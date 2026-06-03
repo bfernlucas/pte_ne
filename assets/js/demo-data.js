@@ -1,7 +1,6 @@
 /**
- * Dados de exemplo extraidos da matriz PTE2026 final (52 iniciativas),
- * ja com setor, natureza juridica e data de fundacao preenchidos.
- * Usados quando CONFIG.USE_DEMO_DATA = true.
+ * Dados de exemplo (52 iniciativas) da matriz PTE2026 atualizada.
+ * estado pode conter multiplas UFs (iniciativas regionais).
  */
 const DEMO_DATA = [
   {
@@ -11,17 +10,17 @@ const DEMO_DATA = [
     "tematica": "Microcrédito; Finanças solidárias",
     "organizacao": "Acreditar Sociedade de Crédito ao Microempreendedor (com apoio da Aliança Empreendedora)",
     "cnpj": "08.834.501/0001-85",
-    "data_fundacao": "",
+    "data_fundacao": "27/04/2007",
     "municipio": "Glória do Goitá",
     "estado": "PE",
     "bioma": "Mata Atlântica",
     "eixo": "1. Finanças Sustentáveis e Inclusivas",
     "setor": "Terciário",
-    "natureza": "",
-    "avaliador": "=IF($P4=\"\",\"\",IF(OR(LEFT($P4,2)=\"1.\",LEFT($P4,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P4,2)=\"2.\",LEFT($P4,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "natureza": "Associação Privada",
+    "avaliador": "Lucas",
     "lat": -8.0017,
     "lon": -35.2928,
-    "pontuacao": "=SUM(R4:AD4)"
+    "pontuacao": 0
   },
   {
     "id": 2,
@@ -37,10 +36,10 @@ const DEMO_DATA = [
     "eixo": "1. Finanças Sustentáveis e Inclusivas",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P5=\"\",\"\",IF(OR(LEFT($P5,2)=\"1.\",LEFT($P5,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P5,2)=\"2.\",LEFT($P5,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -3.7319,
     "lon": -38.5267,
-    "pontuacao": "=SUM(R5:AD5)"
+    "pontuacao": 0
   },
   {
     "id": 3,
@@ -56,10 +55,10 @@ const DEMO_DATA = [
     "eixo": "1. Finanças Sustentáveis e Inclusivas",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P6=\"\",\"\",IF(OR(LEFT($P6,2)=\"1.\",LEFT($P6,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P6,2)=\"2.\",LEFT($P6,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -11.6644,
     "lon": -39.0078,
-    "pontuacao": "=SUM(R6:AD6)"
+    "pontuacao": 0
   },
   {
     "id": 4,
@@ -68,17 +67,17 @@ const DEMO_DATA = [
     "tematica": "Economia solidária; microcrédito",
     "organizacao": "Associação Banco da Cidade (em parceria com a Realiz)",
     "cnpj": "",
-    "data_fundacao": "",
+    "data_fundacao": "Não Localizado",
     "municipio": "Araçoiaba",
     "estado": "PE",
     "bioma": "Mata Atlântica",
     "eixo": "1. Finanças Sustentáveis e Inclusivas",
     "setor": "Terciário",
-    "natureza": "",
-    "avaliador": "=IF($P7=\"\",\"\",IF(OR(LEFT($P7,2)=\"1.\",LEFT($P7,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P7,2)=\"2.\",LEFT($P7,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "natureza": "Não Localizado",
+    "avaliador": "Lucas",
     "lat": -7.7869,
     "lon": -35.0922,
-    "pontuacao": "=SUM(R7:AD7)"
+    "pontuacao": 0
   },
   {
     "id": 5,
@@ -88,16 +87,16 @@ const DEMO_DATA = [
     "organizacao": "Instituto Conexões Sustentáveis (Conexsus)",
     "cnpj": "10.980.503/0001-24",
     "data_fundacao": "27/05/2009",
-    "municipio": "Rio de Janeiro",
-    "estado": "RJ",
-    "bioma": "Mata Atlântica",
+    "municipio": "",
+    "estado": "BA",
+    "bioma": "Mata Atlântica, Caatinga, Cerrado",
     "eixo": "1. Finanças Sustentáveis e Inclusivas",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P8=\"\",\"\",IF(OR(LEFT($P8,2)=\"1.\",LEFT($P8,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P8,2)=\"2.\",LEFT($P8,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -22.9068,
     "lon": -43.1729,
-    "pontuacao": "=SUM(R8:AD8)"
+    "pontuacao": 0
   },
   {
     "id": 6,
@@ -106,17 +105,17 @@ const DEMO_DATA = [
     "tematica": "Certificação; Serviços ecossistêmicos",
     "organizacao": "Associação de Comercialização Solidária Xique-Xique",
     "cnpj": "07.194.162/0001-57",
-    "data_fundacao": "",
+    "data_fundacao": "31/01/2005",
     "municipio": "Mossoró",
     "estado": "RN",
     "bioma": "Caatinga",
     "eixo": "1. Finanças Sustentáveis e Inclusivas",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P9=\"\",\"\",IF(OR(LEFT($P9,2)=\"1.\",LEFT($P9,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P9,2)=\"2.\",LEFT($P9,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -5.1875,
     "lon": -37.3441,
-    "pontuacao": "=SUM(R9:AD9)"
+    "pontuacao": 0
   },
   {
     "id": 7,
@@ -125,17 +124,17 @@ const DEMO_DATA = [
     "tematica": "Facillity; Hub",
     "organizacao": "MDIC – Ministério do Desenvolvimento, Indústria, Comércio e Serviços (parceria UNIDO/DESNZ-Reino Unido)",
     "cnpj": "00.394.478/0001-43",
-    "data_fundacao": "",
+    "data_fundacao": "29/11/1974",
     "municipio": "Brasília",
-    "estado": "DF",
-    "bioma": "Cerrado",
+    "estado": "BA, PE, CE, RN, AL, PI, PB, SE, MA",
+    "bioma": "Cerrado, Caatinga, Mata Atlântica, Amazônia",
     "eixo": "1. Finanças Sustentáveis e Inclusivas",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Federal",
-    "avaliador": "=IF($P10=\"\",\"\",IF(OR(LEFT($P10,2)=\"1.\",LEFT($P10,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P10,2)=\"2.\",LEFT($P10,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -15.7942,
     "lon": -47.8822,
-    "pontuacao": "=SUM(R10:AD10)"
+    "pontuacao": 0
   },
   {
     "id": 8,
@@ -151,10 +150,10 @@ const DEMO_DATA = [
     "eixo": "2. Adensamento Tecnológico",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P11=\"\",\"\",IF(OR(LEFT($P11,2)=\"1.\",LEFT($P11,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P11,2)=\"2.\",LEFT($P11,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -8.0476,
     "lon": -34.877,
-    "pontuacao": "=SUM(R11:AD11)"
+    "pontuacao": 0
   },
   {
     "id": 9,
@@ -163,17 +162,17 @@ const DEMO_DATA = [
     "tematica": "Capacitação técnica e profissional em tecnologia, empreendedorismo",
     "organizacao": "Governo do Estado de Alagoas – Secretaria de Estado da Ciência, Tecnologia e Inovação (Secti/AL)",
     "cnpj": "04.007.216/0001-30",
-    "data_fundacao": "",
+    "data_fundacao": "04/08/2000",
     "municipio": "Maceió",
     "estado": "AL",
-    "bioma": "Mata Atlântica",
+    "bioma": "Caatinga",
     "eixo": "2. Adensamento Tecnológico",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Estadual",
-    "avaliador": "=IF($P12=\"\",\"\",IF(OR(LEFT($P12,2)=\"1.\",LEFT($P12,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P12,2)=\"2.\",LEFT($P12,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -9.6498,
     "lon": -35.7089,
-    "pontuacao": "=SUM(R12:AD12)"
+    "pontuacao": 0
   },
   {
     "id": 10,
@@ -184,15 +183,15 @@ const DEMO_DATA = [
     "cnpj": "03.132.745/0001-00",
     "data_fundacao": "30/04/1999",
     "municipio": "Fortaleza",
-    "estado": "CE",
-    "bioma": "Mata Atlântica",
+    "estado": "BA, PE, CE, RN, AL, PI, PB, SE, MA",
+    "bioma": "Mata Atlântica, Cerrado, Amazônia, Caatinga",
     "eixo": "2. Adensamento Tecnológico",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Federal",
-    "avaliador": "=IF($P13=\"\",\"\",IF(OR(LEFT($P13,2)=\"1.\",LEFT($P13,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P13,2)=\"2.\",LEFT($P13,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -3.7319,
     "lon": -38.5267,
-    "pontuacao": "=SUM(R13:AD13)"
+    "pontuacao": 0
   },
   {
     "id": 11,
@@ -203,15 +202,15 @@ const DEMO_DATA = [
     "cnpj": "00.330.845/0001-45",
     "data_fundacao": "24/08/1972",
     "municipio": "Corrente",
-    "estado": "PI",
-    "bioma": "Cerrado",
+    "estado": "PI, CE, MA",
+    "bioma": "Cerrado, Caatinga, Mata Atlântica, Amazônia",
     "eixo": "2. Adensamento Tecnológico",
     "setor": "Terciário",
     "natureza": "Serviço Social Autônomo",
-    "avaliador": "=IF($P14=\"\",\"\",IF(OR(LEFT($P14,2)=\"1.\",LEFT($P14,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P14,2)=\"2.\",LEFT($P14,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -10.4434,
     "lon": -45.1619,
-    "pontuacao": "=SUM(R14:AD14)"
+    "pontuacao": 0
   },
   {
     "id": 12,
@@ -222,15 +221,15 @@ const DEMO_DATA = [
     "cnpj": "00.348.003/0001-10",
     "data_fundacao": "02/05/1973",
     "municipio": "Petrolina",
-    "estado": "PE",
+    "estado": "BA, PE, PI",
     "bioma": "Caatinga",
     "eixo": "2. Adensamento Tecnológico",
     "setor": "Terciário",
     "natureza": "Empresa Pública",
-    "avaliador": "=IF($P15=\"\",\"\",IF(OR(LEFT($P15,2)=\"1.\",LEFT($P15,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P15,2)=\"2.\",LEFT($P15,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -9.3891,
     "lon": -40.5028,
-    "pontuacao": "=SUM(R15:AD15)"
+    "pontuacao": 0
   },
   {
     "id": 13,
@@ -246,10 +245,10 @@ const DEMO_DATA = [
     "eixo": "2. Adensamento Tecnológico",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P16=\"\",\"\",IF(OR(LEFT($P16,2)=\"1.\",LEFT($P16,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P16,2)=\"2.\",LEFT($P16,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -8.0476,
     "lon": -34.877,
-    "pontuacao": "=SUM(R16:AD16)"
+    "pontuacao": 0
   },
   {
     "id": 14,
@@ -265,10 +264,10 @@ const DEMO_DATA = [
     "eixo": "2. Adensamento Tecnológico",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P17=\"\",\"\",IF(OR(LEFT($P17,2)=\"1.\",LEFT($P17,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P17,2)=\"2.\",LEFT($P17,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -12.9777,
     "lon": -38.5016,
-    "pontuacao": "=SUM(R17:AD17)"
+    "pontuacao": 0
   },
   {
     "id": 15,
@@ -278,16 +277,16 @@ const DEMO_DATA = [
     "organizacao": "Governo Federal – Ministério do Desenvolvimento Agrário e Agricultura Familiar (MDA), com apoio do FIDA",
     "cnpj": "01.612.452/0001-97",
     "data_fundacao": "08/01/1997",
-    "municipio": "Rio de Janeiro",
-    "estado": "RJ",
-    "bioma": "Mata Atlântica",
+    "municipio": "",
+    "estado": "SE, AL, PE",
+    "bioma": "Caatinga",
     "eixo": "3. Bioeconomia e Sistemas Agroalimentares Adaptados",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Federal",
-    "avaliador": "=IF($P18=\"\",\"\",IF(OR(LEFT($P18,2)=\"1.\",LEFT($P18,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P18,2)=\"2.\",LEFT($P18,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -22.9068,
     "lon": -43.1729,
-    "pontuacao": "=SUM(R18:AD18)"
+    "pontuacao": 0
   },
   {
     "id": 16,
@@ -296,17 +295,17 @@ const DEMO_DATA = [
     "tematica": "Turismo comunitário sustentável, cadeias agroalimentares regionais e valorização cultural.",
     "organizacao": "Embrapa Alimentos e Territórios",
     "cnpj": "00.348.003/0025-98",
-    "data_fundacao": "",
+    "data_fundacao": "02/10/2018",
     "municipio": "",
-    "estado": "",
+    "estado": "AL",
     "bioma": "Caatinga",
     "eixo": "3. Bioeconomia e Sistemas Agroalimentares Adaptados",
     "setor": "Terciário",
     "natureza": "Empresa Pública",
-    "avaliador": "=IF($P19=\"\",\"\",IF(OR(LEFT($P19,2)=\"1.\",LEFT($P19,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P19,2)=\"2.\",LEFT($P19,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -9.6619375,
     "lon": -35.7406837,
-    "pontuacao": "=SUM(R19:AD19)"
+    "pontuacao": 0
   },
   {
     "id": 17,
@@ -318,14 +317,14 @@ const DEMO_DATA = [
     "data_fundacao": "01/01/2007",
     "municipio": "Salvador",
     "estado": "BA",
-    "bioma": "Mata Atlântica",
+    "bioma": "Mata Atlântica, Caatinga, Cerrado",
     "eixo": "3. Bioeconomia e Sistemas Agroalimentares Adaptados",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Estadual",
-    "avaliador": "=IF($P20=\"\",\"\",IF(OR(LEFT($P20,2)=\"1.\",LEFT($P20,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P20,2)=\"2.\",LEFT($P20,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -12.9777,
     "lon": -38.5016,
-    "pontuacao": "=SUM(R20:AD20)"
+    "pontuacao": 0
   },
   {
     "id": 18,
@@ -334,17 +333,17 @@ const DEMO_DATA = [
     "tematica": "Bioeconomia comunitária, Gênero e justiça socioambiental. Patrimônio Genético, Repartição de Benefícios e Legislação",
     "organizacao": "Associação das Comunidades Negras Rurais Quilombolas do Maranhão (ACONERUQ)",
     "cnpj": "02.786.414/0001-13",
-    "data_fundacao": "",
+    "data_fundacao": "14/10/1998",
     "municipio": "São Luís",
     "estado": "MA",
-    "bioma": "Amazônia",
+    "bioma": "Amazônia, Cerrado",
     "eixo": "3. Bioeconomia e Sistemas Agroalimentares Adaptados",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P21=\"\",\"\",IF(OR(LEFT($P21,2)=\"1.\",LEFT($P21,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P21,2)=\"2.\",LEFT($P21,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": -2.5391,
     "lon": -44.2829,
-    "pontuacao": "=SUM(R21:AD21)"
+    "pontuacao": 0
   },
   {
     "id": 19,
@@ -355,15 +354,15 @@ const DEMO_DATA = [
     "cnpj": "01.612.452/0001-97",
     "data_fundacao": "08/01/1997",
     "municipio": "",
-    "estado": "BA",
+    "estado": "BA, PE, CE, RN, AL, PI, PB, SE, MA",
     "bioma": "Mata Atlântica",
     "eixo": "3. Bioeconomia e Sistemas Agroalimentares Adaptados",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Federal",
-    "avaliador": "=IF($P22=\"\",\"\",IF(OR(LEFT($P22,2)=\"1.\",LEFT($P22,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P22,2)=\"2.\",LEFT($P22,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Caio",
     "lat": null,
     "lon": null,
-    "pontuacao": "=SUM(R22:AD22)"
+    "pontuacao": 0
   },
   {
     "id": 20,
@@ -372,17 +371,17 @@ const DEMO_DATA = [
     "tematica": "Rastreabilidade e Mercados Sustentáveis, Bioeconomia de baixo carbono e sistemas produtivos sustentáveis baseados na biodiversidade da Caatinga.",
     "organizacao": "Fundação Araripe",
     "cnpj": "",
-    "data_fundacao": "",
+    "data_fundacao": "Não localizado",
     "municipio": "Piranhas",
     "estado": "AL",
     "bioma": "Caatinga",
     "eixo": "3. Bioeconomia e Sistemas Agroalimentares Adaptados",
     "setor": "Terciário",
-    "natureza": "",
-    "avaliador": "=IF($P23=\"\",\"\",IF(OR(LEFT($P23,2)=\"1.\",LEFT($P23,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P23,2)=\"2.\",LEFT($P23,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "natureza": "Não localizado",
+    "avaliador": "Caio",
     "lat": -9.6242,
     "lon": -37.7569,
-    "pontuacao": "=SUM(R23:AD23)"
+    "pontuacao": 0
   },
   {
     "id": 21,
@@ -394,14 +393,14 @@ const DEMO_DATA = [
     "data_fundacao": "22/03/2024",
     "municipio": "Teresina",
     "estado": "PI",
-    "bioma": "Cerrado",
+    "bioma": "Cerrado, Caatinga",
     "eixo": "4. Transição Energética",
     "setor": "Secundário",
     "natureza": "Sociedade Empresária Limitada",
-    "avaliador": "=IF($P24=\"\",\"\",IF(OR(LEFT($P24,2)=\"1.\",LEFT($P24,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P24,2)=\"2.\",LEFT($P24,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -5.0892,
     "lon": -42.8019,
-    "pontuacao": "=SUM(R24:AD24)"
+    "pontuacao": 0
   },
   {
     "id": 22,
@@ -417,10 +416,10 @@ const DEMO_DATA = [
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "Empresa Pública",
-    "avaliador": "=IF($P25=\"\",\"\",IF(OR(LEFT($P25,2)=\"1.\",LEFT($P25,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P25,2)=\"2.\",LEFT($P25,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -8.3993,
     "lon": -35.0639,
-    "pontuacao": "=SUM(R25:AD25)"
+    "pontuacao": 0
   },
   {
     "id": 23,
@@ -436,10 +435,10 @@ const DEMO_DATA = [
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "Serviço Social Autônomo",
-    "avaliador": "=IF($P26=\"\",\"\",IF(OR(LEFT($P26,2)=\"1.\",LEFT($P26,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P26,2)=\"2.\",LEFT($P26,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -12.9777,
     "lon": -38.5016,
-    "pontuacao": "=SUM(R26:AD26)"
+    "pontuacao": 0
   },
   {
     "id": 24,
@@ -448,17 +447,17 @@ const DEMO_DATA = [
     "tematica": "Pesquisa Aplicada e Capacitação Profissional focada na expansão da energia solar fotovoltaica e Geração Distribuída",
     "organizacao": "LabSolar+ – instituição de pesquisa (RN) (organização executora a confirmar)",
     "cnpj": "10.877.412/0001-68",
-    "data_fundacao": "",
+    "data_fundacao": "29/12/2008",
     "municipio": "Natal",
     "estado": "RN",
-    "bioma": "Mata Atlântica",
+    "bioma": "Mata Atlântica, Caatinga",
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
-    "natureza": "",
-    "avaliador": "=IF($P27=\"\",\"\",IF(OR(LEFT($P27,2)=\"1.\",LEFT($P27,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P27,2)=\"2.\",LEFT($P27,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "natureza": "Órgão Público do Poder Executivo Federal",
+    "avaliador": "Lucas",
     "lat": -5.7945,
     "lon": -35.211,
-    "pontuacao": "=SUM(R27:AD27)"
+    "pontuacao": 0
   },
   {
     "id": 25,
@@ -469,15 +468,15 @@ const DEMO_DATA = [
     "cnpj": "05.080.329/0001-23",
     "data_fundacao": "2002",
     "municipio": "Recife",
-    "estado": "PE",
-    "bioma": "Mata Atlântica",
+    "estado": "BA, PE, CE, RN, AL, PI, PB, SE, MA",
+    "bioma": "Mata Atlântica, Caatinga, Cerrado, Amazônia",
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P28=\"\",\"\",IF(OR(LEFT($P28,2)=\"1.\",LEFT($P28,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P28,2)=\"2.\",LEFT($P28,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -8.0476,
     "lon": -34.877,
-    "pontuacao": "=SUM(R28:AD28)"
+    "pontuacao": 0
   },
   {
     "id": 26,
@@ -488,15 +487,15 @@ const DEMO_DATA = [
     "cnpj": "03.353.358/0001-96",
     "data_fundacao": "24/08/1999",
     "municipio": "Brasília",
-    "estado": "DF",
-    "bioma": "Cerrado",
+    "estado": "BA, PE, CE, RN, AL, PI, PB, SE, MA",
+    "bioma": "Mata Atlântica, Caatinga, Cerrado, Amazônia",
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Federal",
-    "avaliador": "=IF($P29=\"\",\"\",IF(OR(LEFT($P29,2)=\"1.\",LEFT($P29,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P29,2)=\"2.\",LEFT($P29,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -15.7942,
     "lon": -47.8822,
-    "pontuacao": "=SUM(R29:AD29)"
+    "pontuacao": 0
   },
   {
     "id": 27,
@@ -505,17 +504,17 @@ const DEMO_DATA = [
     "tematica": "Bioenergia; inclusão energética no meio rural; produção descentralizada de biogás/biometano e biofertilizantes.",
     "organizacao": "Governo Federal – programa nacional de biodigestores e biogás (órgão gestor a confirmar)",
     "cnpj": "",
-    "data_fundacao": "",
+    "data_fundacao": "04/06/2002",
     "municipio": "Brasília",
-    "estado": "DF",
-    "bioma": "Cerrado",
+    "estado": "BA, PE, CE, RN, AL, PI, PB, SE, MA",
+    "bioma": "Mata Atlântica, Caatinga, Cerrado, Amazônia",
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "",
-    "avaliador": "=IF($P30=\"\",\"\",IF(OR(LEFT($P30,2)=\"1.\",LEFT($P30,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P30,2)=\"2.\",LEFT($P30,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -15.7942,
     "lon": -47.8822,
-    "pontuacao": "=SUM(R30:AD30)"
+    "pontuacao": 0
   },
   {
     "id": 28,
@@ -526,15 +525,15 @@ const DEMO_DATA = [
     "cnpj": "37.115.383/0001-53",
     "data_fundacao": "12/05/1992",
     "municipio": "Brasília",
-    "estado": "DF",
-    "bioma": "Cerrado",
+    "estado": "BA, PE, CE, RN, AL, PI, PB, SE, MA",
+    "bioma": "Caatinga, Amazônia",
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Federal",
-    "avaliador": "=IF($P31=\"\",\"\",IF(OR(LEFT($P31,2)=\"1.\",LEFT($P31,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P31,2)=\"2.\",LEFT($P31,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -15.7942,
     "lon": -47.8822,
-    "pontuacao": "=SUM(R31:AD31)"
+    "pontuacao": 0
   },
   {
     "id": 29,
@@ -550,10 +549,10 @@ const DEMO_DATA = [
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P32=\"\",\"\",IF(OR(LEFT($P32,2)=\"1.\",LEFT($P32,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P32,2)=\"2.\",LEFT($P32,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -2.5391,
     "lon": -44.2829,
-    "pontuacao": "=SUM(R32:AD32)"
+    "pontuacao": 0
   },
   {
     "id": 30,
@@ -562,17 +561,17 @@ const DEMO_DATA = [
     "tematica": "Transição energética justa; autonomia comunitária; geração fotovoltaica comunitária; fortalecimento econômico em territórios quilombolas e tradicionais.",
     "organizacao": "Raízes Solares – programa comunitário (organização executora a confirmar)",
     "cnpj": "07.060.718/0001-12",
-    "data_fundacao": "",
+    "data_fundacao": "28/08/2004",
     "municipio": "São Luís",
     "estado": "MA",
     "bioma": "Amazônia",
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "Fundação Privada",
-    "avaliador": "=IF($P33=\"\",\"\",IF(OR(LEFT($P33,2)=\"1.\",LEFT($P33,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P33,2)=\"2.\",LEFT($P33,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -2.5391,
     "lon": -44.2829,
-    "pontuacao": "=SUM(R33:AD33)"
+    "pontuacao": 0
   },
   {
     "id": 31,
@@ -584,14 +583,14 @@ const DEMO_DATA = [
     "data_fundacao": "14/02/1975",
     "municipio": "Recife",
     "estado": "PE",
-    "bioma": "Mata Atlântica",
+    "bioma": "Mata Atlântica, Caatinga",
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Estadual",
-    "avaliador": "=IF($P34=\"\",\"\",IF(OR(LEFT($P34,2)=\"1.\",LEFT($P34,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P34,2)=\"2.\",LEFT($P34,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -8.0476,
     "lon": -34.877,
-    "pontuacao": "=SUM(R34:AD34)"
+    "pontuacao": 0
   },
   {
     "id": 32,
@@ -602,15 +601,15 @@ const DEMO_DATA = [
     "cnpj": "01.612.452/0001-97",
     "data_fundacao": "08/01/1997",
     "municipio": "Brasília",
-    "estado": "DF",
-    "bioma": "Cerrado",
+    "estado": "BA, PE, CE, RN, AL, PI, PB, SE",
+    "bioma": "Cerrado, Caatinga",
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Federal",
-    "avaliador": "=IF($P35=\"\",\"\",IF(OR(LEFT($P35,2)=\"1.\",LEFT($P35,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P35,2)=\"2.\",LEFT($P35,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -15.7942,
     "lon": -47.8822,
-    "pontuacao": "=SUM(R35:AD35)"
+    "pontuacao": 0
   },
   {
     "id": 33,
@@ -626,10 +625,10 @@ const DEMO_DATA = [
     "eixo": "4. Transição Energética",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P36=\"\",\"\",IF(OR(LEFT($P36,2)=\"1.\",LEFT($P36,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P36,2)=\"2.\",LEFT($P36,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Lucas",
     "lat": -9.3856,
     "lon": -37.9966,
-    "pontuacao": "=SUM(R36:AD36)"
+    "pontuacao": 0
   },
   {
     "id": 34,
@@ -641,14 +640,14 @@ const DEMO_DATA = [
     "data_fundacao": "",
     "municipio": "Fortaleza",
     "estado": "CE",
-    "bioma": "Mata Atlântica",
+    "bioma": "Mata Atlântica, Caatinga, Cerrado",
     "eixo": "5. Economia Circular e Solidária",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Estadual",
-    "avaliador": "=IF($P37=\"\",\"\",IF(OR(LEFT($P37,2)=\"1.\",LEFT($P37,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P37,2)=\"2.\",LEFT($P37,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -3.7319,
     "lon": -38.5267,
-    "pontuacao": "=SUM(R37:AD37)"
+    "pontuacao": 0
   },
   {
     "id": 35,
@@ -660,14 +659,14 @@ const DEMO_DATA = [
     "data_fundacao": "01/01/2015",
     "municipio": "Salvador",
     "estado": "BA",
-    "bioma": "Mata Atlântica",
+    "bioma": "Mata Atlântica, Caatinga, Cerrado",
     "eixo": "5. Economia Circular e Solidária",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Estadual",
-    "avaliador": "=IF($P38=\"\",\"\",IF(OR(LEFT($P38,2)=\"1.\",LEFT($P38,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P38,2)=\"2.\",LEFT($P38,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -12.9777,
     "lon": -38.5016,
-    "pontuacao": "=SUM(R38:AD38)"
+    "pontuacao": 0
   },
   {
     "id": 36,
@@ -683,10 +682,10 @@ const DEMO_DATA = [
     "eixo": "5. Economia Circular e Solidária",
     "setor": "Terciário",
     "natureza": "Sociedade Empresária Limitada",
-    "avaliador": "=IF($P39=\"\",\"\",IF(OR(LEFT($P39,2)=\"1.\",LEFT($P39,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P39,2)=\"2.\",LEFT($P39,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -12.9777,
     "lon": -38.5016,
-    "pontuacao": "=SUM(R39:AD39)"
+    "pontuacao": 0
   },
   {
     "id": 37,
@@ -695,17 +694,17 @@ const DEMO_DATA = [
     "tematica": "Valorização dos catadores/as; capacitação; coleta seletiva; Inclusão produtiva",
     "organizacao": "Governo do Estado de Alagoas (Programa Alagoas Catador)",
     "cnpj": "03.626.198/0001-01",
-    "data_fundacao": "",
+    "data_fundacao": "27/12/1999",
     "municipio": "Maceió",
     "estado": "AL",
-    "bioma": "Mata Atlântica",
+    "bioma": "Mata Atlântica, Cerrado, Caatinga",
     "eixo": "5. Economia Circular e Solidária",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Estadual",
-    "avaliador": "=IF($P40=\"\",\"\",IF(OR(LEFT($P40,2)=\"1.\",LEFT($P40,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P40,2)=\"2.\",LEFT($P40,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -9.6498,
     "lon": -35.7089,
-    "pontuacao": "=SUM(R40:AD40)"
+    "pontuacao": 0
   },
   {
     "id": 38,
@@ -714,17 +713,17 @@ const DEMO_DATA = [
     "tematica": "Capacitar Catadores/as; Centros de Triagem; Cadeia local de reciclagem;",
     "organizacao": "Prefeitura Municipal de Arês (RN)",
     "cnpj": "08.161.234/0001-22",
-    "data_fundacao": "",
+    "data_fundacao": "24/01/1975",
     "municipio": "Arês",
     "estado": "RN",
-    "bioma": "Mata Atlântica",
+    "bioma": "Caatinga",
     "eixo": "5. Economia Circular e Solidária",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Municipal",
-    "avaliador": "=IF($P41=\"\",\"\",IF(OR(LEFT($P41,2)=\"1.\",LEFT($P41,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P41,2)=\"2.\",LEFT($P41,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -6.1947,
     "lon": -35.1583,
-    "pontuacao": "=SUM(R41:AD41)"
+    "pontuacao": 0
   },
   {
     "id": 39,
@@ -733,17 +732,17 @@ const DEMO_DATA = [
     "tematica": "Inclusão social e produtiva dos catadores",
     "organizacao": "Rede Recicla Bahia",
     "cnpj": "27.411.942/0001-19",
-    "data_fundacao": "",
+    "data_fundacao": "10/03/2017",
     "municipio": "Salvador",
     "estado": "BA",
-    "bioma": "Mata Atlântica",
+    "bioma": "Mata Atlântica, Caatinga, Cerrado",
     "eixo": "5. Economia Circular e Solidária",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P42=\"\",\"\",IF(OR(LEFT($P42,2)=\"1.\",LEFT($P42,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P42,2)=\"2.\",LEFT($P42,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -12.9777,
     "lon": -38.5016,
-    "pontuacao": "=SUM(R42:AD42)"
+    "pontuacao": 0
   },
   {
     "id": 40,
@@ -759,10 +758,10 @@ const DEMO_DATA = [
     "eixo": "5. Economia Circular e Solidária",
     "setor": "Terciário",
     "natureza": "Consórcio Público",
-    "avaliador": "=IF($P43=\"\",\"\",IF(OR(LEFT($P43,2)=\"1.\",LEFT($P43,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P43,2)=\"2.\",LEFT($P43,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -3.7322,
     "lon": -40.9919,
-    "pontuacao": "=SUM(R43:AD43)"
+    "pontuacao": 0
   },
   {
     "id": 41,
@@ -778,10 +777,10 @@ const DEMO_DATA = [
     "eixo": "5. Economia Circular e Solidária",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Municipal",
-    "avaliador": "=IF($P44=\"\",\"\",IF(OR(LEFT($P44,2)=\"1.\",LEFT($P44,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P44,2)=\"2.\",LEFT($P44,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -3.7319,
     "lon": -38.5267,
-    "pontuacao": "=SUM(R44:AD44)"
+    "pontuacao": 0
   },
   {
     "id": 42,
@@ -797,10 +796,10 @@ const DEMO_DATA = [
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Municipal",
-    "avaliador": "=IF($P45=\"\",\"\",IF(OR(LEFT($P45,2)=\"1.\",LEFT($P45,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P45,2)=\"2.\",LEFT($P45,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -3.7319,
     "lon": -38.5267,
-    "pontuacao": "=SUM(R45:AD45)"
+    "pontuacao": 0
   },
   {
     "id": 43,
@@ -809,17 +808,17 @@ const DEMO_DATA = [
     "tematica": "Segurança hídrica e convivência com o semiárido",
     "organizacao": "ASA – Articulação Semiárido Brasileiro",
     "cnpj": "05.080.329/0001-23",
-    "data_fundacao": "2002",
+    "data_fundacao": "04/06/2002",
     "municipio": "Recife",
-    "estado": "PE",
-    "bioma": "Mata Atlântica",
+    "estado": "PE, CE, BA, RN, AL, PI, MA, PB, SE",
+    "bioma": "Caatinga",
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P46=\"\",\"\",IF(OR(LEFT($P46,2)=\"1.\",LEFT($P46,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P46,2)=\"2.\",LEFT($P46,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -8.0476,
     "lon": -34.877,
-    "pontuacao": "=SUM(R46:AD46)"
+    "pontuacao": 0
   },
   {
     "id": 44,
@@ -828,17 +827,17 @@ const DEMO_DATA = [
     "tematica": "Saneamento rural e reúso de água",
     "organizacao": "Projeto Tecnologia SARA (organização executora a confirmar)",
     "cnpj": "01.263.896/0019-93",
-    "data_fundacao": "",
+    "data_fundacao": "14/04/2004",
     "municipio": "Campina Grande",
-    "estado": "PB",
+    "estado": "PE, CE, BA, RN, AL, PI, MA, PB, SE",
     "bioma": "Caatinga",
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Federal",
-    "avaliador": "=IF($P47=\"\",\"\",IF(OR(LEFT($P47,2)=\"1.\",LEFT($P47,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P47,2)=\"2.\",LEFT($P47,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -7.2306,
     "lon": -35.8811,
-    "pontuacao": "=SUM(R47:AD47)"
+    "pontuacao": 0
   },
   {
     "id": 45,
@@ -847,17 +846,17 @@ const DEMO_DATA = [
     "tematica": "Ordenamento territorial costeiro",
     "organizacao": "Governo do Estado do Ceará – Secretaria do Meio Ambiente (SEMA/CE)",
     "cnpj": "22.156.351/0001-29",
-    "data_fundacao": "",
+    "data_fundacao": "10/03/2015",
     "municipio": "Fortaleza",
     "estado": "CE",
     "bioma": "Mata Atlântica",
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
     "natureza": "Órgão Público do Poder Executivo Estadual",
-    "avaliador": "=IF($P48=\"\",\"\",IF(OR(LEFT($P48,2)=\"1.\",LEFT($P48,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P48,2)=\"2.\",LEFT($P48,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -3.7319,
     "lon": -38.5267,
-    "pontuacao": "=SUM(R48:AD48)"
+    "pontuacao": 0
   },
   {
     "id": 46,
@@ -869,14 +868,14 @@ const DEMO_DATA = [
     "data_fundacao": "31/07/1997",
     "municipio": "Fortaleza",
     "estado": "CE",
-    "bioma": "Mata Atlântica",
+    "bioma": "Mata Atlântica, Caatinga",
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
     "natureza": "Sociedade de Economia Mista",
-    "avaliador": "=IF($P49=\"\",\"\",IF(OR(LEFT($P49,2)=\"1.\",LEFT($P49,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P49,2)=\"2.\",LEFT($P49,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -3.7319,
     "lon": -38.5267,
-    "pontuacao": "=SUM(R49:AD49)"
+    "pontuacao": 0
   },
   {
     "id": 47,
@@ -885,55 +884,55 @@ const DEMO_DATA = [
     "tematica": "Recuperação ambiental e bioeconomia",
     "organizacao": "Associação Norte-Rio-Grandense de Engenheiros Agrônomos",
     "cnpj": "08.381.188/0001-77",
-    "data_fundacao": "",
+    "data_fundacao": "01/12/1977",
     "municipio": "Natal",
     "estado": "RN",
-    "bioma": "Mata Atlântica",
+    "bioma": "Caatinga",
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P50=\"\",\"\",IF(OR(LEFT($P50,2)=\"1.\",LEFT($P50,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P50,2)=\"2.\",LEFT($P50,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -5.7945,
     "lon": -35.211,
-    "pontuacao": "=SUM(R50:AD50)"
+    "pontuacao": 0
   },
   {
     "id": 48,
     "iniciativa": "Conecta Caatinga",
     "objetivo": "Criar corredores ecológicos conectando áreas protegidas da Caatinga",
     "tematica": "Conservação da biodiversidade",
-    "organizacao": "Conecta Caatinga (organização executora a confirmar)",
+    "organizacao": "FunBio",
     "cnpj": "03.537.443/0001-04",
-    "data_fundacao": "",
+    "data_fundacao": "06/12/1999",
     "municipio": "Rio de Janeiro",
-    "estado": "RJ",
-    "bioma": "Mata Atlântica",
+    "estado": "MA, PI, PE, CE, BA, RN, AL, PB, SE",
+    "bioma": "Caatinga, Mata Atlântica",
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P51=\"\",\"\",IF(OR(LEFT($P51,2)=\"1.\",LEFT($P51,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P51,2)=\"2.\",LEFT($P51,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -22.9068,
     "lon": -43.1729,
-    "pontuacao": "=SUM(R51:AD51)"
+    "pontuacao": 0
   },
   {
     "id": 49,
     "iniciativa": "Projetos Rural Sustentável Caatinga e Desenvolvimento Agrícola Sustentável no Maranhão",
     "objetivo": "Promover adoção de tecnologias de baixa emissão de carbono",
     "tematica": "Agricultura sustentável e baixo carbono",
-    "organizacao": "Programa Rural Sustentável – Caatinga (Governo Federal / BNDES; coordenação a confirmar)",
-    "cnpj": "33.657.248/0001-89",
-    "data_fundacao": "06/04/1967",
-    "municipio": "Brasília",
-    "estado": "DF",
-    "bioma": "Cerrado",
+    "organizacao": "Fundação Brasileira para o Desenvolvimento Sustentável (FBDS)",
+    "cnpj": "40.390.569/0001-25",
+    "data_fundacao": "12/02/1992",
+    "municipio": "",
+    "estado": "MA",
+    "bioma": "Caatinga",
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
     "natureza": "Empresa Pública",
-    "avaliador": "=IF($P52=\"\",\"\",IF(OR(LEFT($P52,2)=\"1.\",LEFT($P52,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P52,2)=\"2.\",LEFT($P52,2)=\"3.\"),\"Caio\",\"Leide\")))",
-    "lat": -15.7942,
-    "lon": -47.8822,
-    "pontuacao": "=SUM(R52:AD52)"
+    "avaliador": "Leide",
+    "lat": "-230032",
+    "lon": "-43.2786",
+    "pontuacao": 0
   },
   {
     "id": 50,
@@ -942,17 +941,17 @@ const DEMO_DATA = [
     "tematica": "Gênero e adaptação climática",
     "organizacao": "Plataforma Mulheres de Base Praticantes de Resiliência (organização executora a confirmar)",
     "cnpj": "06.281.222/0001-06",
-    "data_fundacao": "",
+    "data_fundacao": "06/01/2004",
     "municipio": "Pintadas",
-    "estado": "BA",
+    "estado": "PI, PE, CE, BA, RN, AL, PB, SE",
     "bioma": "Caatinga",
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P53=\"\",\"\",IF(OR(LEFT($P53,2)=\"1.\",LEFT($P53,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P53,2)=\"2.\",LEFT($P53,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -11.8104,
     "lon": -39.0833,
-    "pontuacao": "=SUM(R53:AD53)"
+    "pontuacao": 0
   },
   {
     "id": 51,
@@ -961,17 +960,17 @@ const DEMO_DATA = [
     "tematica": "Monitoramento ambiental e alerta precoce da degradação da Caatinga",
     "organizacao": "SIMACaatinga – sistema de monitoramento (instituição executora a confirmar)",
     "cnpj": "24.464.109/0001-48",
-    "data_fundacao": "",
+    "data_fundacao": "03/10/1989",
     "municipio": "Maceió",
-    "estado": "AL",
-    "bioma": "Mata Atlântica",
+    "estado": "PI, PE, CE, BA, RN, AL, PB, SE",
+    "bioma": "Caatinga",
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
-    "natureza": "",
-    "avaliador": "=IF($P54=\"\",\"\",IF(OR(LEFT($P54,2)=\"1.\",LEFT($P54,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P54,2)=\"2.\",LEFT($P54,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "natureza": "Associação Privada",
+    "avaliador": "Leide",
     "lat": -9.6498,
     "lon": -35.7089,
-    "pontuacao": "=SUM(R54:AD54)"
+    "pontuacao": 0
   },
   {
     "id": 52,
@@ -982,14 +981,14 @@ const DEMO_DATA = [
     "cnpj": "05.140.867/0001-66",
     "data_fundacao": "20/05/2002",
     "municipio": "Pirpirituba",
-    "estado": "PB",
-    "bioma": "Mata Atlântica",
+    "estado": "PB, RN",
+    "bioma": "Caatinga",
     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
     "setor": "Terciário",
     "natureza": "Associação Privada",
-    "avaliador": "=IF($P55=\"\",\"\",IF(OR(LEFT($P55,2)=\"1.\",LEFT($P55,2)=\"4.\"),\"Lucas\",IF(OR(LEFT($P55,2)=\"2.\",LEFT($P55,2)=\"3.\"),\"Caio\",\"Leide\")))",
+    "avaliador": "Leide",
     "lat": -6.7811,
     "lon": -35.5128,
-    "pontuacao": "=SUM(R55:AD55)"
+    "pontuacao": 0
   }
 ];
