@@ -33,16 +33,19 @@ const CONFIG = {
     lat: "lat",
     lon: "lon",
     // Campos exibidos no popup do mapa
-    popup: ["organizacao", "municipio", "estado", "eixo"],
+    popup: ["organizacao", "municipio", "estado", "eixo", "setor"],
     // Colunas mostradas na tabela: { key, label, format }
     table: [
       { key: "id", label: "ID", format: "int" },
       { key: "iniciativa", label: "Iniciativa" },
       { key: "organizacao", label: "Organização" },
+      { key: "data_fundacao", label: "Fundação" },
       { key: "municipio", label: "Município" },
       { key: "estado", label: "UF" },
       { key: "bioma", label: "Bioma" },
       { key: "eixo", label: "Eixo" },
+      { key: "setor", label: "Setor" },
+      { key: "natureza", label: "Natureza jurídica" },
       { key: "pontuacao", label: "Pontuação", format: "num" },
     ],
   },
@@ -68,5 +71,7 @@ const CONFIG = {
     { key: "eixo", label: "Eixo" },
     { key: "estado", label: "Estado" },
     { key: "bioma", label: "Bioma" },
+    { key: "setor", label: "Setor" },
+    { key: "natureza", label: "Natureza jurídica" },
   ],
 };
