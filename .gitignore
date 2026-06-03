@@ -1,0 +1,35 @@
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Arquivos temporários
+*.tmp
+*.bak
+*.log
+.cache/
+
+# Node (caso adicione ferramentas futuras)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Python (caso use scripts auxiliares)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Saída de análise / drafts
+/tmp/
+scratch/

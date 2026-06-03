@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visão geral do trabalho · Redes Ceará</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;
+  --bg-2:#FAFAF7;
+  --navy:#0A2540;
+  --navy-soft:#1C3A56;
+  --navy-deep:#061827;
+  --blue:#0B4FA8;
+  --blue-2:#1E40AF;
+  --purple:#7C3AED;
+  --purple-deep:#6D28D9;
+  --green:#0E8C5D;
+  --green-deep:#076E47;
+  --green-light:#10B981;
+  --ink:#0A2540;
+  --ink-2:#3B4E63;
+  --muted:#6B7A8A;
+  --muted-2:#A0AAB6;
+  --line:rgba(10,37,64,.10);
+  --line-soft:rgba(10,37,64,.06);
+  --line-strong:rgba(10,37,64,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:#0A1320;color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;font-feature-settings:"ss01","kern","liga","case";
+  line-height:1.5;overflow:hidden;min-height:100vh;
+}
+
+.deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px}
+.slide{
+  width:100%;max-width:1280px;
+  aspect-ratio:16/9;max-height:calc(100vh - 100px);
+  background:var(--bg);
+  border-radius:0;
+  box-shadow:0 30px 80px -20px rgba(0,0,0,.6);
+  flex-direction:column;position:relative;overflow:hidden;
+}
+.slide:not(.active){display:none}
+.slide.active{animation:fade .35s cubic-bezier(.2,.6,.2,1)}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.tag-line{
+  display:flex;align-items:center;gap:16px;
+  font-size:10.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted);
+}
+.tag-line .t-num{color:var(--navy);font-weight:800}
+.tag-line .t-sep{color:var(--line-strong)}
+.tag-line .t-ato{color:var(--green-deep);font-weight:700}
+.tag-line .t-blue{color:var(--blue-2);font-weight:700}
+.tag-line .t-purple{color:var(--purple);font-weight:700}
+
+.slide-num{
+  position:absolute;top:36px;right:64px;z-index:5;
+  font-size:11px;color:var(--muted-2);letter-spacing:.16em;font-weight:600;font-variant-numeric:tabular-nums;
+}
+.slide-src{
+  position:absolute;bottom:32px;left:64px;right:64px;z-index:5;
+  font-size:10.5px;color:var(--muted);letter-spacing:.04em;line-height:1.5;
+  border-top:1px solid var(--line);padding-top:14px;
+  display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
+}
+.slide-src .src-fonte{flex:1;min-width:0}
+.slide-src .src-link{font-weight:600;color:var(--green-deep);text-decoration:none;letter-spacing:.04em;white-space:nowrap}
+.slide-src .src-link:hover{text-decoration:underline}
+.title-rule{height:1px;background:var(--line-strong);width:100%;display:block;margin:18px 0 0;border:0}
+
+/* COVER */
+.s-cover{padding:64px 64px 56px;display:grid;grid-template-rows:auto 1fr auto;gap:32px;background:var(--bg)}
+.s-cover .c-top{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.s-cover .c-top .brand{color:var(--green-deep)}
+.s-cover .c-mid{display:grid;grid-template-columns:1.6fr 1fr;gap:48px;align-items:end}
+.s-cover h1{font-weight:900;font-size:74px;line-height:.98;letter-spacing:-.035em;color:var(--navy);margin-bottom:24px}
+.s-cover h1 .accent{color:var(--green-deep);font-weight:800}
+.s-cover h1 .ln{display:block}
+.s-cover .lead{font-size:15.5px;line-height:1.6;color:var(--ink-2);max-width:560px;font-weight:400}
+.s-cover .lead strong{color:var(--navy);font-weight:600}
+.s-cover .c-side{border-top:1px solid var(--line);padding-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:20px 28px}
+.s-cover .c-side .it .v{font-size:38px;font-weight:900;color:var(--navy);letter-spacing:-.025em;line-height:1;font-variant-numeric:tabular-nums}
+.s-cover .c-side .it .v small{font-size:14px;font-weight:600;color:var(--muted);margin-left:4px}
+.s-cover .c-side .it .l{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-top:6px}
+.s-cover .c-bot{display:flex;justify-content:space-between;gap:32px;padding-top:18px;border-top:1px solid var(--line);font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+.s-cover .c-bot span strong{display:block;color:var(--navy);font-weight:700;margin-bottom:3px;font-size:9.5px;letter-spacing:.18em}
+
+/* GENERIC ACTION TITLE PAGE */
+.s-page{padding:56px 80px 96px;display:grid;grid-template-rows:auto 1fr;gap:32px;background:var(--bg)}
+.s-page header h2{font-weight:900;font-size:44px;line-height:1.08;letter-spacing:-.025em;color:var(--navy);max-width:1080px;margin-top:14px}
+.s-page header h2 .green{color:var(--green-deep)}
+.s-page header h2 .blue{color:var(--blue-2)}
+.s-page header h2 .purple{color:var(--purple)}
+.s-page header .lead{font-size:15.5px;line-height:1.6;color:var(--ink-2);margin-top:14px;max-width:920px;font-weight:400}
+.s-page header .lead strong{font-weight:600;color:var(--navy)}
+
+/* METHODOLOGY STEPS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;align-content:start;padding-top:8px}
+.step{display:flex;flex-direction:column;gap:12px;padding-right:24px;border-right:1px solid var(--line)}
+.step:last-child{border-right:0}
+.step .step-num{font-size:42px;font-weight:900;color:var(--green-deep);letter-spacing:-.025em;line-height:1;font-variant-numeric:tabular-nums}
+.step .step-title{font-weight:800;font-size:15.5px;letter-spacing:-.01em;color:var(--navy);line-height:1.25}
+.step .step-desc{font-size:12.5px;line-height:1.6;color:var(--ink-2)}
+
+/* SOURCES GRID */
+.sources{display:grid;grid-template-columns:repeat(2,1fr);gap:18px 36px;align-content:start;padding-top:8px}
+.source-item{display:flex;flex-direction:column;gap:4px;padding:14px 0;border-bottom:1px solid var(--line)}
+.source-item:last-child,.source-item:nth-last-child(2){border-bottom:0}
+.source-item .src-name{font-weight:800;font-size:14px;letter-spacing:-.005em;color:var(--navy)}
+.source-item .src-desc{font-size:12.5px;line-height:1.55;color:var(--ink-2)}
+.source-item .src-tag{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green-deep)}
+
+/* SECTION OPENER (Fortaleza, Maracanaú) */
+.s-opener{background:var(--bg);padding:0;display:flex;flex-direction:column;justify-content:center;align-items:stretch}
+.s-opener .o-strap{
+  padding:40px 80px;display:flex;align-items:center;gap:40px;
+  background:var(--navy);color:#fff;
+}
+.s-opener.opener-blue .o-strap{background:var(--blue-2)}
+.s-opener.opener-purple .o-strap{background:var(--purple-deep)}
+.s-opener .o-strap .o-num{font-weight:900;font-size:72px;line-height:.9;letter-spacing:-.04em;color:#fff;font-variant-numeric:tabular-nums}
+.s-opener .o-strap .o-stack{flex:1;display:flex;flex-direction:column;gap:8px}
+.s-opener .o-strap .o-ato{font-size:11px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.85)}
+.s-opener .o-strap .o-title{font-weight:900;font-size:44px;line-height:1.05;letter-spacing:-.025em;color:#fff}
+.s-opener .o-after{padding:48px 80px 0;max-width:980px}
+.s-opener .o-after .turn{font-size:18px;line-height:1.6;color:var(--ink-2);font-weight:400}
+.s-opener .o-after .turn strong{color:var(--navy);font-weight:600}
+.s-opener .ato-footer{
+  position:absolute;bottom:36px;left:80px;right:80px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);padding-top:14px;border-top:1px solid var(--line);
+}
+
+/* CITY OVERVIEW (slide 6, 10) */
+.s-overview{padding:48px 80px 96px;display:grid;grid-template-rows:auto 1fr;gap:24px;background:var(--bg)}
+.s-overview header h2{font-weight:900;font-size:38px;line-height:1.1;letter-spacing:-.022em;color:var(--navy);margin-top:14px}
+.s-overview header h2 .blue{color:var(--blue-2)}
+.s-overview header h2 .purple{color:var(--purple)}
+.s-overview .ov-body{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:start;padding-top:8px}
+.s-overview .ov-body p{font-size:15px;line-height:1.65;color:var(--ink-2);margin-bottom:14px}
+.s-overview .ov-body p strong{color:var(--navy);font-weight:600}
+.s-overview .ov-stats{display:grid;grid-template-columns:1fr 1fr;gap:0;align-content:start;border-top:1px solid var(--line)}
+.s-overview .ov-stats .st{padding:18px 24px 18px 0;border-bottom:1px solid var(--line)}
+.s-overview .ov-stats .st:nth-child(odd){border-right:1px solid var(--line)}
+.s-overview .ov-stats .st:nth-child(even){padding-left:24px}
+.s-overview .ov-stats .st:last-child,.s-overview .ov-stats .st:nth-last-child(2){border-bottom:0}
+.s-overview .ov-stats .st b{font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-.025em;line-height:1;display:block;font-variant-numeric:tabular-nums}
+.s-overview .ov-stats .st b.blue{color:var(--blue-2)}
+.s-overview .ov-stats .st b.purple{color:var(--purple)}
+.s-overview .ov-stats .st b.green{color:var(--green-deep)}
+.s-overview .ov-stats .st span{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-top:7px;display:block}
+
+/* 3 ACHADOS (slide 7, 11) */
+.s-achados{padding:48px 80px 96px;display:grid;grid-template-rows:auto 1fr;gap:32px;background:var(--bg)}
+.s-achados header h2{font-weight:900;font-size:42px;line-height:1.08;letter-spacing:-.025em;color:var(--navy);margin-top:14px;max-width:1000px}
+.s-achados header h2 .green{color:var(--green-deep)}
+.s-achados header h2 .blue{color:var(--blue-2)}
+.s-achados header h2 .purple{color:var(--purple)}
+.s-achados .ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);align-content:start}
+.s-achados .ach{padding:28px 32px 24px 0;display:flex;flex-direction:column;gap:14px;border-bottom:1px solid var(--line)}
+.s-achados .ach+.ach{padding-left:32px;border-left:1px solid var(--line)}
+.s-achados .ach .a-eyebrow{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.s-achados .ach .a-big{font-size:54px;font-weight:900;color:var(--navy);letter-spacing:-.035em;line-height:.95;font-variant-numeric:tabular-nums}
+.s-achados .ach .a-big.blue{color:var(--blue-2)}
+.s-achados .ach .a-big.purple{color:var(--purple)}
+.s-achados .ach .a-big.green{color:var(--green-deep)}
+.s-achados .ach .a-title{font-weight:800;font-size:16px;letter-spacing:-.005em;color:var(--navy);line-height:1.3}
+.s-achados .ach .a-desc{font-size:12.5px;line-height:1.62;color:var(--ink-2)}
+
+/* TERRITORY CARDS (slide 8, 12) — 2 cards side by side */
+.s-terrduo{padding:48px 80px 96px;display:grid;grid-template-rows:auto 1fr;gap:24px;background:var(--bg)}
+.s-terrduo header h2{font-weight:900;font-size:38px;line-height:1.1;letter-spacing:-.022em;color:var(--navy);margin-top:14px}
+.s-terrduo header h2 .green{color:var(--green-deep)}
+.s-terrduo header h2 .blue{color:var(--blue-2)}
+.s-terrduo header h2 .purple{color:var(--purple)}
+.s-terrduo .duo-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;padding-top:8px}
+.s-terrduo .duo-card{padding:22px 0;border-top:2px solid var(--blue-2)}
+.s-terrduo .duo-card.alt{border-top-color:var(--blue)}
+.s-terrduo .duo-card.purple{border-top-color:var(--purple)}
+.s-terrduo .duo-card.purple-alt{border-top-color:var(--purple-deep)}
+.s-terrduo .duo-card .t-name{font-size:10.5px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--blue-2);margin:14px 0 10px}
+.s-terrduo .duo-card.alt .t-name{color:var(--blue)}
+.s-terrduo .duo-card.purple .t-name{color:var(--purple)}
+.s-terrduo .duo-card.purple-alt .t-name{color:var(--purple-deep)}
+.s-terrduo .duo-card h3{font-weight:900;font-size:22px;letter-spacing:-.015em;color:var(--navy);line-height:1.18;margin-bottom:14px}
+.s-terrduo .duo-card .t-desc{font-size:13px;line-height:1.62;color:var(--ink-2);margin-bottom:14px}
+.s-terrduo .duo-card .t-desc strong{color:var(--navy);font-weight:600}
+.s-terrduo .duo-card .t-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;border-top:1px dashed var(--line);padding-top:12px}
+.s-terrduo .duo-card .t-stats .s{display:flex;flex-direction:column;gap:2px}
+.s-terrduo .duo-card .t-stats .s b{font-size:18px;font-weight:900;color:var(--navy);letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.s-terrduo .duo-card .t-stats .s b.green{color:var(--green-deep)}
+.s-terrduo .duo-card .t-stats .s span{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+
+/* TAKEAWAYS (slide 13) */
+.s-takeaways{padding:48px 80px 96px;display:grid;grid-template-rows:auto 1fr;gap:32px;background:var(--bg)}
+.s-takeaways header h2{font-weight:900;font-size:42px;line-height:1.08;letter-spacing:-.025em;color:var(--navy);margin-top:14px;max-width:1000px}
+.s-takeaways header h2 .green{color:var(--green-deep)}
+.tk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);align-content:start}
+.tk{padding:28px 28px 24px 0;display:flex;flex-direction:column;gap:14px;border-bottom:1px solid var(--line)}
+.tk+.tk{padding-left:28px;border-left:1px solid var(--line)}
+.tk .tk-num{font-size:42px;font-weight:900;color:var(--green-deep);letter-spacing:-.025em;line-height:1;font-variant-numeric:tabular-nums}
+.tk h3{font-weight:800;font-size:17px;letter-spacing:-.005em;color:var(--navy);line-height:1.25}
+.tk p{font-size:12.5px;line-height:1.62;color:var(--ink-2)}
+.tk p strong{font-weight:600;color:var(--navy)}
+
+/* CONSIDERAÇÕES FINAIS (slide 14) */
+.s-finais{padding:64px 96px 96px;display:flex;flex-direction:column;justify-content:center;background:var(--bg)}
+.s-finais .lab{display:flex;align-items:center;gap:14px;font-size:10.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:32px}
+.s-finais .lab::before{content:"";display:inline-block;width:32px;height:1px;background:var(--green)}
+.s-finais h2{font-weight:900;font-size:46px;line-height:1.08;letter-spacing:-.025em;color:var(--navy);max-width:1040px;margin-bottom:32px}
+.s-finais h2 .green{color:var(--green-deep)}
+.s-finais .pts{display:grid;grid-template-columns:1fr 1fr;gap:18px 32px;padding-top:24px;border-top:1px solid var(--line)}
+.s-finais .pt{display:flex;gap:14px;align-items:baseline}
+.s-finais .pt b{font-size:24px;font-weight:900;color:var(--green-deep);letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums;min-width:36px}
+.s-finais .pt span{font-size:14px;line-height:1.55;color:var(--ink-2);font-weight:400}
+.s-finais .pt span strong{font-weight:600;color:var(--navy)}
+
+/* CLOSE (slide 15) */
+.s-close{padding:0;display:flex;flex-direction:column;background:var(--bg)}
+.s-close .c-strap{background:var(--navy);color:#fff;padding:32px 80px;display:flex;align-items:center;gap:24px}
+.s-close .c-strap .c-num{font-size:36px;font-weight:900;color:#fff;letter-spacing:-.025em;line-height:1;font-variant-numeric:tabular-nums}
+.s-close .c-strap .c-title{flex:1;display:flex;flex-direction:column;gap:6px}
+.s-close .c-strap .c-title .c-lab{font-size:10.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--green-light)}
+.s-close .c-strap .c-title .c-tit{font-weight:800;font-size:22px;letter-spacing:-.01em;color:#fff}
+.s-close .c-body{flex:1;padding:56px 80px 0;display:flex;flex-direction:column;justify-content:center}
+.s-close .c-body p{font-size:28px;line-height:1.32;letter-spacing:-.012em;color:var(--navy);max-width:1020px;font-weight:500;margin-bottom:40px}
+.s-close .c-body p strong{color:var(--green-deep);font-weight:700}
+.s-close .next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;padding:28px 0 0;border-top:1px solid var(--line);margin-bottom:64px}
+.s-close .next-grid .next-item{display:flex;flex-direction:column;gap:6px}
+.s-close .next-grid .next-item .lab{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.s-close .next-grid .next-item .val{font-size:14.5px;color:var(--navy);font-weight:500;line-height:1.5}
+.s-close .next-grid .next-item .val a{color:var(--green-deep);text-decoration:none;font-weight:600}
+.s-close .next-grid .next-item .val a:hover{text-decoration:underline}
+
+/* CONTROLS */
+.controls{
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  background:rgba(10,37,64,.96);backdrop-filter:blur(8px);color:#fff;
+  border-radius:2px;padding:6px 8px;display:flex;align-items:center;gap:4px;
+  box-shadow:0 12px 30px -10px rgba(0,0,0,.6);z-index:100;font-size:12px;font-feature-settings:"tnum";
+}
+.controls button{background:transparent;border:0;padding:8px 12px;cursor:pointer;font-size:12px;font-weight:600;color:#fff;border-radius:2px;letter-spacing:.04em}
+.controls button:hover{background:rgba(255,255,255,.10)}
+.controls .counter{padding:0 12px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.06em;color:var(--green-light)}
+.controls .sep{width:1px;height:18px;background:rgba(255,255,255,.18)}
+.controls a{text-decoration:none}
+.progress{position:fixed;top:0;left:0;right:0;height:2px;background:rgba(0,0,0,.05);z-index:99}
+.progress .bar{height:100%;background:var(--green);transition:width .4s cubic-bezier(.2,.6,.2,1);width:0%}
+
+.menu{position:fixed;inset:0;background:rgba(5,10,16,.85);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:200;padding:32px}
+.menu.open{display:flex}
+.menu-content{background:#fff;border-radius:2px;max-width:780px;width:100%;max-height:80vh;display:flex;flex-direction:column;overflow:hidden}
+.menu-head{padding:20px 28px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.menu-head h2{font-size:13px;font-weight:800;color:var(--navy);letter-spacing:.06em;text-transform:uppercase}
+.menu-close{background:transparent;border:0;font-size:18px;color:var(--muted);cursor:pointer;padding:4px 10px;border-radius:2px}
+.menu-close:hover{background:rgba(10,37,64,.06)}
+.menu-list{flex:1;overflow-y:auto;padding:6px 0}
+.menu-list a{display:flex;align-items:baseline;gap:18px;padding:12px 28px;color:var(--ink);text-decoration:none;font-size:13.5px;border-left:2px solid transparent}
+.menu-list a:hover{background:rgba(10,37,64,.04)}
+.menu-list a .num{font-size:11px;color:var(--muted);min-width:30px;letter-spacing:.08em;font-weight:700;font-variant-numeric:tabular-nums}
+.menu-list a .name{flex:1;font-weight:500}
+.menu-list a.current{background:rgba(14,140,93,.08);color:var(--green-deep);border-left-color:var(--green)}
+.menu-list a.current .num{color:var(--green-deep)}
+
+@media (max-width:900px),(max-aspect-ratio:4/3){
+  body{overflow:auto}
+  .deck{position:static;padding:14px;flex-direction:column;gap:16px}
+  .slide{aspect-ratio:auto;max-height:none;padding:0;animation:none}
+  .slide:not(.active),.slide.active{display:flex !important;flex-direction:column}
+  .s-cover,.s-page,.s-overview,.s-achados,.s-terrduo,.s-takeaways,.s-finais{padding:28px 20px 64px}
+  .s-opener .o-strap{padding:24px 20px}
+  .s-opener .o-after{padding:28px 20px 0}
+  .s-close .c-strap,.s-close .c-body{padding:20px}
+  .s-cover .c-mid{grid-template-columns:1fr;gap:24px}
+  .s-cover h1{font-size:36px}
+  .s-opener .o-strap .o-title{font-size:24px}
+  .s-opener .o-strap .o-num{font-size:42px}
+  .s-page header h2,.s-achados header h2,.s-takeaways header h2,.s-finais h2{font-size:26px}
+  .s-overview header h2,.s-terrduo header h2{font-size:22px}
+  .steps,.sources,.ach-grid,.tk-grid,.s-overview .ov-body,.s-terrduo .duo-grid,.s-finais .pts{grid-template-columns:1fr;border-top:0}
+  .step,.tk,.ach{padding-right:0;border-right:0;padding-left:0!important;border-left:0!important}
+  .tk+.tk,.ach+.ach{border-top:1px solid var(--line)}
+  .controls{position:sticky;top:10px;bottom:auto;transform:none;left:auto;margin:0 auto}
+  .progress{position:sticky;top:0}
+  .slide-num{top:16px;right:20px}
+  .slide-src{position:static;margin-top:18px;border-top:1px solid var(--line)}
+}
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body{background:#fff !important;overflow:visible !important;height:auto}
+  .deck{position:static !important;padding:0 !important;display:block !important}
+  .slide{display:flex !important;flex-direction:column !important;animation:none !important;width:100% !important;max-width:none !important;aspect-ratio:auto !important;height:100vh !important;max-height:none !important;page-break-after:always !important;break-after:page !important;box-shadow:none !important;border-radius:0 !important}
+  .slide:last-child{page-break-after:auto !important}
+  .controls,.progress,.menu{display:none !important}
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="bar" id="progress-bar"></div></div>
+
+<div class="deck" id="deck">
+
+<!-- 01 · CAPA -->
+<section class="slide s-cover active" data-title="Capa">
+  <div class="c-top">
+    <span class="brand">Redes Ceará</span>
+    <span>Visão geral · 15 slides</span>
+  </div>
+  <div class="c-mid">
+    <div>
+      <h1><span class="ln">Diagnóstico</span><span class="ln">territorial em</span><span class="ln">Fortaleza e Maracanaú<span class="accent">.</span></span></h1>
+      <p class="lead">Visão geral do trabalho. <strong>Dois municípios, 57 bairros, cerca de 585 mil habitantes acompanhados</strong>. O mapeamento identifica onde a articulação institucional da Redes Ceará apresenta maior potencial de adicionalidade.</p>
+    </div>
+    <div class="c-side">
+      <div class="it"><div class="v">2</div><div class="l">Municípios</div></div>
+      <div class="it"><div class="v">57</div><div class="l">Bairros</div></div>
+      <div class="it"><div class="v">585<small>mil</small></div><div class="l">Habitantes</div></div>
+      <div class="it"><div class="v">15</div><div class="l">Slides</div></div>
+    </div>
+  </div>
+  <div class="c-bot">
+    <span><strong>Período</strong>2025 / 2026</span>
+    <span><strong>Fontes</strong>IBGE · MDS · IPEA · Receita Federal</span>
+    <span><strong>Elaboração</strong>Lucas Fernandes</span>
+  </div>
+</section>
+
+<!-- 02 · SOBRE O TRABALHO -->
+<section class="slide s-page" data-title="Sobre o trabalho">
+  <span class="slide-num">02 / 15</span>
+  <header>
+    <span class="tag-line"><span class="t-num">01</span><span class="t-sep">·</span><span class="t-ato">Escopo</span><span class="t-sep">·</span>O que está neste diagnóstico</span>
+    <hr class="title-rule">
+    <h2 style="margin-top:18px">Mapeamento de oportunidades de adicionalidade da Redes Ceará em <span class="green">dois municípios</span> da Região Metropolitana de Fortaleza.</h2>
+    <p class="lead">O diagnóstico cobre <strong>Fortaleza</strong> (recorte de 13 bairros em dois territórios) e <strong>Maracanaú</strong> (44 bairros em seis regiões administrativas). Sete dimensões analíticas: contexto demográfico, emprego e renda, vulnerabilidade social, infraestrutura e equipamentos, tecido econômico, sociedade civil organizada e adicionalidade potencial.</p>
+  </header>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;align-content:start;padding-top:12px;border-top:1px solid var(--line)">
+    <div><div style="font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-.025em;line-height:1">2</div><div style="font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-top:6px">Municípios cobertos</div></div>
+    <div><div style="font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-.025em;line-height:1">7</div><div style="font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-top:6px">Dimensões analíticas</div></div>
+    <div><div style="font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-.025em;line-height:1">8</div><div style="font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-top:6px">Fontes públicas oficiais</div></div>
+    <div><div style="font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-.025em;line-height:1">3</div><div style="font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-top:6px">Produtos do TR atendidos</div></div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">Estrutura definida no Termo de Referência da Redes Ceará</span>
+    <a class="src-link" href="resumo_executivo.html">Voltar ao hub →</a>
+  </div>
+</section>
+
+<!-- 03 · METODOLOGIA -->
+<section class="slide s-page" data-title="Metodologia">
+  <span class="slide-num">03 / 15</span>
+  <header>
+    <span class="tag-line"><span class="t-num">02</span><span class="t-sep">·</span><span class="t-ato">Metodologia</span><span class="t-sep">·</span>Como o trabalho foi construído</span>
+    <hr class="title-rule">
+    <h2 style="margin-top:18px">Quatro etapas para identificar onde a Redes Ceará pode <span class="green">adicionar valor</span>.</h2>
+  </header>
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">01</span>
+      <span class="step-title">Sistematização das bases públicas</span>
+      <span class="step-desc">Coleta e padronização dos dados oficiais por bairro: Censo IBGE, CadÚnico, Mapa das OSCs, Receita Federal, INEP, CNES.</span>
+    </div>
+    <div class="step">
+      <span class="step-num">02</span>
+      <span class="step-title">Agregação por território</span>
+      <span class="step-desc">Agrupamento dos bairros nos territórios da Redes Ceará (Grande Bom Jardim, Grande Mucuripe) e nas seis regiões de Maracanaú.</span>
+    </div>
+    <div class="step">
+      <span class="step-num">03</span>
+      <span class="step-title">Cruzamento dos indicadores</span>
+      <span class="step-desc">Análise integrada das sete dimensões do TR, com leituras comparativas entre territórios e identificação de assimetrias.</span>
+    </div>
+    <div class="step">
+      <span class="step-num">04</span>
+      <span class="step-title">Matriz de adicionalidade</span>
+      <span class="step-desc">Avaliação de potencial impacto, densidade de atores, riscos político-institucionais e alinhamento com competências dos parceiros.</span>
+    </div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">Metodologia conforme Produtos 1, 2 e 3 do Termo de Referência</span>
+    <a class="src-link" href="policy_brief.html">Policy Brief →</a>
+  </div>
+</section>
+
+<!-- 04 · BASES DE DADOS -->
+<section class="slide s-page" data-title="Bases de dados">
+  <span class="slide-num">04 / 15</span>
+  <header>
+    <span class="tag-line"><span class="t-num">03</span><span class="t-sep">·</span><span class="t-ato">Bases</span><span class="t-sep">·</span>Fontes utilizadas</span>
+    <hr class="title-rule">
+    <h2 style="margin-top:18px">Fontes públicas oficiais cruzadas com dados administrativos da Receita Federal e do Ministério do Desenvolvimento Social.</h2>
+  </header>
+  <div class="sources">
+    <div class="source-item">
+      <span class="src-tag">IBGE</span>
+      <span class="src-name">Censo Demográfico 2022</span>
+      <span class="src-desc">População, perfil etário, composição racial, chefia familiar, densidade e cobertura de saneamento por bairro.</span>
+    </div>
+    <div class="source-item">
+      <span class="src-tag">MDS</span>
+      <span class="src-name">CadÚnico, 2025</span>
+      <span class="src-desc">Inscrição no CadÚnico, extrema pobreza e indicadores de proteção social por bairro.</span>
+    </div>
+    <div class="source-item">
+      <span class="src-tag">IPEA</span>
+      <span class="src-name">Mapa das OSCs, 2024</span>
+      <span class="src-desc">Organizações da sociedade civil ativas, por classificação temática e localização geográfica.</span>
+    </div>
+    <div class="source-item">
+      <span class="src-tag">Receita Federal</span>
+      <span class="src-name">CNPJs ativos, dez/2024</span>
+      <span class="src-desc">Empresas formais ativas por porte e CNAE, com cruzamento específico para o setor alimentício.</span>
+    </div>
+    <div class="source-item">
+      <span class="src-tag">INEP</span>
+      <span class="src-name">Censo Escolar, 2023</span>
+      <span class="src-desc">Rede pública de ensino: escolas e cobertura por bairro.</span>
+    </div>
+    <div class="source-item">
+      <span class="src-tag">CNES · SSPDS</span>
+      <span class="src-name">Saúde e segurança, 2024</span>
+      <span class="src-desc">Estabelecimentos de saúde, cobertura da Estratégia Saúde da Família e indicadores de violência letal.</span>
+    </div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">Bases públicas oficiais · referência no painel interativo</span>
+    <a class="src-link" href="resumo_executivo.html">Voltar ao hub →</a>
+  </div>
+</section>
+
+<!-- 05 · ABERTURA FORTALEZA -->
+<section class="slide s-opener opener-blue" data-title="Fortaleza · abertura">
+  <span class="slide-num" style="color:#9CA8B6">05 / 15</span>
+  <div class="o-strap">
+    <div class="o-num">01</div>
+    <div class="o-stack">
+      <span class="o-ato">Município I</span>
+      <span class="o-title">Fortaleza.</span>
+    </div>
+  </div>
+  <div class="o-after">
+    <p class="turn">13 bairros, 2 territórios (Grande Bom Jardim e Grande Mucuripe), 345 mil habitantes. Dois perfis muito distintos dentro do mesmo recorte.</p>
+  </div>
+  <div class="ato-footer">
+    <span>Visão geral do trabalho</span>
+    <span>Fortaleza · 4 slides</span>
+  </div>
+</section>
+
+<!-- 06 · FORTALEZA · VISÃO GERAL -->
+<section class="slide s-overview" data-title="Fortaleza · visão geral">
+  <span class="slide-num">06 / 15</span>
+  <header>
+    <span class="tag-line"><span class="t-num">04</span><span class="t-sep">·</span><span class="t-blue">Fortaleza</span><span class="t-sep">·</span>Visão geral</span>
+    <hr class="title-rule">
+    <h2 style="margin-top:18px">Dois <span class="blue">territórios</span> com gramáticas operacionais distintas.</h2>
+  </header>
+  <div class="ov-body">
+    <div>
+      <p>A análise cobre 13 bairros agrupados em dois territórios: <strong>Grande Bom Jardim</strong> (5 bairros, oeste do município) e <strong>Grande Mucuripe</strong> (8 bairros, costa leste).</p>
+      <p>Os territórios concentram <strong>345 mil habitantes</strong>, com configurações socioeconômicas e institucionais muito diferentes entre si. O Grande Bom Jardim apresenta vulnerabilidade contínua e ampla; o Grande Mucuripe é heterogêneo, com rede institucional mais densa.</p>
+      <p>A diferença mais visível entre os territórios não é apenas de magnitude (renda, pobreza), mas de <strong>configuração estrutural</strong>: composição setorial, densidade institucional, padrão de articulação local.</p>
+    </div>
+    <div class="ov-stats">
+      <div class="st"><b class="blue">216 mil</b><span>Grande Bom Jardim · hab.</span></div>
+      <div class="st"><b class="blue">129 mil</b><span>Grande Mucuripe · hab.</span></div>
+      <div class="st"><b>1.142</b><span>OSCs ativas</span></div>
+      <div class="st"><b>31 mil</b><span>Empresas formais</span></div>
+      <div class="st"><b class="green">42,4%</b><span>Extrema pobreza · GBJ</span></div>
+      <div class="st"><b class="green">23,7%</b><span>Extrema pobreza · GM</span></div>
+    </div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">IBGE Censo 2022 · MDS CadÚnico 2025 · IPEA Mapa das OSCs 2024 · Receita Federal dez/2024</span>
+    <a class="src-link" href="report_fortaleza.html">Apresentação completa de Fortaleza →</a>
+  </div>
+</section>
+
+<!-- 07 · FORTALEZA · 3 ACHADOS-CHAVE -->
+<section class="slide s-achados" data-title="Fortaleza · 3 achados-chave">
+  <span class="slide-num">07 / 15</span>
+  <header>
+    <span class="tag-line"><span class="t-num">05</span><span class="t-sep">·</span><span class="t-blue">Fortaleza</span><span class="t-sep">·</span>Três achados-chave</span>
+    <hr class="title-rule">
+    <h2 style="margin-top:18px">Três contrastes <span class="blue">estruturais</span> entre os dois territórios.</h2>
+  </header>
+  <div class="ach-grid">
+    <div class="ach">
+      <span class="a-eyebrow">Achado 01 · Renda</span>
+      <div class="a-big blue">1/3</div>
+      <span class="a-title">A renda média no Grande Bom Jardim corresponde a um terço da renda no Grande Mucuripe.</span>
+      <span class="a-desc">R$ 1.428,94 contra R$ 3.886,97. A diferença é estrutural, não apenas de magnitude.</span>
+    </div>
+    <div class="ach">
+      <span class="a-eyebrow">Achado 02 · Sociedade civil</span>
+      <div class="a-big blue">4,4×</div>
+      <span class="a-title">O Grande Mucuripe concentra 4,4 vezes mais OSCs por habitante.</span>
+      <span class="a-desc">64 OSCs / 10 mil habitantes contra 14,6 no Grande Bom Jardim. Configurações distintas de articulação local.</span>
+    </div>
+    <div class="ach">
+      <span class="a-eyebrow">Achado 03 · Setor alimentício</span>
+      <div class="a-big blue">1.343</div>
+      <span class="a-title">Estabelecimentos alimentícios formais nos 13 bairros acompanhados.</span>
+      <span class="a-desc">617 no Grande Bom Jardim e 726 no Grande Mucuripe, com 78% concentrados em restaurantes e lanchonetes.</span>
+    </div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">IBGE · IPEA · Receita Federal · ver detalhes no painel</span>
+    <a class="src-link" href="report_fortaleza.html">Apresentação completa →</a>
+  </div>
+</section>
+
+<!-- 08 · FORTALEZA · ADICIONALIDADE -->
+<section class="slide s-terrduo" data-title="Fortaleza · onde adicionar valor">
+  <span class="slide-num">08 / 15</span>
+  <header>
+    <span class="tag-line"><span class="t-num">06</span><span class="t-sep">·</span><span class="t-blue">Fortaleza</span><span class="t-sep">·</span>Síntese de adicionalidade</span>
+    <hr class="title-rule">
+    <h2 style="margin-top:18px">Dois <span class="blue">caminhos</span> de adicionalidade, segundo a configuração de cada território.</h2>
+  </header>
+  <div class="duo-grid">
+    <div class="duo-card">
+      <div class="t-name">Grande Bom Jardim · 5 bairros</div>
+      <h3>Articulação em escala.</h3>
+      <p class="t-desc">Vulnerabilidade ampla e relativamente homogênea entre os cinco bairros, com rede institucional menos densa. A configuração sugere potencial para programas que <strong>articulem proteção social, organizações locais e sistemas de qualificação em escala territorial</strong>.</p>
+      <div class="t-stats">
+        <div class="s"><b>216 mil</b><span>Hab.</span></div>
+        <div class="s"><b class="green">42,4%</b><span>Ext. pobreza</span></div>
+        <div class="s"><b>53,3%</b><span>CadÚnico</span></div>
+        <div class="s"><b>315</b><span>OSCs</span></div>
+      </div>
+    </div>
+    <div class="duo-card alt">
+      <div class="t-name">Grande Mucuripe · 8 bairros</div>
+      <h3>Coerência sistêmica.</h3>
+      <p class="t-desc">Contrastes internos relevantes entre bairros, com rede institucional densa (827 OSCs, 2.119 médias e grandes empresas). A configuração sugere potencial para <strong>intermediação e governança entre atores já instalados</strong>, com foco em reduzir sobreposição.</p>
+      <div class="t-stats">
+        <div class="s"><b>129 mil</b><span>Hab.</span></div>
+        <div class="s"><b class="green">23,7%</b><span>Ext. pobreza</span></div>
+        <div class="s"><b>39,2%</b><span>CadÚnico</span></div>
+        <div class="s"><b>827</b><span>OSCs</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">Síntese · cruzamento dos indicadores com a leitura do Policy Brief</span>
+    <a class="src-link" href="report_fortaleza.html">Apresentação completa →</a>
+  </div>
+</section>
+
+<!-- 09 · ABERTURA MARACANAÚ -->
+<section class="slide s-opener opener-purple" data-title="Maracanaú · abertura">
+  <span class="slide-num" style="color:#9CA8B6">09 / 15</span>
+  <div class="o-strap">
+    <div class="o-num">02</div>
+    <div class="o-stack">
+      <span class="o-ato">Município II</span>
+      <span class="o-title">Maracanaú.</span>
+    </div>
+  </div>
+  <div class="o-after">
+    <p class="turn">44 bairros, 6 regiões administrativas, 239 mil habitantes. Vulnerabilidade espalhada, com forte contraste entre o núcleo urbano consolidado e as bordas periféricas.</p>
+  </div>
+  <div class="ato-footer">
+    <span>Visão geral do trabalho</span>
+    <span>Maracanaú · 4 slides</span>
+  </div>
+</section>
+
+<!-- 10 · MARACANAÚ · VISÃO GERAL -->
+<section class="slide s-overview" data-title="Maracanaú · visão geral">
+  <span class="slide-num">10 / 15</span>
+  <header>
+    <span class="tag-line"><span class="t-num">07</span><span class="t-sep">·</span><span class="t-purple">Maracanaú</span><span class="t-sep">·</span>Visão geral</span>
+    <hr class="title-rule">
+    <h2 style="margin-top:18px">Seis <span class="purple">regiões</span> com vulnerabilidade espalhada e infraestrutura desigual.</h2>
+  </header>
+  <div class="ov-body">
+    <div>
+      <p>Maracanaú é estruturado em <strong>seis regiões administrativas</strong>: Extremo Norte, Zona Norte, Centro e Jereissati, Zona Leste, Zona Oeste e Zona Sul.</p>
+      <p>O Centro e Jereissati e a Zona Leste concentram <strong>metade da população</strong> e a maior densidade econômica e institucional, incluindo o Distrito Industrial do Ceará. As regiões periféricas (Extremo Norte, Zona Oeste) apresentam vulnerabilidade mais aguda e menor cobertura de serviços.</p>
+      <p>A insegurança alimentar e a baixa cobertura de saneamento são <strong>traços comuns às regiões periféricas</strong>, com forte assimetria em relação ao núcleo urbano.</p>
+    </div>
+    <div class="ov-stats">
+      <div class="st"><b class="purple">64 mil</b><span>Centro · hab.</span></div>
+      <div class="st"><b class="purple">39 mil</b><span>Zona Norte · hab.</span></div>
+      <div class="st"><b>406</b><span>OSCs ativas</span></div>
+      <div class="st"><b>17 mil</b><span>Empresas formais</span></div>
+      <div class="st"><b class="green">30,5%</b><span>Extrema pobreza (média)</span></div>
+      <div class="st"><b class="green">49,3%</b><span>Cobertura de esgoto</span></div>
+    </div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">IBGE Censo 2022 · MDS CadÚnico 2025 · IPEA Mapa das OSCs 2024 · Receita Federal dez/2024</span>
+    <a class="src-link" href="report_maracanau.html">Apresentação completa de Maracanaú →</a>
+  </div>
+</section>
+
+<!-- 11 · MARACANAÚ · 3 ACHADOS-CHAVE -->
+<section class="slide s-achados" data-title="Maracanaú · 3 achados-chave">
+  <span class="slide-num">11 / 15</span>
+  <header>
+    <span class="tag-line"><span class="t-num">08</span><span class="t-sep">·</span><span class="t-purple">Maracanaú</span><span class="t-sep">·</span>Três achados-chave</span>
+    <hr class="title-rule">
+    <h2 style="margin-top:18px">Três marcas <span class="purple">estruturais</span> da configuração do município.</h2>
+  </header>
+  <div class="ach-grid">
+    <div class="ach">
+      <span class="a-eyebrow">Achado 01 · Vulnerabilidade</span>
+      <div class="a-big purple">30,5%</div>
+      <span class="a-title">Cerca de 1 em cada 3 maracanauenses vive em domicílio em situação de extrema pobreza.</span>
+      <span class="a-desc">Variação entre 20% na Zona Sul e 40% no Extremo Norte. A vulnerabilidade é generalizada.</span>
+    </div>
+    <div class="ach">
+      <span class="a-eyebrow">Achado 02 · Saneamento</span>
+      <div class="a-big purple">8×</div>
+      <span class="a-title">A cobertura de esgoto varia 8 vezes entre o Centro (87%) e o Extremo Norte (11%).</span>
+      <span class="a-desc">Maior assimetria estrutural identificada no diagnóstico de Maracanaú.</span>
+    </div>
+    <div class="ach">
+      <span class="a-eyebrow">Achado 03 · Informalidade</span>
+      <div class="a-big purple">68%</div>
+      <span class="a-title">Em todas as regiões, mais da metade das empresas formais são microempreendedores individuais.</span>
+      <span class="a-desc">Variação entre 57% no Extremo Norte e 78% na Zona Sul. A informalidade é um traço estrutural da economia local.</span>
+    </div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">IBGE · MDS · Receita Federal · ver detalhes no painel</span>
+    <a class="src-link" href="report_maracanau.html">Apresentação completa →</a>
+  </div>
+</section>
+
+<!-- 12 · MARACANAÚ · ADICIONALIDADE -->
+<section class="slide s-terrduo" data-title="Maracanaú · onde adicionar valor">
+  <span class="slide-num">12 / 15</span>
+  <header>
+    <span class="tag-line"><span class="t-num">09</span><span class="t-sep">·</span><span class="t-purple">Maracanaú</span><span class="t-sep">·</span>Síntese de adicionalidade</span>
+    <hr class="title-rule">
+    <h2 style="margin-top:18px">Dois <span class="purple">eixos</span> de adicionalidade dentro do município.</h2>
+  </header>
+  <div class="duo-grid">
+    <div class="duo-card purple">
+      <div class="t-name">Centro e Jereissati · 11 bairros</div>
+      <h3>Ancoragem institucional.</h3>
+      <p class="t-desc">Núcleo urbano consolidado, com infraestrutura mais completa (87% de cobertura de esgoto), maior densidade de empresas formais e <strong>139 OSCs ativas</strong>. A configuração sugere potencial para <strong>atuar como base operacional</strong> de programas com alcance metropolitano, incluindo articulação com o Distrito Industrial.</p>
+      <div class="t-stats">
+        <div class="s"><b>64 mil</b><span>Hab.</span></div>
+        <div class="s"><b class="green">27,1%</b><span>Ext. pobreza</span></div>
+        <div class="s"><b>55,2%</b><span>CadÚnico</span></div>
+        <div class="s"><b>139</b><span>OSCs</span></div>
+      </div>
+    </div>
+    <div class="duo-card purple-alt">
+      <div class="t-name">Zona Norte · 8 bairros</div>
+      <h3>Vulnerabilidade aguda.</h3>
+      <p class="t-desc">Faixa de expansão urbana recente com a maior inscrição no CadÚnico do município (66%) e 35% dos domicílios em extrema pobreza. Cobertura de esgoto intermediária (54%). A configuração sugere potencial para <strong>programas de proteção social e inclusão produtiva</strong> em escala.</p>
+      <div class="t-stats">
+        <div class="s"><b>39 mil</b><span>Hab.</span></div>
+        <div class="s"><b class="green">35,4%</b><span>Ext. pobreza</span></div>
+        <div class="s"><b>65,7%</b><span>CadÚnico</span></div>
+        <div class="s"><b>55</b><span>OSCs</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">Síntese · cruzamento dos indicadores com a leitura do Policy Brief</span>
+    <a class="src-link" href="report_maracanau.html">Apresentação completa →</a>
+  </div>
+</section>
+
+<!-- 13 · TAKEAWAYS -->
+<section class="slide s-takeaways" data-title="Três takeaways do diagnóstico">
+  <span class="slide-num">13 / 15</span>
+  <header>
+    <span class="tag-line"><span class="t-num">10</span><span class="t-sep">·</span><span class="t-ato">Síntese</span><span class="t-sep">·</span>Takeaways do diagnóstico</span>
+    <hr class="title-rule">
+    <h2 style="margin-top:18px">Três <span class="green">leituras</span> que atravessam os dois municípios.</h2>
+  </header>
+  <div class="tk-grid">
+    <div class="tk">
+      <span class="tk-num">01</span>
+      <h3>A estratégia precisa variar com a configuração territorial.</h3>
+      <p>Onde a rede institucional é magra (Grande Bom Jardim, Zona Norte de Maracanaú), há espaço para <strong>articulação em escala</strong>. Onde a rede é densa (Grande Mucuripe, Centro de Maracanaú), o ganho está em <strong>coerência sistêmica</strong>.</p>
+    </div>
+    <div class="tk">
+      <span class="tk-num">02</span>
+      <h3>O setor alimentício é base operacional comum aos dois municípios.</h3>
+      <p>Somados, os territórios acompanhados concentram <strong>2.518 estabelecimentos alimentícios formais</strong>. Esses estabelecimentos formam infraestrutura disponível para programas de compras públicas, alimentação escolar e cadeias locais.</p>
+    </div>
+    <div class="tk">
+      <span class="tk-num">03</span>
+      <h3>A Redes Ceará pode atuar como instrumento de coordenação.</h3>
+      <p>O diagnóstico aponta para um papel de <strong>articulação institucional</strong>: reduzir assimetrias de informação, alinhar incentivos entre setor público, empresas e organizações da sociedade civil, e mediar entre oferta e demanda nos dois municípios.</p>
+    </div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">Síntese · cruzamento dos diagnósticos de Fortaleza e Maracanaú</span>
+    <a class="src-link" href="policy_brief.html">Policy Brief →</a>
+  </div>
+</section>
+
+<!-- 14 · CONSIDERAÇÕES FINAIS -->
+<section class="slide s-finais" data-title="Considerações finais">
+  <span class="slide-num">14 / 15</span>
+  <span class="lab">Considerações finais</span>
+  <h2>Quatro <span class="green">frentes de aprofundamento</span> para a continuidade do trabalho.</h2>
+  <div class="pts">
+    <div class="pt">
+      <b>01</b>
+      <span><strong>Aprofundamento setorial.</strong> Detalhar cadeias específicas (alimentação escolar, compras públicas) com mapeamento de fornecedores e demandas institucionais nos dois municípios.</span>
+    </div>
+    <div class="pt">
+      <b>02</b>
+      <span><strong>Integração com dados sub-municipais.</strong> Cruzar com bases de saúde (SUS), educação (provas, abandono) e segurança pública por bairro para qualificar a leitura de vulnerabilidade.</span>
+    </div>
+    <div class="pt">
+      <b>03</b>
+      <span><strong>Articulação com parceiros.</strong> Identificar competências dos parceiros da Redes Ceará e cruzar com o perfil de cada território para alocação preferencial.</span>
+    </div>
+    <div class="pt">
+      <b>04</b>
+      <span><strong>Monitoramento.</strong> Estruturar indicadores de acompanhamento ao longo da implementação dos programas, com painéis atualizados periodicamente.</span>
+    </div>
+  </div>
+  <div class="slide-src">
+    <span class="src-fonte">Próximos passos · continuidade do diagnóstico territorial</span>
+    <a class="src-link" href="resumo_executivo.html">Voltar ao hub →</a>
+  </div>
+</section>
+
+<!-- 15 · ENCERRAMENTO -->
+<section class="slide s-close" data-title="Encerramento">
+  <span class="slide-num" style="color:#9CA8B6">15 / 15</span>
+  <div class="c-strap">
+    <div class="c-num">15</div>
+    <div class="c-title">
+      <span class="c-lab">Encerramento</span>
+      <span class="c-tit">O diagnóstico fica disponível como ferramenta viva.</span>
+    </div>
+  </div>
+  <div class="c-body">
+    <p>Os dois <strong>painéis interativos</strong> e o <strong>Policy Brief</strong> ficam disponíveis para consulta contínua, atualização e reaproveitamento ao longo da implementação dos programas da Redes Ceará.</p>
+    <div class="next-grid">
+      <div class="next-item">
+        <span class="lab">Painel · Fortaleza</span>
+        <span class="val"><a href="https://bfernlucas.github.io/redes_ceara/fortaleza.html" target="_blank" rel="noopener">Acessar o painel ↗</a></span>
+      </div>
+      <div class="next-item">
+        <span class="lab">Painel · Maracanaú</span>
+        <span class="val"><a href="https://bfernlucas.github.io/redes_ceara/maracanau.html" target="_blank" rel="noopener">Acessar o painel ↗</a></span>
+      </div>
+      <div class="next-item">
+        <span class="lab">Elaboração</span>
+        <span class="val">Lucas Fernandes · 2026</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="controls" id="controls">
+  <button id="btn-menu" title="Menu de slides (Esc)">Menu</button>
+  <span class="sep"></span>
+  <button id="btn-prev" title="← Anterior">←</button>
+  <span class="counter" id="counter">1 / 15</span>
+  <button id="btn-next" title="Próximo →">→</button>
+  <span class="sep"></span>
+  <button id="btn-fullscreen" title="Tela cheia (F)">Tela cheia</button>
+  <a href="report_geral.pdf" download target="_blank"><button id="btn-pdf" title="Baixar PDF (P)">Baixar PDF</button></a>
+  <a href="resumo_executivo.html"><button title="Voltar ao hub">Hub</button></a>
+</div>
+
+<div class="menu" id="menu">
+  <div class="menu-content">
+    <div class="menu-head">
+      <h2>Visão geral do trabalho · 15 slides</h2>
+      <button class="menu-close" id="menu-close" title="Fechar (Esc)">✕</button>
+    </div>
+    <div class="menu-list" id="menu-list"></div>
+  </div>
+</div>
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total = slides.length;
+let idx = 0;
+const counterEl = document.getElementById('counter');
+const progEl = document.getElementById('progress-bar');
+const menuEl = document.getElementById('menu');
+const menuListEl = document.getElementById('menu-list');
+
+function go(i){
+  idx = Math.max(0, Math.min(total-1, i));
+  slides.forEach((s,j) => s.classList.toggle('active', j===idx));
+  counterEl.textContent = `${String(idx+1).padStart(2,'0')} / ${total}`;
+  progEl.style.width = `${((idx+1)/total)*100}%`;
+  if(location.hash !== `#${idx+1}`) history.replaceState(null,'',`#${idx+1}`);
+  menuListEl.querySelectorAll('a').forEach((a,j)=>a.classList.toggle('current', j===idx));
+}
+function next(){ go(idx+1); }
+function prev(){ go(idx-1); }
+function toggleFullscreen(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); }
+function exportPDF(){ const a = document.createElement("a"); a.href = "report_geral.pdf"; a.download = "Visao_Geral_Redes_Ceara.pdf"; a.target = "_blank"; document.body.appendChild(a); a.click(); a.remove(); }
+
+document.addEventListener('keydown', e => {
+  if(menuEl.classList.contains('open')){
+    if(e.key === 'Escape') menuEl.classList.remove('open');
+    return;
+  }
+  if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); next(); }
+  else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); prev(); }
+  else if(e.key === 'Home'){ go(0); }
+  else if(e.key === 'End'){ go(total-1); }
+  else if(e.key === 'Escape'){ menuEl.classList.add('open'); }
+  else if(e.key === 'f' || e.key === 'F'){ toggleFullscreen(); }
+  else if(e.key === 'p' || e.key === 'P'){ exportPDF(); }
+});
+document.getElementById('btn-prev').addEventListener('click', prev);
+document.getElementById('btn-next').addEventListener('click', next);
+document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+document.getElementById('btn-menu').addEventListener('click', () => menuEl.classList.add('open'));
+document.getElementById('menu-close').addEventListener('click', () => menuEl.classList.remove('open'));
+menuEl.addEventListener('click', e => { if(e.target === menuEl) menuEl.classList.remove('open'); });
+document.addEventListener('click', e => {
+  const blocked = ['BUTTON','A','INPUT','SELECT','TEXTAREA','LABEL'];
+  if(blocked.includes(e.target.tagName)) return;
+  if(e.target.closest('.menu') || e.target.closest('.controls')) return;
+  if(e.clientX > window.innerWidth/2) next(); else prev();
+});
+
+slides.forEach((s,j) => {
+  const t = s.dataset.title || `Slide ${j+1}`;
+  const a = document.createElement('a');
+  a.href = `#${j+1}`;
+  a.innerHTML = `<span class="num">${String(j+1).padStart(2,'0')}</span><span class="name">${t}</span>`;
+  a.addEventListener('click', e => { e.preventDefault(); go(j); menuEl.classList.remove('open'); });
+  menuListEl.appendChild(a);
+});
+
+const hashIdx = parseInt((location.hash || '').replace('#',''), 10);
+if(!isNaN(hashIdx) && hashIdx >= 1 && hashIdx <= total) go(hashIdx-1);
+else go(0);
+</script>
+</body>
+</html>

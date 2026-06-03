@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup · Nova linguagem · Resumo Executivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  /* Nova paleta editorial */
+  --navy:#0B2B44;
+  --navy-soft:#1A3A55;
+  --coral:#E07856;
+  --coral-deep:#C25E3C;
+  --cream:#FAF6EF;
+  --cream-2:#F0EAE0;
+  --line:rgba(11,43,68,.12);
+  --ink:#0B2B44;
+  --ink-2:#3B4C5C;
+  --muted:#7E8A9A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:#070d14;
+  color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.5;
+  overflow:hidden;
+  min-height:100vh;
+}
+
+/* DECK CONTAINER ─────────────────────────────────────────────── */
+.deck{
+  position:fixed;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+}
+.slide{
+  width:100%;max-width:1280px;
+  aspect-ratio:16/9;max-height:calc(100vh - 100px);
+  border-radius:6px;
+  box-shadow:0 30px 80px -20px rgba(0,0,0,.6);
+  display:none;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+.slide.active{display:flex;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* COMMON ELEMENTS ─────────────────────────────────────────────── */
+.eyebrow{
+  font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.eyebrow::before{
+  content:"";display:inline-block;width:24px;height:2px;background:var(--coral);
+}
+.serif{font-family:'Source Serif Pro',Georgia,serif}
+.slide-num{
+  position:absolute;top:42px;right:64px;
+  font-family:'Source Serif Pro',serif;font-weight:400;font-style:italic;
+  font-size:13px;color:rgba(0,0,0,.35);letter-spacing:.04em;
+}
+.slide-src{
+  position:absolute;bottom:36px;left:64px;right:64px;
+  font-size:10.5px;color:var(--muted);letter-spacing:.06em;
+  border-top:1px solid var(--line);padding-top:14px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.slide-src a{color:var(--coral-deep);text-decoration:none;font-weight:600}
+.slide-src a:hover{text-decoration:underline}
+
+/* ──────────────────────────────────────────────────────────────
+   SLIDE 1 — SECTION OPENER (full-bleed navy)
+   ────────────────────────────────────────────────────────────── */
+.s-opener{
+  background:var(--navy);color:var(--cream);
+  padding:64px 80px;
+  justify-content:center;
+}
+.s-opener::after{
+  /* decorative coral arc bottom-right */
+  content:"";position:absolute;bottom:-100px;right:-100px;
+  width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,rgba(224,120,86,.22) 0%,transparent 70%);
+}
+.s-opener .eyebrow{color:var(--coral)}
+.s-opener .eyebrow::before{background:var(--coral)}
+.s-opener .ato{
+  font-family:'Source Serif Pro',serif;font-style:italic;font-weight:400;
+  font-size:24px;color:rgba(250,246,239,.55);letter-spacing:.02em;
+  margin:24px 0 6px;
+}
+.s-opener .ato-num{
+  font-family:'Source Serif Pro',serif;font-weight:700;
+  font-size:220px;line-height:.85;letter-spacing:-.04em;
+  color:var(--coral);margin:8px 0 32px;display:block;
+}
+.s-opener h1{
+  font-family:'Inter',sans-serif;font-weight:900;
+  font-size:84px;line-height:.95;letter-spacing:-.03em;color:#fff;
+  max-width:880px;margin-bottom:24px;
+}
+.s-opener h1 em{font-style:normal;color:var(--coral)}
+.s-opener .turn{
+  font-family:'Source Serif Pro',serif;font-style:italic;font-weight:400;
+  font-size:21px;line-height:1.5;color:rgba(250,246,239,.78);
+  max-width:680px;
+}
+.s-opener .footer-bar{
+  position:absolute;bottom:40px;left:80px;right:80px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(250,246,239,.5);padding-top:16px;border-top:1px solid rgba(250,246,239,.15);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   SLIDE 2 — HERO NUMBER (cream, big number editorial)
+   ────────────────────────────────────────────────────────────── */
+.s-hero{
+  background:var(--cream);color:var(--navy);
+  padding:64px 80px;
+  display:grid;grid-template-rows:auto 1fr auto;
+}
+.s-hero .eyebrow{color:var(--coral-deep);margin-bottom:0}
+.s-hero .hero-body{
+  display:grid;grid-template-columns:1.6fr 1fr;gap:48px;align-items:center;
+  padding:24px 0;
+}
+.s-hero .big-num{
+  font-family:'Inter',sans-serif;font-weight:900;
+  font-size:240px;line-height:.85;letter-spacing:-.05em;color:var(--navy);
+  position:relative;
+}
+.s-hero .big-num .unit{
+  display:block;font-size:36px;font-weight:700;letter-spacing:0;
+  color:var(--coral-deep);margin-top:6px;
+}
+.s-hero .read{
+  font-family:'Source Serif Pro',serif;font-size:24px;line-height:1.4;
+  color:var(--ink-2);font-style:italic;
+}
+.s-hero .read strong{font-style:normal;font-weight:700;color:var(--navy)}
+.s-hero .read .coral{color:var(--coral-deep);font-weight:700;font-style:normal}
+.s-hero .micro{
+  display:flex;gap:32px;margin-top:24px;
+  border-top:1px solid var(--line);padding-top:18px;
+}
+.s-hero .micro div span{display:block;font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.s-hero .micro div strong{font-size:22px;font-weight:800;color:var(--navy);letter-spacing:-.02em}
+
+/* ──────────────────────────────────────────────────────────────
+   SLIDE 3 — ACTION TITLE + CHART
+   ────────────────────────────────────────────────────────────── */
+.s-action{
+  background:var(--cream);color:var(--navy);
+  padding:56px 80px 84px;
+  display:grid;grid-template-rows:auto 1fr;gap:24px;
+}
+.s-action header .eyebrow{color:var(--coral-deep)}
+.s-action header h2{
+  font-family:'Inter',sans-serif;font-weight:900;
+  font-size:48px;line-height:1.08;letter-spacing:-.025em;color:var(--navy);
+  margin-top:14px;max-width:1000px;
+}
+.s-action header h2 em{font-style:normal;color:var(--coral-deep)}
+.s-action header .lede{
+  font-family:'Source Serif Pro',serif;font-size:16px;font-style:italic;
+  color:var(--ink-2);margin-top:14px;line-height:1.5;max-width:880px;
+}
+.s-action .chart-wrap{
+  position:relative;background:#fff;border-radius:4px;padding:24px 28px;
+  border:1px solid var(--line);
+}
+.s-action .chart-wrap canvas{max-height:100%}
+
+/* ──────────────────────────────────────────────────────────────
+   SLIDE 4 — QUOTE / VOZ (navy with big serif quote)
+   ────────────────────────────────────────────────────────────── */
+.s-quote{
+  background:var(--navy);color:var(--cream);
+  padding:80px 100px;
+  justify-content:center;display:flex;flex-direction:column;
+}
+.s-quote::before{
+  content:"\201C";font-family:'Source Serif Pro',serif;
+  position:absolute;top:24px;left:80px;
+  font-size:280px;line-height:1;color:var(--coral);font-weight:700;
+  opacity:.92;pointer-events:none;
+}
+.s-quote .quote-eyebrow{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--coral);margin-bottom:24px;
+}
+.s-quote blockquote{
+  font-family:'Source Serif Pro',serif;font-weight:400;font-style:italic;
+  font-size:42px;line-height:1.3;letter-spacing:-.012em;color:#fff;
+  max-width:980px;margin-left:0;position:relative;z-index:1;
+}
+.s-quote blockquote strong{font-style:normal;font-weight:700;color:var(--coral)}
+.s-quote cite{
+  display:block;margin-top:32px;font-style:normal;font-size:13px;letter-spacing:.06em;
+  text-transform:uppercase;color:rgba(250,246,239,.7);font-family:'Inter',sans-serif;font-weight:600;
+}
+.s-quote cite span{display:block;color:rgba(250,246,239,.5);font-size:11px;letter-spacing:.04em;margin-top:3px;text-transform:none;font-weight:400}
+
+/* ──────────────────────────────────────────────────────────────
+   SLIDE 5 — RECOMMENDATION (cream, 3 columns)
+   ────────────────────────────────────────────────────────────── */
+.s-rec{
+  background:var(--cream);color:var(--navy);
+  padding:56px 80px 84px;
+  display:grid;grid-template-rows:auto 1fr;gap:32px;
+}
+.s-rec header .eyebrow{color:var(--coral-deep)}
+.s-rec header h2{
+  font-family:'Inter',sans-serif;font-weight:900;
+  font-size:46px;line-height:1.08;letter-spacing:-.025em;color:var(--navy);
+  margin-top:14px;max-width:1000px;
+}
+.s-rec header h2 em{font-style:normal;color:var(--coral-deep)}
+.recs{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-content:start}
+.rec{
+  background:#fff;border-radius:4px;padding:24px 22px;
+  border:1px solid var(--line);
+  border-left:4px solid var(--coral);
+  display:flex;flex-direction:column;gap:10px;
+  position:relative;
+}
+.rec .num{
+  font-family:'Source Serif Pro',serif;font-style:italic;font-weight:700;
+  font-size:48px;line-height:.9;color:var(--coral);letter-spacing:-.03em;
+  margin-bottom:4px;
+}
+.rec h3{
+  font-family:'Inter',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.01em;
+  color:var(--navy);line-height:1.2;
+}
+.rec p{
+  font-size:12.5px;line-height:1.55;color:var(--ink-2);
+}
+.rec .badge{
+  display:inline-block;margin-top:auto;font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 8px;background:var(--cream-2);color:var(--coral-deep);
+  border-radius:3px;align-self:flex-start;
+}
+
+/* DECK CONTROLS ─────────────────────────────────────────────── */
+.controls{
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  background:rgba(11,43,68,.94);backdrop-filter:blur(8px);color:var(--cream);
+  border-radius:999px;padding:6px 10px;
+  display:flex;align-items:center;gap:6px;
+  box-shadow:0 12px 30px -10px rgba(0,0,0,.6);
+  z-index:100;font-size:12px;
+}
+.controls button{
+  background:transparent;border:0;padding:6px 10px;cursor:pointer;
+  font-size:12.5px;font-weight:600;color:var(--cream);
+  border-radius:999px;display:flex;align-items:center;gap:5px;
+}
+.controls button:hover{background:rgba(250,246,239,.12)}
+.controls .counter{padding:0 10px;font-weight:700;font-variant-numeric:tabular-nums}
+.controls .sep{width:1px;height:18px;background:rgba(250,246,239,.2)}
+.controls a{text-decoration:none}
+.progress{
+  position:fixed;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.05);z-index:99;
+}
+.progress .bar{height:100%;background:var(--coral);transition:width .35s ease;width:0%}
+
+/* MOCKUP LABEL */
+.mockup-tag{
+  position:fixed;top:18px;left:18px;z-index:120;
+  background:var(--coral);color:#fff;
+  font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  padding:6px 12px;border-radius:3px;box-shadow:0 4px 14px rgba(0,0,0,.3);
+}
+
+/* RESPONSIVE */
+@media (max-width:900px), (max-aspect-ratio:4/3){
+  body{overflow:auto}
+  .deck{position:static;padding:14px;flex-direction:column;gap:16px}
+  .slide{aspect-ratio:auto;max-height:none;display:flex!important;padding:32px 24px;animation:none}
+  .s-opener,.s-quote{padding:32px 24px}
+  .s-opener .ato-num{font-size:120px}
+  .s-opener h1{font-size:40px}
+  .s-quote blockquote{font-size:24px}
+  .s-quote::before{font-size:160px}
+  .s-hero .big-num{font-size:120px}
+  .s-hero .hero-body{grid-template-columns:1fr;gap:24px}
+  .s-action header h2{font-size:28px}
+  .s-rec header h2{font-size:28px}
+  .recs{grid-template-columns:1fr}
+  .controls{position:sticky;top:10px;bottom:auto;transform:none;left:auto;margin:0 auto}
+  .progress{position:sticky;top:0}
+}
+
+/* PRINT */
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body{background:#fff!important;overflow:visible!important;height:auto}
+  .deck{position:static!important;padding:0!important;display:block!important}
+  .slide{
+    display:flex!important;animation:none!important;
+    width:100%!important;max-width:none!important;aspect-ratio:auto!important;
+    height:100vh!important;max-height:none!important;
+    page-break-after:always!important;break-after:page!important;
+    box-shadow:none!important;border-radius:0!important;
+  }
+  .slide:last-child{page-break-after:auto!important}
+  .controls,.progress,.mockup-tag{display:none!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+</style>
+</head>
+<body>
+
+<div class="mockup-tag">Mockup · 5 templates</div>
+
+<div class="progress"><div class="bar" id="progress-bar"></div></div>
+
+<div class="deck" id="deck">
+
+  <!-- ─────────────────────────────────────────────────────────
+       1 · SECTION OPENER
+       ───────────────────────────────────────────────────────── -->
+  <section class="slide s-opener active" data-title="Section opener">
+    <span class="slide-num serif">03 · 21</span>
+    <span class="eyebrow">Resumo Executivo · Fortaleza</span>
+    <span class="ato serif">ATO III</span>
+    <span class="ato-num">03</span>
+    <h1>A forma da<br><em>vulnerabilidade</em>.</h1>
+    <p class="turn">Como pobreza, fome e violência se entrelaçam nos 13 bairros — e por que o Grande Bom Jardim concentra o problema na sua forma mais aguda.</p>
+    <div class="footer-bar">
+      <span>Redes Ceará</span>
+      <span>Atos · I Cenário · II Quem mora aqui · <strong style="color:var(--coral)">III Vulnerabilidade</strong> · IV Tecido · V Caminhos</span>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────────
+       2 · HERO NUMBER
+       ───────────────────────────────────────────────────────── -->
+  <section class="slide s-hero" data-title="Hero number">
+    <span class="slide-num serif">05 · 21</span>
+    <header>
+      <span class="eyebrow">01 · Ato II · Escala humana</span>
+    </header>
+    <div class="hero-body">
+      <div>
+        <span class="big-num">345<span class="unit">mil pessoas</span></span>
+      </div>
+      <div>
+        <p class="read">Os 13 bairros acompanhados pela Redes Ceará abrigam <strong>uma população do porte de uma cidade média</strong>. <span class="coral">62%</span> deles vivem no Grande Bom Jardim — escala que muda toda a equação operacional.</p>
+        <div class="micro">
+          <div><span>Bom Jardim</span><strong>216 mil</strong></div>
+          <div><span>Mucuripe</span><strong>129 mil</strong></div>
+          <div><span>Bairros</span><strong>13</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-src">
+      <span>Fonte · IBGE Censo Demográfico, 2022</span>
+      <a href="fortaleza.html#section-demo">Ver perfil populacional →</a>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────────
+       3 · ACTION TITLE + CHART
+       ───────────────────────────────────────────────────────── -->
+  <section class="slide s-action" data-title="Action title + chart">
+    <span class="slide-num serif">09 · 21</span>
+    <header>
+      <span class="eyebrow">04 · Ato III · Renda do trabalho</span>
+      <h2>O Grande Bom Jardim ganha <em>1/3 do que ganha o Mucuripe</em> — e isso muda toda a tática de inclusão produtiva.</h2>
+      <p class="lede">Renda média do responsável pelo domicílio, R$ por mês. A diferença não é só de magnitude: é de modelo — onde inserir, onde proteger, onde encadear.</p>
+    </header>
+    <div class="chart-wrap"><canvas id="ch-renda"></canvas></div>
+    <div class="slide-src">
+      <span>Fonte · IBGE Censo Demográfico, 2022</span>
+      <a href="fortaleza.html#section-vuln">Ver detalhes no painel →</a>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────────
+       4 · QUOTE / VOZ
+       ───────────────────────────────────────────────────────── -->
+  <section class="slide s-quote" data-title="Quote / voz">
+    <span class="slide-num serif" style="color:rgba(250,246,239,.4)">15 · 21</span>
+    <span class="quote-eyebrow">Voz do Policy Brief</span>
+    <blockquote>
+      Grandes investimentos <strong>não distribuem benefícios sozinhos</strong>: precisam ser conectados ao território por regras, incentivos e instâncias de governança.
+    </blockquote>
+    <cite>
+      Síntese do Policy Brief · Redes Ceará
+      <span>A partir de Flammer (2021); Kline &amp; Moretti (2014); Banerjee et al. (2015)</span>
+    </cite>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────────
+       5 · RECOMMENDATION (3 caminhos)
+       ───────────────────────────────────────────────────────── -->
+  <section class="slide s-rec" data-title="Recomendação">
+    <span class="slide-num serif">20 · 21</span>
+    <header>
+      <span class="eyebrow">Ato V · Onde a Redes Ceará faz diferença</span>
+      <h2>Três <em>caminhos estratégicos</em> de adicionalidade.</h2>
+    </header>
+    <div class="recs">
+      <div class="rec">
+        <span class="num">01</span>
+        <h3>Grande Bom Jardim · articulação em escala</h3>
+        <p>Atuar como ancoragem entre proteção social, OSCs locais e Sistema S. Alta adicionalidade pelo vácuo de articulação e pelo volume populacional vulnerável.</p>
+        <span class="badge">Produto 3 do TR</span>
+      </div>
+      <div class="rec">
+        <span class="num">02</span>
+        <h3>Grande Mucuripe · coerência sistêmica</h3>
+        <p>Articular as 827 OSCs já operando com as 2.119 médias e grandes empresas. Adicionalidade média — viabilidade alta, foco em intermediação e governança.</p>
+        <span class="badge">Produto 3 do TR</span>
+      </div>
+      <div class="rec">
+        <span class="num">03</span>
+        <h3>Cadeias alimentícias locais</h3>
+        <p>Os 1.343 estabelecimentos alimentícios nos dois territórios são base operacional para compras públicas, CEASA Mais Nutrição e alimentação escolar — em paralelo.</p>
+        <span class="badge">Atende Produtos 2 e 3</span>
+      </div>
+    </div>
+    <div class="slide-src">
+      <span>Síntese final · Painel + Policy Brief</span>
+      <a href="fortaleza.html#section-adic">Ver matriz de adicionalidade →</a>
+    </div>
+  </section>
+
+</div>
+
+<!-- CONTROLS -->
+<div class="controls" id="controls">
+  <button id="btn-prev" title="← Anterior">←</button>
+  <span class="counter" id="counter">1 / 5</span>
+  <button id="btn-next" title="Próximo →">→</button>
+  <span class="sep"></span>
+  <button id="btn-fullscreen" title="Tela cheia (F)">⛶ Fullscreen</button>
+  <button id="btn-pdf" title="Exportar PDF (P)">Exportar PDF</button>
+  <a href="resumo_executivo.html"><button title="Voltar ao hub">← Hub</button></a>
+</div>
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total  = slides.length;
+let idx = 0;
+const counterEl = document.getElementById('counter');
+const progEl    = document.getElementById('progress-bar');
+
+function go(i){
+  idx = Math.max(0, Math.min(total-1, i));
+  slides.forEach((s,j)=>s.classList.toggle('active', j===idx));
+  counterEl.textContent = `${idx+1} / ${total}`;
+  progEl.style.width = `${((idx+1)/total)*100}%`;
+  if(location.hash !== `#${idx+1}`) history.replaceState(null,'',`#${idx+1}`);
+}
+function next(){ go(idx+1); }
+function prev(){ go(idx-1); }
+function toggleFullscreen(){
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+  else document.exitFullscreen?.();
+}
+function exportPDF(){ window.print(); }
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight' || e.key===' ' || e.key==='PageDown'){ e.preventDefault(); next(); }
+  else if(e.key==='ArrowLeft' || e.key==='PageUp'){ e.preventDefault(); prev(); }
+  else if(e.key==='Home'){ go(0); }
+  else if(e.key==='End'){ go(total-1); }
+  else if(e.key==='f' || e.key==='F'){ toggleFullscreen(); }
+  else if(e.key==='p' || e.key==='P'){ exportPDF(); }
+});
+document.getElementById('btn-prev').addEventListener('click', prev);
+document.getElementById('btn-next').addEventListener('click', next);
+document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+document.getElementById('btn-pdf').addEventListener('click', exportPDF);
+document.addEventListener('click', e=>{
+  const blocked = ['BUTTON','A','INPUT','SELECT','TEXTAREA','LABEL'];
+  if(blocked.includes(e.target.tagName)) return;
+  if(e.target.closest('.controls')) return;
+  if(e.clientX > window.innerWidth/2) next(); else prev();
+});
+
+// Hash deep link
+const hashIdx = parseInt((location.hash||'').replace('#',''),10);
+if(!isNaN(hashIdx) && hashIdx>=1 && hashIdx<=total) go(hashIdx-1);
+else go(0);
+
+// Chart (Source Serif Pro for labels, navy + coral)
+Chart.defaults.font.family = "'Inter',sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#3B4C5C';
+new Chart(document.getElementById('ch-renda'), {
+  type:'bar',
+  data:{
+    labels:['Grande Bom Jardim','Grande Mucuripe'],
+    datasets:[{
+      label:'Renda média do responsável (R$)',
+      data:[1428.94, 3886.97],
+      backgroundColor:['#0B2B44','#E07856'],
+      borderRadius:3,
+      barThickness:60
+    }]
+  },
+  options:{
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    layout:{padding:{left:0,right:24,top:8,bottom:8}},
+    scales:{
+      x:{beginAtZero:true,grid:{color:'rgba(11,43,68,.08)'},ticks:{
+        callback:v=>'R$ '+v.toLocaleString('pt-BR'),
+        font:{size:12,weight:600}
+      }},
+      y:{grid:{display:false},ticks:{font:{size:14,weight:700}}}
+    },
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{label:c=>'R$ '+c.parsed.x.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
