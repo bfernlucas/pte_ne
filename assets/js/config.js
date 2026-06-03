@@ -1,45 +1,72 @@
 /**
- * Configuração do dashboard.
+ * Configuração do dashboard PTE2026.
  *
  * COMO CONECTAR SUA PLANILHA DO GOOGLE SHEETS:
- * 1. Abra sua planilha no Google Sheets.
- * 2. Clique em "Compartilhar" → "Qualquer pessoa com o link" → "Leitor".
- * 3. Copie o ID da planilha da URL. Exemplo:
- *      https://docs.google.com/spreadsheets/d/AQUI_ESTA_O_ID/edit
- *    O ID é o trecho entre /d/ e /edit.
- * 4. Cole o ID em SHEET_ID abaixo e ajuste SHEET_NAME para o nome da aba.
+ * 1. Crie uma ABA LIMPA na sua planilha só para o dashboard, com os
+ *    cabeçalhos na PRIMEIRA linha (o painel original tem 3 linhas de
+ *    cabeçalho mescladas, que o dashboard não entende).
+ *    Cabeçalhos sugeridos (exatamente estes nomes):
+ *      id | iniciativa | objetivo | tematica | organizacao | municipio |
+ *      estado | bioma | eixo | avaliador | lat | lon | pontuacao
+ *    Dica: você pode preencher essa aba com fórmulas que apontam para o
+ *    painel original (ex. ='Exercício - Matriz de avaliação'!A4), assim
+ *    ela se atualiza sozinha.
+ * 2. Compartilhe a planilha: "Qualquer pessoa com o link" → "Leitor".
+ * 3. Copie o ID da URL (trecho entre /d/ e /edit) e cole em SHEET_ID.
+ * 4. Ajuste SHEET_NAME para o nome da aba limpa.
  * 5. Defina USE_DEMO_DATA = false.
- *
- * Não precisa de chave de API: o dashboard usa o endpoint público "gviz"
- * do Google, que devolve os dados em tempo real a cada carregamento.
  */
 const CONFIG = {
   // --- Conexão com o Google Sheets ---
   SHEET_ID: "COLE_O_ID_DA_SUA_PLANILHA_AQUI",
-  SHEET_NAME: "Página1", // nome da aba (guia) que contém os dados
+  SHEET_NAME: "Dashboard", // nome da aba LIMPA (cabeçalhos na 1ª linha)
 
-  // Enquanto não plugar a planilha, deixe true para ver dados de exemplo.
+  // Enquanto não plugar a planilha, deixe true para usar os 52 registros reais.
   USE_DEMO_DATA: true,
 
   // Atualização automática (tempo real). Intervalo em segundos. 0 = desligado.
   REFRESH_SECONDS: 60,
 
   // --- Mapeamento de colunas ---
-  // Diga ao dashboard quais colunas da sua planilha usar.
-  // Os valores devem bater EXATAMENTE com os cabeçalhos da primeira linha.
   COLUMNS: {
-    label: "bairro", // nome de cada item (rótulo de gráficos/tabela)
-    category: "cidade", // usado para agrupar/filtrar
-    lat: "lat", // latitude (para o mapa)
-    lon: "lon", // longitude (para o mapa)
-    // Métricas numéricas: { coluna, rótulo, formato }
-    metrics: [
-      { key: "estabelecimentos", label: "Estabelecimentos", format: "int" },
-      { key: "renda_media", label: "Renda média", format: "money" },
-      { key: "populacao", label: "População", format: "int" },
+    label: "iniciativa", // rótulo principal de cada registro
+    lat: "lat",
+    lon: "lon",
+    // Campos exibidos no popup do mapa
+    popup: ["organizacao", "municipio", "estado", "eixo"],
+    // Colunas mostradas na tabela: { key, label, format }
+    table: [
+      { key: "id", label: "ID", format: "int" },
+      { key: "iniciativa", label: "Iniciativa" },
+      { key: "organizacao", label: "Organização" },
+      { key: "municipio", label: "Município" },
+      { key: "estado", label: "UF" },
+      { key: "bioma", label: "Bioma" },
+      { key: "eixo", label: "Eixo" },
+      { key: "pontuacao", label: "Pontuação", format: "num" },
     ],
   },
 
-  // Métrica principal exibida nas barras do gráfico e no tamanho dos pontos.
-  PRIMARY_METRIC: "estabelecimentos",
+  // --- Cartões KPI ---
+  // Tipos: "count" (nº de registros), "distinct" (valores únicos de uma coluna),
+  //        "avg" (média), "sum" (soma). 'format' opcional: int|money|num
+  KPIS: [
+    { type: "count", label: "Iniciativas" },
+    { type: "distinct", key: "estado", label: "Estados" },
+    { type: "distinct", key: "eixo", label: "Eixos" },
+    { type: "avg", key: "pontuacao", label: "Pontuação média", format: "num" },
+  ],
+
+  // --- Gráficos (contagem de registros por categoria) ---
+  CHARTS: {
+    bar: { key: "estado", title: "Iniciativas por estado" },
+    pie: { key: "eixo", title: "Distribuição por eixo" },
+  },
+
+  // --- Filtros (geram menus suspensos no topo) ---
+  FILTERS: [
+    { key: "eixo", label: "Eixo" },
+    { key: "estado", label: "Estado" },
+    { key: "bioma", label: "Bioma" },
+  ],
 };

@@ -1,8 +1,12 @@
-# Dashboard com Google Sheets
+# PTE2026 — Painel de Iniciativas
 
 Dashboard estático (HTML/CSS/JS) que lê uma planilha do **Google Sheets**
-em tempo real e exibe **cartões KPI, gráficos, mapa e tabela**.
+em tempo real e exibe **cartões KPI, gráficos, mapa e tabela** das iniciativas
+do Plano Brasil Nordeste de Transformação Ecológica.
 Pode ser publicado gratuitamente no **GitHub Pages**.
+
+Já vem carregado com as **52 iniciativas** da planilha de critérios PTE2026
+(dados de exemplo), então funciona assim que você abre.
 
 ```
 Google Sheets (público)  ──CSV──▶  Dashboard (GitHub Pages)
@@ -32,12 +36,20 @@ Ao abrir, ele já mostra **dados de exemplo** (Fortaleza/Maracanaú).
 
 ## 2. Conectar sua planilha do Google Sheets
 
-1. Monte sua planilha. A **primeira linha** deve conter os cabeçalhos
-   (nomes das colunas). Exemplo:
+A planilha original (`Critérios de seleção de projetos PTE2026`) tem **3 linhas
+de cabeçalho mescladas** (título, grupos e nomes das colunas). O dashboard — e o
+Google Sheets via CSV — só entende **cabeçalhos na primeira linha**. Por isso:
 
-   | bairro | cidade | lat | lon | estabelecimentos | renda_media | populacao |
-   |--------|--------|-----|-----|------------------|-------------|-----------|
-   | Centro | Fortaleza | -3.7275 | -38.5270 | 1240 | 2850 | 28500 |
+1. Na sua planilha, crie uma **aba nova e "limpa"** (ex. chamada `Dashboard`)
+   com os cabeçalhos na **primeira linha**, exatamente assim:
+
+   | id | iniciativa | objetivo | tematica | organizacao | municipio | estado | bioma | eixo | avaliador | lat | lon | pontuacao |
+   |----|-----------|----------|----------|-------------|-----------|--------|-------|------|-----------|-----|-----|-----------|
+
+   > 💡 Dica: preencha essa aba com **fórmulas** apontando para o painel original
+   > (ex. `='Exercício - Matriz de avaliação'!A4`). Assim ela se atualiza
+   > sozinha conforme você avalia os projetos, e o dashboard reflete em tempo real.
+   > Lembre-se de dar nome às colunas de **latitude → `lat`** e **longitude → `lon`**.
 
 2. Clique em **Compartilhar → "Qualquer pessoa com o link" → Leitor**.
 
@@ -49,12 +61,13 @@ Ao abrir, ele já mostra **dados de exemplo** (Fortaleza/Maracanaú).
 
 4. Abra `assets/js/config.js` e edite:
    - `SHEET_ID`: cole o ID
-   - `SHEET_NAME`: nome da aba (guia), ex. `"Página1"`
+   - `SHEET_NAME`: nome da aba limpa, ex. `"Dashboard"`
    - `USE_DEMO_DATA`: mude para `false`
-   - `COLUMNS`: ajuste os nomes das colunas para baterem com a sua planilha
 
 Pronto — ao recarregar a página, o dashboard mostra seus dados reais e
-se atualiza automaticamente a cada `REFRESH_SECONDS` segundos.
+se atualiza automaticamente a cada `REFRESH_SECONDS` segundos. Conforme você
+preenche a coluna **Pontuação** na avaliação, o KPI de pontuação média e a
+tabela se atualizam sozinhos.
 
 ## 3. Publicar no GitHub Pages
 
@@ -76,12 +89,15 @@ assets/js/demo-data.js     dados de exemplo
 assets/js/app.js           lógica (busca, gráficos, mapa, tabela)
 ```
 
-## Personalização rápida
+## Personalização rápida (tudo em `assets/js/config.js`)
 
-- **Métricas (KPIs/colunas):** edite `COLUMNS.metrics` em `config.js`.
-  Formatos disponíveis: `"int"`, `"money"`, `"num"`.
-- **Métrica principal** (barras e tamanho dos pontos no mapa): `PRIMARY_METRIC`.
-- **Mapa:** precisa de colunas de `lat` e `lon`. Sem elas, o mapa fica vazio.
+- **Cartões KPI:** lista `KPIS`. Tipos: `count` (nº de registros),
+  `distinct` (valores únicos de uma coluna), `avg` (média), `sum` (soma).
+- **Gráficos:** `CHARTS.bar` e `CHARTS.pie` — basta indicar a coluna (`key`)
+  pela qual contar (ex. `estado`, `eixo`, `bioma`).
+- **Filtros:** lista `FILTERS` — cada item vira um menu suspenso no topo.
+- **Mapa:** usa as colunas `lat` e `lon`. Sem coordenadas, o ponto não aparece.
+- **Tabela / popup do mapa:** `COLUMNS.table` e `COLUMNS.popup`.
 - **Cores dos gráficos:** constante `PALETTE` em `app.js`.
 
 ## Tecnologias

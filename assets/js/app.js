@@ -4,7 +4,9 @@
 // Estado global
 // ----------------------------------------------------------------------------
 const state = {
-  rows: [],
+  allRows: [], // todos os registros carregados
+  rows: [], // registros após filtros
+  filters: {}, // { coluna: valor selecionado }
   charts: {},
   map: null,
   markersLayer: null,
@@ -18,8 +20,7 @@ const state = {
 function buildSheetUrl() {
   const id = encodeURIComponent(CONFIG.SHEET_ID);
   const name = encodeURIComponent(CONFIG.SHEET_NAME);
-  // cache-buster para garantir dados frescos a cada atualização
-  const t = Date.now();
+  const t = Date.now(); // cache-buster: garante dados frescos
   return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${name}&_=${t}`;
 }
 
@@ -42,96 +43,93 @@ function loadData() {
 }
 
 // ----------------------------------------------------------------------------
-// Formatação
+// Utilitários
 // ----------------------------------------------------------------------------
 const fmt = {
   int: (n) => new Intl.NumberFormat("pt-BR").format(Math.round(n || 0)),
   money: (n) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n || 0),
-  num: (n) => new Intl.NumberFormat("pt-BR").format(n || 0),
+  num: (n) => new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(n || 0),
 };
 function formatValue(value, format) {
-  return (fmt[format] || fmt.num)(value);
+  return format ? (fmt[format] || fmt.num)(value) : value ?? "";
 }
-
 function toNumber(v) {
   if (typeof v === "number") return v;
-  if (v == null) return 0;
+  if (v == null || v === "") return 0;
   const n = parseFloat(String(v).replace(/\./g, "").replace(",", "."));
   return Number.isFinite(n) ? n : 0;
 }
 
-// ----------------------------------------------------------------------------
-// Renderização — KPIs
-// ----------------------------------------------------------------------------
-function renderKpis(rows) {
-  const el = document.getElementById("kpis");
-  el.innerHTML = "";
-  CONFIG.COLUMNS.metrics.forEach((m) => {
-    const total = rows.reduce((acc, r) => acc + toNumber(r[m.key]), 0);
-    const isMoney = m.format === "money";
-    // para dinheiro mostramos a média; para o resto, o total
-    const value = isMoney ? total / (rows.length || 1) : total;
-    const label = isMoney ? `${m.label} (média)` : `${m.label} (total)`;
-    const card = document.createElement("div");
-    card.className = "kpi-card";
-    card.innerHTML = `
-      <span class="kpi-label">${label}</span>
-      <span class="kpi-value">${formatValue(value, m.format)}</span>
-    `;
-    el.appendChild(card);
-  });
-}
-
-// ----------------------------------------------------------------------------
-// Renderização — Gráficos
-// ----------------------------------------------------------------------------
 const PALETTE = [
   "#2563eb", "#16a34a", "#ea580c", "#9333ea", "#dc2626",
   "#0891b2", "#ca8a04", "#db2777", "#475569", "#65a30d",
 ];
 
+/** Conta registros por valor de uma coluna; devolve [labels, valores] ordenado. */
+function countBy(rows, key) {
+  const groups = {};
+  rows.forEach((r) => {
+    const v = (r[key] ?? "—").toString().trim() || "—";
+    groups[v] = (groups[v] || 0) + 1;
+  });
+  const entries = Object.entries(groups).sort((a, b) => b[1] - a[1]);
+  return [entries.map((e) => e[0]), entries.map((e) => e[1])];
+}
+
+// ----------------------------------------------------------------------------
+// KPIs
+// ----------------------------------------------------------------------------
+function renderKpis(rows) {
+  const el = document.getElementById("kpis");
+  el.innerHTML = "";
+  CONFIG.KPIS.forEach((k) => {
+    let value;
+    if (k.type === "count") {
+      value = fmt.int(rows.length);
+    } else if (k.type === "distinct") {
+      const set = new Set(rows.map((r) => (r[k.key] ?? "").toString().trim()).filter(Boolean));
+      value = fmt.int(set.size);
+    } else if (k.type === "avg") {
+      const nums = rows.map((r) => toNumber(r[k.key]));
+      const avg = nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : 0;
+      value = formatValue(avg, k.format || "num");
+    } else if (k.type === "sum") {
+      const total = rows.reduce((a, r) => a + toNumber(r[k.key]), 0);
+      value = formatValue(total, k.format || "num");
+    }
+    const card = document.createElement("div");
+    card.className = "kpi-card";
+    card.innerHTML = `<span class="kpi-label">${k.label}</span><span class="kpi-value">${value}</span>`;
+    el.appendChild(card);
+  });
+}
+
+// ----------------------------------------------------------------------------
+// Gráficos
+// ----------------------------------------------------------------------------
 function renderBarChart(rows) {
-  const metricKey = CONFIG.PRIMARY_METRIC;
-  const metric = CONFIG.COLUMNS.metrics.find((m) => m.key === metricKey) || {};
-  const sorted = rows
-    .slice()
-    .sort((a, b) => toNumber(b[metricKey]) - toNumber(a[metricKey]))
-    .slice(0, 10);
-
-  const labels = sorted.map((r) => r[CONFIG.COLUMNS.label]);
-  const data = sorted.map((r) => toNumber(r[metricKey]));
+  const cfg = CONFIG.CHARTS.bar;
+  const [labels, data] = countBy(rows, cfg.key);
   const ctx = document.getElementById("barChart");
-
   if (state.charts.bar) state.charts.bar.destroy();
   state.charts.bar = new Chart(ctx, {
     type: "bar",
-    data: {
-      labels,
-      datasets: [{ label: metric.label || metricKey, data, backgroundColor: "#2563eb", borderRadius: 4 }],
-    },
+    data: { labels, datasets: [{ data, backgroundColor: "#2563eb", borderRadius: 4 }] },
     options: {
       indexAxis: "y",
       responsive: true,
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
-      scales: { x: { beginAtZero: true } },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } },
     },
   });
 }
 
-function renderCategoryChart(rows) {
-  const catKey = CONFIG.COLUMNS.category;
-  const metricKey = CONFIG.PRIMARY_METRIC;
-  const groups = {};
-  rows.forEach((r) => {
-    const cat = r[catKey] || "—";
-    groups[cat] = (groups[cat] || 0) + toNumber(r[metricKey]);
-  });
-  const labels = Object.keys(groups);
-  const data = Object.values(groups);
+function renderPieChart(rows) {
+  const cfg = CONFIG.CHARTS.pie;
+  const [labels, data] = countBy(rows, cfg.key);
   const ctx = document.getElementById("pieChart");
-
   if (state.charts.pie) state.charts.pie.destroy();
   state.charts.pie = new Chart(ctx, {
     type: "doughnut",
@@ -139,18 +137,16 @@ function renderCategoryChart(rows) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: "bottom" } },
+      plugins: { legend: { position: "right", labels: { boxWidth: 12, font: { size: 11 } } } },
     },
   });
 }
 
 // ----------------------------------------------------------------------------
-// Renderização — Mapa
+// Mapa
 // ----------------------------------------------------------------------------
 function renderMap(rows) {
-  const latKey = CONFIG.COLUMNS.lat;
-  const lonKey = CONFIG.COLUMNS.lon;
-  const metricKey = CONFIG.PRIMARY_METRIC;
+  const { lat: latKey, lon: lonKey, label: labelKey, popup } = CONFIG.COLUMNS;
   const points = rows.filter((r) => toNumber(r[latKey]) && toNumber(r[lonKey]));
 
   if (!state.map) {
@@ -164,45 +160,36 @@ function renderMap(rows) {
   state.markersLayer.clearLayers();
 
   if (!points.length) {
-    state.map.setView([-3.73, -38.52], 11); // fallback: Fortaleza
+    state.map.setView([-8.5, -39], 5); // fallback: Nordeste
     return;
   }
-
-  const max = Math.max(...points.map((r) => toNumber(r[metricKey]))) || 1;
   const bounds = [];
   points.forEach((r) => {
     const lat = toNumber(r[latKey]);
     const lon = toNumber(r[lonKey]);
-    const val = toNumber(r[metricKey]);
-    const radius = 6 + (val / max) * 22;
     bounds.push([lat, lon]);
-    const metric = CONFIG.COLUMNS.metrics.find((m) => m.key === metricKey) || {};
+    const extra = (popup || [])
+      .map((k) => (r[k] ? `${r[k]}` : ""))
+      .filter(Boolean)
+      .join("<br>");
     L.circleMarker([lat, lon], {
-      radius,
-      color: "#2563eb",
+      radius: 7,
+      color: "#1d4ed8",
       fillColor: "#3b82f6",
-      fillOpacity: 0.6,
+      fillOpacity: 0.7,
       weight: 1.5,
     })
-      .bindPopup(
-        `<strong>${r[CONFIG.COLUMNS.label] || ""}</strong><br>` +
-          `${r[CONFIG.COLUMNS.category] || ""}<br>` +
-          `${metric.label || metricKey}: ${formatValue(val, metric.format)}`
-      )
+      .bindPopup(`<strong>${r[labelKey] || ""}</strong><br>${extra}`)
       .addTo(state.markersLayer);
   });
   state.map.fitBounds(bounds, { padding: [30, 30] });
 }
 
 // ----------------------------------------------------------------------------
-// Renderização — Tabela
+// Tabela
 // ----------------------------------------------------------------------------
 function renderTable(rows) {
-  const cols = [
-    { key: CONFIG.COLUMNS.label, label: "Item", format: null },
-    { key: CONFIG.COLUMNS.category, label: "Categoria", format: null },
-    ...CONFIG.COLUMNS.metrics.map((m) => ({ key: m.key, label: m.label, format: m.format })),
-  ];
+  const cols = CONFIG.COLUMNS.table;
   const thead = `<tr>${cols.map((c) => `<th>${c.label}</th>`).join("")}</tr>`;
   const tbody = rows
     .map(
@@ -220,31 +207,66 @@ function renderTable(rows) {
 }
 
 // ----------------------------------------------------------------------------
+// Filtros
+// ----------------------------------------------------------------------------
+function buildFilters() {
+  const bar = document.getElementById("filters");
+  bar.innerHTML = "";
+  (CONFIG.FILTERS || []).forEach((f) => {
+    const values = Array.from(
+      new Set(state.allRows.map((r) => (r[f.key] ?? "").toString().trim()).filter(Boolean))
+    ).sort();
+    const wrap = document.createElement("label");
+    wrap.className = "filter";
+    const opts = ['<option value="">Todos</option>']
+      .concat(values.map((v) => `<option value="${v}">${v}</option>`))
+      .join("");
+    wrap.innerHTML = `<span>${f.label}</span><select data-key="${f.key}">${opts}</select>`;
+    wrap.querySelector("select").addEventListener("change", (e) => {
+      state.filters[f.key] = e.target.value;
+      applyFiltersAndRender();
+    });
+    bar.appendChild(wrap);
+  });
+}
+
+function applyFiltersAndRender() {
+  state.rows = state.allRows.filter((r) =>
+    Object.entries(state.filters).every(
+      ([k, v]) => !v || (r[k] ?? "").toString().trim() === v
+    )
+  );
+  renderAll(state.rows);
+}
+
+// ----------------------------------------------------------------------------
 // Orquestração
 // ----------------------------------------------------------------------------
 function renderAll(rows) {
-  state.rows = rows;
   renderKpis(rows);
   renderBarChart(rows);
-  renderCategoryChart(rows);
+  renderPieChart(rows);
   renderMap(rows);
   renderTable(rows);
-  const stamp = new Date().toLocaleTimeString("pt-BR");
-  document.getElementById("lastUpdate").textContent = `Atualizado às ${stamp}`;
-  document.getElementById("rowCount").textContent = `${rows.length} registros`;
+  document.getElementById("barTitle").textContent = CONFIG.CHARTS.bar.title;
+  document.getElementById("pieTitle").textContent = CONFIG.CHARTS.pie.title;
+  document.getElementById("rowCount").textContent = `${rows.length} de ${state.allRows.length} registros`;
+  document.getElementById("lastUpdate").textContent =
+    `Atualizado às ${new Date().toLocaleTimeString("pt-BR")}`;
 }
 
 async function refresh() {
   const status = document.getElementById("status");
   try {
     status.textContent = "Carregando…";
-    const rows = await loadData();
-    renderAll(rows);
-    status.textContent = CONFIG.USE_DEMO_DATA ? "Dados de exemplo" : "Conectado ao Google Sheets";
+    state.allRows = await loadData();
+    buildFilters();
+    applyFiltersAndRender();
+    status.textContent = CONFIG.USE_DEMO_DATA ? "Dados de exemplo (planilha PTE2026)" : "Conectado ao Google Sheets";
     status.className = "status ok";
   } catch (err) {
     console.error(err);
-    status.textContent = "Erro ao carregar dados — confira o ID/aba da planilha";
+    status.textContent = "Erro ao carregar — confira o ID/aba da planilha";
     status.className = "status error";
   }
 }
@@ -255,7 +277,5 @@ async function refresh() {
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("refreshBtn").addEventListener("click", refresh);
   refresh();
-  if (CONFIG.REFRESH_SECONDS > 0) {
-    setInterval(refresh, CONFIG.REFRESH_SECONDS * 1000);
-  }
+  if (CONFIG.REFRESH_SECONDS > 0) setInterval(refresh, CONFIG.REFRESH_SECONDS * 1000);
 });

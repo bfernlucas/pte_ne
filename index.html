@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard</title>
+  <title>PTE2026 — Painel de Iniciativas</title>
 
   <!-- Mapa: Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -12,7 +12,7 @@
 </head>
 <body>
   <header class="topbar">
-    <h1>📊 Dashboard</h1>
+    <h1>🌱 PTE2026 — Painel de Iniciativas</h1>
     <span id="status" class="status">Carregando…</span>
     <div class="spacer"></div>
     <span id="rowCount" class="meta"></span>
@@ -21,17 +21,20 @@
   </header>
 
   <main class="container">
+    <!-- Filtros -->
+    <section id="filters" class="filter-bar"></section>
+
     <!-- Cartões KPI -->
     <section id="kpis" class="kpi-grid"></section>
 
     <!-- Gráficos -->
     <section class="grid">
       <div class="panel">
-        <h2>Ranking (top 10)</h2>
+        <h2 id="barTitle">Por estado</h2>
         <div class="chart-box"><canvas id="barChart"></canvas></div>
       </div>
       <div class="panel">
-        <h2>Distribuição por categoria</h2>
+        <h2 id="pieTitle">Por eixo</h2>
         <div class="chart-box"><canvas id="pieChart"></canvas></div>
       </div>
     </section>

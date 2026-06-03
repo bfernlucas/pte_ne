@@ -55,6 +55,31 @@ button:hover { filter: brightness(1.05); }
 /* Layout */
 .container { padding: 20px 24px 48px; max-width: 1300px; margin: 0 auto; }
 
+/* Filtros */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.filter select {
+  font-size: 0.88rem;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  min-width: 180px;
+  cursor: pointer;
+}
+
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
