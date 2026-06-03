@@ -19,9 +19,14 @@ const state = {
 /** Monta a URL pública (gviz) que devolve a planilha em CSV, em tempo real. */
 function buildSheetUrl() {
   const id = encodeURIComponent(CONFIG.SHEET_ID);
-  const name = encodeURIComponent(CONFIG.SHEET_NAME);
   const t = Date.now(); // cache-buster: garante dados frescos
-  return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${name}&_=${t}`;
+  const base = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv`;
+  // Prioriza o gid (id da aba, vem na URL após gid=) por ser mais robusto;
+  // se não houver gid, usa o nome da aba.
+  const tab = CONFIG.SHEET_GID
+    ? `gid=${encodeURIComponent(CONFIG.SHEET_GID)}`
+    : `sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;
+  return `${base}&${tab}&_=${t}`;
 }
 
 /** Carrega dados do Google Sheets (ou demo) e devolve uma lista de objetos. */
