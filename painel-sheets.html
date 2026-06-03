@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PTE2026 — Painel de Iniciativas</title>
+
+  <!-- Mapa: Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>🌱 PTE2026 — Painel de Iniciativas</h1>
+    <span id="status" class="status">Carregando…</span>
+    <div class="spacer"></div>
+    <span id="rowCount" class="meta"></span>
+    <span id="lastUpdate" class="meta"></span>
+    <button id="refreshBtn">Atualizar</button>
+  </header>
+
+  <main class="container">
+    <!-- Filtros -->
+    <section id="filters" class="filter-bar"></section>
+
+    <!-- Cartões KPI -->
+    <section id="kpis" class="kpi-grid"></section>
+
+    <!-- Gráficos -->
+    <section class="grid">
+      <div class="panel">
+        <h2 id="barTitle">Por estado</h2>
+        <div class="chart-box"><canvas id="barChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <h2 id="pieTitle">Por eixo</h2>
+        <div class="chart-box"><canvas id="pieChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Mapa -->
+    <section class="panel full" style="margin-bottom: 20px;">
+      <h2>Mapa</h2>
+      <div id="map"></div>
+    </section>
+
+    <!-- Tabela -->
+    <section class="panel full">
+      <h2>Dados</h2>
+      <div class="table-wrap">
+        <table id="dataTable"></table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bibliotecas (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- App -->
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/demo-data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
