@@ -18,11 +18,12 @@
  */
 const CONFIG = {
   // --- Conexão com o Google Sheets ---
-  SHEET_ID: "COLE_O_ID_DA_SUA_PLANILHA_AQUI",
-  SHEET_NAME: "Dashboard", // nome da aba LIMPA (cabeçalhos na 1ª linha)
+  SHEET_ID: "1cdpIInSfNVRdaz4YEBIf5Wxkcx5Mwpc__SToVnssRyg",
+  SHEET_GID: "1168173087", // id da aba (vem na URL após gid=). Tem prioridade.
+  SHEET_NAME: "Dashboard", // usado só se SHEET_GID estiver vazio
 
-  // Enquanto não plugar a planilha, deixe true para usar os 52 registros reais.
-  USE_DEMO_DATA: true,
+  // true = usa os 52 registros embutidos; false = lê a planilha do Google ao vivo.
+  USE_DEMO_DATA: false,
 
   // Atualização automática (tempo real). Intervalo em segundos. 0 = desligado.
   REFRESH_SECONDS: 60,
