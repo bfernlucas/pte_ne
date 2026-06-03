@@ -1,12 +1,32 @@
 # PTE2026 — Painel de Iniciativas
 
-Dashboard estático (HTML/CSS/JS) que lê uma planilha do **Google Sheets**
-em tempo real e exibe **cartões KPI, gráficos, mapa e tabela** das iniciativas
-do Plano Brasil Nordeste de Transformação Ecológica.
-Pode ser publicado gratuitamente no **GitHub Pages**.
+Dashboards das iniciativas do Plano Brasil Nordeste de Transformação Ecológica,
+com **cartões KPI, gráficos, mapa e tabela** das 52 iniciativas.
 
-Já vem carregado com as **52 iniciativas** da planilha de critérios PTE2026
-(dados de exemplo), então funciona assim que você abre.
+Há duas versões:
+
+| Página | Arquivo | Descrição |
+|--------|---------|-----------|
+| **Dashboard publicável** (padrão) | `index.html` | Autocontido, com os 52 dados embutidos e **mapa em destaque** com filtros e legenda interativa. Abre direto, sem servidor. É a página servida pelo GitHub Pages. |
+| **Painel ao vivo** | `painel-sheets.html` | Lê o **Google Sheets** em tempo real (endpoint `gviz`). Use quando quiser que o painel reflita a planilha conforme ela é editada. |
+
+## Publicar no GitHub Pages
+
+1. No GitHub, vá em **Settings → Pages**.
+2. Em **Build and deployment → Source**, escolha **Deploy from a branch**.
+3. Selecione a **branch** e a pasta **`/ (root)`** e clique **Save**.
+4. Em ~1 minuto o site fica disponível em:
+   `https://bfernlucas.github.io/pte_ne/`
+
+O endereço serve o `index.html` (dashboard publicável). O painel ao vivo fica em
+`https://bfernlucas.github.io/pte_ne/painel-sheets.html`.
+
+---
+
+### Sobre o painel ao vivo (Google Sheets)
+
+O painel ao vivo busca os dados direto do navegador usando o endpoint público
+do Google (`gviz`), sem servidor, build ou chave de API.
 
 ```
 Google Sheets (público)  ──CSV──▶  Dashboard (GitHub Pages)
