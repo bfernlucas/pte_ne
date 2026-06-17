@@ -1,13 +1,41 @@
 # PTE2026 — Painel de Iniciativas
 
 Dashboards das iniciativas do Plano Brasil Nordeste de Transformação Ecológica,
-com **cartões KPI, gráficos, mapa e tabela** das 52 iniciativas.
+com **cartões KPI, gráficos, mapa, ranking de pontuação e rota de campo** das
+52 iniciativas.
+
+> **Novidades desta versão**
+> - **🏆 Ranking por pontuação**: leaderboard interativo (posição, medalhas,
+>   barra por nota, cor por eixo), pontuação no mapa (tamanho do ponto), na
+>   tabela e no popup, e KPIs de pontuação média / nº de avaliadas.
+> - **🧭 Rota de campo**: ao filtrar (ex.: por **eixo**), o botão *Gerar rota*
+>   monta uma **rota geográfica/operacional otimizada** entre as iniciativas
+>   (vizinho-mais-próximo + 2-opt), com itinerário ordenado e distância. Opção
+>   de traçar **por rodovias (OSRM)** com km/tempo reais.
+> - **Base = planilha**: os dados embutidos passaram a refletir a planilha
+>   `PTE2026_matriz_dashboard_vf.xlsx` (versão oficial), com os campos em branco
+>   preenchidos (exceto pontuação). Ver [`docs/BENCHMARKING.md`](docs/BENCHMARKING.md).
+
+## Atualizar os dados a partir da planilha
+
+A página é estática, mas os dados ficam **embutidos** no `index.html`. Para
+regenerá-los a partir da planilha (preenche brancos, corrige coordenadas e
+reescreve os 52 registros):
+
+```bash
+pip install openpyxl
+python3 tools/build_dashboard.py PTE2026_matriz_dashboard_vf.xlsx
+```
+
+O script também salva uma cópia portátil da planilha (com valores) e exporta
+`assets/data/iniciativas.json`. Editar o algoritmo da rota/ranking? Mexa em
+`tools/features.py` e rode o build de novo (ele reinjeta só o bloco de JS).
 
 Há duas versões:
 
 | Página | Arquivo | Descrição |
 |--------|---------|-----------|
-| **Dashboard publicável** (padrão) | `index.html` | Autocontido, com os 52 dados embutidos e **mapa em destaque** com filtros e legenda interativa. Abre direto, sem servidor. É a página servida pelo GitHub Pages. |
+| **Dashboard publicável** (padrão) | `index.html` | Autocontido, com os 52 dados embutidos, **mapa em destaque**, **ranking** e **rota de campo**. Abre direto, sem servidor. É a página servida pelo GitHub Pages. |
 | **Painel ao vivo** | `painel-sheets.html` | Lê o **Google Sheets** em tempo real (endpoint `gviz`). Use quando quiser que o painel reflita a planilha conforme ela é editada. |
 
 ## Publicar no GitHub Pages
