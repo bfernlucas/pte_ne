@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/dashboard.css?v=14" />
+<link rel="stylesheet" href="assets/css/dashboard.css?v=15" />
 </head>
 <body>
 <header class="topbar">
@@ -130,13 +130,24 @@
   <div class="view hidden" id="view-comparar">
     <h2 class="view-head">Comparar iniciativas <small>desempenho lado a lado nos dez critérios de avaliação</small></h2>
     <div class="cmp-bar">
-      <p>Selecione iniciativas (na tabela, nos cartões ou abaixo) para comparar no gráfico de teia e nos cartões de detalhe.</p>
-      <select id="cmp-add"><option value="">Adicionar iniciativa à comparação...</option></select>
+      <p>Selecione até 6 iniciativas (na tabela, nos cartões ou abaixo) para comparar o perfil nos dez critérios, ver quem lidera cada um e onde estão as maiores diferenças.</p>
+      <div class="cmp-tools">
+        <select id="cmp-add"><option value="">Adicionar iniciativa à comparação...</option></select>
+        <div class="cmp-presets">
+          <button class="btn secondary sm" id="cmp-top5">Top 5 por nota</button>
+          <button class="btn secondary sm" id="cmp-anchors">Âncoras</button>
+          <button class="btn secondary sm" id="cmp-clear">Limpar</button>
+        </div>
+        <label class="chk cmp-avg-l"><input type="checkbox" id="cmp-avg" checked> Mostrar média geral</label>
+        <span class="cmp-count" id="cmp-count"></span>
+      </div>
     </div>
     <div class="cmp-layout">
       <div class="radar-wrap"><canvas id="radar"></canvas></div>
-      <div class="cmp-cards" id="cmp-cards"></div>
+      <div class="cmp-insights" id="cmp-insights"></div>
     </div>
+    <div class="cmp-matrix" id="cmp-matrix"></div>
+    <div class="cmp-cards" id="cmp-cards"></div>
   </div>
 </main>
 
@@ -152,10 +163,10 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=14"></script>
-<script src="assets/data/uf_ne.js?v=14"></script>
-<script src="assets/js/maplayers.js?v=14"></script>
-<script src="assets/js/rota.js?v=14"></script>
-<script src="assets/js/dashboard.js?v=14"></script>
+<script src="assets/data/iniciativas.js?v=15"></script>
+<script src="assets/data/uf_ne.js?v=15"></script>
+<script src="assets/js/maplayers.js?v=15"></script>
+<script src="assets/js/rota.js?v=15"></script>
+<script src="assets/js/dashboard.js?v=15"></script>
 </body>
 </html>

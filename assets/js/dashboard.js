@@ -261,43 +261,61 @@
   }
 
   // ---------- COMPARAR ----------
-  let radarChart;
+  let radarChart, RANK = {}, AVGCRIT = {}, AVGTOTAL = 0;
+  function computeCompareRefs() {
+    [...ITEMS].sort((a, b) => (b.pontuacao || 0) - (a.pontuacao || 0)).forEach((i, idx) => { RANK[i.id] = idx + 1; });
+    META.criterios.forEach(c => { AVGCRIT[c.key] = ITEMS.reduce((s, i) => s + (i.criterios[c.key] || 0), 0) / ITEMS.length; });
+    AVGTOTAL = ITEMS.reduce((s, i) => s + (i.pontuacao || 0), 0) / ITEMS.length;
+  }
   function initCompare() {
+    computeCompareRefs();
     const sel = $("#cmp-add");
-    [...ITEMS].sort((a, b) => b.pontuacao - a.pontuacao).forEach(i =>
-      sel.insertAdjacentHTML("beforeend", `<option value="${i.id}">${esc(i.nome)} — ${i.pontuacao} pts</option>`));
+    META.eixos.forEach(e => {
+      const opts = [...ITEMS].filter(i => i.eixo_cod === e.cod).sort((a, b) => b.pontuacao - a.pontuacao);
+      if (!opts.length) return;
+      const og = document.createElement("optgroup"); og.label = e.nome;
+      opts.forEach(i => og.insertAdjacentHTML("beforeend", `<option value="${i.id}">${esc(trunc(i.nome, 44))} — ${i.pontuacao} pts</option>`));
+      sel.appendChild(og);
+    });
     sel.addEventListener("change", e => { if (e.target.value) { toggleSelect(+e.target.value, true); e.target.value = ""; } });
+    const setSel = ids => { state.selected.clear(); ids.slice(0, 6).forEach(id => state.selected.add(id)); refresh(); };
+    $("#cmp-top5").addEventListener("click", () => setSel([...ITEMS].sort((a, b) => b.pontuacao - a.pontuacao).slice(0, 5).map(i => i.id)));
+    $("#cmp-anchors").addEventListener("click", () => setSel(window.PTE_ROTAS ? ITEMS.filter(i => window.PTE_ROTAS.isAnchor(i.id)).map(i => i.id) : []));
+    $("#cmp-clear").addEventListener("click", () => { state.selected.clear(); refresh(); });
+    $("#cmp-avg").addEventListener("change", renderCompare);
   }
   const RCOL = ["#1f4da1", "#f37520", "#43a047", "#7a3fb8", "#e0392b", "#0d9488"];
+  const ordinal = n => n + "º";
+  function scoreBg(v) { return v <= 0 ? "#f5f6fa" : `rgba(31,77,161,${(0.16 + 0.26 * v).toFixed(2)})`; }
   function renderCompare() {
-    const ids = [...state.selected].slice(0, 6);
-    // cartões de detalhe
-    if (!ids.length) {
-      $("#cmp-cards").innerHTML = '<div class="cmp-empty">Nenhuma iniciativa selecionada. Use o seletor acima ou clique nas iniciativas na tabela/cartões.</div>';
+    const crits = META.criterios;
+    const all = [...state.selected];
+    const ids = all.slice(0, 6);
+    const showAvg = $("#cmp-avg") ? $("#cmp-avg").checked : true;
+    $("#cmp-count").textContent = all.length
+      ? `${all.length} selecionada${all.length > 1 ? "s" : ""}${all.length > 6 ? " · comparando as 6 primeiras" : ""}` : "";
+    const sel = ids.map((id, k) => ({ i: byId(id), col: RCOL[k % RCOL.length] }));
+
+    if (!sel.length) {
+      $("#cmp-insights").innerHTML = emptyInsights();
+      $("#cmp-matrix").innerHTML = "";
+      $("#cmp-cards").innerHTML = "";
     } else {
-      $("#cmp-cards").innerHTML = ids.map((id, k) => {
-        const i = byId(id), uf = ufTokens(i.estado).join(", ");
-        const crit = META.criterios.map(c => {
-          const v = i.criterios[c.key] || 0;
-          return `<div class="cr"><span class="lab">${c.label}</span><span>${v}</span><span class="bar"><i style="width:${(v / 3) * 100}%;background:${RCOL[k % RCOL.length]}"></i></span></div>`;
-        }).join("");
-        const sub = orgSub(i);
-        return `<div class="cmp-card" style="border-top-color:${RCOL[k % RCOL.length]}">
-          <div class="cc-h"><span>${esc(i.nome)}</span><b>${i.pontuacao}</b></div>
-          ${sub ? `<div class="cc-sub">${esc(sub)}</div>` : ""}
-          <div class="cc-meta">${esc(i.eixo || "")} · ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}</div>
-          <div class="crit">${crit}</div>
-          <button class="cc-rm" data-id="${id}">Remover da comparação</button>
-        </div>`;
-      }).join("");
+      $("#cmp-insights").innerHTML = buildInsights(sel, crits);
+      $("#cmp-matrix").innerHTML = buildMatrix(sel, crits, showAvg);
+      $("#cmp-cards").innerHTML = buildCmpCards(sel, crits);
       $$("#cmp-cards .cc-rm").forEach(b => b.addEventListener("click", () => toggleSelect(+b.dataset.id)));
     }
-    // radar
-    const labels = META.criterios.map(c => c.label);
-    const datasets = ids.map((id, k) => {
-      const i = byId(id), col = RCOL[k % RCOL.length];
-      return { label: trunc(i.nome, 28), data: META.criterios.map(c => i.criterios[c.key] || 0),
-        borderColor: col, backgroundColor: col + "22", borderWidth: 2, pointBackgroundColor: col };
+
+    // ---- radar (perfil nos critérios) ----
+    const labels = crits.map(c => c.label);
+    const datasets = sel.map(s => ({
+      label: trunc(s.i.nome, 24), data: crits.map(c => s.i.criterios[c.key] || 0),
+      borderColor: s.col, backgroundColor: s.col + "22", borderWidth: 2, pointBackgroundColor: s.col, pointRadius: 3
+    }));
+    if (showAvg) datasets.push({
+      label: "Média geral (82)", data: crits.map(c => +AVGCRIT[c.key].toFixed(2)),
+      borderColor: "#9aa0b0", backgroundColor: "transparent", borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, fill: false
     });
     if (radarChart) radarChart.destroy();
     radarChart = new Chart($("#radar"), {
@@ -306,6 +324,86 @@
         plugins: { legend: { position: "bottom", labels: { font: { size: 11 }, boxWidth: 12 } } },
         scales: { r: { min: 0, suggestedMax: 3, ticks: { stepSize: 1 }, pointLabels: { font: { size: 10 } } } } }
     });
+  }
+  function emptyInsights() {
+    return `<div class="ci-empty">
+      <div class="ci-h">Como usar esta comparação</div>
+      <ul>
+        <li>Adicione iniciativas pelo seletor ou pelos atalhos acima — ou clicando na tabela e nos cartões.</li>
+        <li>O <b>gráfico de teia</b> mostra o perfil nos dez critérios; a linha tracejada é a <b>média das 82</b> iniciativas.</li>
+        <li>A <b>matriz por critério</b> destaca quem se sai melhor em cada um e compara com a média.</li>
+        <li>As <b>maiores diferenças</b> apontam os critérios decisivos entre as escolhidas.</li>
+      </ul>
+      <div class="ci-tip">Dica: comece por “Top 5 por nota” ou pelas suas “Âncoras”.</div></div>`;
+  }
+  function buildInsights(sel, crits) {
+    if (sel.length === 1) {
+      const i = sel[0].i;
+      const strong = crits.filter(c => (i.criterios[c.key] || 0) >= 3).map(c => c.label);
+      const weak = crits.filter(c => (i.criterios[c.key] || 0) <= 1).map(c => c.label);
+      const above = crits.filter(c => (i.criterios[c.key] || 0) > AVGCRIT[c.key]).length;
+      return `<div class="ci-h">Perfil da iniciativa</div>
+        <div class="ci-rank">Nota <b>${i.pontuacao}</b>/30 · <b>${ordinal(RANK[i.id])}</b> de ${ITEMS.length} no ranking geral</div>
+        <div class="ci-line">Acima da média geral em <b>${above}</b> de ${crits.length} critérios.</div>
+        ${strong.length ? `<div class="ci-block"><span class="ci-tag good">Pontos fortes</span><ul>${strong.map(l => `<li>${esc(l)}</li>`).join("")}</ul></div>` : ""}
+        ${weak.length ? `<div class="ci-block"><span class="ci-tag warn">A desenvolver</span><ul>${weak.map(l => `<li>${esc(l)}</li>`).join("")}</ul></div>` : ""}
+        <div class="ci-tip">Adicione outra iniciativa para comparar lado a lado.</div>`;
+    }
+    const lead = sel.map(() => 0), diffs = [];
+    crits.forEach(c => {
+      const vals = sel.map(s => s.i.criterios[c.key] || 0);
+      const mx = Math.max(...vals), mn = Math.min(...vals);
+      if (mx > mn) sel.forEach((s, idx) => { if (vals[idx] === mx) lead[idx]++; });
+      diffs.push({ label: c.label, spread: mx - mn, leader: sel[vals.indexOf(mx)] });
+    });
+    const board = sel.map((s, idx) => `<div class="ci-bar"><span class="ci-dot" style="background:${s.col}"></span>
+      <span class="ci-bn" title="${esc(s.i.nome)}">${esc(trunc(s.i.nome, 22))}</span>
+      <span class="ci-bt"><i style="width:${lead[idx] / crits.length * 100}%;background:${s.col}"></i></span>
+      <span class="ci-bc">${lead[idx]}</span></div>`).join("");
+    const top = diffs.filter(d => d.spread > 0).sort((a, b) => b.spread - a.spread).slice(0, 4);
+    const diffHtml = top.length ? top.map(d => `<li><span class="ci-cl">${esc(d.label)}</span>
+      <span class="ci-cv"><span class="ci-dot" style="background:${d.leader.col}"></span>${esc(trunc(d.leader.i.nome, 18))} <em>+${d.spread}</em></span></li>`).join("")
+      : `<li class="ci-none">Desempenho idêntico nos dez critérios.</li>`;
+    return `<div class="ci-h">Quem lidera cada critério <small>de ${crits.length}</small></div>
+      <div class="ci-board">${board}</div>
+      <div class="ci-h" style="margin-top:16px">Maiores diferenças</div>
+      <ul class="ci-diffs">${diffHtml}</ul>`;
+  }
+  function buildMatrix(sel, crits, showAvg) {
+    const head = `<th class="mc-crit">Critério</th>` +
+      sel.map(s => `<th><span class="mc-dot" style="background:${s.col}"></span><span class="mc-nm" title="${esc(s.i.nome)}">${esc(trunc(s.i.nome, 16))}</span></th>`).join("") +
+      (showAvg ? `<th class="mc-avg">Média<br>geral</th>` : "");
+    const rows = crits.map(c => {
+      const vals = sel.map(s => s.i.criterios[c.key] || 0), mx = Math.max(...vals), mn = Math.min(...vals);
+      const cells = sel.map((s, idx) => {
+        const v = vals[idx], win = sel.length > 1 && v === mx && mx > mn;
+        return `<td class="mc-s${win ? " win" : ""}" style="background:${scoreBg(v)};color:${v >= 2 ? "#fff" : "var(--ink)"}${win ? `;box-shadow:inset 0 0 0 2px ${s.col}` : ""}">${v}</td>`;
+      }).join("");
+      return `<tr><th class="mc-crit">${esc(c.label)}</th>${cells}${showAvg ? `<td class="mc-avg">${AVGCRIT[c.key].toFixed(1)}</td>` : ""}</tr>`;
+    }).join("");
+    const tot = sel.map(s => s.i.pontuacao || 0), tmx = Math.max(...tot), tmn = Math.min(...tot);
+    const totCells = sel.map((s, idx) => {
+      const win = sel.length > 1 && tot[idx] === tmx && tmx > tmn;
+      return `<td class="mc-tot${win ? " win" : ""}"${win ? ` style="box-shadow:inset 0 0 0 2px ${s.col}"` : ""}>${tot[idx]}</td>`;
+    }).join("");
+    return `<div class="mc-title">Comparação por critério <small>nota de 0 a 3 · célula destacada = melhor entre as selecionadas · coluna cinza = média das 82</small></div>
+      <div class="mc-scroll"><table class="cmp-mtx"><thead><tr>${head}</tr></thead><tbody>${rows}
+        <tr class="mc-totrow"><th class="mc-crit">Nota total (0–30)</th>${totCells}${showAvg ? `<td class="mc-avg">${AVGTOTAL.toFixed(1)}</td>` : ""}</tr></tbody></table></div>`;
+  }
+  function buildCmpCards(sel, crits) {
+    return sel.map(s => {
+      const i = s.i, uf = ufTokens(i.estado).join(", "), sub = orgSub(i);
+      const strong = crits.filter(c => (i.criterios[c.key] || 0) >= 3).map(c => c.label).slice(0, 4);
+      const weak = crits.filter(c => (i.criterios[c.key] || 0) <= 1).map(c => c.label).slice(0, 3);
+      return `<div class="cmp-card" style="border-top-color:${s.col}">
+        <div class="cc-h"><span>${esc(i.nome)}</span><b>${i.pontuacao}</b></div>
+        ${sub ? `<div class="cc-sub">${esc(sub)}</div>` : ""}
+        <div class="cc-meta"><span class="cc-rk">${ordinal(RANK[i.id])} de ${ITEMS.length}</span> · ${esc(i.eixo || "")} · ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}${i.preselecionada ? ' · <span class="cc-pre">pré-selecionada</span>' : ""}</div>
+        ${strong.length ? `<div class="cc-tags"><span class="cc-lab good">Fortes</span>${strong.map(l => `<span class="cc-chip good">${esc(l)}</span>`).join("")}</div>` : ""}
+        ${weak.length ? `<div class="cc-tags"><span class="cc-lab warn">A desenvolver</span>${weak.map(l => `<span class="cc-chip warn">${esc(l)}</span>`).join("")}</div>` : ""}
+        <button class="cc-rm" data-id="${i.id}">Remover</button>
+      </div>`;
+    }).join("");
   }
 
   // ---------- seleção / abas ----------
