@@ -1,26 +1,24 @@
-/* PTE2026 — Painel de Iniciativas. Carrega window.PTE_DATA (assets/data/iniciativas.js). */
+/* PTE Nordeste — Painel de Iniciativas. Consome window.PTE_DATA. */
 (function () {
   "use strict";
   const D = window.PTE_DATA;
   if (!D) { document.body.innerHTML = "<p style='padding:30px'>Dados não carregados (assets/data/iniciativas.js).</p>"; return; }
-  const ITEMS = D.iniciativas;
-  const META = D.meta;
+  const ITEMS = D.iniciativas, META = D.meta;
 
-  // ---- helpers ----
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-  const colorByEixo = {}, nameByCod = {};
-  META.eixos.forEach(e => { colorByEixo[e.cod] = e.cor; nameByCod[e.cod] = e.nome; });
-  const eixoColor = cod => colorByEixo[cod] || "#94a3b8";
+  const colorByCod = {}, nameByCod = {};
+  META.eixos.forEach(e => { colorByCod[e.cod] = e.cor; nameByCod[e.cod] = e.nome; });
+  const eixoColor = c => colorByCod[c] || "#9aa0b0";
   const PMAX = Math.max(...ITEMS.map(i => i.pontuacao || 0));
   const PMIN = Math.min(...ITEMS.map(i => i.pontuacao || 0));
   const ufTokens = s => (s ? String(s).match(/\b[A-Z]{2}\b/g) || [] : []);
+  const UF_ORDER = ["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"];
+  const UF_NOME = { MA: "Maranhão", PI: "Piauí", CE: "Ceará", RN: "Rio Grande do Norte", PB: "Paraíba", PE: "Pernambuco", AL: "Alagoas", SE: "Sergipe", BA: "Bahia" };
 
-  // ---- state ----
   const state = { view: "ranking", sort: { key: "pontuacao", dir: -1 }, selected: new Set() };
   const filters = { busca: "", eixo: "", estado: "", bioma: "", pre: false };
 
-  // ---- filtering ----
   function filtered() {
     const q = filters.busca.trim().toLowerCase();
     return ITEMS.filter(i => {
@@ -36,33 +34,25 @@
     });
   }
 
-  // ---- KPIs ----
+  // ---------- KPIs ----------
   function renderKpis() {
-    const ufs = new Set();
-    ITEMS.forEach(i => ufTokens(i.estado).forEach(u => ufs.add(u)));
+    const ufs = new Set(); ITEMS.forEach(i => ufTokens(i.estado).forEach(u => ufs.add(u)));
     const avg = (ITEMS.reduce((s, i) => s + (i.pontuacao || 0), 0) / ITEMS.length).toFixed(1);
-    const kpis = [
-      ["Iniciativas", META.total], ["Pré-selecionadas", META.preselecionadas],
-      ["Estados (UF)", ufs.size], ["Nota média", avg], ["Nota máx.", PMAX]
-    ];
+    const kpis = [["Iniciativas", META.total], ["Pré-selecionadas", META.preselecionadas],
+      ["Estados", ufs.size], ["Nota média", avg], ["Nota máxima", PMAX]];
     $("#kpis").innerHTML = kpis.map(([l, v]) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join("");
     $("#foot-meta").textContent = `${META.total} iniciativas · ${META.preselecionadas} pré-selecionadas para incursão de campo`;
   }
 
-  // ---- filter controls ----
-  function fillSelect(sel, values) {
-    values.sort((a, b) => a.localeCompare(b, "pt"));
-    sel.insertAdjacentHTML("beforeend", values.map(v => `<option value="${v}">${v}</option>`).join(""));
-  }
+  // ---------- filtros ----------
   function initFilters() {
-    fillSelect($("#f-eixo"), META.eixos.map(e => e.cod));
-    // relabel eixo options with full names
-    $$("#f-eixo option").forEach(o => { if (o.value) o.textContent = `${o.value} — ${nameByCod[o.value]}`; });
-    const ufs = new Set(), biomas = new Set();
-    ITEMS.forEach(i => { ufTokens(i.estado).forEach(u => ufs.add(u)); (i.biomas || "").split(/[,/;]+/).forEach(b => { b = b.trim(); if (b) biomas.add(b); }); });
-    fillSelect($("#f-estado"), [...ufs]);
-    fillSelect($("#f-bioma"), [...biomas]);
-
+    const fe = $("#f-eixo");
+    META.eixos.forEach(e => fe.insertAdjacentHTML("beforeend", `<option value="${e.cod}">${e.nome}</option>`));
+    const biomas = new Set();
+    ITEMS.forEach(i => (i.biomas || "").split(/[,/;]+/).forEach(b => { b = b.trim(); if (b) biomas.add(b); }));
+    const fest = $("#f-estado");
+    UF_ORDER.forEach(u => fest.insertAdjacentHTML("beforeend", `<option value="${u}">${UF_NOME[u]} (${u})</option>`));
+    [...biomas].sort((a, b) => a.localeCompare(b, "pt")).forEach(b => $("#f-bioma").insertAdjacentHTML("beforeend", `<option value="${b}">${b}</option>`));
     $("#f-busca").addEventListener("input", e => { filters.busca = e.target.value; refresh(); });
     $("#f-eixo").addEventListener("change", e => { filters.eixo = e.target.value; refresh(); });
     $("#f-estado").addEventListener("change", e => { filters.estado = e.target.value; refresh(); });
@@ -75,25 +65,33 @@
     });
   }
 
-  // ---- RANKING ----
+  // ---------- RANKING ----------
   function renderRanking(list) {
     const k = state.sort.key, dir = state.sort.dir;
+    const val = (i) => k === "pontuacao" ? (i.pontuacao || 0) : k === "id" ? i.id
+      : k === "preselecionada" ? (i.preselecionada ? 1 : 0) : k === "eixo" ? (i.eixo || "")
+      : (i[k] || "");
     const sorted = [...list].sort((a, b) => {
-      let va = a[k], vb = b[k];
-      if (k === "pontuacao") return (((va || 0) - (vb || 0)) * dir);
-      va = (va || "").toString().toLowerCase(); vb = (vb || "").toString().toLowerCase();
+      const va = val(a), vb = val(b);
+      if (typeof va === "number") return (va - vb) * dir;
       return va < vb ? -dir : va > vb ? dir : 0;
     });
-    const tb = $("#tbl-ranking tbody");
-    tb.innerHTML = sorted.map((i, idx) => {
-      const w = Math.round(8 + 52 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN)));
+    $$("#tbl-ranking thead th").forEach(th => {
+      const arr = th.querySelector(".arr");
+      if (arr) arr.textContent = th.dataset.sort === k ? (dir < 0 ? "▼" : "▲") : "";
+    });
+    $("#tbl-ranking tbody").innerHTML = sorted.map(i => {
+      const w = Math.round(100 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN)));
+      const uf = ufTokens(i.estado).join(", ") || "—";
       return `<tr data-id="${i.id}" class="${state.selected.has(i.id) ? "sel" : ""}">
-        <td class="nota-cell"><span class="nota-bar" style="width:${w}px"></span>${i.pontuacao}</td>
-        <td><span class="rank-pos">#${idx + 1}</span>${esc(i.nome)}</td>
-        <td>${esc(trunc(i.org, 42))}</td>
-        <td>${esc(i.municipio || "")}/${esc(i.estado || "")}</td>
-        <td><span class="eixo-tag" style="background:${eixoColor(i.eixo_cod)}">${i.eixo_cod || "—"}</span></td>
-        <td>${i.preselecionada ? '<span class="pre-badge">★ ' + i.pre_ufs.join(",") + "</span>" : ""}</td>
+        <td class="num t-id">${i.id}</td>
+        <td class="t-nome">${esc(i.nome)}</td>
+        <td class="t-org">${esc(i.org || "—")}</td>
+        <td>${esc(i.municipio || "—")}</td>
+        <td>${esc(uf)}</td>
+        <td class="t-eixo"><span class="eixo-dot" style="background:${eixoColor(i.eixo_cod)}"></span><span class="eixo-name">${esc(i.eixo || "—")}</span></td>
+        <td>${i.preselecionada ? '<span class="badge badge-pre">Sim</span>' : '<span class="badge badge-no">Não</span>'}</td>
+        <td class="t-nota"><span class="nota-track"><span class="nota-fill" style="width:${w}%"></span></span><span class="nota-num">${i.pontuacao}</span></td>
       </tr>`;
     }).join("");
     $$("#tbl-ranking tbody tr").forEach(tr => tr.addEventListener("click", () => toggleSelect(+tr.dataset.id)));
@@ -101,174 +99,205 @@
   $$("#tbl-ranking thead th[data-sort]").forEach(th => th.addEventListener("click", () => {
     const key = th.dataset.sort;
     if (state.sort.key === key) state.sort.dir *= -1;
-    else state.sort = { key, dir: key === "pontuacao" ? -1 : 1 };
+    else state.sort = { key, dir: (key === "pontuacao" || key === "id") ? -1 : 1 };
     refresh();
   }));
 
-  // ---- CARDS ----
+  // ---------- CARTÕES ----------
   function renderCards(list) {
-    $("#cards-grid").innerHTML = list.map(i => `
-      <div class="card ${state.selected.has(i.id) ? "sel" : ""}" data-id="${i.id}">
-        ${i.preselecionada ? '<span class="pre-flag pre-badge">★ pré-selecionada</span>' : ""}
-        <div class="ctop">
+    $("#cards-grid").innerHTML = list.map(i => {
+      const w = Math.round(100 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN)));
+      const cor = eixoColor(i.eixo_cod);
+      const uf = ufTokens(i.estado).join(", ");
+      const local = [i.municipio, uf].filter(Boolean).join(" · ") || "Atuação multiestadual";
+      const fact = (k, v) => v ? `<div class="f"><span class="k">${k}</span><span>${esc(v)}</span></div>` : "";
+      return `<div class="card ${state.selected.has(i.id) ? "sel" : ""}" data-id="${i.id}">
+        <div class="strip" style="background:${cor}"></div>
+        <div class="pad">
+          <div class="row1">
+            <span class="eixo-chip" style="background:${cor}">${esc(i.eixo || "—")}</span>
+            <span class="idtag">#${i.id}${i.preselecionada ? ' · <span style="color:var(--pre)">pré-selecionada</span>' : ""}</span>
+          </div>
           <h3>${esc(i.nome)}</h3>
-          <span class="nota" title="Pontuação">${i.pontuacao}</span>
+          <div class="org">${esc(i.org || "")}</div>
+          <div class="facts">
+            ${fact("Local", local)}
+            ${fact("Setor", i.setor)}
+            ${fact("Natureza", i.natureza)}
+          </div>
+          <div class="footer">
+            <span class="score"><b>${i.pontuacao}</b><span>de ${PMAX} pts</span></span>
+            <span class="scorebar"><i style="width:${w}%"></i></span>
+          </div>
         </div>
-        <div class="meta">${esc(trunc(i.org, 60))}</div>
-        <div class="meta">📍 ${esc(i.municipio || "—")} / ${esc(i.estado || "")}</div>
-        <div class="cfoot">
-          <span class="eixo-tag" style="background:${eixoColor(i.eixo_cod)}">${i.eixo_cod || "—"}</span>
-          ${i.cnpj && i.cnpj !== "Não localizado" ? `<span class="meta">CNPJ ${esc(i.cnpj)}</span>` : ""}
-        </div>
-      </div>`).join("");
+      </div>`;
+    }).join("");
     $$("#cards-grid .card").forEach(c => c.addEventListener("click", () => toggleSelect(+c.dataset.id)));
   }
 
-  // ---- MAPA GERAL ----
+  // ---------- MAPA GERAL ----------
   let mapGeral, layerGeral;
   function ensureMapGeral() {
     if (mapGeral) return;
-    mapGeral = L.map("map-geral").setView([-8.5, -39.5], 5);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      { attribution: "© OpenStreetMap", maxZoom: 18 }).addTo(mapGeral);
+    mapGeral = L.map("map-geral", { zoomControl: true }).setView([-8.6, -39.5], 5);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 19 }).addTo(mapGeral);
     layerGeral = L.layerGroup().addTo(mapGeral);
-    $("#map-legend").innerHTML = META.eixos.map(e =>
-      `<span class="li"><span class="dot" style="background:${e.cor}"></span>${e.cod} — ${e.nome}</span>`).join("") +
-      `<span class="li"><span class="dot" style="background:#fff;border:2px solid ${'#b45309'}"></span>★ pré-selecionada (anel dourado)</span>`;
+    renderMapLegend();
+  }
+  function renderMapLegend() {
+    const cores = META.eixos.map(e => `<div class="li"><span class="dot" style="background:${e.cor}"></span>${e.nome}</div>`).join("");
+    const szs = [PMIN, Math.round((PMIN + PMAX) / 2), PMAX].map(v => {
+      const r = 5 + 13 * ((v - PMIN) / Math.max(1, PMAX - PMIN));
+      return `<div class="sz"><span class="szc" style="width:${r * 2}px;height:${r * 2}px"></span>${v}</div>`;
+    }).join("");
+    $("#map-side").innerHTML = `
+      <div class="legend"><h4>Eixo (cor)</h4>${cores}</div>
+      <div class="legend"><h4>Nota (tamanho)</h4><div class="sizes">${szs}</div>
+        <div class="note">Contorno laranja indica iniciativa pré-selecionada para incursão de campo.</div></div>`;
   }
   function renderMapGeral(list) {
     ensureMapGeral();
     layerGeral.clearLayers();
     list.forEach(i => {
       if (i.lat == null || i.lon == null) return;
-      const r = 5 + 11 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN));
-      const m = L.circleMarker([i.lat, i.lon], {
-        radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: .82,
-        color: i.preselecionada ? "#b45309" : "#fff", weight: i.preselecionada ? 3 : 1
-      });
-      m.bindPopup(popupHtml(i));
-      m.addTo(layerGeral);
+      const r = 5 + 13 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN));
+      L.circleMarker([i.lat, i.lon], {
+        radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: i.fora_ne ? .45 : .82,
+        color: i.preselecionada ? "#f37520" : "#fff", weight: i.preselecionada ? 3 : 1.2
+      }).bindPopup(popupHtml(i)).addTo(layerGeral);
     });
     setTimeout(() => mapGeral.invalidateSize(), 50);
   }
   function popupHtml(i) {
-    return `<b>${esc(i.nome)}</b><br>${esc(i.org || "")}<br>
-      📍 ${esc(i.municipio || "")}/${esc(i.estado || "")}<br>
-      Eixo: ${esc(i.eixo || "")}<br>
-      Nota: <b>${i.pontuacao}</b> ${i.preselecionada ? "· ★ pré-selecionada" : ""}`;
+    const uf = ufTokens(i.estado).join(", ");
+    return `<span class="pp-h">${esc(i.nome)}</span>
+      ${esc(i.org || "")}<br>
+      <span class="pp-k">Local:</span> ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br>
+      <span class="pp-k">Eixo:</span> ${esc(i.eixo || "")}<br>
+      <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${i.preselecionada ? " · pré-selecionada" : ""}`;
   }
 
-  // ---- COMPARAR (radar) ----
-  let radarChart;
-  function initCompare() {
-    const sel = $("#cmp-add");
-    fillSelect2(sel, [...ITEMS].sort((a, b) => b.pontuacao - a.pontuacao));
-    sel.addEventListener("change", e => { if (e.target.value) { toggleSelect(+e.target.value, true); e.target.value = ""; } });
-  }
-  function fillSelect2(sel, list) {
-    sel.insertAdjacentHTML("beforeend", list.map(i => `<option value="${i.id}">${esc(i.nome)} (${i.pontuacao})</option>`).join(""));
-  }
-  const RADAR_COLORS = ["#2563eb", "#16a34a", "#ea580c", "#7c3aed", "#0891b2", "#dc2626"];
-  function renderCompare() {
-    const ids = [...state.selected];
-    $("#cmp-chips").innerHTML = ids.map(id => {
-      const i = byId(id);
-      return `<span class="chip">${esc(trunc(i.nome, 28))}<button data-id="${id}">✕</button></span>`;
-    }).join("") || '<span class="meta">Nenhuma selecionada.</span>';
-    $$("#cmp-chips .chip button").forEach(b => b.addEventListener("click", () => toggleSelect(+b.dataset.id)));
-
-    const labels = META.criterios.map(c => c.label);
-    const datasets = ids.slice(0, 6).map((id, k) => {
-      const i = byId(id);
-      return {
-        label: trunc(i.nome, 24),
-        data: META.criterios.map(c => i.criterios[c.key] || 0),
-        borderColor: RADAR_COLORS[k % RADAR_COLORS.length],
-        backgroundColor: RADAR_COLORS[k % RADAR_COLORS.length] + "33", borderWidth: 2
-      };
-    });
-    if (radarChart) radarChart.destroy();
-    radarChart = new Chart($("#radar"), {
-      type: "radar", data: { labels, datasets },
-      options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, suggestedMax: 3, ticks: { stepSize: 1 } } } }
-    });
-  }
-
-  // ---- ANÁLISES (heatmap + gráficos) ----
-  const UF_ORDER = ["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"];
+  // ---------- ANÁLISES ----------
   let histChart, eixoChart;
   function renderAnalises(list) {
-    // heatmap UF x eixo
     const cods = META.eixos.map(e => e.cod);
     const grid = {}, pre = {};
-    UF_ORDER.forEach(u => { grid[u] = {}; pre[u] = {}; cods.forEach(c => { grid[u][c] = 0; pre[u][c] = 0; }); });
+    cods.forEach(c => { grid[c] = {}; pre[c] = {}; UF_ORDER.forEach(u => { grid[c][u] = 0; pre[c][u] = 0; }); });
     let maxc = 1;
     list.forEach(i => {
-      const u = (ufTokens(i.estado)[0]) || null;
-      if (!u || !grid[u] || !i.eixo_cod) return;
-      grid[u][i.eixo_cod]++; if (i.preselecionada) pre[u][i.eixo_cod]++;
-      maxc = Math.max(maxc, grid[u][i.eixo_cod]);
+      const u = ufTokens(i.estado)[0]; if (!u || !UF_NOME[u] || !i.eixo_cod) return;
+      grid[i.eixo_cod][u]++; if (i.preselecionada) pre[i.eixo_cod][u]++;
+      maxc = Math.max(maxc, grid[i.eixo_cod][u]);
     });
-    const shade = n => n === 0 ? "#fff" : `rgba(41,45,118,${0.10 + 0.62 * (n / maxc)})`;
-    let html = "<table><thead><tr><th>UF</th>" + cods.map(c => `<th title="${nameByCod[c]}">${c}</th>`).join("") + "<th>Σ</th></tr></thead><tbody>";
-    UF_ORDER.forEach(u => {
-      const tot = cods.reduce((s, c) => s + grid[u][c], 0);
-      html += `<tr><td class="uf">${u}</td>` + cods.map(c => {
-        const n = grid[u][c], p = pre[u][c];
-        return `<td class="cell" style="background:${shade(n)}">${n || ""}${p ? ` <span class="star">★${p}</span>` : ""}</td>`;
-      }).join("") + `<td class="cell"><b>${tot}</b></td></tr>`;
+    const shade = n => n === 0 ? "#fff" : `rgba(41,45,118,${0.08 + 0.6 * (n / maxc)})`;
+    const ink = n => n / maxc > 0.55 ? "#fff" : "var(--ink)";
+    let h = "<table><thead><tr><th class='rowh'>Eixo \\ Estado</th>" +
+      UF_ORDER.map(u => `<th>${UF_NOME[u]}</th>`).join("") + "<th class='tot'>Total</th></tr></thead><tbody>";
+    cods.forEach(c => {
+      const tot = UF_ORDER.reduce((s, u) => s + grid[c][u], 0);
+      h += `<tr><th class="rowh"><span class="eixo-dot" style="background:${eixoColor(c)}"></span>${nameByCod[c]}</th>` +
+        UF_ORDER.map(u => {
+          const n = grid[c][u], p = pre[c][u];
+          return `<td style="background:${shade(n)};color:${ink(n)}">${n ? `<span class="v">${n}</span>` : ""}${p ? `<span class="pre">${p} pré</span>` : ""}</td>`;
+        }).join("") + `<td class="tot">${tot}</td></tr>`;
     });
-    const colTot = cods.map(c => UF_ORDER.reduce((s, u) => s + grid[u][c], 0));
-    html += `<tr><td class="uf">Σ</td>` + colTot.map(t => `<td class="cell"><b>${t}</b></td>`).join("") + `<td class="cell"><b>${colTot.reduce((a, b) => a + b, 0)}</b></td></tr>`;
-    html += "</tbody></table>";
-    $("#heatmap").innerHTML = html;
+    const colTot = UF_ORDER.map(u => cods.reduce((s, c) => s + grid[c][u], 0));
+    h += `<tr class="tot"><th class="rowh">Total</th>` + colTot.map(t => `<td>${t}</td>`).join("") +
+      `<td>${colTot.reduce((a, b) => a + b, 0)}</td></tr></tbody></table>`;
+    $("#heatmap").innerHTML = h;
 
-    // histograma de notas
-    const vals = list.map(i => i.pontuacao || 0);
-    const lo = Math.min(...vals, 0), hi = Math.max(...vals, 1), W = 2;
-    const start = Math.floor(lo / W) * W, bins = [];
+    // histograma
+    const vals = list.map(i => i.pontuacao || 0), W = 2;
+    const start = Math.floor(Math.min(...vals, 0) / W) * W, hi = Math.max(...vals, 1), bins = [];
     for (let b = start; b <= hi; b += W) bins.push(b);
     const counts = bins.map(b => vals.filter(v => v >= b && v < b + W).length);
     if (histChart) histChart.destroy();
     histChart = new Chart($("#hist-nota"), {
       type: "bar",
-      data: { labels: bins.map(b => `${b}–${b + W}`), datasets: [{ label: "iniciativas", data: counts, backgroundColor: "#292d76" }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { precision: 0 } } } }
+      data: { labels: bins.map(b => `${b} a ${b + W}`), datasets: [{ label: "Iniciativas", data: counts, backgroundColor: "#292d76", borderRadius: 4 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+        scales: { y: { ticks: { precision: 0 }, title: { display: true, text: "nº de iniciativas" } }, x: { title: { display: true, text: "faixa de nota" } } } }
     });
 
-    // média por eixo
-    const avg = META.eixos.map(e => {
+    // média por eixo (barra horizontal, nomes completos)
+    const rows = META.eixos.map(e => {
       const g = list.filter(i => i.eixo_cod === e.cod);
-      return g.length ? g.reduce((s, i) => s + (i.pontuacao || 0), 0) / g.length : 0;
+      return { nome: e.nome, cor: e.cor, media: g.length ? g.reduce((s, i) => s + (i.pontuacao || 0), 0) / g.length : 0 };
     });
     if (eixoChart) eixoChart.destroy();
     eixoChart = new Chart($("#bar-eixo"), {
       type: "bar",
-      data: { labels: META.eixos.map(e => e.cod), datasets: [{ label: "nota média", data: avg.map(v => +v.toFixed(1)), backgroundColor: META.eixos.map(e => e.cor) }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: c => nameByCod[c[0].label] } } }, scales: { y: { beginAtZero: true } } }
+      data: { labels: rows.map(r => r.nome), datasets: [{ label: "Nota média", data: rows.map(r => +r.media.toFixed(1)), backgroundColor: rows.map(r => r.cor), borderRadius: 4 }] },
+      options: { indexAxis: "y", responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true, suggestedMax: PMAX, title: { display: true, text: "nota média" } }, y: { ticks: { font: { size: 11 } } } } }
     });
   }
 
-  // ---- selection ----
+  // ---------- COMPARAR ----------
+  let radarChart;
+  function initCompare() {
+    const sel = $("#cmp-add");
+    [...ITEMS].sort((a, b) => b.pontuacao - a.pontuacao).forEach(i =>
+      sel.insertAdjacentHTML("beforeend", `<option value="${i.id}">${esc(i.nome)} — ${i.pontuacao} pts</option>`));
+    sel.addEventListener("change", e => { if (e.target.value) { toggleSelect(+e.target.value, true); e.target.value = ""; } });
+  }
+  const RCOL = ["#1f4da1", "#f37520", "#43a047", "#7a3fb8", "#e0392b", "#0d9488"];
+  function renderCompare() {
+    const ids = [...state.selected].slice(0, 6);
+    // cartões de detalhe
+    if (!ids.length) {
+      $("#cmp-cards").innerHTML = '<div class="cmp-empty">Nenhuma iniciativa selecionada. Use o seletor acima ou clique nas iniciativas na tabela/cartões.</div>';
+    } else {
+      $("#cmp-cards").innerHTML = ids.map((id, k) => {
+        const i = byId(id), uf = ufTokens(i.estado).join(", ");
+        const crit = META.criterios.map(c => {
+          const v = i.criterios[c.key] || 0;
+          return `<div class="cr"><span class="lab">${c.label}</span><span>${v}</span><span class="bar"><i style="width:${(v / 3) * 100}%;background:${RCOL[k % RCOL.length]}"></i></span></div>`;
+        }).join("");
+        return `<div class="cmp-card" style="border-top-color:${RCOL[k % RCOL.length]}">
+          <div class="cc-h"><span>${esc(i.nome)}</span><b>${i.pontuacao}</b></div>
+          <div class="cc-meta">${esc(i.eixo || "")} · ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}</div>
+          <div class="crit">${crit}</div>
+          <button class="cc-rm" data-id="${id}">Remover da comparação</button>
+        </div>`;
+      }).join("");
+      $$("#cmp-cards .cc-rm").forEach(b => b.addEventListener("click", () => toggleSelect(+b.dataset.id)));
+    }
+    // radar
+    const labels = META.criterios.map(c => c.label);
+    const datasets = ids.map((id, k) => {
+      const i = byId(id), col = RCOL[k % RCOL.length];
+      return { label: trunc(i.nome, 28), data: META.criterios.map(c => i.criterios[c.key] || 0),
+        borderColor: col, backgroundColor: col + "22", borderWidth: 2, pointBackgroundColor: col };
+    });
+    if (radarChart) radarChart.destroy();
+    radarChart = new Chart($("#radar"), {
+      type: "radar", data: { labels, datasets },
+      options: { responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom", labels: { font: { size: 11 }, boxWidth: 12 } } },
+        scales: { r: { min: 0, suggestedMax: 3, ticks: { stepSize: 1 }, pointLabels: { font: { size: 10 } } } } }
+    });
+  }
+
+  // ---------- seleção / abas ----------
   function toggleSelect(id, forceAdd) {
     if (forceAdd) state.selected.add(id);
-    else if (state.selected.has(id)) state.selected.delete(id);
-    else state.selected.add(id);
+    else if (state.selected.has(id)) state.selected.delete(id); else state.selected.add(id);
     refresh();
   }
   const byId = id => ITEMS.find(i => i.id === id);
 
-  // ---- tabs ----
   function setView(v) {
     state.view = v;
     $$("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
     $$(".view").forEach(el => el.classList.add("hidden"));
     $("#view-" + v).classList.remove("hidden");
+    $("#filters").style.display = (v === "rotas" || v === "comparar") ? "none" : "";
     refresh();
   }
   $$("#tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
 
-  // ---- refresh dispatcher ----
   function refresh() {
     const list = filtered();
     $("#f-count").textContent = `${list.length} de ${META.total} iniciativas`;
@@ -276,16 +305,14 @@
     else if (state.view === "cards") renderCards(list);
     else if (state.view === "mapa") renderMapGeral(list);
     else if (state.view === "analises") renderAnalises(list);
-    else if (state.view === "rotas" && window.PTE_ROTAS) window.PTE_ROTAS.render(list, helpers());
+    else if (state.view === "rotas" && window.PTE_ROTAS) window.PTE_ROTAS.render(helpers());
     else if (state.view === "comparar") renderCompare();
   }
-  function helpers() { return { ITEMS, META, byId, eixoColor, popupHtml, esc, trunc }; }
+  function helpers() { return { ITEMS, META, byId, eixoColor, nameByCod, popupHtml, ufTokens, esc, trunc, UF_NOME }; }
 
-  // ---- utils ----
   function esc(s) { return (s == null ? "" : String(s)).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function trunc(s, n) { s = s == null ? "" : String(s); return s.length > n ? s.slice(0, n - 1) + "…" : s; }
 
-  // ---- boot ----
   renderKpis(); initFilters(); initCompare();
   window.PTE_DASH = { refresh, helpers, state, filtered };
   setView("ranking");

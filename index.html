@@ -3,17 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>PTE2026 — Painel de Iniciativas do Nordeste</title>
+<title>PTE Nordeste — Painel de Iniciativas</title>
 
-<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-<!-- Tipografia do PTE Nordeste: Roboto (corpo) + Oswald (títulos, ~Headline Gothic) -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -23,16 +20,19 @@
 <body>
 <header class="topbar">
   <div class="brand">
-    <span class="logo">🌱</span>
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+      <circle cx="20" cy="15" r="8.5" fill="#faac33"/>
+      <path d="M1 33 Q11 24 20 29 Q29 35 39 27 L39 40 L1 40 Z" fill="#55b847"/>
+      <path d="M1 37 Q12 31 21 34 Q30 37 39 33 L39 40 L1 40 Z" fill="#1f4da1" opacity=".85"/>
+    </svg>
     <div>
-      <h1>PTE2026 — Iniciativas do Nordeste</h1>
-      <p class="sub">Plano Brasil Nordeste de Transformação Ecológica · painel de avaliação e planejamento de campo</p>
+      <h1>PTE Nordeste — Painel de Iniciativas</h1>
+      <p class="sub">Plano Brasil Nordeste de Transformação Ecológica · avaliação e planejamento de incursões de campo</p>
     </div>
   </div>
   <div id="kpis" class="kpis"></div>
 </header>
 
-<!-- motivo gráfico (colinas) — eco da capa do plano -->
 <div class="hills" aria-hidden="true">
   <svg viewBox="0 0 1440 44" preserveAspectRatio="none">
     <path d="M0,24 C160,8 320,32 480,22 C640,12 800,34 960,22 C1120,10 1280,30 1440,18 L1440,44 L0,44 Z" fill="#3f9e3f"/>
@@ -41,97 +41,114 @@
 </div>
 
 <nav class="tabs" id="tabs">
-  <button data-view="ranking" class="active">📊 Ranking</button>
-  <button data-view="cards">🗂️ Cartões</button>
-  <button data-view="mapa">🗺️ Mapa geral</button>
-  <button data-view="analises">🔥 Análises</button>
-  <button data-view="rotas">🧭 Rotas de campo</button>
-  <button data-view="comparar">📈 Comparar</button>
+  <button data-view="ranking" class="active">Ranking</button>
+  <button data-view="cards">Cartões</button>
+  <button data-view="mapa">Mapa geral</button>
+  <button data-view="analises">Análises</button>
+  <button data-view="rotas">Rotas de campo</button>
+  <button data-view="comparar">Comparar</button>
 </nav>
 
 <section class="filters" id="filters">
-  <input type="search" id="f-busca" placeholder="🔎 Buscar iniciativa, organização, município…" />
+  <input type="search" id="f-busca" placeholder="Buscar iniciativa, organização ou município..." />
   <select id="f-eixo"><option value="">Todos os eixos</option></select>
   <select id="f-estado"><option value="">Todos os estados</option></select>
   <select id="f-bioma"><option value="">Todos os biomas</option></select>
-  <label class="chk"><input type="checkbox" id="f-pre" /> Só pré-selecionadas</label>
+  <label class="chk"><input type="checkbox" id="f-pre" /> Apenas pré-selecionadas</label>
   <span class="count" id="f-count"></span>
-  <button id="f-reset" class="ghost">limpar</button>
+  <button id="f-reset" class="ghost">Limpar filtros</button>
 </section>
 
 <main>
   <!-- RANKING -->
   <div class="view" id="view-ranking">
-    <div class="table-wrap">
+    <h2 class="view-head">Ranking das iniciativas <small>ordenado por nota de avaliação</small></h2>
+    <div class="table-wrap"><div class="tbl-scroll">
       <table id="tbl-ranking">
         <thead>
           <tr>
-            <th data-sort="pontuacao" class="num">Nota</th>
-            <th data-sort="nome">Iniciativa</th>
-            <th data-sort="org">Organização</th>
-            <th data-sort="municipio">Município/UF</th>
-            <th data-sort="eixo">Eixo</th>
-            <th>Pré-sel.</th>
+            <th data-sort="id" class="num">ID<span class="arr"></span></th>
+            <th data-sort="nome">Nome<span class="arr"></span></th>
+            <th data-sort="org">Organização<span class="arr"></span></th>
+            <th data-sort="municipio">Município<span class="arr"></span></th>
+            <th data-sort="estado">UF<span class="arr"></span></th>
+            <th data-sort="eixo">Eixo<span class="arr"></span></th>
+            <th data-sort="preselecionada">Pré-selecionado<span class="arr"></span></th>
+            <th data-sort="pontuacao" class="num">Nota<span class="arr"></span></th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
-    </div>
+    </div></div>
   </div>
 
-  <!-- CARDS -->
+  <!-- CARTÕES -->
   <div class="view hidden" id="view-cards">
+    <h2 class="view-head">Cartões das iniciativas <small>visão detalhada por iniciativa</small></h2>
     <div class="cards-grid" id="cards-grid"></div>
   </div>
 
   <!-- MAPA GERAL -->
   <div class="view hidden" id="view-mapa">
-    <div id="map-geral" class="map"></div>
-    <div class="legend" id="map-legend"></div>
+    <h2 class="view-head">Distribuição geográfica <small>tamanho do círculo = nota · cor = eixo</small></h2>
+    <div class="map-layout">
+      <div id="map-geral" class="map"></div>
+      <div class="map-side" id="map-side"></div>
+    </div>
   </div>
 
   <!-- ANÁLISES -->
   <div class="view hidden" id="view-analises">
+    <h2 class="view-head">Análises <small>cobertura e desempenho por eixo e estado</small></h2>
     <div class="analises-grid">
-      <div class="panel">
-        <h3>Cobertura UF × Eixo <small>(nº de iniciativas · ★ pré-selecionadas)</small></h3>
+      <div class="panel full">
+        <h3>Cobertura por estado e eixo</h3>
+        <div class="ph-sub">Número de iniciativas em cada cruzamento (e quantas estão pré-selecionadas para incursão).</div>
         <div id="heatmap" class="heatmap"></div>
       </div>
       <div class="panel">
         <h3>Distribuição das notas</h3>
+        <div class="ph-sub">Quantidade de iniciativas por faixa de nota.</div>
         <div class="chart-box"><canvas id="hist-nota"></canvas></div>
       </div>
       <div class="panel">
         <h3>Nota média por eixo</h3>
+        <div class="ph-sub">Média da nota de avaliação das iniciativas de cada eixo.</div>
         <div class="chart-box"><canvas id="bar-eixo"></canvas></div>
       </div>
     </div>
   </div>
 
-  <!-- ROTAS -->
+  <!-- ROTAS DE CAMPO -->
   <div class="view hidden" id="view-rotas">
-    <div class="rotas-main">
-      <div class="rotas-controls" id="rotas-controls"></div>
-      <div id="map-rotas" class="map"></div>
+    <h2 class="view-head">Planejamento de incursões de campo <small>filtre as candidatas e gere a rota otimizada</small></h2>
+    <div class="rotas-wrap">
+      <div class="rotas-main">
+        <div class="rotas-controls" id="rotas-controls"></div>
+        <div id="map-rotas" class="map"></div>
+      </div>
+      <aside class="rotas-side" id="rotas-itinerary"></aside>
     </div>
-    <aside class="rotas-itinerary" id="rotas-itinerary"></aside>
   </div>
 
   <!-- COMPARAR -->
   <div class="view hidden" id="view-comparar">
-    <div class="compare-pick">
-      <p>Selecione iniciativas para comparar nos 10 critérios de avaliação:</p>
-      <select id="cmp-add"><option value="">+ adicionar iniciativa…</option></select>
-      <div id="cmp-chips" class="chips"></div>
+    <h2 class="view-head">Comparar iniciativas <small>desempenho lado a lado nos dez critérios de avaliação</small></h2>
+    <div class="cmp-bar">
+      <p>Selecione iniciativas (na tabela, nos cartões ou abaixo) para comparar no gráfico de teia e nos cartões de detalhe.</p>
+      <select id="cmp-add"><option value="">Adicionar iniciativa à comparação...</option></select>
     </div>
-    <div class="radar-wrap"><canvas id="radar"></canvas></div>
+    <div class="cmp-layout">
+      <div class="radar-wrap"><canvas id="radar"></canvas></div>
+      <div class="cmp-cards" id="cmp-cards"></div>
+    </div>
   </div>
 </main>
 
 <section class="parceiros">
   <span class="pl">Realização e parceiros</span>
-  <img src="assets/img/parceiros-banner.png"
-       alt="OEI · Open Society Foundations · Ministério da Fazenda · Governo do Brasil · Brasil Nordeste · Consórcio Nordeste" />
+  <img src="assets/img/parceiros.png"
+       alt="OEI, Open Society Foundations, Ministério da Fazenda, Governo do Brasil e Consórcio Nordeste" />
 </section>
 
 <footer class="foot">

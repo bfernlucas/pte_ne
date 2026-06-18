@@ -221,13 +221,14 @@
   function planMissions(candidates, hubs, params) {
     params.prov = params.prov || makeProvider(params);
     const valid = candidates.filter(n => n.lat != null && n.lon != null && !n.fora_ne);
-    const pre = valid.filter(n => n.preselecionada);
-    const opt = valid.filter(n => !n.preselecionada);
+    const preAll = valid.filter(n => n.preselecionada);
+    // núcleo das missões: pré-selecionadas; se o filtro não tiver nenhuma, roteia todas as candidatas
+    let core = preAll, opt = valid.filter(n => !n.preselecionada);
+    if (core.length === 0) { core = valid; opt = []; }
+    if (!params.incluirOpcionais) opt = [];
     const k = Math.max(1, params.numMissoes || 2);
-    let groups = kmeansK(pre, k);
-    // missão "norte" primeiro (maior latitude = mais ao norte)
-    groups.sort((a, b) => avgLat(b) - avgLat(a));
-    // distribui opcionais para a missão de núcleo mais próximo
+    let groups = kmeansK(core, k);
+    groups.sort((a, b) => avgLat(b) - avgLat(a)); // missão mais ao norte primeiro
     const pools = groups.map(() => []);
     opt.forEach(n => {
       let bi = 0, bd = Infinity;
@@ -235,8 +236,9 @@
       pools[bi].push(n);
     });
     const missions = groups.map((g, i) => buildMission(g, pools[i], hubs, params));
-    const preTotal = pre.length, preVis = missions.reduce((s, m) => s + m.visited.filter(n => n.preselecionada).length, 0);
-    return { missions, params, cobertura: { preTotal, preVis } };
+    const candVis = missions.reduce((s, m) => s + m.visited.length, 0);
+    const preVis = missions.reduce((s, m) => s + m.visited.filter(n => n.preselecionada).length, 0);
+    return { missions, params, cobertura: { preTotal: preAll.length, preVis, candTotal: valid.length, candVis } };
   }
   function avgLat(g) { return g.length ? g.reduce((s, n) => s + n.lat, 0) / g.length : -8; }
   function minDist(n, g) { return g.length ? Math.min(...g.map(m => haversineKm(n, m))) : Infinity; }
@@ -259,28 +261,59 @@
   // ---------- navegador ----------
   if (typeof window === "undefined") return;
 
-  let map, layer, lastList;
-  const MCOLOR = ["#2563eb", "#ea580c", "#16a34a", "#7c3aed", "#dc2626", "#0891b2"];
+  let map, allLayer, routeLayer, lastH, mode = "all";
+  const MCOLOR = ["#1f4da1", "#f37520", "#43a047", "#7a3fb8", "#e0392b", "#0d9488"];
   function ensureMap() {
     if (map) return;
-    map = L.map("map-rotas").setView([-8.5, -39.5], 5);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap", maxZoom: 18 }).addTo(map);
-    layer = L.layerGroup().addTo(map);
+    map = L.map("map-rotas").setView([-8.6, -39.5], 5);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 19 }).addTo(map);
+    allLayer = L.layerGroup().addTo(map);
+    routeLayer = L.layerGroup().addTo(map);
   }
-  function controls(run) {
+
+  function distinct(items, key) {
+    const s = new Set();
+    items.forEach(i => { const v = i[key]; if (v != null && String(v).trim()) s.add(String(v).trim()); });
+    return [...s].sort((a, b) => a.localeCompare(b, "pt"));
+  }
+  function biomasList(items) {
+    const s = new Set();
+    items.forEach(i => (i.biomas || "").split(/[,/;]+/).forEach(b => { b = b.trim(); if (b) s.add(b); }));
+    return [...s].sort((a, b) => a.localeCompare(b, "pt"));
+  }
+  function optTags(arr) { return arr.map(v => `<option value="${String(v).replace(/"/g, "&quot;")}">${v}</option>`).join(""); }
+
+  function buildControls(H) {
     const c = document.getElementById("rotas-controls");
     if (c.dataset.init) return;
     c.dataset.init = "1";
+    const UFS = ["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"];
     c.innerHTML = `
-      <div class="grp"><label>Nº de missões</label><input id="r-miss" type="range" min="1" max="6" step="1" value="3"><small id="r-miss-v">3</small></div>
-      <div class="grp"><label>Horas/visita</label><input id="r-visita" type="range" min="1" max="4" step="0.5" value="2"><small id="r-visita-v">2 h</small></div>
-      <div class="grp"><label>Direção máx/dia</label><input id="r-dir" type="range" min="6" max="10" step="1" value="8"><small id="r-dir-v">8 h</small></div>
-      <div class="grp"><label>Dias/missão</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><small id="r-dias-v">5 dias</small></div>
-      <label class="chk"><input type="checkbox" id="r-opt" checked> incluir outras da base</label>
-      <label class="chk"><input type="checkbox" id="r-ors"> tempo real de carro (ORS)</label>
-      <input id="r-orskey" type="password" placeholder="chave OpenRouteService" style="border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:.8rem;width:170px">
-      <button class="btn" id="r-run">🧭 Otimizar rotas</button>
-      <small id="r-status" style="color:#64748b">distâncias: aproximadas (Haversine×1,3)</small>`;
+      <div class="rc-group">
+        <span class="rc-title">Candidatas — quais iniciativas podem entrar na rota</span>
+        <div class="rc-field"><label>Eixo</label><select id="rf-eixo"><option value="">Todos os eixos</option>${H.META.eixos.map(e => `<option value="${e.cod}">${e.nome}</option>`).join("")}</select></div>
+        <div class="rc-field"><label>Estado</label><select id="rf-uf"><option value="">Todos os estados</option>${UFS.map(u => `<option value="${u}">${H.UF_NOME[u]}</option>`).join("")}</select></div>
+        <div class="rc-field"><label>Natureza jurídica</label><select id="rf-nat"><option value="">Todas</option>${optTags(distinct(H.ITEMS, "natureza"))}</select></div>
+        <div class="rc-field"><label>Tipo de organização</label><select id="rf-tipo"><option value="">Todos</option>${optTags(distinct(H.ITEMS, "tipo_inst"))}</select></div>
+        <div class="rc-field"><label>Setor</label><select id="rf-setor"><option value="">Todos</option>${optTags(distinct(H.ITEMS, "setor"))}</select></div>
+        <div class="rc-field"><label>Bioma</label><select id="rf-bioma"><option value="">Todos</option>${optTags(biomasList(H.ITEMS))}</select></div>
+      </div>
+      <div class="rc-group">
+        <span class="rc-title">Parâmetros da rota</span>
+        <div class="rc-field"><label>Nº de missões</label><input id="r-miss" type="range" min="1" max="6" step="1" value="3"><span class="val" id="r-miss-v">3</span></div>
+        <div class="rc-field"><label>Horas por visita</label><input id="r-visita" type="range" min="1" max="4" step="0.5" value="2"><span class="val" id="r-visita-v">2 h</span></div>
+        <div class="rc-field"><label>Direção máx. por dia</label><input id="r-dir" type="range" min="6" max="10" step="1" value="8"><span class="val" id="r-dir-v">8 h</span></div>
+        <div class="rc-field"><label>Dias por missão</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><span class="val" id="r-dias-v">5 dias</span></div>
+        <label class="rc-chk"><input type="checkbox" id="r-opt" checked> Incluir outras iniciativas que estejam no caminho</label>
+        <label class="rc-chk"><input type="checkbox" id="r-ors"> Usar tempo real de carro (OpenRouteService)</label>
+        <div class="rc-field"><label>Chave OpenRouteService (opcional)</label><input id="r-orskey" type="password" placeholder="cole a chave da API"></div>
+      </div>
+      <div class="rc-actions">
+        <button class="btn" id="r-run">Otimizar rotas</button>
+        <button class="btn secondary" id="r-clear">Ver todas as iniciativas</button>
+        <span class="rc-status" id="r-status"></span>
+      </div>`;
     document.getElementById("r-orskey").value = (window.localStorage && localStorage.getItem("ors_key")) || "";
     const sync = () => {
       document.getElementById("r-miss-v").textContent = document.getElementById("r-miss").value;
@@ -289,27 +322,63 @@
       document.getElementById("r-dias-v").textContent = document.getElementById("r-dias").value + " dias";
     };
     ["r-miss", "r-visita", "r-dir", "r-dias"].forEach(id => document.getElementById(id).addEventListener("input", sync));
-    document.getElementById("r-run").addEventListener("click", run);
+    document.getElementById("r-run").addEventListener("click", () => draw(H));
+    document.getElementById("r-clear").addEventListener("click", () => showAll(H));
     sync();
   }
   function readParams() {
     return {
       numMissoes: +document.getElementById("r-miss").value,
-      dias: +document.getElementById("r-dias").value,
-      jornadaH: 10,
+      dias: +document.getElementById("r-dias").value, jornadaH: 10,
       dirMaxH: +document.getElementById("r-dir").value,
       visitaH: +document.getElementById("r-visita").value,
       incluirOpcionais: document.getElementById("r-opt").checked,
       detour: 1.3, speedKmh: 65
     };
   }
+  function readFilters() {
+    const v = id => document.getElementById(id).value;
+    return { eixo: v("rf-eixo"), uf: v("rf-uf"), nat: v("rf-nat"), tipo: v("rf-tipo"), setor: v("rf-setor"), bioma: v("rf-bioma") };
+  }
+  function applyFilters(items, f, H) {
+    return items.filter(i => {
+      if (f.eixo && i.eixo_cod !== f.eixo) return false;
+      if (f.uf && !H.ufTokens(i.estado).includes(f.uf)) return false;
+      if (f.nat && i.natureza !== f.nat) return false;
+      if (f.tipo && i.tipo_inst !== f.tipo) return false;
+      if (f.setor && i.setor !== f.setor) return false;
+      if (f.bioma && !(i.biomas || "").toLowerCase().includes(f.bioma.toLowerCase())) return false;
+      return true;
+    });
+  }
 
-  function render(list, H) {
-    lastList = H.ITEMS; // rota opera sobre a base inteira (não os filtros do topo)
+  function render(H) {
+    lastH = H;
     ensureMap();
-    controls(() => draw(H));
+    buildControls(H);
     setTimeout(() => map.invalidateSize(), 60);
-    if (!layer.getLayers().length) draw(H);
+    if (mode === "all") showAll(H);
+  }
+
+  function showAll(H) {
+    mode = "all";
+    routeLayer.clearLayers(); allLayer.clearLayers();
+    const ps = H.ITEMS.map(i => i.pontuacao || 0), pmin = Math.min(...ps), pmax = Math.max(...ps);
+    const bounds = [];
+    let mapped = 0;
+    H.ITEMS.forEach(i => {
+      if (i.lat == null || i.lon == null) return;
+      mapped++; bounds.push([i.lat, i.lon]);
+      L.circleMarker([i.lat, i.lon], {
+        radius: 5 + 11 * ((i.pontuacao - pmin) / Math.max(1, pmax - pmin)), fillColor: H.eixoColor(i.eixo_cod),
+        fillOpacity: i.fora_ne ? .4 : .8, color: i.preselecionada ? "#f37520" : "#fff", weight: i.preselecionada ? 2.5 : 1
+      }).bindPopup(H.popupHtml(i)).addTo(allLayer);
+    });
+    if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
+    const s = document.getElementById("r-status");
+    if (s) s.textContent = `Mostrando todas as ${mapped} iniciativas mapeadas. Ajuste os filtros e os parâmetros e clique em “Otimizar rotas”.`;
+    document.getElementById("rotas-itinerary").innerHTML =
+      `<div class="cover empty">Defina os filtros de candidatas e os parâmetros, e clique em <b>Otimizar rotas</b>. O roteiro dia a dia das missões aparece aqui.</div>`;
   }
 
   async function fetchORSMatrix(points, key) {
@@ -324,78 +393,93 @@
   }
 
   async function draw(H) {
+    mode = "route";
     const params = readParams();
+    const f = readFilters();
+    const candidates = applyFilters(H.ITEMS, f, H);
     const statusEl = document.getElementById("r-status");
-    // provedor de distância: tempo real (ORS) com fallback p/ Haversine
     let prov = makeProvider(params);
     const useORS = document.getElementById("r-ors").checked;
     const key = document.getElementById("r-orskey").value.trim();
     if (useORS && key) {
-      statusEl.textContent = "buscando tempos reais (ORS)…";
+      statusEl.textContent = "Buscando tempos reais de carro (OpenRouteService)...";
       try {
         if (window.localStorage) localStorage.setItem("ors_key", key);
-        const valid = lastList.filter(n => n.lat != null && n.lon != null && !n.fora_ne);
+        const valid = candidates.filter(n => n.lat != null && n.lon != null && !n.fora_ne);
         const pre = valid.filter(n => n.preselecionada);
         const opt = valid.filter(n => !n.preselecionada).sort((a, b) => (b.pontuacao || 0) - (a.pontuacao || 0));
         const cap = Math.max(0, 50 - HUBS.length - pre.length); // limite gratuito ORS (~3500 rotas)
         const pts = [...HUBS, ...pre, ...opt.slice(0, cap)].map(p => ({ lat: p.lat, lon: p.lon }));
         const m = await fetchORSMatrix(pts, key);
         prov = makeMatrixProvider(pts, m.durations, m.distances, makeProvider(params));
-        statusEl.textContent = "distâncias: tempo real de carro (ORS) ✓";
+        statusEl.textContent = "Distâncias por tempo real de carro (OpenRouteService).";
       } catch (e) {
-        statusEl.textContent = "ORS falhou (" + e.message + ") — usando aproximação";
+        statusEl.textContent = "OpenRouteService indisponível (" + e.message + "). Usando distância aproximada.";
       }
     } else {
-      statusEl.textContent = "distâncias: aproximadas (Haversine×1,3)";
+      statusEl.textContent = "Distâncias aproximadas (linha reta × 1,3). Marque a opção acima para usar o tempo real de carro.";
     }
     params.prov = prov;
-    const plan = planMissions(lastList, HUBS, params);
-    layer.clearLayers();
-    const bounds = [];
+    const plan = planMissions(candidates, HUBS, params);
+    routeLayer.clearLayers(); allLayer.clearLayers();
     const panel = document.getElementById("rotas-itinerary");
-    const cob = plan.cobertura, full = cob.preVis >= cob.preTotal;
-    let html = `<div class="summary" style="font-size:.9rem;margin-bottom:12px;padding:8px 10px;border-radius:8px;background:${full ? "#dcfce7" : "#fef3c7"};color:${full ? "#166534" : "#92400e"}">
-      <b>Cobertura das pré-selecionadas: ${cob.preVis}/${cob.preTotal}</b>${full ? " ✓ todas cobertas" : ` — aumente o nº de missões para cobrir todas`}</div>`;
+    const cob = plan.cobertura;
+    if (cob.candTotal === 0) {
+      panel.innerHTML = `<div class="cover warn">Nenhuma iniciativa atende aos filtros escolhidos. Ajuste os filtros e tente novamente.</div>`;
+      return;
+    }
+    const bounds = [];
+    let html;
+    if (cob.preTotal > 0) {
+      const full = cob.preVis >= cob.preTotal;
+      html = `<div class="cover ${full ? "ok" : "warn"}"><b>Pré-selecionadas cobertas: ${cob.preVis} de ${cob.preTotal}.</b> ${full ? "Todas incluídas no roteiro." : `Aumente o número de missões para cobrir todas. ${cob.candVis} paradas no total.`}</div>`;
+    } else {
+      html = `<div class="cover ok"><b>${cob.candVis} de ${cob.candTotal} iniciativas filtradas incluídas no roteiro.</b></div>`;
+    }
     plan.missions.forEach((m, mi) => {
       const color = MCOLOR[mi % MCOLOR.length];
-      // polilinha hub -> visitados -> hub
       const pts = [[m.hub.lat, m.hub.lon], ...m.visited.map(n => [n.lat, n.lon]), [m.hub.lat, m.hub.lon]];
       pts.forEach(p => bounds.push(p));
-      L.polyline(pts, { color, weight: 3, opacity: .75 }).addTo(layer);
-      // hub
-      L.marker([m.hub.lat, m.hub.lon], { icon: divIcon("✈", "#111") }).bindPopup(`<b>Hub ${mi + 1}:</b> ${m.hub.nome}/${m.hub.uf}`).addTo(layer);
-      // paradas numeradas
+      L.polyline(pts, { color, weight: 3, opacity: .8 }).addTo(routeLayer);
+      L.marker([m.hub.lat, m.hub.lon], { icon: hubIcon(color) })
+        .bindPopup(`<span class="pp-h">Base da Missão ${mi + 1}</span>${m.hub.nome} (${m.hub.uf}) — ponto de partida e retorno`).addTo(routeLayer);
       let n = 0;
       m.visited.forEach(node => {
         n++;
-        L.marker([node.lat, node.lon], { icon: divIcon(String(n), color) })
-          .bindPopup(`<b>Missão ${mi + 1} · parada ${n}</b><br>${H.esc(node.nome)}<br>📍 ${H.esc(node.municipio || "")}/${H.esc(node.estado || "")}<br>Nota: <b>${node.pontuacao}</b>${node.preselecionada ? " · ★" : ""}`)
-          .addTo(layer);
+        const uf = H.ufTokens(node.estado).join(", ");
+        L.marker([node.lat, node.lon], { icon: numIcon(n, color) })
+          .bindPopup(`<span class="pp-h">Missão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b>${node.preselecionada ? " · pré-selecionada" : ""}`)
+          .addTo(routeLayer);
       });
-      // itinerário
-      html += `<div class="mission"><h3 style="color:${color}">Missão ${mi + 1} — base ${m.hub.nome}/${m.hub.uf}</h3>
-        <div class="summary">${m.visited.length} paradas · ${m.days.length} dia(s) · ${Math.round(m.totalKm)} km · ${m.totalH.toFixed(1)} h · nota somada <b>${m.score}</b></div>`;
+      html += `<div class="mission"><div class="mh" style="background:${color}"><span class="mn">Missão ${mi + 1}</span><span class="mhub">base em ${m.hub.nome} (${m.hub.uf})</span></div>
+        <div class="msum"><span><b>${m.visited.length}</b> paradas</span><span><b>${m.days.length}</b> dia(s)</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.totalH.toFixed(1)}</b> h</span><span>nota somada <b>${m.score}</b></span></div>`;
       let counter = 0;
       m.days.forEach((d, di) => {
-        html += `<div class="day"><div class="dh">Dia ${di + 1} — ${Math.round(d.km)} km · ${(d.driveH + d.visitH).toFixed(1)} h</div>`;
+        html += `<div class="day"><div class="dh">Dia ${di + 1}<span>${Math.round(d.km)} km · ${(d.driveH + d.visitH).toFixed(1)} h de jornada</span></div>`;
         d.stops.forEach(s => {
           counter++;
-          html += `<div class="leg">↳ ${Math.round(s.legKm)} km (${s.legH.toFixed(1)} h)</div>
-            <div class="stop"><span class="n">${counter}.</span> ${H.esc(s.node.nome)} <span style="color:#64748b">(${s.node.pontuacao}${s.node.preselecionada ? "★" : ""})</span></div>`;
+          if (s.legKm > 1) html += `<div class="leg-line">deslocamento: ${Math.round(s.legKm)} km (${s.legH.toFixed(1)} h)</div>`;
+          html += `<div class="stop ${s.node.preselecionada ? "pre" : ""}"><span class="n">${counter}</span><span class="nm">${H.esc(s.node.nome)} <span class="sc">${s.node.pontuacao} pts${s.node.preselecionada ? " · pré-selecionada" : ""}</span></span></div>`;
         });
         html += `</div>`;
       });
-      html += `<div class="leg">↳ retorno ao hub: ${Math.round(m.back.legKm)} km</div>`;
-      if (m.dropped.length) html += `<div class="summary" style="color:#b45309">Fora do orçamento: ${m.dropped.map(n => H.esc(n.nome)).join("; ")}</div>`;
+      html += `<div class="leg-line">retorno à base: ${Math.round(m.back.legKm)} km</div>`;
+      if (m.dropped.length) html += `<div class="dropped">Fora do orçamento de tempo: ${m.dropped.map(n => H.esc(n.nome)).join("; ")}.</div>`;
       html += `</div>`;
     });
     panel.innerHTML = html;
     if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
   }
-  function divIcon(txt, color) {
+  function numIcon(n, color) {
     return L.divIcon({
-      className: "", html: `<div style="background:${color};color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4)">${txt}</div>`,
+      className: "", html: `<div style="background:${color};color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4)">${n}</div>`,
       iconSize: [24, 24], iconAnchor: [12, 12]
+    });
+  }
+  function hubIcon(color) {
+    return L.divIcon({
+      className: "", html: `<div style="background:${color};width:16px;height:16px;border:3px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.45);transform:rotate(45deg)"></div>`,
+      iconSize: [22, 22], iconAnchor: [11, 11]
     });
   }
 
