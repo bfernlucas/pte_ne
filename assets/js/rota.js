@@ -338,6 +338,8 @@
     if (c.dataset.init) return;
     c.dataset.init = "1";
     const UFS = ["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"];
+    const anchorCands = [...H.ITEMS].filter(i => i.lat != null && !i.fora_ne).sort((a, b) => a.nome.localeCompare(b.nome, "pt"));
+    const anchorOpts = anchorCands.map(i => `<option value="${i.nome.replace(/"/g, "&quot;")}">${H.esc(i.municipio || "")}${i.estado ? " · " + H.esc(i.estado) : ""}</option>`).join("");
     c.innerHTML = `
       <div class="rc-group">
         <span class="rc-title">Parâmetros da rota</span>
@@ -351,7 +353,8 @@
       <div class="rc-group">
         <span class="rc-title">Âncoras — obrigatórias na rota</span>
         <div class="rc-field rc-anchorfield">
-          <select id="rf-anchor-add"><option value="">Adicionar âncora...</option>${[...H.ITEMS].filter(i => i.lat != null && !i.fora_ne).sort((a, b) => a.nome.localeCompare(b.nome, "pt")).map(i => `<option value="${i.id}">${i.nome.replace(/"/g, "&quot;")}</option>`).join("")}</select>
+          <input id="rf-anchor-add" type="text" list="rf-anchor-list" placeholder="Buscar ou escolher na lista..." autocomplete="off">
+          <datalist id="rf-anchor-list">${anchorOpts}</datalist>
           <div class="rc-anchors" id="rf-anchors"></div></div>
       </div>
       <div class="rc-group">
@@ -379,9 +382,15 @@
     document.getElementById("r-run").addEventListener("click", () => draw(H));
     document.getElementById("r-clear").addEventListener("click", () => showAll(H));
     document.getElementById("r-clear-anchors").addEventListener("click", () => clearAnchors());
-    document.getElementById("rf-anchor-add").addEventListener("change", e => {
-      if (e.target.value) { anchorIds.add(+e.target.value); e.target.value = ""; renderAnchors(H); syncAnchorMarkers(); }
-    });
+    const addInput = document.getElementById("rf-anchor-add");
+    const tryAddAnchor = () => {
+      const val = addInput.value.trim();
+      if (!val) return;
+      const it = anchorCands.find(i => i.nome === val) || anchorCands.find(i => i.nome.toLowerCase() === val.toLowerCase());
+      if (it) { anchorIds.add(it.id); addInput.value = ""; renderAnchors(H); syncAnchorMarkers(); }
+    };
+    addInput.addEventListener("input", tryAddAnchor);
+    addInput.addEventListener("change", tryAddAnchor);
     renderAnchors(H);
     sync();
   }
