@@ -45,6 +45,35 @@
     return [g1, g2];
   }
 
+  // k-means para k grupos (init por ponto-mais-distante, determinístico)
+  function kmeansK(nodes, k) {
+    if (k <= 1) return [nodes.slice()];
+    if (nodes.length <= k) return nodes.map(n => [n]).concat(Array.from({ length: k - nodes.length }, () => []));
+    let seeds = [nodes.reduce((a, b) => (a.lat >= b.lat ? a : b))]; // começa pelo mais ao norte
+    while (seeds.length < k) {
+      let best = null, bd = -1;
+      nodes.forEach(n => { const d = Math.min(...seeds.map(s => haversineKm(n, s))); if (d > bd) { bd = d; best = n; } });
+      seeds.push(best);
+    }
+    let cents = seeds.map(s => ({ lat: s.lat, lon: s.lon })), groups;
+    for (let it = 0; it < 12; it++) {
+      groups = cents.map(() => []);
+      nodes.forEach(n => {
+        let bi = 0, bd = Infinity;
+        cents.forEach((c, i) => { const d = haversineKm(n, c); if (d < bd) { bd = d; bi = i; } });
+        groups[bi].push(n);
+      });
+      let moved = false;
+      cents = cents.map((c, i) => {
+        const g = groups[i]; if (!g.length) return c;
+        const nc = { lat: g.reduce((s, n) => s + n.lat, 0) / g.length, lon: g.reduce((s, n) => s + n.lon, 0) / g.length };
+        if (nc.lat !== c.lat || nc.lon !== c.lon) moved = true; return nc;
+      });
+      if (!moved) break;
+    }
+    return groups.filter(g => g.length);
+  }
+
   // ---------- TSP: vizinho mais próximo + 2-opt (hub fixo nas pontas) ----------
   function nearestNeighbor(hub, nodes, prov) {
     const rem = nodes.slice(), order = [];
@@ -179,17 +208,20 @@
     const valid = candidates.filter(n => n.lat != null && n.lon != null && !n.fora_ne);
     const pre = valid.filter(n => n.preselecionada);
     const opt = valid.filter(n => !n.preselecionada);
-    let groups = kmeans2(pre);
+    const k = Math.max(1, params.numMissoes || 2);
+    let groups = kmeansK(pre, k);
     // missão "norte" primeiro (maior latitude = mais ao norte)
     groups.sort((a, b) => avgLat(b) - avgLat(a));
     // distribui opcionais para a missão de núcleo mais próximo
-    const pools = [[], []];
+    const pools = groups.map(() => []);
     opt.forEach(n => {
-      const d0 = minDist(n, groups[0]), d1 = minDist(n, groups[1]);
-      pools[(d0 <= d1 ? 0 : 1)].push(n);
+      let bi = 0, bd = Infinity;
+      groups.forEach((g, i) => { const d = minDist(n, g); if (d < bd) { bd = d; bi = i; } });
+      pools[bi].push(n);
     });
     const missions = groups.map((g, i) => buildMission(g, pools[i], hubs, params));
-    return { missions, params };
+    const preTotal = pre.length, preVis = missions.reduce((s, m) => s + m.visited.filter(n => n.preselecionada).length, 0);
+    return { missions, params, cobertura: { preTotal, preVis } };
   }
   function avgLat(g) { return g.length ? g.reduce((s, n) => s + n.lat, 0) / g.length : -8; }
   function minDist(n, g) { return g.length ? Math.min(...g.map(m => haversineKm(n, m))) : Infinity; }
@@ -206,14 +238,14 @@
     { nome: "Salvador", uf: "BA", lat: -12.9714, lon: -38.5014 }
   ];
 
-  const API = { haversineKm, makeProvider, kmeans2, nearestNeighbor, twoOpt, packDays, buildMission, planMissions, HUBS };
+  const API = { haversineKm, makeProvider, kmeans2, kmeansK, nearestNeighbor, twoOpt, packDays, buildMission, planMissions, HUBS };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 
   // ---------- navegador ----------
   if (typeof window === "undefined") return;
 
   let map, layer, lastList;
-  const MCOLOR = ["#2563eb", "#ea580c"];
+  const MCOLOR = ["#2563eb", "#ea580c", "#16a34a", "#7c3aed", "#dc2626", "#0891b2"];
   function ensureMap() {
     if (map) return;
     map = L.map("map-rotas").setView([-8.5, -39.5], 5);
@@ -225,6 +257,7 @@
     if (c.dataset.init) return;
     c.dataset.init = "1";
     c.innerHTML = `
+      <div class="grp"><label>Nº de missões</label><input id="r-miss" type="range" min="1" max="6" step="1" value="3"><small id="r-miss-v">3</small></div>
       <div class="grp"><label>Horas/visita</label><input id="r-visita" type="range" min="1" max="4" step="0.5" value="2"><small id="r-visita-v">2 h</small></div>
       <div class="grp"><label>Direção máx/dia</label><input id="r-dir" type="range" min="6" max="10" step="1" value="8"><small id="r-dir-v">8 h</small></div>
       <div class="grp"><label>Dias/missão</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><small id="r-dias-v">5 dias</small></div>
@@ -232,16 +265,18 @@
       <button class="btn" id="r-run">🧭 Otimizar rotas</button>
       <small style="color:#64748b">distâncias: Haversine×1,3 (aprox.) — trocável por tempo real de carro</small>`;
     const sync = () => {
+      document.getElementById("r-miss-v").textContent = document.getElementById("r-miss").value;
       document.getElementById("r-visita-v").textContent = document.getElementById("r-visita").value + " h";
       document.getElementById("r-dir-v").textContent = document.getElementById("r-dir").value + " h";
       document.getElementById("r-dias-v").textContent = document.getElementById("r-dias").value + " dias";
     };
-    ["r-visita", "r-dir", "r-dias"].forEach(id => document.getElementById(id).addEventListener("input", sync));
+    ["r-miss", "r-visita", "r-dir", "r-dias"].forEach(id => document.getElementById(id).addEventListener("input", sync));
     document.getElementById("r-run").addEventListener("click", run);
     sync();
   }
   function readParams() {
     return {
+      numMissoes: +document.getElementById("r-miss").value,
       dias: +document.getElementById("r-dias").value,
       jornadaH: 10,
       dirMaxH: +document.getElementById("r-dir").value,
@@ -265,9 +300,11 @@
     layer.clearLayers();
     const bounds = [];
     const panel = document.getElementById("rotas-itinerary");
-    let html = "";
+    const cob = plan.cobertura, full = cob.preVis >= cob.preTotal;
+    let html = `<div class="summary" style="font-size:.9rem;margin-bottom:12px;padding:8px 10px;border-radius:8px;background:${full ? "#dcfce7" : "#fef3c7"};color:${full ? "#166534" : "#92400e"}">
+      <b>Cobertura das pré-selecionadas: ${cob.preVis}/${cob.preTotal}</b>${full ? " ✓ todas cobertas" : ` — aumente o nº de missões para cobrir todas`}</div>`;
     plan.missions.forEach((m, mi) => {
-      const color = MCOLOR[mi];
+      const color = MCOLOR[mi % MCOLOR.length];
       // polilinha hub -> visitados -> hub
       const pts = [[m.hub.lat, m.hub.lon], ...m.visited.map(n => [n.lat, n.lon]), [m.hub.lat, m.hub.lon]];
       pts.forEach(p => bounds.push(p));
