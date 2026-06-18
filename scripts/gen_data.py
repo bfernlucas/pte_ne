@@ -24,11 +24,12 @@ CRIT = [("relevancia", "Relevância territorial"), ("clima", "Adaptação/mitiga
         ("replicabilidade", "Replicabilidade/escala"), ("inovacao", "Inovação tecnológica e social"),
         ("investimentos", "Atração de investimentos verdes"), ("inclusao", "Inclusão produtiva"),
         ("equidade", "Equidade de gênero, raça e etnia"), ("governanca", "Governança multinível")]
-EIXO_CORES = [("Finanças Sustentáveis e Inclusivas", "FSI", "#2563eb"),
-              ("Adensamento Tecnológico", "ADT", "#7c3aed"),
-              ("Bioeconomia e Sistemas Agroalimentares Adaptados", "BIO", "#16a34a"),
-              ("Transição Energética", "TE", "#ea580c"),
-              ("Economia Circular e Solidária", "EC", "#0891b2"),
+# Cores dos eixos alinhadas à paleta do Plano Brasil Nordeste (PTE-NE)
+EIXO_CORES = [("Finanças Sustentáveis e Inclusivas", "FSI", "#1f4da1"),
+              ("Adensamento Tecnológico", "ADT", "#7a3fb8"),
+              ("Bioeconomia e Sistemas Agroalimentares Adaptados", "BIO", "#55b847"),
+              ("Transição Energética", "TE", "#f37520"),
+              ("Economia Circular e Solidária", "EC", "#17a2b8"),
               ("Nova Infraestrutura Verde-Azul e Adaptação Climática", "NIVA", "#0d9488")]
 
 
