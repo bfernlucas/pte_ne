@@ -358,6 +358,7 @@
         <div class="rc-field"><label>Direção máx. por dia</label><input id="r-dir" type="range" min="6" max="10" step="1" value="8"><span class="val" id="r-dir-v">8 h</span></div>
         <div class="rc-field"><label>Dias por incursão (máx. 7 corridos)</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><span class="val" id="r-dias-v">5 dias</span></div>
         <label class="rc-chk"><input type="checkbox" id="r-opt" checked> Incluir outras iniciativas que estejam no caminho</label>
+        <label class="rc-chk"><input type="checkbox" id="r-ctx" checked> Mostrar demais iniciativas (em cinza)</label>
         <label class="rc-chk"><input type="checkbox" id="r-ors"> Usar tempo real de carro (OpenRouteService)</label>
         <div class="rc-field"><label>Chave OpenRouteService (opcional)</label><input id="r-orskey" type="password" placeholder="cole a chave da API"></div>
       </div>
@@ -554,7 +555,9 @@
     const ancMetric = cob.ancTotal ? `<div class="opt-m"><b>${cob.ancVis}/${cob.ancTotal}</b><span>âncoras</span></div>` : "";
     const ancWarn = (cob.ancMissed && cob.ancMissed.length)
       ? `<div class="opt-warn">${cob.ancMissed.length} âncora(s) não couberam no orçamento: ${cob.ancMissed.map(n => H.esc(n.nome)).join("; ")}. Aumente os dias ou o nº de incursões.</div>` : "";
-    let html = `<div class="opt-card">
+    const showCtx = document.getElementById("r-ctx") ? document.getElementById("r-ctx").checked : true;
+    let html = showCtx ? `<div class="ctx-legend"><span><i class="d-route"></i> paradas da rota</span><span><i class="d-pre"></i> pré-selecionada fora da rota</span><span><i class="d-other"></i> outras iniciativas</span></div>` : "";
+    html += `<div class="opt-card">
       <div class="opt-title">Cenário ótimo · ${k} incursão(ões) de até ${params.dias} dias</div>
       <div class="opt-grid">
         <div class="opt-m"><b>${cob.preTotal ? cob.preVis + "/" + cob.preTotal : cob.candVis}</b><span>${cob.preTotal ? "pré-selecionadas" : "iniciativas"}</span>${cob.preTotal ? `<div class="opt-bar"><i style="width:${pct}%"></i></div>` : ""}</div>
@@ -624,6 +627,20 @@
       html += `<div class="uncovered"><div class="uh">Pré-selecionadas fora destas ${k} incursões (${cob.droppedPre.length})</div>
         <div class="usub">Somam ${wp} pts. Para incluí-las, aumente o nº de incursões ou de dias — ou reserve-as para uma incursão futura.</div>
         <ul>${lis}</ul></div>`;
+    }
+    // camada de contexto: demais iniciativas em escala de cinza (2 tons)
+    if (showCtx) {
+      const visitedIds = new Set(plan.missions.flatMap(m => m.visited.map(n => n.id)));
+      H.ITEMS.forEach(i => {
+        if (visitedIds.has(i.id)) return;
+        const pre = i.preselecionada;
+        locsOf(i, H).forEach(loc => {
+          L.circleMarker([loc.lat, loc.lon], {
+            radius: pre ? 5.5 : 4, fillColor: pre ? "#7d8290" : "#c5c8d2",
+            fillOpacity: pre ? .85 : .55, color: "#fff", weight: 1
+          }).bindPopup(`<span class="pp-h">${H.esc(i.nome)}</span>${pre ? "Pré-selecionada · fora da rota" : "Não selecionada · fora da rota"}<br><span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>`).addTo(allLayer);
+        });
+      });
     }
     panel.innerHTML = html;
     if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
