@@ -203,6 +203,14 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .opt-bar{height:5px;border-radius:3px;background:#e1e5f2;margin-top:6px;overflow:hidden}
 .opt-bar i{display:block;height:100%;background:var(--orange)}
 .opt-help{font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.45}
+.cmp-scen{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.cmp-scen .cs-h{font-family:var(--display);text-transform:uppercase;font-size:.78rem;color:var(--brand);letter-spacing:.04em;margin-bottom:8px}
+.cmp-scen table{width:100%;border-collapse:collapse;font-size:.76rem}
+.cmp-scen th{background:var(--surface-2);color:var(--muted);text-transform:uppercase;font-size:.62rem;letter-spacing:.03em;padding:5px 6px;text-align:center;position:static;cursor:default}
+.cmp-scen td{padding:5px 6px;text-align:center;border-top:1px solid var(--border-2);font-variant-numeric:tabular-nums}
+.cmp-scen tr.cur{background:#eef2fb}
+.cmp-scen tr.cur td{color:var(--brand);font-weight:700}
+.cmp-scen .cs-note{font-size:.72rem;color:var(--muted);margin-top:6px;line-height:1.4}
 .incursao{margin-bottom:16px;border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .ih{padding:10px 14px;color:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ih .in{font-family:var(--display);text-transform:uppercase;font-size:.95rem;letter-spacing:.03em}

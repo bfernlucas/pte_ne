@@ -463,6 +463,16 @@
       </div>
       <div class="opt-help">O ótimo prioriza as pré-selecionadas de maior <b>densidade de valor</b> (nota por tempo de deslocamento) e preenche o tempo restante com as iniciativas <b>no caminho</b> de melhor custo-benefício.</div>
     </div>`;
+    // ---- comparador de cenários (nº de incursões) ----
+    const cmp = [];
+    for (let kk = 1; kk <= 6; kk++) {
+      const c = planMissions(candidates, HUBS, { ...params, numMissoes: kk }).cobertura;
+      cmp.push({ k: kk, pre: c.preTotal ? `${c.preVis}/${c.preTotal}` : "—", opt: c.optVis, score: c.totalScore, km: c.totalKm, dias: c.totalDays });
+    }
+    html += `<div class="cmp-scen"><div class="cs-h">Comparar cenários — incursões de ${params.dias} dias</div>
+      <table><thead><tr><th>Incursões</th><th>Pré-sel.</th><th>No caminho</th><th>Valor</th><th>Km</th><th>Dias</th></tr></thead><tbody>
+      ${cmp.map(r => `<tr class="${r.k === k ? "cur" : ""}"><td>${r.k}</td><td>${r.pre}</td><td>+${r.opt}</td><td>${r.score}</td><td>${r.km}</td><td>${r.dias}</td></tr>`).join("")}
+      </tbody></table><div class="cs-note">Linha destacada = cenário atual (ajuste pelo controle “Nº de incursões”). Mais incursões cobrem mais pré-selecionadas, com mais esforço.</div></div>`;
     // ---- cada incursão ----
     plan.missions.forEach((m, mi) => {
       const color = MCOLOR[mi % MCOLOR.length];
