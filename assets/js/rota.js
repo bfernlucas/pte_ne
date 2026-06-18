@@ -344,6 +344,7 @@
       <div class="rc-actions">
         <button class="btn" id="r-run">Otimizar rotas</button>
         <button class="btn secondary" id="r-clear">Ver todas as iniciativas</button>
+        <button class="btn secondary" id="r-clear-anchors">Limpar âncoras</button>
         <span class="rc-status" id="r-status"></span>
       </div>`;
     document.getElementById("r-orskey").value = (window.localStorage && localStorage.getItem("ors_key")) || "";
@@ -356,11 +357,24 @@
     ["r-miss", "r-visita", "r-dir", "r-dias"].forEach(id => document.getElementById(id).addEventListener("input", sync));
     document.getElementById("r-run").addEventListener("click", () => draw(H));
     document.getElementById("r-clear").addEventListener("click", () => showAll(H));
+    document.getElementById("r-clear-anchors").addEventListener("click", () => clearAnchors());
     document.getElementById("rf-anchor-add").addEventListener("change", e => {
-      if (e.target.value) { anchorIds.add(+e.target.value); e.target.value = ""; renderAnchors(H); }
+      if (e.target.value) { anchorIds.add(+e.target.value); e.target.value = ""; renderAnchors(H); syncAnchorMarkers(); }
     });
     renderAnchors(H);
     sync();
+  }
+  function syncAnchorMarkers() {
+    if (!lastH) return;
+    Object.keys(allMarkers).forEach(id => {
+      const i = lastH.byId(+id);
+      if (i) { allMarkers[id].setStyle(ovStyle(i)); allMarkers[id].setPopupContent(overviewPopup(i, lastH)); }
+    });
+  }
+  function clearAnchors() {
+    if (!anchorIds.size) return;
+    anchorIds.clear();
+    if (lastH) { renderAnchors(lastH); syncAnchorMarkers(); if (window.PTE_DASH) window.PTE_DASH.refresh(); }
   }
   function renderAnchors(H) {
     const box = document.getElementById("rf-anchors");

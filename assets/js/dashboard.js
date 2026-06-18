@@ -83,6 +83,7 @@
     $("#tbl-ranking tbody").innerHTML = sorted.map(i => {
       const w = Math.round(100 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN)));
       const uf = ufTokens(i.estado).join(", ") || "—";
+      const anc = window.PTE_ROTAS ? window.PTE_ROTAS.isAnchor(i.id) : false;
       return `<tr data-id="${i.id}" class="${state.selected.has(i.id) ? "sel" : ""}">
         <td class="num t-id">${i.id}</td>
         <td class="t-nome">${esc(i.nome)}</td>
@@ -92,9 +93,15 @@
         <td class="t-eixo"><span class="eixo-dot" style="background:${eixoColor(i.eixo_cod)}"></span><span class="eixo-name">${esc(i.eixo || "—")}</span></td>
         <td>${i.preselecionada ? '<span class="badge badge-pre">Sim</span>' : '<span class="badge badge-no">Não</span>'}</td>
         <td class="t-nota"><span class="nota-track"><span class="nota-fill" style="width:${w}%"></span></span><span class="nota-num">${i.pontuacao}</span></td>
+        <td><button class="card-anchor ${anc ? "on" : ""}" data-id="${i.id}" title="Fixar como âncora no planejamento de rotas">${anc ? "Âncora" : "Fixar"}</button></td>
       </tr>`;
     }).join("");
     $$("#tbl-ranking tbody tr").forEach(tr => tr.addEventListener("click", () => toggleSelect(+tr.dataset.id)));
+    $$("#tbl-ranking tbody .card-anchor").forEach(b => b.addEventListener("click", e => {
+      e.stopPropagation();
+      if (window.PTE_ROTAS) window.PTE_ROTAS.toggleAnchor(+b.dataset.id);
+      refresh();
+    }));
   }
   $$("#tbl-ranking thead th[data-sort]").forEach(th => th.addEventListener("click", () => {
     const key = th.dataset.sort;
