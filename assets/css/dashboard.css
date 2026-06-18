@@ -4,14 +4,14 @@
    · âmbar #faac33 · verde #55b847 · tipografia Roboto + Oswald
    ============================================================ */
 :root{
-  --bg:#eef1f6; --surface:#ffffff; --surface-2:#f7f8fb;
-  --ink:#23262f; --muted:#6b7080; --faint:#9aa0b0; --border:#e3e6ef; --border-2:#eef0f6;
+  --bg:#f5f6f9; --surface:#ffffff; --surface-2:#f7f8fb;
+  --ink:#23262f; --muted:#6b7080; --faint:#9aa0b0; --border:#e7e9f1; --border-2:#eef0f5;
   --brand:#292d76; --brand-2:#1f4da1; --brand-3:#3a5fc0;
   --orange:#f37520; --amber:#faac33; --green:#55b847; --red:#e0392b;
   --pre:#9a5b00; --pre-bg:#fff2d6; --pre-bd:#f3d08a;
-  --shadow:0 1px 2px rgba(20,24,54,.06), 0 4px 16px rgba(20,24,54,.06);
-  --shadow-sm:0 1px 2px rgba(20,24,54,.08);
-  --radius:14px;
+  --shadow:none;
+  --shadow-sm:none;
+  --radius:10px;
   --font:"Roboto",system-ui,-apple-system,"Segoe UI",sans-serif;
   --display:"Oswald","Roboto Condensed",system-ui,sans-serif;
 }
@@ -34,15 +34,16 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{ou
 .brand .mark{width:40px;height:40px;flex:0 0 auto}
 .topbar h1{font-size:clamp(1.05rem,2.2vw,1.4rem);color:#fff;font-weight:700;letter-spacing:.02em;line-height:1.08}
 .topbar .sub{font-family:var(--font);text-transform:none;font-size:.78rem;color:rgba(255,255,255,.86);margin-top:3px;font-weight:400}
-.kpis{display:flex;gap:10px;margin-left:auto;flex-wrap:wrap}
-.kpi{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.26);border-radius:12px;
-  padding:8px 16px;text-align:center;min-width:92px}
-.kpi b{display:block;font-family:var(--display);font-size:1.5rem;line-height:1;font-weight:600}
-.kpi span{font-size:.64rem;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.06em}
+.kpis{display:flex;gap:0;margin-left:auto;flex-wrap:wrap}
+.kpi{background:none;border:none;border-left:1px solid rgba(255,255,255,.22);border-radius:0;
+  padding:2px 20px;text-align:center;min-width:78px}
+.kpi:first-child{border-left:none}
+.kpi b{display:block;font-family:var(--display);font-size:1.55rem;line-height:1;font-weight:600}
+.kpi span{font-size:.62rem;color:rgba(255,255,255,.82);text-transform:uppercase;letter-spacing:.07em}
 
 /* colinas (eco da capa) */
 .hills{background:var(--brand-2);line-height:0}
-.hills svg{display:block;width:100%;height:34px}
+.hills svg{display:block;width:100%;height:20px}
 
 /* ---------- tabs ---------- */
 .tabs{display:flex;gap:2px;padding:0 clamp(8px,2vw,26px);background:var(--surface);border-bottom:1px solid var(--border);
@@ -74,9 +75,9 @@ main{padding:clamp(16px,2.4vw,24px) clamp(12px,3vw,26px) 20px;max-width:1520px;m
 .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
 .tbl-scroll{overflow:auto;max-height:calc(100vh - 230px)}
 table{width:100%;border-collapse:separate;border-spacing:0;font-size:.86rem}
-thead th{position:sticky;top:0;background:var(--brand);color:#fff;text-align:left;padding:12px 14px;
-  font-family:var(--font);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
-  white-space:nowrap;cursor:pointer;user-select:none;z-index:2}
+thead th{position:sticky;top:0;background:var(--surface);color:var(--muted);text-align:left;padding:13px 14px;
+  font-family:var(--font);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  white-space:nowrap;cursor:pointer;user-select:none;z-index:2;border-bottom:2px solid var(--brand)}
 thead th .arr{opacity:.5;font-size:.7rem;margin-left:3px}
 thead th.num{text-align:right}
 tbody td{padding:11px 14px;border-bottom:1px solid var(--border-2);vertical-align:middle}
@@ -103,7 +104,7 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .empty-state{grid-column:1/-1;text-align:center;color:var(--muted);padding:44px 20px;font-size:.92rem;background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius)}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);
   cursor:pointer;display:flex;flex-direction:column;overflow:hidden;transition:transform .08s,box-shadow .12s}
-.card:hover{transform:translateY(-3px);box-shadow:0 6px 22px rgba(20,24,54,.12)}
+.card:hover{transform:translateY(-2px);border-color:var(--brand-3)}
 .card.sel{outline:2px solid var(--orange);outline-offset:-1px}
 .card .strip{height:5px;width:100%}
 .card .pad{padding:14px 16px 16px;display:flex;flex-direction:column;gap:9px;flex:1}
@@ -209,10 +210,10 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .dropped{font-size:.78rem;color:var(--pre);padding:8px 14px;background:var(--pre-bg);border-top:1px solid var(--pre-bd)}
 
 /* cenário ótimo + incursões */
-.opt-card{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;background:linear-gradient(180deg,#f3f6ff,#fff)}
-.opt-title{font-family:var(--display);text-transform:uppercase;letter-spacing:.04em;font-size:.84rem;color:var(--brand);margin-bottom:10px}
-.opt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.opt-m{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 10px;text-align:center}
+.opt-card{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;background:var(--surface)}
+.opt-title{font-family:var(--display);text-transform:uppercase;letter-spacing:.04em;font-size:.84rem;color:var(--brand);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border-2)}
+.opt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 8px}
+.opt-m{background:none;border:none;padding:2px 6px;text-align:center}
 .opt-m b{display:block;font-family:var(--display);font-size:1.3rem;line-height:1;color:var(--brand)}
 .opt-m span{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
 .opt-bar{height:5px;border-radius:3px;background:#e1e5f2;margin-top:6px;overflow:hidden}
