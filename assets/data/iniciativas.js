@@ -7,27 +7,27 @@ window.PTE_DATA = {
    {
     "nome": "Finanças Sustentáveis e Inclusivas",
     "cod": "FSI",
-    "cor": "#2563eb"
+    "cor": "#1f4da1"
    },
    {
     "nome": "Adensamento Tecnológico",
     "cod": "ADT",
-    "cor": "#7c3aed"
+    "cor": "#7a3fb8"
    },
    {
     "nome": "Bioeconomia e Sistemas Agroalimentares Adaptados",
     "cod": "BIO",
-    "cor": "#16a34a"
+    "cor": "#55b847"
    },
    {
     "nome": "Transição Energética",
     "cod": "TE",
-    "cor": "#ea580c"
+    "cor": "#f37520"
    },
    {
     "nome": "Economia Circular e Solidária",
     "cod": "EC",
-    "cor": "#0891b2"
+    "cor": "#17a2b8"
    },
    {
     "nome": "Nova Infraestrutura Verde-Azul e Adaptação Climática",

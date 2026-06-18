@@ -209,7 +209,7 @@
       grid[u][i.eixo_cod]++; if (i.preselecionada) pre[u][i.eixo_cod]++;
       maxc = Math.max(maxc, grid[u][i.eixo_cod]);
     });
-    const shade = n => n === 0 ? "#fff" : `rgba(37,99,235,${0.12 + 0.6 * (n / maxc)})`;
+    const shade = n => n === 0 ? "#fff" : `rgba(41,45,118,${0.10 + 0.62 * (n / maxc)})`;
     let html = "<table><thead><tr><th>UF</th>" + cods.map(c => `<th title="${nameByCod[c]}">${c}</th>`).join("") + "<th>Σ</th></tr></thead><tbody>";
     UF_ORDER.forEach(u => {
       const tot = cods.reduce((s, c) => s + grid[u][c], 0);
@@ -232,7 +232,7 @@
     if (histChart) histChart.destroy();
     histChart = new Chart($("#hist-nota"), {
       type: "bar",
-      data: { labels: bins.map(b => `${b}–${b + W}`), datasets: [{ label: "iniciativas", data: counts, backgroundColor: "#2563eb" }] },
+      data: { labels: bins.map(b => `${b}–${b + W}`), datasets: [{ label: "iniciativas", data: counts, backgroundColor: "#292d76" }] },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { precision: 0 } } } }
     });
 
