@@ -444,31 +444,9 @@
     });
   }
 
-  let eixoLegendAdded = false;
-  function addEixoLegend(eixos) {
-    if (eixoLegendAdded || !map) return;
-    eixoLegendAdded = true;
-    if (!map._controlCorners.topcenter) {
-      map._controlCorners.topcenter = L.DomUtil.create("div", "leaflet-top map-topcenter", map._controlContainer);
-    }
-    const Legend = L.Control.extend({
-      options: { position: "topcenter" },
-      onAdd() {
-        const div = L.DomUtil.create("div", "map-legend");
-        div.innerHTML = `<span class="ml-t">Eixos</span>` +
-          eixos.map(e => `<span class="ml-i"><i style="background:${e.cor}"></i>${e.nome}</span>`).join("");
-        L.DomEvent.disableClickPropagation(div);
-        L.DomEvent.disableScrollPropagation(div);
-        return div;
-      }
-    });
-    new Legend().addTo(map);
-  }
-
   function render(H) {
     lastH = H;
     ensureMap();
-    addEixoLegend(H.META.eixos);
     buildControls(H);
     setTimeout(() => map.invalidateSize(), 60);
     if (mode === "all") showAll(H);
