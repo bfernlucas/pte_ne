@@ -340,18 +340,6 @@
     const UFS = ["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"];
     c.innerHTML = `
       <div class="rc-group">
-        <span class="rc-title">Candidatas — quais iniciativas podem entrar na rota</span>
-        <div class="rc-field"><label>Eixo</label><select id="rf-eixo"><option value="">Todos os eixos</option>${H.META.eixos.map(e => `<option value="${e.cod}">${e.nome}</option>`).join("")}</select></div>
-        <div class="rc-field"><label>Estado</label><select id="rf-uf"><option value="">Todos os estados</option>${UFS.map(u => `<option value="${u}">${H.UF_NOME[u]}</option>`).join("")}</select></div>
-        <div class="rc-field"><label>Natureza jurídica</label><select id="rf-nat"><option value="">Todas</option>${optTags(distinct(H.ITEMS, "natureza"))}</select></div>
-        <div class="rc-field"><label>Tipo de organização</label><select id="rf-tipo"><option value="">Todos</option>${optTags(distinct(H.ITEMS, "tipo_inst"))}</select></div>
-        <div class="rc-field"><label>Setor</label><select id="rf-setor"><option value="">Todos</option>${optTags(distinct(H.ITEMS, "setor"))}</select></div>
-        <div class="rc-field"><label>Bioma</label><select id="rf-bioma"><option value="">Todos</option>${optTags(biomasList(H.ITEMS))}</select></div>
-        <div class="rc-field rc-anchorfield"><label>Âncoras — obrigatórias na rota</label>
-          <select id="rf-anchor-add"><option value="">Adicionar âncora...</option>${[...H.ITEMS].filter(i => i.lat != null && !i.fora_ne).sort((a, b) => a.nome.localeCompare(b.nome, "pt")).map(i => `<option value="${i.id}">${i.nome.replace(/"/g, "&quot;")}</option>`).join("")}</select>
-          <div class="rc-anchors" id="rf-anchors"></div></div>
-      </div>
-      <div class="rc-group">
         <span class="rc-title">Parâmetros da rota</span>
         <div class="rc-field"><label>Nº de incursões</label><input id="r-miss" type="range" min="1" max="6" step="1" value="2"><span class="val" id="r-miss-v">2</span></div>
         <div class="rc-field"><label>Horas por visita</label><input id="r-visita" type="range" min="1" max="4" step="0.5" value="2"><span class="val" id="r-visita-v">2 h</span></div>
@@ -359,8 +347,21 @@
         <div class="rc-field"><label>Dias por incursão (máx. 7 corridos)</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><span class="val" id="r-dias-v">5 dias</span></div>
         <label class="rc-chk"><input type="checkbox" id="r-opt" checked> Incluir outras iniciativas que estejam no caminho</label>
         <label class="rc-chk"><input type="checkbox" id="r-ctx" checked> Mostrar demais iniciativas (em cinza)</label>
-        <label class="rc-chk"><input type="checkbox" id="r-ors"> Usar tempo real de carro (OpenRouteService)</label>
-        <div class="rc-field"><label>Chave OpenRouteService (opcional)</label><input id="r-orskey" type="password" placeholder="cole a chave da API"></div>
+      </div>
+      <div class="rc-group">
+        <span class="rc-title">Âncoras — obrigatórias na rota</span>
+        <div class="rc-field rc-anchorfield">
+          <select id="rf-anchor-add"><option value="">Adicionar âncora...</option>${[...H.ITEMS].filter(i => i.lat != null && !i.fora_ne).sort((a, b) => a.nome.localeCompare(b.nome, "pt")).map(i => `<option value="${i.id}">${i.nome.replace(/"/g, "&quot;")}</option>`).join("")}</select>
+          <div class="rc-anchors" id="rf-anchors"></div></div>
+      </div>
+      <div class="rc-group">
+        <span class="rc-title">Candidatas — quais iniciativas podem entrar na rota</span>
+        <div class="rc-field"><label>Eixo</label><select id="rf-eixo"><option value="">Todos os eixos</option>${H.META.eixos.map(e => `<option value="${e.cod}">${e.nome}</option>`).join("")}</select></div>
+        <div class="rc-field"><label>Estado</label><select id="rf-uf"><option value="">Todos os estados</option>${UFS.map(u => `<option value="${u}">${H.UF_NOME[u]}</option>`).join("")}</select></div>
+        <div class="rc-field"><label>Natureza jurídica</label><select id="rf-nat"><option value="">Todas</option>${optTags(distinct(H.ITEMS, "natureza"))}</select></div>
+        <div class="rc-field"><label>Tipo de organização</label><select id="rf-tipo"><option value="">Todos</option>${optTags(distinct(H.ITEMS, "tipo_inst"))}</select></div>
+        <div class="rc-field"><label>Setor</label><select id="rf-setor"><option value="">Todos</option>${optTags(distinct(H.ITEMS, "setor"))}</select></div>
+        <div class="rc-field"><label>Bioma</label><select id="rf-bioma"><option value="">Todos</option>${optTags(biomasList(H.ITEMS))}</select></div>
       </div>
       <div class="rc-actions">
         <button class="btn" id="r-run">Otimizar rotas</button>
@@ -368,7 +369,6 @@
         <button class="btn secondary" id="r-clear-anchors">Limpar âncoras</button>
         <span class="rc-status" id="r-status"></span>
       </div>`;
-    document.getElementById("r-orskey").value = (window.localStorage && localStorage.getItem("ors_key")) || "";
     const sync = () => {
       document.getElementById("r-miss-v").textContent = document.getElementById("r-miss").value;
       document.getElementById("r-visita-v").textContent = document.getElementById("r-visita").value + " h";
@@ -517,27 +517,8 @@
     const cidset = new Set(candidates.map(c => c.id));
     H.ITEMS.forEach(i => { if (anchorIds.has(i.id) && i.lat != null && !i.fora_ne && !cidset.has(i.id)) candidates.push(i); });
     const statusEl = document.getElementById("r-status");
-    let prov = makeProvider(params);
-    const useORS = document.getElementById("r-ors").checked;
-    const key = document.getElementById("r-orskey").value.trim();
-    if (useORS && key) {
-      statusEl.textContent = "Buscando tempos reais de carro (OpenRouteService)...";
-      try {
-        if (window.localStorage) localStorage.setItem("ors_key", key);
-        const valid = candidates.filter(n => n.lat != null && n.lon != null && !n.fora_ne);
-        const pre = valid.filter(n => n.preselecionada);
-        const opt = valid.filter(n => !n.preselecionada).sort((a, b) => (b.pontuacao || 0) - (a.pontuacao || 0));
-        const cap = Math.max(0, 50 - HUBS.length - pre.length); // limite gratuito ORS (~3500 rotas)
-        const pts = [...HUBS, ...pre, ...opt.slice(0, cap)].map(p => ({ lat: p.lat, lon: p.lon }));
-        const m = await fetchORSMatrix(pts, key);
-        prov = makeMatrixProvider(pts, m.durations, m.distances, makeProvider(params));
-        statusEl.textContent = "Distâncias por tempo real de carro (OpenRouteService).";
-      } catch (e) {
-        statusEl.textContent = "OpenRouteService indisponível (" + e.message + "). Usando distância aproximada.";
-      }
-    } else {
-      statusEl.textContent = "Distâncias aproximadas (linha reta × 1,3). Marque a opção acima para usar o tempo real de carro.";
-    }
+    const prov = makeProvider(params);
+    statusEl.textContent = "Distâncias estimadas por geografia (linha reta × 1,3).";
     params.prov = prov;
     const plan = planMissions(candidates, HUBS, params);
     routeLayer.clearLayers(); allLayer.clearLayers();
