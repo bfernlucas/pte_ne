@@ -162,17 +162,24 @@
     let hub = hubs[0], hd = Infinity;
     hubs.forEach(h => { const d = haversineKm(h, cen); if (d < hd) { hd = d; hub = h; } });
 
-    // ordena núcleo (NN + 2opt) e ajusta para caber nos dias (descarta menor nota se estourar)
+    // ordena o núcleo (NN + 2-opt) e ajusta para caber nos dias.
+    // Critério de corte = menor DENSIDADE DE VALOR (nota ÷ tempo marginal):
+    // remove primeiro a iniciativa que custa mais deslocamento por ponto de nota.
     let nodes = core.slice().sort((a, b) => b.pontuacao - a.pontuacao);
     let order = twoOpt(hub, nearestNeighbor(hub, nodes, params.prov), params.prov, true);
     let packed = packDays(hub, order, params.prov, params);
     const dropped = [];
-    while (packed.overflow.length && nodes.length) {
-      // remove a de menor nota entre as não visitadas (overflow)
-      const ovIds = new Set(packed.overflow.map(n => n.id));
-      let worst = null;
-      nodes.forEach(n => { if (ovIds.has(n.id) && (!worst || n.pontuacao < worst.pontuacao)) worst = n; });
-      if (!worst) worst = nodes[nodes.length - 1];
+    while (packed.overflow.length && nodes.length > 1) {
+      let worst = null, worstEff = Infinity;
+      for (let idx = 0; idx < order.length; idx++) {
+        const n = order[idx];
+        const a = idx === 0 ? hub : order[idx - 1];
+        const b = idx === order.length - 1 ? hub : order[idx + 1];
+        const marg = params.prov.h(a, n) + params.prov.h(n, b) - params.prov.h(a, b) + params.visitaH;
+        const eff = (n.pontuacao || 1) / Math.max(0.1, marg); // pontos por hora marginal
+        if (eff < worstEff) { worstEff = eff; worst = n; }
+      }
+      if (!worst) break;
       dropped.push(worst);
       nodes = nodes.filter(n => n.id !== worst.id);
       order = twoOpt(hub, nearestNeighbor(hub, nodes, params.prov), params.prov, true);
@@ -214,7 +221,8 @@
     const totalKm = packed.days.reduce((s, d) => s + d.km, 0) + packed.back.legKm;
     const totalH = packed.days.reduce((s, d) => s + d.driveH + d.visitH, 0) + packed.back.legH;
     const score = packed.visited.reduce((s, n) => s + (n.pontuacao || 0), 0);
-    return { hub, days: packed.days, back: packed.back, visited: packed.visited, dropped, totalKm, totalH, score };
+    const preCount = packed.visited.filter(n => n.preselecionada).length;
+    return { hub, days: packed.days, back: packed.back, visited: packed.visited, dropped, totalKm, totalH, score, preCount, optCount: packed.visited.length - preCount };
   }
 
   // ---------- planeja as 2 missões ----------
@@ -238,7 +246,17 @@
     const missions = groups.map((g, i) => buildMission(g, pools[i], hubs, params));
     const candVis = missions.reduce((s, m) => s + m.visited.length, 0);
     const preVis = missions.reduce((s, m) => s + m.visited.filter(n => n.preselecionada).length, 0);
-    return { missions, params, cobertura: { preTotal: preAll.length, preVis, candTotal: valid.length, candVis } };
+    const droppedPre = missions.flatMap(m => m.dropped.filter(n => n.preselecionada));
+    const totalScore = missions.reduce((s, m) => s + m.score, 0);
+    const totalKm = missions.reduce((s, m) => s + m.totalKm, 0);
+    const totalDays = missions.reduce((s, m) => s + m.days.length, 0);
+    return {
+      missions, params,
+      cobertura: {
+        preTotal: preAll.length, preVis, candTotal: valid.length, candVis,
+        optVis: candVis - preVis, totalScore, totalKm: Math.round(totalKm), totalDays, droppedPre
+      }
+    };
   }
   function avgLat(g) { return g.length ? g.reduce((s, n) => s + n.lat, 0) / g.length : -8; }
   function minDist(n, g) { return g.length ? Math.min(...g.map(m => haversineKm(n, m))) : Infinity; }
@@ -301,7 +319,7 @@
       </div>
       <div class="rc-group">
         <span class="rc-title">Parâmetros da rota</span>
-        <div class="rc-field"><label>Nº de missões</label><input id="r-miss" type="range" min="1" max="6" step="1" value="3"><span class="val" id="r-miss-v">3</span></div>
+        <div class="rc-field"><label>Nº de incursões</label><input id="r-miss" type="range" min="1" max="6" step="1" value="2"><span class="val" id="r-miss-v">2</span></div>
         <div class="rc-field"><label>Horas por visita</label><input id="r-visita" type="range" min="1" max="4" step="0.5" value="2"><span class="val" id="r-visita-v">2 h</span></div>
         <div class="rc-field"><label>Direção máx. por dia</label><input id="r-dir" type="range" min="6" max="10" step="1" value="8"><span class="val" id="r-dir-v">8 h</span></div>
         <div class="rc-field"><label>Dias por missão</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><span class="val" id="r-dias-v">5 dias</span></div>
@@ -429,50 +447,72 @@
       return;
     }
     const bounds = [];
-    let html;
-    if (cob.preTotal > 0) {
-      const full = cob.preVis >= cob.preTotal;
-      html = `<div class="cover ${full ? "ok" : "warn"}"><b>Pré-selecionadas cobertas: ${cob.preVis} de ${cob.preTotal}.</b> ${full ? "Todas incluídas no roteiro." : `Aumente o número de missões para cobrir todas. ${cob.candVis} paradas no total.`}</div>`;
-    } else {
-      html = `<div class="cover ok"><b>${cob.candVis} de ${cob.candTotal} iniciativas filtradas incluídas no roteiro.</b></div>`;
-    }
+    const k = plan.missions.length;
+    const effKm = cob.totalKm ? (cob.totalScore / cob.totalKm * 100) : 0;
+    const pct = cob.preTotal ? Math.round(100 * cob.preVis / cob.preTotal) : 100;
+    // ---- cartão de cenário ótimo ----
+    let html = `<div class="opt-card">
+      <div class="opt-title">Cenário ótimo · ${k} incursão(ões) de ${params.dias} dias</div>
+      <div class="opt-grid">
+        <div class="opt-m"><b>${cob.preTotal ? cob.preVis + "/" + cob.preTotal : cob.candVis}</b><span>${cob.preTotal ? "pré-selecionadas" : "iniciativas"}</span>${cob.preTotal ? `<div class="opt-bar"><i style="width:${pct}%"></i></div>` : ""}</div>
+        <div class="opt-m"><b>+${cob.optVis}</b><span>no caminho</span></div>
+        <div class="opt-m"><b>${cob.totalScore}</b><span>valor (pts)</span></div>
+        <div class="opt-m"><b>${cob.totalKm}</b><span>km</span></div>
+        <div class="opt-m"><b>${cob.totalDays}</b><span>dias úteis</span></div>
+        <div class="opt-m"><b>${effKm.toFixed(1)}</b><span>pts / 100 km</span></div>
+      </div>
+      <div class="opt-help">O ótimo prioriza as pré-selecionadas de maior <b>densidade de valor</b> (nota por tempo de deslocamento) e preenche o tempo restante com as iniciativas <b>no caminho</b> de melhor custo-benefício.</div>
+    </div>`;
+    // ---- cada incursão ----
     plan.missions.forEach((m, mi) => {
       const color = MCOLOR[mi % MCOLOR.length];
       const pts = [[m.hub.lat, m.hub.lon], ...m.visited.map(n => [n.lat, n.lon]), [m.hub.lat, m.hub.lon]];
       pts.forEach(p => bounds.push(p));
       L.polyline(pts, { color, weight: 3, opacity: .8 }).addTo(routeLayer);
       L.marker([m.hub.lat, m.hub.lon], { icon: hubIcon(color) })
-        .bindPopup(`<span class="pp-h">Base da Missão ${mi + 1}</span>${m.hub.nome} (${m.hub.uf}) — ponto de partida e retorno`).addTo(routeLayer);
+        .bindPopup(`<span class="pp-h">Base da Incursão ${mi + 1}</span>${m.hub.nome} (${m.hub.uf}) — partida e retorno`).addTo(routeLayer);
       let n = 0;
       m.visited.forEach(node => {
         n++;
         const uf = H.ufTokens(node.estado).join(", ");
-        L.marker([node.lat, node.lon], { icon: numIcon(n, color) })
-          .bindPopup(`<span class="pp-h">Missão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b>${node.preselecionada ? " · pré-selecionada" : ""}`)
+        L.marker([node.lat, node.lon], { icon: numIcon(n, color, !node.preselecionada) })
+          .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b> · ${node.preselecionada ? "pré-selecionada" : "no caminho"}`)
           .addTo(routeLayer);
       });
-      html += `<div class="mission"><div class="mh" style="background:${color}"><span class="mn">Missão ${mi + 1}</span><span class="mhub">base em ${m.hub.nome} (${m.hub.uf})</span></div>
-        <div class="msum"><span><b>${m.visited.length}</b> paradas</span><span><b>${m.days.length}</b> dia(s)</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.totalH.toFixed(1)}</b> h</span><span>nota somada <b>${m.score}</b></span></div>`;
+      html += `<div class="incursao">
+        <div class="ih" style="background:${color}"><span class="in">Incursão ${mi + 1}</span><span class="imoment">momento ${mi + 1}</span><span class="ihub">base: ${m.hub.nome} (${m.hub.uf})</span></div>
+        <div class="isum"><span><b>${m.visited.length}</b> paradas · <b>${m.preCount}</b> pré · ${m.optCount} no caminho</span><span><b>${m.days.length}</b> dias</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.score}</b> pts</span></div>`;
       let counter = 0;
       m.days.forEach((d, di) => {
-        html += `<div class="day"><div class="dh">Dia ${di + 1}<span>${Math.round(d.km)} km · ${(d.driveH + d.visitH).toFixed(1)} h de jornada</span></div>`;
+        const jh = d.driveH + d.visitH, fill = Math.min(100, jh / params.jornadaH * 100);
+        html += `<div class="day"><div class="dh">Dia ${di + 1}<span>${Math.round(d.km)} km · ${jh.toFixed(1)} h de jornada</span></div>
+          <div class="dbar" title="${jh.toFixed(1)} h de ${params.jornadaH} h"><i style="width:${fill}%"></i></div>`;
         d.stops.forEach(s => {
           counter++;
           if (s.legKm > 1) html += `<div class="leg-line">deslocamento: ${Math.round(s.legKm)} km (${s.legH.toFixed(1)} h)</div>`;
-          html += `<div class="stop ${s.node.preselecionada ? "pre" : ""}"><span class="n">${counter}</span><span class="nm">${H.esc(s.node.nome)} <span class="sc">${s.node.pontuacao} pts${s.node.preselecionada ? " · pré-selecionada" : ""}</span></span></div>`;
+          const pre = s.node.preselecionada;
+          html += `<div class="stop ${pre ? "pre" : "opt"}"><span class="n" style="background:${pre ? color : "#fff"};color:${pre ? "#fff" : color};border-color:${color}">${counter}</span><span class="nm">${H.esc(s.node.nome)} <span class="tag ${pre ? "tpre" : "topt"}">${pre ? "pré-selecionada" : "no caminho"}</span> <span class="sc">${s.node.pontuacao} pts</span></span></div>`;
         });
         html += `</div>`;
       });
-      html += `<div class="leg-line">retorno à base: ${Math.round(m.back.legKm)} km</div>`;
-      if (m.dropped.length) html += `<div class="dropped">Fora do orçamento de tempo: ${m.dropped.map(n => H.esc(n.nome)).join("; ")}.</div>`;
-      html += `</div>`;
+      html += `<div class="leg-line">retorno à base: ${Math.round(m.back.legKm)} km</div></div>`;
     });
+    // ---- não cobertas (trade-off do ótimo) ----
+    if (cob.droppedPre && cob.droppedPre.length) {
+      const wp = cob.droppedPre.reduce((s, n) => s + (n.pontuacao || 0), 0);
+      const lis = cob.droppedPre.slice().sort((a, b) => b.pontuacao - a.pontuacao)
+        .map(n => `<li>${H.esc(n.nome)} <span>${n.pontuacao} pts · ${H.ufTokens(n.estado).join(", ") || "—"}</span></li>`).join("");
+      html += `<div class="uncovered"><div class="uh">Pré-selecionadas fora destas ${k} incursões (${cob.droppedPre.length})</div>
+        <div class="usub">Somam ${wp} pts. Para incluí-las, aumente o nº de incursões ou de dias — ou reserve-as para uma incursão futura.</div>
+        <ul>${lis}</ul></div>`;
+    }
     panel.innerHTML = html;
     if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
   }
-  function numIcon(n, color) {
+  function numIcon(n, color, opt) {
+    const bg = opt ? "#fff" : color, fg = opt ? color : "#fff";
     return L.divIcon({
-      className: "", html: `<div style="background:${color};color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4)">${n}</div>`,
+      className: "", html: `<div style="background:${bg};color:${fg};width:${opt ? 19 : 24}px;height:${opt ? 19 : 24}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:${opt ? 10 : 12}px;border:2px solid ${opt ? color : "#fff"};box-shadow:0 1px 3px rgba(0,0,0,.4)">${n}</div>`,
       iconSize: [24, 24], iconAnchor: [12, 12]
     });
   }
