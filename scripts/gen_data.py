@@ -27,9 +27,9 @@ CRIT = [("relevancia", "Relevância territorial"), ("clima", "Adaptação/mitiga
 # Cores dos eixos alinhadas à paleta do Plano Brasil Nordeste (PTE-NE)
 EIXO_CORES = [("Finanças Sustentáveis e Inclusivas", "FSI", "#1f4da1"),
               ("Adensamento Tecnológico", "ADT", "#7a3fb8"),
-              ("Bioeconomia e Sistemas Agroalimentares Adaptados", "BIO", "#55b847"),
+              ("Bioeconomia e Sistemas Agroalimentares Adaptados", "BIO", "#43a047"),
               ("Transição Energética", "TE", "#f37520"),
-              ("Economia Circular e Solidária", "EC", "#17a2b8"),
+              ("Economia Circular e Solidária", "EC", "#f6a609"),
               ("Nova Infraestrutura Verde-Azul e Adaptação Climática", "NIVA", "#0d9488")]
 
 

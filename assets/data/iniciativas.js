@@ -17,7 +17,7 @@ window.PTE_DATA = {
    {
     "nome": "Bioeconomia e Sistemas Agroalimentares Adaptados",
     "cod": "BIO",
-    "cor": "#55b847"
+    "cor": "#43a047"
    },
    {
     "nome": "Transição Energética",
@@ -27,7 +27,7 @@ window.PTE_DATA = {
    {
     "nome": "Economia Circular e Solidária",
     "cod": "EC",
-    "cor": "#17a2b8"
+    "cor": "#f6a609"
    },
    {
     "nome": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
