@@ -87,13 +87,13 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .t-id{color:var(--faint);font-variant-numeric:tabular-nums;font-weight:600}
 .t-nome{font-weight:600;color:var(--ink);max-width:340px}
 .t-org{color:var(--muted);max-width:260px}
-.t-eixo{white-space:nowrap}
+.t-eixo{white-space:normal;min-width:170px}
 .t-nota{text-align:right;white-space:nowrap}
 .nota-num{font-weight:700;font-variant-numeric:tabular-nums;font-size:.95rem}
 .nota-track{display:inline-block;width:54px;height:7px;border-radius:4px;background:#e7e9f2;vertical-align:middle;margin-right:9px;overflow:hidden}
 .nota-fill{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--brand-2),var(--brand))}
 .eixo-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:middle}
-.eixo-name{font-size:.82rem;color:var(--ink)}
+.eixo-name{display:inline-block;max-width:210px;vertical-align:middle;font-size:.82rem;color:var(--ink);line-height:1.25}
 .badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:.7rem;font-weight:600;letter-spacing:.02em}
 .badge-pre{color:var(--pre);background:var(--pre-bg);border:1px solid var(--pre-bd)}
 .badge-no{color:var(--faint)}
@@ -109,7 +109,7 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .card .strip{height:5px;width:100%}
 .card .pad{padding:14px 16px 16px;display:flex;flex-direction:column;gap:9px;flex:1}
 .card .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.card .eixo-chip{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:999px;color:#fff;white-space:nowrap}
+.card .eixo-chip{font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding:3px 9px;border-radius:6px;color:#fff;white-space:normal;line-height:1.3;max-width:74%}
 .card .idtag{font-size:.7rem;color:var(--faint);font-weight:600}
 .card h3{font-family:var(--font);text-transform:none;color:var(--ink);font-size:1rem;font-weight:700;line-height:1.28;letter-spacing:0}
 .card .org{font-size:.82rem;color:var(--muted);line-height:1.35}
@@ -158,7 +158,7 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .heatmap th,.heatmap td{border:1px solid var(--border);padding:8px 10px;text-align:center}
 .heatmap thead th{position:static;background:var(--surface-2);color:var(--muted);font-family:var(--font);
   text-transform:none;letter-spacing:0;font-weight:600;font-size:.76rem;cursor:default}
-.heatmap th.rowh{background:var(--surface-2);color:var(--ink);text-align:left;font-weight:600;white-space:nowrap}
+.heatmap th.rowh{background:var(--surface-2);color:var(--ink);text-align:left;font-weight:600;white-space:normal;max-width:230px;line-height:1.25}
 .heatmap td .v{font-variant-numeric:tabular-nums;font-weight:600}
 .heatmap td .pre{display:block;font-size:.68rem;color:var(--pre);font-weight:600;margin-top:1px}
 .heatmap tr.tot td,.heatmap td.tot{background:#eef1fb;font-weight:700}
