@@ -470,7 +470,8 @@
   function overviewPopup(i, H, locs, li) {
     const anc = anchorIds.has(i.id), multi = locs.length > 1, cur = locs[li] || {};
     const locLine = `<br><span class="pp-k">Local:</span> ${H.esc(cur.municipio || "Multiestadual")}${cur.uf ? "/" + H.esc(cur.uf) : ""}${multi ? ` (${li + 1} de ${locs.length} — a rota escolhe o melhor)` : ""}`;
-    return `<span class="pp-h">${H.esc(i.nome)}</span>${H.esc(i.org || "")}<br>
+    const sub = H.orgSub ? H.orgSub(i) : "";
+    return `<span class="pp-h">${H.esc(i.nome)}</span>${sub ? H.esc(sub) + "<br>" : ""}
       <span class="pp-k">Eixo:</span> ${H.esc(i.eixo || "")}<br>
       <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${i.preselecionada ? " · pré-selecionada" : ""}${locLine}<br>
       <button class="pp-anchor ${anc ? "on" : ""}" onclick="window.PTE_ROTAS.toggleAnchor(${i.id})">${anc ? "Remover âncora" : "Fixar como âncora"}</button>`;

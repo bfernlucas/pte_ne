@@ -79,15 +79,15 @@
       const arr = th.querySelector(".arr");
       if (arr) arr.textContent = th.dataset.sort === k ? (dir < 0 ? "▼" : "▲") : "";
     });
-    if (!sorted.length) { $("#tbl-ranking tbody").innerHTML = `<tr><td colspan="9" class="empty-row">Nenhuma iniciativa corresponde aos filtros selecionados.</td></tr>`; return; }
+    if (!sorted.length) { $("#tbl-ranking tbody").innerHTML = `<tr><td colspan="8" class="empty-row">Nenhuma iniciativa corresponde aos filtros selecionados.</td></tr>`; return; }
     $("#tbl-ranking tbody").innerHTML = sorted.map(i => {
       const w = Math.round(100 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN)));
       const uf = ufTokens(i.estado).join(", ") || "—";
       const anc = window.PTE_ROTAS ? window.PTE_ROTAS.isAnchor(i.id) : false;
+      const sub = orgSub(i);
       return `<tr data-id="${i.id}" class="${state.selected.has(i.id) ? "sel" : ""}">
         <td class="num t-id">${i.id}</td>
-        <td class="t-nome">${esc(i.nome)}</td>
-        <td class="t-org">${esc(i.org || "—")}</td>
+        <td class="t-nome"><span class="nm">${esc(i.nome)}</span>${sub ? `<span class="sub">${esc(sub)}</span>` : ""}</td>
         <td>${esc(i.municipio || "—")}</td>
         <td>${esc(uf)}</td>
         <td class="t-eixo"><span class="eixo-dot" style="background:${eixoColor(i.eixo_cod)}"></span><span class="eixo-name">${esc(i.eixo || "—")}</span></td>
@@ -128,7 +128,8 @@
             <span class="idtag">#${i.id}${i.preselecionada ? ' · <span style="color:var(--pre)">pré-selecionada</span>' : ""}</span>
           </div>
           <h3>${esc(i.nome)}</h3>
-          <div class="org">${esc(i.org || "")}</div>
+          ${orgSub(i) ? `<div class="org">${esc(orgSub(i))}</div>` : ""}
+          ${i.objetivo ? `<p class="desc">${esc(trunc(i.objetivo, 180))}</p>` : ""}
           <div class="facts">
             ${fact("Local", local)}
             ${fact("Setor", i.setor)}
@@ -195,8 +196,9 @@
   }
   function popupHtml(i) {
     const uf = ufTokens(i.estado).join(", ");
+    const sub = orgSub(i);
     return `<span class="pp-h">${esc(i.nome)}</span>
-      ${esc(i.org || "")}<br>
+      ${sub ? esc(sub) + "<br>" : ""}
       <span class="pp-k">Local:</span> ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br>
       <span class="pp-k">Eixo:</span> ${esc(i.eixo || "")}<br>
       <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${i.preselecionada ? " · pré-selecionada" : ""}`;
@@ -279,8 +281,10 @@
           const v = i.criterios[c.key] || 0;
           return `<div class="cr"><span class="lab">${c.label}</span><span>${v}</span><span class="bar"><i style="width:${(v / 3) * 100}%;background:${RCOL[k % RCOL.length]}"></i></span></div>`;
         }).join("");
+        const sub = orgSub(i);
         return `<div class="cmp-card" style="border-top-color:${RCOL[k % RCOL.length]}">
           <div class="cc-h"><span>${esc(i.nome)}</span><b>${i.pontuacao}</b></div>
+          ${sub ? `<div class="cc-sub">${esc(sub)}</div>` : ""}
           <div class="cc-meta">${esc(i.eixo || "")} · ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}</div>
           <div class="crit">${crit}</div>
           <button class="cc-rm" data-id="${id}">Remover da comparação</button>
@@ -332,10 +336,23 @@
     else if (state.view === "rotas" && window.PTE_ROTAS) window.PTE_ROTAS.render(helpers());
     else if (state.view === "comparar") renderCompare();
   }
-  function helpers() { return { ITEMS, META, byId, eixoColor, nameByCod, popupHtml, ufTokens, esc, trunc, UF_NOME }; }
+  function helpers() { return { ITEMS, META, byId, eixoColor, nameByCod, popupHtml, ufTokens, esc, trunc, orgSub, UF_NOME }; }
 
   function esc(s) { return (s == null ? "" : String(s)).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function trunc(s, n) { s = s == null ? "" : String(s); return s.length > n ? s.slice(0, n - 1) + "…" : s; }
+  // forma normalizada (sem acento/parênteses/pontuação) para comparar nome × organização
+  function normName(s) {
+    return (s == null ? "" : String(s)).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/\([^)]*\)/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
+  }
+  // organização a exibir como subtítulo — só quando difere de fato do nome da iniciativa
+  function orgSub(i) {
+    const o = (i.org == null ? "" : String(i.org)).trim();
+    if (!o) return "";
+    const a = normName(i.nome), b = normName(o);
+    if (!b || a === b || a.includes(b) || b.includes(a)) return "";
+    return o;
+  }
 
   renderKpis(); initFilters(); initCompare();
   window.PTE_DASH = { refresh, helpers, state, filtered };
