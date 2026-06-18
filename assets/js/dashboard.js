@@ -129,7 +129,7 @@
           </div>
           <h3>${esc(i.nome)}</h3>
           ${orgSub(i) ? `<div class="org">${esc(orgSub(i))}</div>` : ""}
-          ${i.objetivo ? `<p class="desc">${esc(trunc(i.objetivo, 180))}</p>` : ""}
+          ${i.objetivo ? `<p class="desc">${esc(truncWords(i.objetivo, 155))}</p>` : ""}
           <div class="facts">
             ${fact("Local", local)}
             ${fact("Setor", i.setor)}
@@ -340,10 +340,30 @@
 
   function esc(s) { return (s == null ? "" : String(s)).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function trunc(s, n) { s = s == null ? "" : String(s); return s.length > n ? s.slice(0, n - 1) + "…" : s; }
+  // trunca em limite de palavra (sem cortar no meio da palavra)
+  function truncWords(s, n) {
+    s = (s == null ? "" : String(s)).trim();
+    if (s.length <= n) return s;
+    const cut = s.slice(0, n), sp = cut.lastIndexOf(" ");
+    return (sp > n * 0.6 ? cut.slice(0, sp) : cut).replace(/[\s.,;:–-]+$/, "") + "…";
+  }
   // forma normalizada (sem acento/parênteses/pontuação) para comparar nome × organização
   function normName(s) {
     return (s == null ? "" : String(s)).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
       .replace(/\([^)]*\)/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
+  }
+  // padroniza maiúsculas/minúsculas de textos "gritados" (CAIXA ALTA) com mais de
+  // uma palavra; acrônimos de palavra única (UFAL, MMA, SEBRAE) ficam intactos
+  const SMALL_WORDS = new Set(["de", "da", "do", "dos", "das", "e", "em", "no", "na", "nos", "nas", "a", "o", "ao", "à", "para", "com", "ou"]);
+  function tidyOrg(s) {
+    s = String(s);
+    const letters = (s.match(/[a-zà-ÿA-ZÀ-Ÿ]/g) || []).length;
+    const lowers = (s.match(/[a-zà-ÿ]/g) || []).length;
+    if (letters > 3 && /\s/.test(s) && lowers / letters < 0.15) {
+      s = s.toLowerCase().replace(/[a-zà-ÿ0-9]+/g, (w, off) =>
+        (off > 0 && SMALL_WORDS.has(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1));
+    }
+    return s;
   }
   // organização a exibir como subtítulo — só quando difere de fato do nome da iniciativa
   function orgSub(i) {
@@ -351,7 +371,7 @@
     if (!o) return "";
     const a = normName(i.nome), b = normName(o);
     if (!b || a === b || a.includes(b) || b.includes(a)) return "";
-    return o;
+    return tidyOrg(o);
   }
 
   renderKpis(); initFilters(); initCompare();

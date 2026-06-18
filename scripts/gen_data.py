@@ -25,6 +25,56 @@ ALT_LOCAIS = {
     ],
 }
 
+# Revisão editorial dos nomes: nome principal padronizado, sem siglas de UF,
+# sem subtítulos/descrições e sem acrônimo da organização (que vira subtítulo).
+NAME_OVERRIDES = {
+    3: "Conselho Gestor do Fundo Rotativo",
+    5: "Rede de Ativadores de Crédito Socioambiental",
+    7: "ID Hub Brazil",
+    8: "Projeto Pacto Global de Jovens pelo Clima",
+    9: "OxeTech",
+    11: "Programa Jovem Empreendedor Primeiros Passos (JEPP)",
+    13: "Parque Tecnológico Porto Digital",
+    17: "Rede BATUC de Turismo Comunitário",
+    18: "Associação das Comunidades Negras Rurais Quilombolas do Maranhão",
+    19: "Territórios da Cidadania",
+    21: "Green Energy Park",
+    22: "Logística Verde e Operações Sustentáveis no Porto de Suape",
+    23: "SENAI CIMATEC",
+    24: "Programa 1 Milhão de Tetos Solares (P1MTS)",
+    25: "Programa Água Doce",
+    26: "APROBAMBU",
+    27: "Raízes Solares",
+    28: "Programa Sertão Vivo",
+    29: "Crédito de Carbono Integral (CCI-BSHE)",
+    30: "Programa Município Selo Verde",
+    34: "Modelo de Gestão Municipal de Resíduos Sólidos de Arez",
+    37: "Labifor",
+    39: "Programas Complementares de Captação de Água da ASA",
+    40: "Projeto Tecnologia SARA",
+    41: "Zoneamento Ecológico-Econômico da Zona Costeira do Ceará",
+    44: "Conecta Caatinga",
+    47: "SIMACaatinga",
+    49: "Renova-Semiárido",
+    51: "No Clima da Caatinga",
+    59: "Comitê da Bacia Hidrográfica do Rio São Francisco (CBHSF)",
+    60: "Observatório da Transição Energética",
+    61: "Hub de Hidrogênio Verde do Complexo do Pecém",
+    62: "Projeto Pecém – Fortescue",
+    68: "Voltalia – Cluster Serra Branca",
+    69: "Complexo Solar São Gonçalo – Enel Green Power",
+    72: "Programa Indústria Verde – FIEB",
+    73: "Plano de Descarbonização e Hub de H2V – Porto do Itaqui / EMAP",
+    74: "Complexo Eólico Marinho Dragão do Mar – Energo",
+    75: "Hub de Hidrogênio Verde de Sergipe – Green Energy Park / SergipeTec",
+    76: "Cooperativa de Energia Solar Bem Viver / CERSA",
+    77: "Grupo EQM / ZEG Biogás – Biometano da Vinhaça",
+    78: "SENAI e Hubs de Inovação em Hidrogênio Verde / Powershoring",
+    80: "Debêntures Verdes da Casa dos Ventos (Complexo Rio do Vento)",
+    81: "Instituto Clima e Sociedade",
+    82: "SITAWI Finanças do Bem",
+}
+
 EIXO_COD = {"Finanças Sustentáveis e Inclusivas": "FSI", "Adensamento Tecnológico": "ADT",
             "Bioeconomia e Sistemas Agroalimentares Adaptados": "BIO", "Transição Energética": "TE",
             "Economia Circular e Solidária": "EC", "Nova Infraestrutura Verde-Azul e Adaptação Climática": "NIVA"}
@@ -58,6 +108,7 @@ def main():
         if not nm or str(nm).strip().upper() == "NOVAS INICIATIVAS":
             continue
         idn = int(val(r, 1))
+        nm = NAME_OVERRIDES.get(idn, nm)
         crit = {key: val(r, 22 + k) for k, (key, _) in enumerate(CRIT)}
         eixo = val(r, 16)
         items.append({
