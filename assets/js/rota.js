@@ -315,8 +315,9 @@
   function ensureMap() {
     if (map) return;
     map = L.map("map-rotas").setView([-8.6, -39.5], 5);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 19 }).addTo(map);
+    if (window.PTE_MAP) PTE_MAP.setup(map, { base: "Ruas e estradas", boundaries: true, airports: true });
+    else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20 }).addTo(map);
     allLayer = L.layerGroup().addTo(map);
     routeLayer = L.layerGroup().addTo(map);
   }

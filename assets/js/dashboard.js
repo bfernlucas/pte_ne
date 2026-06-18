@@ -155,21 +155,26 @@
   function ensureMapGeral() {
     if (mapGeral) return;
     mapGeral = L.map("map-geral", { zoomControl: true }).setView([-8.6, -39.5], 5);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 19 }).addTo(mapGeral);
+    if (window.PTE_MAP) PTE_MAP.setup(mapGeral, { base: "Ruas e estradas", boundaries: true });
+    else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20 }).addTo(mapGeral);
     layerGeral = L.layerGroup().addTo(mapGeral);
     renderMapLegend();
   }
+  function markerR(v) { return 7 + 17 * ((v - PMIN) / Math.max(1, PMAX - PMIN)); }
   function renderMapLegend() {
     const cores = META.eixos.map(e => `<div class="li"><span class="dot" style="background:${e.cor}"></span>${e.nome}</div>`).join("");
     const szs = [PMIN, Math.round((PMIN + PMAX) / 2), PMAX].map(v => {
-      const r = 5 + 13 * ((v - PMIN) / Math.max(1, PMAX - PMIN));
+      const r = markerR(v);
       return `<div class="sz"><span class="szc" style="width:${r * 2}px;height:${r * 2}px"></span>${v}</div>`;
     }).join("");
     $("#map-side").innerHTML = `
-      <div class="legend"><h4>Eixo (cor)</h4>${cores}</div>
-      <div class="legend"><h4>Nota (tamanho)</h4><div class="sizes">${szs}</div>
-        <div class="note">Contorno laranja indica iniciativa pré-selecionada para incursão de campo.</div></div>`;
+      <div class="legend"><h4>Eixo (cor do círculo)</h4>${cores}</div>
+      <div class="legend"><h4>Nota (tamanho do círculo)</h4><div class="sizes">${szs}</div>
+        <div class="li" style="margin-top:8px"><span class="dot ring-pre"></span>Pré-selecionada (contorno laranja)</div>
+        <div class="li"><span class="apt-ico apt-leg">✈</span>Aeroporto</div>
+        <div class="li"><span class="uf-leg"></span>Limite estadual</div>
+        <div class="note">Use o controle de camadas no canto do mapa (↗) para alternar entre ruas, satélite e relevo, e ligar/desligar limites e aeroportos.</div></div>`;
   }
   function renderMapGeral(list) {
     ensureMapGeral();
@@ -177,12 +182,12 @@
     list.forEach(i => {
       const locs = (i.locais && i.locais.length) ? i.locais
         : (i.lat != null && i.lon != null ? [{ lat: i.lat, lon: i.lon, municipio: i.municipio, uf: ufTokens(i.estado).join(", ") }] : []);
-      const r = 5 + 13 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN));
+      const r = markerR(i.pontuacao);
       locs.forEach((loc, li) => {
         const extra = locs.length > 1 ? `<br><span class="pp-k">Local ${li + 1} de ${locs.length}:</span> ${esc(loc.municipio || "")}${loc.uf ? "/" + esc(loc.uf) : ""}` : "";
         L.circleMarker([loc.lat, loc.lon], {
-          radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: i.fora_ne ? .45 : .82,
-          color: i.preselecionada ? "#f37520" : "#fff", weight: i.preselecionada ? 3 : 1.2
+          radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: i.fora_ne ? .5 : .85,
+          color: i.preselecionada ? "#f37520" : "#fff", weight: i.preselecionada ? 3.5 : 1.4
         }).bindPopup(popupHtml(i) + extra).addTo(layerGeral);
       });
     });
