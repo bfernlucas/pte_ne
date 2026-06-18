@@ -1,8 +1,8 @@
 window.PTE_DATA = {
  "meta": {
   "fonte": "PTE2026_matriz_dashboard.xlsx",
-  "total": 82,
-  "preselecionadas": 31,
+  "total": 83,
+  "preselecionadas": 32,
   "eixos": [
    {
     "nome": "Finanças Sustentáveis e Inclusivas",
@@ -1051,7 +1051,7 @@ window.PTE_DATA = {
   },
   {
    "id": 24,
-   "nome": "Programa 1 Milhão de Tetos Solares (P1MTS) – Nordeste",
+   "nome": "Programa 1 Milhão de Tetos Solares (P1MTS) – Remígio (PB)",
    "objetivo": "Promover a produção descentralizada de energia fotovoltaica em residências e unidades comunitárias do Semiárido, fortalecendo a autonomia energética, a inclusão social e a justiça climática para famílias de baixa renda e em situação de vulnerabilidade.",
    "tematica": "Justiça climática e inclusão social; produção fotovoltaica comunitária; redução da vulnerabilidade de famílias rurais do Semiárido.",
    "org": "Governo Federal / estaduais – Programa 1 Milhão de Tetos Solares (articulação ASA/sociedade civil)",
@@ -1059,11 +1059,11 @@ window.PTE_DATA = {
    "fundacao": "2002",
    "cnae": "9430-8/00 - Atividades de associações de defesa de direitos sociais",
    "endereco": "Rua Monte Alverne, 287, Bairro do Hipódromo, Recife - PE \nCEP: 52041-610.",
-   "lat": -8.0476,
-   "lon": -34.877,
+   "lat": -6.9528,
+   "lon": -35.8331,
    "avaliador": "Lucas",
-   "municipio": "Recife",
-   "estado": "BA, PE, CE, RN, AL, PI, PB, SE, MA",
+   "municipio": "Remígio",
+   "estado": "PB",
    "biomas": "Mata Atlântica, Caatinga, Cerrado, Amazônia",
    "eixo": "Transição Energética",
    "eixo_cod": "TE",
@@ -1088,8 +1088,7 @@ window.PTE_DATA = {
    "observacoes": "Salvaguardas: definição reputacional, com base no histórico de intervenção do P1MC da ASA, projeto ainda em desenvolvimento não há informações robustas sobre violação de salvaguardas, por exemplo.\n\nCritérios: iniciativa da Asa em parceria com a Fundação Banco do Brasil, promove a geração solar fotovoltaica descentralizada para famílias rurais de baixa renda do Semiárido, com foco no combate à pobreza energética e no uso produtivo da energia, como o bombeamento para irrigação. Na primeira fase, vai implantar pequenas usinas de geração solar para 400 famílias rurais e três escolas-fábrica de painéis fotovoltaicos, em Remígio (PB), Araripina (PE) e Porteirinha (MG). O projeto tem forte relevância territorial, capacidade de replicabilidade e governança, dado a experiência do P1MC, além disso, dialóga muito fortemente com temas de adaptação e mitigação climática e potencial de financiamento. Mas, o projeto ainda está em estágio inicial, pois foi lançado em março de 2026, ainda não se sabe ao certo sobre a reaplicabilidade e viabilidade do projeto.\n\nSugestão: realizar a visita as experiências em andamento, consultar o nível de desenvolvimento em Remígio ou Araripina.",
    "preselecionada": true,
    "pre_ufs": [
-    "PB",
-    "PE"
+    "PB"
    ],
    "fora_ne": false
   },
@@ -3508,6 +3507,49 @@ window.PTE_DATA = {
    "observacoes": "Infraestrutura financeira pioneira para a economia de impacto, com inovação tecnológica e social máxima (crowdlending de impacto e blended finance) e destaque na inclusão produtiva e na equidade de gênero, raça e etnia (foco em pequenos negócios sem acesso a crédito e debate explícito de equidade racial e de gênero, incluindo mulheres indígenas Krikati/MA). Apresenta nota máxima no fortalecimento das cadeias produtivas sustentáveis do NE (sociobiodiversidade e agricultura familiar) e na viabilidade operacional e replicabilidade/escala (mais de 15 anos, mais de R$ 475 milhões mobilizados e plataforma replicável por região). A relevância territorial é intermediária (chamadas e capacitações específicas no NE, mas atuação nacional), assim como a atração de investimentos verdes (mobiliza capital filantrópico e de impacto em escala menor que bancos e plataformas federais) e a governança multinível (parcerias público-privadas e filantrópicas).",
    "preselecionada": false,
    "pre_ufs": [],
+   "fora_ne": false
+  },
+  {
+   "id": 83,
+   "nome": "Programa 1 Milhão de Tetos Solares (P1MTS) – Araripina (PE)",
+   "objetivo": "Promover a produção descentralizada de energia fotovoltaica em residências e unidades comunitárias do Semiárido, fortalecendo a autonomia energética, a inclusão social e a justiça climática para famílias de baixa renda e em situação de vulnerabilidade.",
+   "tematica": "Justiça climática e inclusão social; produção fotovoltaica comunitária; redução da vulnerabilidade de famílias rurais do Semiárido.",
+   "org": "Governo Federal / estaduais – Programa 1 Milhão de Tetos Solares (articulação ASA/sociedade civil)",
+   "cnpj": "05.080.329/0001-23",
+   "fundacao": "2002",
+   "cnae": "9430-8/00 - Atividades de associações de defesa de direitos sociais",
+   "endereco": "Rua Monte Alverne, 287, Bairro do Hipódromo, Recife - PE \nCEP: 52041-610.",
+   "lat": -7.5764,
+   "lon": -40.4983,
+   "avaliador": "Lucas",
+   "municipio": "Araripina",
+   "estado": "PE",
+   "biomas": "Mata Atlântica, Caatinga, Cerrado, Amazônia",
+   "eixo": "Transição Energética",
+   "eixo_cod": "TE",
+   "eixo_sec": "ADT, NIVA, BIO",
+   "setor": "Terciário",
+   "natureza": "Associação Privada",
+   "tipo_inst": "ONGs (Organizações Não Governamentais)",
+   "salvaguardas": "Atende",
+   "criterios": {
+    "relevancia": 3,
+    "clima": 3,
+    "cadeias": 3,
+    "viabilidade": 1,
+    "replicabilidade": 1,
+    "inovacao": 3,
+    "investimentos": 3,
+    "inclusao": 3,
+    "equidade": 3,
+    "governanca": 3
+   },
+   "pontuacao": 26,
+   "observacoes": "Salvaguardas: definição reputacional, com base no histórico de intervenção do P1MC da ASA, projeto ainda em desenvolvimento não há informações robustas sobre violação de salvaguardas, por exemplo.\n\nCritérios: iniciativa da Asa em parceria com a Fundação Banco do Brasil, promove a geração solar fotovoltaica descentralizada para famílias rurais de baixa renda do Semiárido, com foco no combate à pobreza energética e no uso produtivo da energia, como o bombeamento para irrigação. Na primeira fase, vai implantar pequenas usinas de geração solar para 400 famílias rurais e três escolas-fábrica de painéis fotovoltaicos, em Remígio (PB), Araripina (PE) e Porteirinha (MG). O projeto tem forte relevância territorial, capacidade de replicabilidade e governança, dado a experiência do P1MC, além disso, dialóga muito fortemente com temas de adaptação e mitigação climática e potencial de financiamento. Mas, o projeto ainda está em estágio inicial, pois foi lançado em março de 2026, ainda não se sabe ao certo sobre a reaplicabilidade e viabilidade do projeto.\n\nSugestão: realizar a visita as experiências em andamento, consultar o nível de desenvolvimento em Remígio ou Araripina.",
+   "preselecionada": true,
+   "pre_ufs": [
+    "PE"
+   ],
    "fora_ne": false
   }
  ]
