@@ -168,18 +168,20 @@
     let nodes = core.slice().sort((a, b) => b.pontuacao - a.pontuacao);
     let order = twoOpt(hub, nearestNeighbor(hub, nodes, params.prov), params.prov, true);
     let packed = packDays(hub, order, params.prov, params);
+    const anchorSet = params.anchorSet || new Set();
     const dropped = [];
     while (packed.overflow.length && nodes.length > 1) {
       let worst = null, worstEff = Infinity;
       for (let idx = 0; idx < order.length; idx++) {
         const n = order[idx];
+        if (anchorSet.has(n.id)) continue; // âncora nunca é descartada
         const a = idx === 0 ? hub : order[idx - 1];
         const b = idx === order.length - 1 ? hub : order[idx + 1];
         const marg = params.prov.h(a, n) + params.prov.h(n, b) - params.prov.h(a, b) + params.visitaH;
         const eff = (n.pontuacao || 1) / Math.max(0.1, marg); // pontos por hora marginal
         if (eff < worstEff) { worstEff = eff; worst = n; }
       }
-      if (!worst) break;
+      if (!worst) break; // só restam âncoras: não dá para encurtar mais
       dropped.push(worst);
       nodes = nodes.filter(n => n.id !== worst.id);
       order = twoOpt(hub, nearestNeighbor(hub, nodes, params.prov), params.prov, true);
@@ -229,9 +231,13 @@
   function planMissions(candidates, hubs, params) {
     params.prov = params.prov || makeProvider(params);
     const valid = candidates.filter(n => n.lat != null && n.lon != null && !n.fora_ne);
+    const anchorSet = new Set(params.anchors || []);
+    params.anchorSet = anchorSet;
+    const isAnc = n => anchorSet.has(n.id);
     const preAll = valid.filter(n => n.preselecionada);
-    // núcleo das missões: pré-selecionadas; se o filtro não tiver nenhuma, roteia todas as candidatas
-    let core = preAll, opt = valid.filter(n => !n.preselecionada);
+    // núcleo = âncoras (obrigatórias) + pré-selecionadas; se vazio, roteia todas as candidatas
+    let core = valid.filter(n => n.preselecionada || isAnc(n));
+    let opt = valid.filter(n => !n.preselecionada && !isAnc(n));
     if (core.length === 0) { core = valid; opt = []; }
     if (!params.incluirOpcionais) opt = [];
     const k = Math.max(1, params.numMissoes || 2);
@@ -246,7 +252,10 @@
     const missions = groups.map((g, i) => buildMission(g, pools[i], hubs, params));
     const candVis = missions.reduce((s, m) => s + m.visited.length, 0);
     const preVis = missions.reduce((s, m) => s + m.visited.filter(n => n.preselecionada).length, 0);
-    const droppedPre = missions.flatMap(m => m.dropped.filter(n => n.preselecionada));
+    const visitedIds = new Set(missions.flatMap(m => m.visited.map(n => n.id)));
+    const droppedPre = missions.flatMap(m => m.dropped.filter(n => n.preselecionada && !isAnc(n)));
+    const ancAll = valid.filter(isAnc);
+    const ancMissed = ancAll.filter(a => !visitedIds.has(a.id));
     const totalScore = missions.reduce((s, m) => s + m.score, 0);
     const totalKm = missions.reduce((s, m) => s + m.totalKm, 0);
     const totalDays = missions.reduce((s, m) => s + m.days.length, 0);
@@ -254,7 +263,8 @@
       missions, params,
       cobertura: {
         preTotal: preAll.length, preVis, candTotal: valid.length, candVis,
-        optVis: candVis - preVis, totalScore, totalKm: Math.round(totalKm), totalDays, droppedPre
+        optVis: candVis - preVis, totalScore, totalKm: Math.round(totalKm), totalDays, droppedPre,
+        ancTotal: ancAll.length, ancVis: ancAll.length - ancMissed.length, ancMissed
       }
     };
   }
@@ -280,6 +290,7 @@
   if (typeof window === "undefined") return;
 
   let map, allLayer, routeLayer, lastH, mode = "all";
+  const anchorIds = new Set();
   const MCOLOR = ["#1f4da1", "#f37520", "#43a047", "#7a3fb8", "#e0392b", "#0d9488"];
   function ensureMap() {
     if (map) return;
@@ -316,13 +327,16 @@
         <div class="rc-field"><label>Tipo de organização</label><select id="rf-tipo"><option value="">Todos</option>${optTags(distinct(H.ITEMS, "tipo_inst"))}</select></div>
         <div class="rc-field"><label>Setor</label><select id="rf-setor"><option value="">Todos</option>${optTags(distinct(H.ITEMS, "setor"))}</select></div>
         <div class="rc-field"><label>Bioma</label><select id="rf-bioma"><option value="">Todos</option>${optTags(biomasList(H.ITEMS))}</select></div>
+        <div class="rc-field rc-anchorfield"><label>Âncoras — obrigatórias na rota</label>
+          <select id="rf-anchor-add"><option value="">Adicionar âncora...</option>${[...H.ITEMS].filter(i => i.lat != null && !i.fora_ne).sort((a, b) => a.nome.localeCompare(b.nome, "pt")).map(i => `<option value="${i.id}">${i.nome.replace(/"/g, "&quot;")}</option>`).join("")}</select>
+          <div class="rc-anchors" id="rf-anchors"></div></div>
       </div>
       <div class="rc-group">
         <span class="rc-title">Parâmetros da rota</span>
         <div class="rc-field"><label>Nº de incursões</label><input id="r-miss" type="range" min="1" max="6" step="1" value="2"><span class="val" id="r-miss-v">2</span></div>
         <div class="rc-field"><label>Horas por visita</label><input id="r-visita" type="range" min="1" max="4" step="0.5" value="2"><span class="val" id="r-visita-v">2 h</span></div>
         <div class="rc-field"><label>Direção máx. por dia</label><input id="r-dir" type="range" min="6" max="10" step="1" value="8"><span class="val" id="r-dir-v">8 h</span></div>
-        <div class="rc-field"><label>Dias por missão</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><span class="val" id="r-dias-v">5 dias</span></div>
+        <div class="rc-field"><label>Dias por incursão (máx. 7 corridos)</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><span class="val" id="r-dias-v">5 dias</span></div>
         <label class="rc-chk"><input type="checkbox" id="r-opt" checked> Incluir outras iniciativas que estejam no caminho</label>
         <label class="rc-chk"><input type="checkbox" id="r-ors"> Usar tempo real de carro (OpenRouteService)</label>
         <div class="rc-field"><label>Chave OpenRouteService (opcional)</label><input id="r-orskey" type="password" placeholder="cole a chave da API"></div>
@@ -342,7 +356,21 @@
     ["r-miss", "r-visita", "r-dir", "r-dias"].forEach(id => document.getElementById(id).addEventListener("input", sync));
     document.getElementById("r-run").addEventListener("click", () => draw(H));
     document.getElementById("r-clear").addEventListener("click", () => showAll(H));
+    document.getElementById("rf-anchor-add").addEventListener("change", e => {
+      if (e.target.value) { anchorIds.add(+e.target.value); e.target.value = ""; renderAnchors(H); }
+    });
+    renderAnchors(H);
     sync();
+  }
+  function renderAnchors(H) {
+    const box = document.getElementById("rf-anchors");
+    if (!box) return;
+    if (!anchorIds.size) { box.innerHTML = `<span class="rc-anchors-empty">Nenhuma âncora — a rota é definida só pela otimização.</span>`; return; }
+    box.innerHTML = [...anchorIds].map(id => {
+      const i = H.byId(id);
+      return `<span class="achip">${H.esc(H.trunc(i.nome, 24))}<button data-id="${id}" title="remover âncora">×</button></span>`;
+    }).join("");
+    box.querySelectorAll(".achip button").forEach(b => b.addEventListener("click", () => { anchorIds.delete(+b.dataset.id); renderAnchors(H); }));
   }
   function readParams() {
     return {
@@ -351,6 +379,7 @@
       dirMaxH: +document.getElementById("r-dir").value,
       visitaH: +document.getElementById("r-visita").value,
       incluirOpcionais: document.getElementById("r-opt").checked,
+      anchors: [...anchorIds],
       detour: 1.3, speedKmh: 65
     };
   }
@@ -415,6 +444,9 @@
     const params = readParams();
     const f = readFilters();
     const candidates = applyFilters(H.ITEMS, f, H);
+    // âncoras entram sempre, mesmo se não casarem com os outros filtros
+    const cidset = new Set(candidates.map(c => c.id));
+    H.ITEMS.forEach(i => { if (anchorIds.has(i.id) && i.lat != null && !i.fora_ne && !cidset.has(i.id)) candidates.push(i); });
     const statusEl = document.getElementById("r-status");
     let prov = makeProvider(params);
     const useORS = document.getElementById("r-ors").checked;
@@ -451,17 +483,22 @@
     const effKm = cob.totalKm ? (cob.totalScore / cob.totalKm * 100) : 0;
     const pct = cob.preTotal ? Math.round(100 * cob.preVis / cob.preTotal) : 100;
     // ---- cartão de cenário ótimo ----
+    const ancMetric = cob.ancTotal ? `<div class="opt-m"><b>${cob.ancVis}/${cob.ancTotal}</b><span>âncoras</span></div>` : "";
+    const ancWarn = (cob.ancMissed && cob.ancMissed.length)
+      ? `<div class="opt-warn">${cob.ancMissed.length} âncora(s) não couberam no orçamento: ${cob.ancMissed.map(n => H.esc(n.nome)).join("; ")}. Aumente os dias ou o nº de incursões.</div>` : "";
     let html = `<div class="opt-card">
-      <div class="opt-title">Cenário ótimo · ${k} incursão(ões) de ${params.dias} dias</div>
+      <div class="opt-title">Cenário ótimo · ${k} incursão(ões) de até ${params.dias} dias</div>
       <div class="opt-grid">
         <div class="opt-m"><b>${cob.preTotal ? cob.preVis + "/" + cob.preTotal : cob.candVis}</b><span>${cob.preTotal ? "pré-selecionadas" : "iniciativas"}</span>${cob.preTotal ? `<div class="opt-bar"><i style="width:${pct}%"></i></div>` : ""}</div>
+        ${ancMetric}
         <div class="opt-m"><b>+${cob.optVis}</b><span>no caminho</span></div>
         <div class="opt-m"><b>${cob.totalScore}</b><span>valor (pts)</span></div>
         <div class="opt-m"><b>${cob.totalKm}</b><span>km</span></div>
-        <div class="opt-m"><b>${cob.totalDays}</b><span>dias úteis</span></div>
+        <div class="opt-m"><b>${cob.totalDays}</b><span>dias (total)</span></div>
         <div class="opt-m"><b>${effKm.toFixed(1)}</b><span>pts / 100 km</span></div>
       </div>
-      <div class="opt-help">O ótimo prioriza as pré-selecionadas de maior <b>densidade de valor</b> (nota por tempo de deslocamento) e preenche o tempo restante com as iniciativas <b>no caminho</b> de melhor custo-benefício.</div>
+      ${ancWarn}
+      <div class="opt-help">As <b>âncoras</b> são sempre incluídas; em volta delas o ótimo encaixa as pré-selecionadas de maior <b>densidade de valor</b> (nota por tempo de deslocamento) e as iniciativas <b>no caminho</b> de melhor custo-benefício.</div>
     </div>`;
     // ---- comparador de cenários (nº de incursões) ----
     const cmp = [];
@@ -485,8 +522,9 @@
       m.visited.forEach(node => {
         n++;
         const uf = H.ufTokens(node.estado).join(", ");
-        L.marker([node.lat, node.lon], { icon: numIcon(n, color, !node.preselecionada) })
-          .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b> · ${node.preselecionada ? "pré-selecionada" : "no caminho"}`)
+        const anc = anchorIds.has(node.id);
+        L.marker([node.lat, node.lon], { icon: numIcon(n, color, !node.preselecionada, anc) })
+          .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b> · ${anc ? "âncora" : node.preselecionada ? "pré-selecionada" : "no caminho"}`)
           .addTo(routeLayer);
       });
       html += `<div class="incursao">
@@ -500,8 +538,11 @@
         d.stops.forEach(s => {
           counter++;
           if (s.legKm > 1) html += `<div class="leg-line">deslocamento: ${Math.round(s.legKm)} km (${s.legH.toFixed(1)} h)</div>`;
-          const pre = s.node.preselecionada;
-          html += `<div class="stop ${pre ? "pre" : "opt"}"><span class="n" style="background:${pre ? color : "#fff"};color:${pre ? "#fff" : color};border-color:${color}">${counter}</span><span class="nm">${H.esc(s.node.nome)} <span class="tag ${pre ? "tpre" : "topt"}">${pre ? "pré-selecionada" : "no caminho"}</span> <span class="sc">${s.node.pontuacao} pts</span></span></div>`;
+          const anc = anchorIds.has(s.node.id), pre = s.node.preselecionada;
+          const tagCls = anc ? "tanc" : pre ? "tpre" : "topt";
+          const tagTxt = anc ? "âncora" : pre ? "pré-selecionada" : "no caminho";
+          const nbg = (anc || pre) ? color : "#fff", nfg = (anc || pre) ? "#fff" : color, nbd = anc ? "#f6a609" : color;
+          html += `<div class="stop ${(pre || anc) ? "pre" : "opt"}"><span class="n" style="background:${nbg};color:${nfg};border-color:${nbd}">${counter}</span><span class="nm">${H.esc(s.node.nome)} <span class="tag ${tagCls}">${tagTxt}</span> <span class="sc">${s.node.pontuacao} pts</span></span></div>`;
         });
         html += `</div>`;
       });
@@ -519,7 +560,13 @@
     panel.innerHTML = html;
     if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
   }
-  function numIcon(n, color, opt) {
+  function numIcon(n, color, opt, anchor) {
+    if (anchor) {
+      return L.divIcon({
+        className: "", html: `<div style="background:${color};color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;border:3px solid #f6a609;box-shadow:0 1px 4px rgba(0,0,0,.5)">${n}</div>`,
+        iconSize: [26, 26], iconAnchor: [13, 13]
+      });
+    }
     const bg = opt ? "#fff" : color, fg = opt ? color : "#fff";
     return L.divIcon({
       className: "", html: `<div style="background:${bg};color:${fg};width:${opt ? 19 : 24}px;height:${opt ? 19 : 24}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:${opt ? 10 : 12}px;border:2px solid ${opt ? color : "#fff"};box-shadow:0 1px 3px rgba(0,0,0,.4)">${n}</div>`,

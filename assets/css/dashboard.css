@@ -223,6 +223,13 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .tag{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:1px 6px;border-radius:999px;vertical-align:middle}
 .tag.tpre{color:var(--pre);background:var(--pre-bg)}
 .tag.topt{color:var(--brand-2);background:#e7eef9}
+.tag.tanc{color:#6b4500;background:#ffe2a8;border:1px solid #f3d08a}
+.opt-warn{font-size:.76rem;color:var(--pre);background:var(--pre-bg);border:1px solid var(--pre-bd);border-radius:8px;padding:7px 10px;margin:8px 0 0}
+.rc-anchorfield{min-width:240px;flex:1}
+.rc-anchors{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.rc-anchors-empty{font-size:.72rem;color:var(--faint)}
+.achip{display:inline-flex;align-items:center;gap:5px;background:#fff6e6;border:1px solid #f3d08a;color:#9a5b00;border-radius:999px;padding:3px 9px;font-size:.74rem;font-weight:600}
+.achip button{border:none;background:none;color:#9a5b00;cursor:pointer;font-weight:800;font-size:.95rem;line-height:1;padding:0}
 .stop.opt .nm{color:var(--muted)}
 .uncovered{border:1px solid var(--pre-bd);background:var(--pre-bg);border-radius:12px;padding:12px 14px}
 .uncovered .uh{font-family:var(--display);text-transform:uppercase;font-size:.8rem;color:var(--pre);letter-spacing:.03em}
