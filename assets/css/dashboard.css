@@ -23,6 +23,10 @@ h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:.01em;text-tr
 .kpi b{display:block;font-size:1.3rem;line-height:1.1;font-weight:700;font-family:var(--display)}
 .kpi span{font-size:.66rem;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.04em}
 
+/* motivo de colinas sob o cabeçalho */
+.hills{background:var(--brand-2);line-height:0;margin-top:-1px}
+.hills svg{display:block;width:100%;height:40px}
+
 /* tabs */
 .tabs{display:flex;gap:4px;padding:10px 22px 0;flex-wrap:wrap}
 .tabs button{border:1px solid var(--border);border-bottom:none;background:#e9ebf4;color:var(--muted);
@@ -123,8 +127,13 @@ tbody tr:hover{background:#f8fafc;cursor:pointer}
 .heatmap .star{color:var(--pre);font-weight:700}
 @media (max-width:860px){.analises-grid{grid-template-columns:1fr}}
 
-.foot{padding:16px 22px;color:var(--muted);font-size:.78rem;display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap}
-.foot code{background:#e2e8f0;padding:1px 6px;border-radius:4px}
+.parceiros{margin-top:26px;text-align:center}
+.parceiros .pl{display:block;font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;
+  font-size:.78rem;color:var(--brand);margin-bottom:8px}
+.parceiros img{width:100%;max-width:1100px;display:block;margin:0 auto;border-radius:12px 12px 0 0;box-shadow:var(--shadow)}
+
+.foot{padding:14px 22px;color:#fff;background:var(--brand);font-size:.78rem;display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap}
+.foot code{background:rgba(255,255,255,.18);padding:1px 6px;border-radius:4px;color:#fff}
 
 @media (max-width:860px){
   .view#view-rotas{grid-template-columns:1fr}
