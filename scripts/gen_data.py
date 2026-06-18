@@ -11,10 +11,19 @@ OUT = os.path.join(ROOT, "assets", "data", "iniciativas.js")
 # Pré-selecionadas (aba Cruzamento): id -> UFs onde aparece
 PRE = {27: ["MA"], 21: ["PI"], 52: ["PI", "CE"], 10: ["CE", "RN", "PB", "PE", "AL", "BA"],
        20: ["CE"], 74: ["CE"], 32: ["CE"], 38: ["CE"], 57: ["CE"], 58: ["CE"], 6: ["RN"],
-       34: ["RN"], 24: ["PB"], 76: ["PB"], 53: ["PB"], 1: ["PE"], 12: ["PE"], 13: ["PE"],
+       34: ["RN"], 24: ["PB", "PE"], 76: ["PB"], 53: ["PB"], 1: ["PE"], 12: ["PE"], 13: ["PE"],
        39: ["PE"], 56: ["AL"], 9: ["AL"], 16: ["AL"], 66: ["AL"], 67: ["AL"], 47: ["AL"],
-       50: ["SE"], 75: ["SE"], 3: ["BA"], 17: ["BA"], 65: ["BA"], 72: ["BA"], 83: ["PE"]}
+       50: ["SE"], 75: ["SE"], 3: ["BA"], 17: ["BA"], 65: ["BA"], 72: ["BA"]}
 FORA_NE = {11, 19, 59, 60, 70}  # sede fora do NE (não são sites de visita de campo)
+
+# Iniciativas com mais de um local de visita possível. A rota escolhe a
+# coordenada ótima entre estes pontos; o mapa mostra todos.
+ALT_LOCAIS = {
+    24: [  # Programa 1 Milhão de Tetos Solares
+        {"municipio": "Remígio", "uf": "PB", "lat": -6.9528, "lon": -35.8331},
+        {"municipio": "Araripina", "uf": "PE", "lat": -7.5764, "lon": -40.4983},
+    ],
+}
 
 EIXO_COD = {"Finanças Sustentáveis e Inclusivas": "FSI", "Adensamento Tecnológico": "ADT",
             "Bioeconomia e Sistemas Agroalimentares Adaptados": "BIO", "Transição Energética": "TE",
@@ -61,6 +70,13 @@ def main():
             "criterios": crit, "pontuacao": val(r, 32), "observacoes": val(r, 33),
             "preselecionada": idn in PRE, "pre_ufs": PRE.get(idn, []), "fora_ne": idn in FORA_NE,
         })
+
+    # coordenadas alternativas (rota escolhe a ótima; mapa mostra todas)
+    for it in items:
+        if it["id"] in ALT_LOCAIS:
+            it["locais"] = ALT_LOCAIS[it["id"]]
+            it["lat"] = it["locais"][0]["lat"]
+            it["lon"] = it["locais"][0]["lon"]
 
     meta = {"fonte": "PTE2026_matriz_dashboard.xlsx", "total": len(items),
             "preselecionadas": sum(1 for i in items if i["preselecionada"]),

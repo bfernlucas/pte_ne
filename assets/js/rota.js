@@ -11,6 +11,17 @@
     const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLon / 2) ** 2;
     return 2 * R * Math.asin(Math.sqrt(h));
   }
+  // escolhe, entre os locais alternativos de uma iniciativa, o mais próximo de "ref"
+  function chooseLoc(n, ref) {
+    if (!n.locais || !n.locais.length) return null;
+    let best = n.locais[0], bd = Infinity;
+    n.locais.forEach(L => { const d = haversineKm({ lat: L.lat, lon: L.lon }, ref); if (d < bd) { bd = d; best = L; } });
+    return best;
+  }
+  function applyLoc(n, ref) {
+    const L = chooseLoc(n, ref);
+    if (L) { n.lat = L.lat; n.lon = L.lon; n.municipio = L.municipio; n.estado = L.uf; }
+  }
   // Provedor v1: Haversine × fator de desvio rodoviário / velocidade média.
   // Trocar por matriz real de carro mantendo a mesma interface {km, h}.
   function makeProvider(params) {
@@ -161,6 +172,8 @@
     const cen = core.length ? { lat: core.reduce((s, n) => s + n.lat, 0) / core.length, lon: core.reduce((s, n) => s + n.lon, 0) / core.length } : hubs[0];
     let hub = hubs[0], hd = Infinity;
     hubs.forEach(h => { const d = haversineKm(h, cen); if (d < hd) { hd = d; hub = h; } });
+    // refina os multi-locais para o local mais próximo do hub desta incursão
+    [...core, ...optionalPool].forEach(n => { if (n.locais && n.locais.length) applyLoc(n, hub); });
 
     // ordena o núcleo (NN + 2-opt) e ajusta para caber nos dias.
     // Critério de corte = menor DENSIDADE DE VALOR (nota ÷ tempo marginal):
@@ -230,7 +243,9 @@
   // ---------- planeja as 2 missões ----------
   function planMissions(candidates, hubs, params) {
     params.prov = params.prov || makeProvider(params);
-    const valid = candidates.filter(n => n.lat != null && n.lon != null && !n.fora_ne);
+    // clona iniciativas com locais alternativos (a rota escolherá a coordenada ótima)
+    const valid = candidates.filter(n => n.lat != null && n.lon != null && !n.fora_ne)
+      .map(n => (n.locais && n.locais.length) ? Object.assign({}, n) : n);
     const anchorSet = new Set(params.anchors || []);
     params.anchorSet = anchorSet;
     const isAnc = n => anchorSet.has(n.id);
@@ -240,6 +255,11 @@
     let opt = valid.filter(n => !n.preselecionada && !isAnc(n));
     if (core.length === 0) { core = valid; opt = []; }
     if (!params.incluirOpcionais) opt = [];
+    // local provisório das iniciativas multi-locais = mais próximo do centroide do núcleo
+    if (core.length) {
+      const cx = core.reduce((s, n) => s + n.lat, 0) / core.length, cy = core.reduce((s, n) => s + n.lon, 0) / core.length;
+      [...core, ...opt].forEach(n => { if (n.locais && n.locais.length) applyLoc(n, { lat: cx, lon: cy }); });
+    }
     const k = Math.max(1, params.numMissoes || 2);
     let groups = kmeansK(core, k);
     groups.sort((a, b) => avgLat(b) - avgLat(a)); // missão mais ao norte primeiro
@@ -283,7 +303,7 @@
     { nome: "Salvador", uf: "BA", lat: -12.9714, lon: -38.5014 }
   ];
 
-  const API = { haversineKm, makeProvider, makeMatrixProvider, kmeans2, kmeansK, nearestNeighbor, twoOpt, packDays, buildMission, planMissions, HUBS };
+  const API = { haversineKm, chooseLoc, makeProvider, makeMatrixProvider, kmeans2, kmeansK, nearestNeighbor, twoOpt, packDays, buildMission, planMissions, HUBS };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 
   // ---------- navegador ----------
@@ -368,7 +388,7 @@
     if (!lastH) return;
     Object.keys(allMarkers).forEach(id => {
       const i = lastH.byId(+id);
-      if (i) { allMarkers[id].setStyle(ovStyle(i)); allMarkers[id].setPopupContent(overviewPopup(i, lastH)); }
+      if (i) allMarkers[id].forEach(mk => { mk.setStyle(ovStyle(i)); mk.setPopupContent(overviewPopup(i, lastH, mk._ctx.locs, mk._ctx.li)); });
     });
   }
   function clearAnchors() {
@@ -431,24 +451,34 @@
       weight: anc ? 3.5 : (i.preselecionada ? 2.5 : 1)
     };
   }
-  function overviewPopup(i, H) {
-    const uf = H.ufTokens(i.estado).join(", "), anc = anchorIds.has(i.id);
+  function locsOf(i, H) {
+    if (i.locais && i.locais.length) return i.locais;
+    if (i.lat == null || i.lon == null) return [];
+    return [{ lat: i.lat, lon: i.lon, municipio: i.municipio, uf: H.ufTokens(i.estado).join(", ") }];
+  }
+  function overviewPopup(i, H, locs, li) {
+    const anc = anchorIds.has(i.id), multi = locs.length > 1, cur = locs[li] || {};
+    const locLine = `<br><span class="pp-k">Local:</span> ${H.esc(cur.municipio || "Multiestadual")}${cur.uf ? "/" + H.esc(cur.uf) : ""}${multi ? ` (${li + 1} de ${locs.length} — a rota escolhe o melhor)` : ""}`;
     return `<span class="pp-h">${H.esc(i.nome)}</span>${H.esc(i.org || "")}<br>
-      <span class="pp-k">Local:</span> ${H.esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br>
       <span class="pp-k">Eixo:</span> ${H.esc(i.eixo || "")}<br>
-      <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${i.preselecionada ? " · pré-selecionada" : ""}<br>
+      <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${i.preselecionada ? " · pré-selecionada" : ""}${locLine}<br>
       <button class="pp-anchor ${anc ? "on" : ""}" onclick="window.PTE_ROTAS.toggleAnchor(${i.id})">${anc ? "Remover âncora" : "Fixar como âncora"}</button>`;
   }
   function showAll(H) {
     mode = "all"; lastH = H;
     routeLayer.clearLayers(); allLayer.clearLayers(); allMarkers = {};
     const ps = H.ITEMS.map(i => i.pontuacao || 0); ovPmin = Math.min(...ps); ovPmax = Math.max(...ps);
-    const bounds = [];
-    let mapped = 0;
+    const bounds = []; let mapped = 0;
     H.ITEMS.forEach(i => {
-      if (i.lat == null || i.lon == null) return;
-      mapped++; bounds.push([i.lat, i.lon]);
-      allMarkers[i.id] = L.circleMarker([i.lat, i.lon], ovStyle(i)).bindPopup(overviewPopup(i, H)).addTo(allLayer);
+      const locs = locsOf(i, H);
+      if (!locs.length) return;
+      mapped++; allMarkers[i.id] = [];
+      locs.forEach((loc, li) => {
+        bounds.push([loc.lat, loc.lon]);
+        const mk = L.circleMarker([loc.lat, loc.lon], ovStyle(i)).bindPopup(overviewPopup(i, H, locs, li)).addTo(allLayer);
+        mk._ctx = { locs, li };
+        allMarkers[i.id].push(mk);
+      });
     });
     if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
     const s = document.getElementById("r-status");
@@ -460,8 +490,8 @@
     id = +id;
     if (anchorIds.has(id)) anchorIds.delete(id); else anchorIds.add(id);
     if (lastH) renderAnchors(lastH);
-    const mk = allMarkers[id];
-    if (mk && lastH) { const i = lastH.byId(id); mk.setStyle(ovStyle(i)); mk.setPopupContent(overviewPopup(i, lastH)); }
+    const mks = allMarkers[id];
+    if (mks && lastH) { const i = lastH.byId(id); mks.forEach(mk => { mk.setStyle(ovStyle(i)); mk.setPopupContent(overviewPopup(i, lastH, mk._ctx.locs, mk._ctx.li)); }); }
     if (window.PTE_DASH && window.PTE_DASH.state && window.PTE_DASH.state.view === "cards") window.PTE_DASH.refresh();
   }
   function isAnchor(id) { return anchorIds.has(+id); }

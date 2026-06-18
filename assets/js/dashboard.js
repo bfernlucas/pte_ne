@@ -174,12 +174,16 @@
     ensureMapGeral();
     layerGeral.clearLayers();
     list.forEach(i => {
-      if (i.lat == null || i.lon == null) return;
+      const locs = (i.locais && i.locais.length) ? i.locais
+        : (i.lat != null && i.lon != null ? [{ lat: i.lat, lon: i.lon, municipio: i.municipio, uf: ufTokens(i.estado).join(", ") }] : []);
       const r = 5 + 13 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN));
-      L.circleMarker([i.lat, i.lon], {
-        radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: i.fora_ne ? .45 : .82,
-        color: i.preselecionada ? "#f37520" : "#fff", weight: i.preselecionada ? 3 : 1.2
-      }).bindPopup(popupHtml(i)).addTo(layerGeral);
+      locs.forEach((loc, li) => {
+        const extra = locs.length > 1 ? `<br><span class="pp-k">Local ${li + 1} de ${locs.length}:</span> ${esc(loc.municipio || "")}${loc.uf ? "/" + esc(loc.uf) : ""}` : "";
+        L.circleMarker([loc.lat, loc.lon], {
+          radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: i.fora_ne ? .45 : .82,
+          color: i.preselecionada ? "#f37520" : "#fff", weight: i.preselecionada ? 3 : 1.2
+        }).bindPopup(popupHtml(i) + extra).addTo(layerGeral);
+      });
     });
     setTimeout(() => mapGeral.invalidateSize(), 50);
   }
