@@ -407,26 +407,50 @@
     if (mode === "all") showAll(H);
   }
 
+  let allMarkers = {}, ovPmin = 10, ovPmax = 30;
+  function ovStyle(i) {
+    const anc = anchorIds.has(i.id);
+    return {
+      radius: 5 + 11 * ((i.pontuacao - ovPmin) / Math.max(1, ovPmax - ovPmin)),
+      fillColor: lastH.eixoColor(i.eixo_cod), fillOpacity: i.fora_ne ? .4 : .8,
+      color: anc ? "#f6a609" : (i.preselecionada ? "#f37520" : "#fff"),
+      weight: anc ? 3.5 : (i.preselecionada ? 2.5 : 1)
+    };
+  }
+  function overviewPopup(i, H) {
+    const uf = H.ufTokens(i.estado).join(", "), anc = anchorIds.has(i.id);
+    return `<span class="pp-h">${H.esc(i.nome)}</span>${H.esc(i.org || "")}<br>
+      <span class="pp-k">Local:</span> ${H.esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br>
+      <span class="pp-k">Eixo:</span> ${H.esc(i.eixo || "")}<br>
+      <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${i.preselecionada ? " · pré-selecionada" : ""}<br>
+      <button class="pp-anchor ${anc ? "on" : ""}" onclick="window.PTE_ROTAS.toggleAnchor(${i.id})">${anc ? "Remover âncora" : "Fixar como âncora"}</button>`;
+  }
   function showAll(H) {
-    mode = "all";
-    routeLayer.clearLayers(); allLayer.clearLayers();
-    const ps = H.ITEMS.map(i => i.pontuacao || 0), pmin = Math.min(...ps), pmax = Math.max(...ps);
+    mode = "all"; lastH = H;
+    routeLayer.clearLayers(); allLayer.clearLayers(); allMarkers = {};
+    const ps = H.ITEMS.map(i => i.pontuacao || 0); ovPmin = Math.min(...ps); ovPmax = Math.max(...ps);
     const bounds = [];
     let mapped = 0;
     H.ITEMS.forEach(i => {
       if (i.lat == null || i.lon == null) return;
       mapped++; bounds.push([i.lat, i.lon]);
-      L.circleMarker([i.lat, i.lon], {
-        radius: 5 + 11 * ((i.pontuacao - pmin) / Math.max(1, pmax - pmin)), fillColor: H.eixoColor(i.eixo_cod),
-        fillOpacity: i.fora_ne ? .4 : .8, color: i.preselecionada ? "#f37520" : "#fff", weight: i.preselecionada ? 2.5 : 1
-      }).bindPopup(H.popupHtml(i)).addTo(allLayer);
+      allMarkers[i.id] = L.circleMarker([i.lat, i.lon], ovStyle(i)).bindPopup(overviewPopup(i, H)).addTo(allLayer);
     });
     if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
     const s = document.getElementById("r-status");
-    if (s) s.textContent = `Mostrando todas as ${mapped} iniciativas mapeadas. Ajuste os filtros e os parâmetros e clique em “Otimizar rotas”.`;
+    if (s) s.textContent = `Mostrando todas as ${mapped} iniciativas mapeadas. Clique num ponto para fixá-lo como âncora; ajuste os filtros e clique em “Otimizar rotas”.`;
     document.getElementById("rotas-itinerary").innerHTML =
-      `<div class="cover empty">Defina os filtros de candidatas e os parâmetros, e clique em <b>Otimizar rotas</b>. O roteiro dia a dia das missões aparece aqui.</div>`;
+      `<div class="cover empty">Fixe âncoras (no mapa, nos cartões ou no seletor), defina os filtros e parâmetros e clique em <b>Otimizar rotas</b>. O roteiro aparece aqui.</div>`;
   }
+  function toggleAnchor(id) {
+    id = +id;
+    if (anchorIds.has(id)) anchorIds.delete(id); else anchorIds.add(id);
+    if (lastH) renderAnchors(lastH);
+    const mk = allMarkers[id];
+    if (mk && lastH) { const i = lastH.byId(id); mk.setStyle(ovStyle(i)); mk.setPopupContent(overviewPopup(i, lastH)); }
+    if (window.PTE_DASH && window.PTE_DASH.state && window.PTE_DASH.state.view === "cards") window.PTE_DASH.refresh();
+  }
+  function isAnchor(id) { return anchorIds.has(+id); }
 
   async function fetchORSMatrix(points, key) {
     const body = { locations: points.map(p => [p.lon, p.lat]), metrics: ["duration", "distance"], units: "m" };
@@ -580,5 +604,5 @@
     });
   }
 
-  window.PTE_ROTAS = { render };
+  window.PTE_ROTAS = { render, toggleAnchor, isAnchor };
 })();

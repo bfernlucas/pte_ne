@@ -111,8 +111,14 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .card .score{display:flex;align-items:baseline;gap:5px}
 .card .score b{font-family:var(--display);font-size:1.5rem;line-height:1;color:var(--brand)}
 .card .score span{font-size:.68rem;color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
-.card .scorebar{flex:1;height:6px;border-radius:4px;background:#e7e9f2;overflow:hidden;max-width:110px}
+.card .scorebar{flex:1;height:6px;border-radius:4px;background:#e7e9f2;overflow:hidden;max-width:90px}
 .card .scorebar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand-2),var(--brand))}
+.card-anchor{border:1px solid var(--border);background:#fff;color:var(--muted);border-radius:8px;padding:5px 10px;font-size:.7rem;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap}
+.card-anchor:hover{border-color:var(--amber);color:var(--pre)}
+.card-anchor.on{background:#ffe2a8;border-color:#f3d08a;color:#6b4500}
+.pp-anchor{margin-top:8px;border:1px solid var(--amber);background:#fff;color:var(--pre);border-radius:8px;padding:6px 11px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:var(--font)}
+.pp-anchor:hover{background:#fff6e6}
+.pp-anchor.on{background:#ffe2a8;border-color:#f3d08a;color:#6b4500}
 
 /* ---------- mapa ---------- */
 .map-layout{display:grid;grid-template-columns:1fr 250px;gap:16px}

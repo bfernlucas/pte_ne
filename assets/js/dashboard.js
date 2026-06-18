@@ -110,6 +110,7 @@
       const cor = eixoColor(i.eixo_cod);
       const uf = ufTokens(i.estado).join(", ");
       const local = [i.municipio, uf].filter(Boolean).join(" · ") || "Atuação multiestadual";
+      const anc = window.PTE_ROTAS ? window.PTE_ROTAS.isAnchor(i.id) : false;
       const fact = (k, v) => v ? `<div class="f"><span class="k">${k}</span><span>${esc(v)}</span></div>` : "";
       return `<div class="card ${state.selected.has(i.id) ? "sel" : ""}" data-id="${i.id}">
         <div class="strip" style="background:${cor}"></div>
@@ -128,11 +129,17 @@
           <div class="footer">
             <span class="score"><b>${i.pontuacao}</b><span>de ${PMAX} pts</span></span>
             <span class="scorebar"><i style="width:${w}%"></i></span>
+            <button class="card-anchor ${anc ? "on" : ""}" data-id="${i.id}" title="Fixar como âncora no planejamento de rotas">${anc ? "Âncora" : "Fixar âncora"}</button>
           </div>
         </div>
       </div>`;
     }).join("");
     $$("#cards-grid .card").forEach(c => c.addEventListener("click", () => toggleSelect(+c.dataset.id)));
+    $$("#cards-grid .card-anchor").forEach(b => b.addEventListener("click", e => {
+      e.stopPropagation();
+      if (window.PTE_ROTAS) window.PTE_ROTAS.toggleAnchor(+b.dataset.id);
+      refresh();
+    }));
   }
 
   // ---------- MAPA GERAL ----------
