@@ -20,6 +20,21 @@
       h: (a, b) => (haversineKm(a, b) * detour) / speed
     };
   }
+  // Provedor por matriz pré-buscada (ex.: OpenRouteService). durations[s] em
+  // segundos, distances[s] em metros; cai no fallback p/ pares fora da matriz.
+  function makeMatrixProvider(points, durations, distances, fallback) {
+    const key = p => p.lat.toFixed(4) + "," + p.lon.toFixed(4);
+    const idx = new Map(); points.forEach((p, i) => idx.set(key(p), i));
+    const get = (a, b, mat) => {
+      const i = idx.get(key(a)), j = idx.get(key(b));
+      if (i == null || j == null || !mat || !mat[i] || mat[i][j] == null) return null;
+      return mat[i][j];
+    };
+    return {
+      h: (a, b) => { const s = get(a, b, durations); return s == null ? fallback.h(a, b) : s / 3600; },
+      km: (a, b) => { const m = get(a, b, distances); return m == null ? fallback.km(a, b) : m / 1000; }
+    };
+  }
 
   // ---------- clusterização em 2 grupos (k-means simples) ----------
   function kmeans2(nodes) {
@@ -238,7 +253,7 @@
     { nome: "Salvador", uf: "BA", lat: -12.9714, lon: -38.5014 }
   ];
 
-  const API = { haversineKm, makeProvider, kmeans2, kmeansK, nearestNeighbor, twoOpt, packDays, buildMission, planMissions, HUBS };
+  const API = { haversineKm, makeProvider, makeMatrixProvider, kmeans2, kmeansK, nearestNeighbor, twoOpt, packDays, buildMission, planMissions, HUBS };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 
   // ---------- navegador ----------
@@ -262,8 +277,11 @@
       <div class="grp"><label>Direção máx/dia</label><input id="r-dir" type="range" min="6" max="10" step="1" value="8"><small id="r-dir-v">8 h</small></div>
       <div class="grp"><label>Dias/missão</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><small id="r-dias-v">5 dias</small></div>
       <label class="chk"><input type="checkbox" id="r-opt" checked> incluir outras da base</label>
+      <label class="chk"><input type="checkbox" id="r-ors"> tempo real de carro (ORS)</label>
+      <input id="r-orskey" type="password" placeholder="chave OpenRouteService" style="border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:.8rem;width:170px">
       <button class="btn" id="r-run">🧭 Otimizar rotas</button>
-      <small style="color:#64748b">distâncias: Haversine×1,3 (aprox.) — trocável por tempo real de carro</small>`;
+      <small id="r-status" style="color:#64748b">distâncias: aproximadas (Haversine×1,3)</small>`;
+    document.getElementById("r-orskey").value = (window.localStorage && localStorage.getItem("ors_key")) || "";
     const sync = () => {
       document.getElementById("r-miss-v").textContent = document.getElementById("r-miss").value;
       document.getElementById("r-visita-v").textContent = document.getElementById("r-visita").value + " h";
@@ -294,8 +312,43 @@
     if (!layer.getLayers().length) draw(H);
   }
 
-  function draw(H) {
+  async function fetchORSMatrix(points, key) {
+    const body = { locations: points.map(p => [p.lon, p.lat]), metrics: ["duration", "distance"], units: "m" };
+    const res = await fetch("https://api.openrouteservice.org/v2/matrix/driving-car", {
+      method: "POST", headers: { Authorization: key, "Content-Type": "application/json" }, body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const j = await res.json();
+    if (!j.durations) throw new Error("resposta sem matriz");
+    return { durations: j.durations, distances: j.distances };
+  }
+
+  async function draw(H) {
     const params = readParams();
+    const statusEl = document.getElementById("r-status");
+    // provedor de distância: tempo real (ORS) com fallback p/ Haversine
+    let prov = makeProvider(params);
+    const useORS = document.getElementById("r-ors").checked;
+    const key = document.getElementById("r-orskey").value.trim();
+    if (useORS && key) {
+      statusEl.textContent = "buscando tempos reais (ORS)…";
+      try {
+        if (window.localStorage) localStorage.setItem("ors_key", key);
+        const valid = lastList.filter(n => n.lat != null && n.lon != null && !n.fora_ne);
+        const pre = valid.filter(n => n.preselecionada);
+        const opt = valid.filter(n => !n.preselecionada).sort((a, b) => (b.pontuacao || 0) - (a.pontuacao || 0));
+        const cap = Math.max(0, 50 - HUBS.length - pre.length); // limite gratuito ORS (~3500 rotas)
+        const pts = [...HUBS, ...pre, ...opt.slice(0, cap)].map(p => ({ lat: p.lat, lon: p.lon }));
+        const m = await fetchORSMatrix(pts, key);
+        prov = makeMatrixProvider(pts, m.durations, m.distances, makeProvider(params));
+        statusEl.textContent = "distâncias: tempo real de carro (ORS) ✓";
+      } catch (e) {
+        statusEl.textContent = "ORS falhou (" + e.message + ") — usando aproximação";
+      }
+    } else {
+      statusEl.textContent = "distâncias: aproximadas (Haversine×1,3)";
+    }
+    params.prov = prov;
     const plan = planMissions(lastList, HUBS, params);
     layer.clearLayers();
     const bounds = [];

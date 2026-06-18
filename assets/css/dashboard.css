@@ -102,6 +102,22 @@ tbody tr:hover{background:#f8fafc;cursor:pointer}
 .chip button{border:none;background:none;cursor:pointer;color:#1e40af;font-weight:700}
 .radar-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow);height:62vh}
 
+/* análises */
+.analises-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.analises-grid .panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+.analises-grid .panel:first-child{grid-column:1 / -1}
+.panel h3{margin:0 0 10px;font-size:.98rem}
+.panel h3 small{color:var(--muted);font-weight:400;font-size:.78rem}
+.chart-box{height:300px;position:relative}
+.heatmap{overflow-x:auto}
+.heatmap table{width:100%;border-collapse:collapse;font-size:.8rem}
+.heatmap th,.heatmap td{border:1px solid var(--border);padding:6px 8px;text-align:center}
+.heatmap th{background:#f8fafc;color:var(--muted);font-size:.72rem;text-transform:uppercase}
+.heatmap td.uf{font-weight:700;background:#f8fafc}
+.heatmap .cell{font-variant-numeric:tabular-nums}
+.heatmap .star{color:var(--pre);font-weight:700}
+@media (max-width:860px){.analises-grid{grid-template-columns:1fr}}
+
 .foot{padding:16px 22px;color:var(--muted);font-size:.78rem;display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap}
 .foot code{background:#e2e8f0;padding:1px 6px;border-radius:4px}
 

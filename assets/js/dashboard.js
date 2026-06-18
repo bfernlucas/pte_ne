@@ -194,6 +194,61 @@
     });
   }
 
+  // ---- ANÁLISES (heatmap + gráficos) ----
+  const UF_ORDER = ["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"];
+  let histChart, eixoChart;
+  function renderAnalises(list) {
+    // heatmap UF x eixo
+    const cods = META.eixos.map(e => e.cod);
+    const grid = {}, pre = {};
+    UF_ORDER.forEach(u => { grid[u] = {}; pre[u] = {}; cods.forEach(c => { grid[u][c] = 0; pre[u][c] = 0; }); });
+    let maxc = 1;
+    list.forEach(i => {
+      const u = (ufTokens(i.estado)[0]) || null;
+      if (!u || !grid[u] || !i.eixo_cod) return;
+      grid[u][i.eixo_cod]++; if (i.preselecionada) pre[u][i.eixo_cod]++;
+      maxc = Math.max(maxc, grid[u][i.eixo_cod]);
+    });
+    const shade = n => n === 0 ? "#fff" : `rgba(37,99,235,${0.12 + 0.6 * (n / maxc)})`;
+    let html = "<table><thead><tr><th>UF</th>" + cods.map(c => `<th title="${nameByCod[c]}">${c}</th>`).join("") + "<th>Σ</th></tr></thead><tbody>";
+    UF_ORDER.forEach(u => {
+      const tot = cods.reduce((s, c) => s + grid[u][c], 0);
+      html += `<tr><td class="uf">${u}</td>` + cods.map(c => {
+        const n = grid[u][c], p = pre[u][c];
+        return `<td class="cell" style="background:${shade(n)}">${n || ""}${p ? ` <span class="star">★${p}</span>` : ""}</td>`;
+      }).join("") + `<td class="cell"><b>${tot}</b></td></tr>`;
+    });
+    const colTot = cods.map(c => UF_ORDER.reduce((s, u) => s + grid[u][c], 0));
+    html += `<tr><td class="uf">Σ</td>` + colTot.map(t => `<td class="cell"><b>${t}</b></td>`).join("") + `<td class="cell"><b>${colTot.reduce((a, b) => a + b, 0)}</b></td></tr>`;
+    html += "</tbody></table>";
+    $("#heatmap").innerHTML = html;
+
+    // histograma de notas
+    const vals = list.map(i => i.pontuacao || 0);
+    const lo = Math.min(...vals, 0), hi = Math.max(...vals, 1), W = 2;
+    const start = Math.floor(lo / W) * W, bins = [];
+    for (let b = start; b <= hi; b += W) bins.push(b);
+    const counts = bins.map(b => vals.filter(v => v >= b && v < b + W).length);
+    if (histChart) histChart.destroy();
+    histChart = new Chart($("#hist-nota"), {
+      type: "bar",
+      data: { labels: bins.map(b => `${b}–${b + W}`), datasets: [{ label: "iniciativas", data: counts, backgroundColor: "#2563eb" }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { precision: 0 } } } }
+    });
+
+    // média por eixo
+    const avg = META.eixos.map(e => {
+      const g = list.filter(i => i.eixo_cod === e.cod);
+      return g.length ? g.reduce((s, i) => s + (i.pontuacao || 0), 0) / g.length : 0;
+    });
+    if (eixoChart) eixoChart.destroy();
+    eixoChart = new Chart($("#bar-eixo"), {
+      type: "bar",
+      data: { labels: META.eixos.map(e => e.cod), datasets: [{ label: "nota média", data: avg.map(v => +v.toFixed(1)), backgroundColor: META.eixos.map(e => e.cor) }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: c => nameByCod[c[0].label] } } }, scales: { y: { beginAtZero: true } } }
+    });
+  }
+
   // ---- selection ----
   function toggleSelect(id, forceAdd) {
     if (forceAdd) state.selected.add(id);
@@ -220,6 +275,7 @@
     if (state.view === "ranking") renderRanking(list);
     else if (state.view === "cards") renderCards(list);
     else if (state.view === "mapa") renderMapGeral(list);
+    else if (state.view === "analises") renderAnalises(list);
     else if (state.view === "rotas" && window.PTE_ROTAS) window.PTE_ROTAS.render(list, helpers());
     else if (state.view === "comparar") renderCompare();
   }
