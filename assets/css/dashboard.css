@@ -276,10 +276,15 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 
 /* ---------- parceiros / footer ---------- */
 .parceiros{margin-top:26px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:18px 20px;text-align:center;box-shadow:var(--shadow)}
+  padding:20px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:22px 44px}
+.pgroup{text-align:center}
+.pgroup.tecnico{padding-left:44px;border-left:1px solid var(--border)}
 .parceiros .pl{display:block;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;
   font-size:.74rem;color:var(--muted);margin-bottom:12px}
-.parceiros img{width:100%;max-width:780px;height:auto;display:block;margin:0 auto}
+.parceiros img{height:auto;display:block;margin:0 auto}
+.pgroup.realiza img{width:min(100%,560px)}
+.pgroup.tecnico img{width:min(100%,190px)}
+@media (max-width:760px){.pgroup.tecnico{padding-left:0;border-left:none}}
 .foot{padding:16px 26px 30px;color:var(--muted);font-size:.78rem;display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap;max-width:1520px;margin:0 auto}
 .foot code{background:#e1e4ef;padding:1px 6px;border-radius:4px;color:var(--ink)}
 
