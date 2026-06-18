@@ -80,6 +80,7 @@
       const arr = th.querySelector(".arr");
       if (arr) arr.textContent = th.dataset.sort === k ? (dir < 0 ? "▼" : "▲") : "";
     });
+    if (!sorted.length) { $("#tbl-ranking tbody").innerHTML = `<tr><td colspan="9" class="empty-row">Nenhuma iniciativa corresponde aos filtros selecionados.</td></tr>`; return; }
     $("#tbl-ranking tbody").innerHTML = sorted.map(i => {
       const w = Math.round(100 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN)));
       const uf = ufTokens(i.estado).join(", ") || "—";
@@ -112,6 +113,7 @@
 
   // ---------- CARTÕES ----------
   function renderCards(list) {
+    if (!list.length) { $("#cards-grid").innerHTML = `<div class="empty-state">Nenhuma iniciativa corresponde aos filtros selecionados.</div>`; return; }
     $("#cards-grid").innerHTML = list.map(i => {
       const w = Math.round(100 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN)));
       const cor = eixoColor(i.eixo_cod);
