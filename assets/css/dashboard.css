@@ -272,12 +272,24 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .achip{display:inline-flex;align-items:center;gap:5px;background:#fff6e6;border:1px solid #f3d08a;color:#9a5b00;border-radius:999px;padding:3px 9px;font-size:.74rem;font-weight:600}
 .achip button{border:none;background:none;color:#9a5b00;cursor:pointer;font-weight:800;font-size:.95rem;line-height:1;padding:0}
 .stop.opt .nm{color:var(--muted)}
-.uncovered{border:1px solid var(--pre-bd);background:var(--pre-bg);border-radius:12px;padding:12px 14px}
-.uncovered .uh{font-family:var(--display);text-transform:uppercase;font-size:.8rem;color:var(--pre);letter-spacing:.03em}
-.uncovered .usub{font-size:.76rem;color:var(--pre);margin:3px 0 8px;line-height:1.4}
-.uncovered ul{margin:0;padding-left:18px}
-.uncovered li{font-size:.8rem;color:var(--ink);margin:3px 0}
-.uncovered li span{color:var(--muted);font-size:.74rem}
+.uncovered{border:1px solid var(--pre-bd);background:var(--pre-bg);border-radius:12px;padding:14px 16px}
+.uncovered .uh{display:flex;align-items:center;gap:10px;font-family:var(--display);text-transform:uppercase;
+  font-size:.82rem;color:var(--pre);letter-spacing:.03em}
+.uncovered .uh .ucount{background:var(--pre);color:#fff;border-radius:20px;padding:1px 9px;font-size:.74rem;font-weight:700;line-height:1.5}
+.uncovered .usub{font-size:.78rem;color:#8a5a12;margin:5px 0 12px;line-height:1.45}
+.uncovered .usub b{color:var(--pre);font-weight:700}
+.ulist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.ulist li{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:10px;
+  padding:7px 9px;border-radius:8px;font-size:.82rem;color:var(--ink);background:rgba(255,255,255,.5)}
+.ulist li:hover{background:#fff}
+.u-dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+.u-name{font-weight:500;line-height:1.3;min-width:0}
+.u-ufs{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}
+.u-ufs i{font-style:normal;font-size:.64rem;font-weight:700;color:var(--muted);background:#fff;
+  border:1px solid var(--border);border-radius:4px;padding:1px 5px;letter-spacing:.02em}
+.u-ufs i.na{border-style:dashed}
+.u-score{font-variant-numeric:tabular-nums;font-weight:700;color:var(--pre);font-size:.88rem;white-space:nowrap;text-align:right}
+.u-score small{font-weight:500;color:var(--muted);font-size:.66rem;margin-left:2px}
 
 /* ---------- comparar ---------- */
 .cmp-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;

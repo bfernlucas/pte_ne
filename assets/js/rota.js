@@ -613,11 +613,19 @@
     // ---- não cobertas (trade-off do ótimo) ----
     if (cob.droppedPre && cob.droppedPre.length) {
       const wp = cob.droppedPre.reduce((s, n) => s + (n.pontuacao || 0), 0);
-      const lis = cob.droppedPre.slice().sort((a, b) => b.pontuacao - a.pontuacao)
-        .map(n => `<li>${H.esc(n.nome)} <span>${n.pontuacao} pts · ${H.ufTokens(n.estado).join(", ") || "—"}</span></li>`).join("");
-      html += `<div class="uncovered"><div class="uh">Pré-selecionadas fora destas ${k} incursões (${cob.droppedPre.length})</div>
-        <div class="usub">Somam ${wp} pts. Para incluí-las, aumente o nº de incursões ou de dias — ou reserve-as para uma incursão futura.</div>
-        <ul>${lis}</ul></div>`;
+      const lis = cob.droppedPre.slice().sort((a, b) => b.pontuacao - a.pontuacao).map(n => {
+        const ufs = H.ufTokens(n.estado);
+        const chips = ufs.length ? ufs.map(u => `<i>${u}</i>`).join("") : `<i class="na">—</i>`;
+        return `<li title="${H.esc(n.eixo || "")}">
+          <span class="u-dot" style="background:${H.eixoColor(n.eixo_cod)}"></span>
+          <span class="u-name">${H.esc(n.nome)}</span>
+          <span class="u-ufs">${chips}</span>
+          <span class="u-score">${n.pontuacao}<small>pts</small></span></li>`;
+      }).join("");
+      html += `<div class="uncovered">
+        <div class="uh"><span>Pré-selecionadas fora destas ${k} incursões</span><span class="ucount">${cob.droppedPre.length}</span></div>
+        <div class="usub">Somam <b>${wp} pts</b>. Para incluí-las, aumente o nº de incursões ou de dias — ou reserve-as para uma incursão futura.</div>
+        <ul class="ulist">${lis}</ul></div>`;
     }
     // camada de contexto: demais iniciativas em escala de cinza (2 tons)
     if (showCtx) {
