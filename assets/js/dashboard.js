@@ -41,7 +41,6 @@
     const kpis = [["Iniciativas", META.total], ["Pré-selecionadas", META.preselecionadas],
       ["Estados", ufs.size], ["Nota média", avg], ["Nota máxima", PMAX]];
     $("#kpis").innerHTML = kpis.map(([l, v]) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join("");
-    $("#foot-meta").textContent = `${META.total} iniciativas · ${META.preselecionadas} pré-selecionadas para incursão de campo`;
   }
 
   // ---------- filtros ----------
