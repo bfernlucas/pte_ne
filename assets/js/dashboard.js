@@ -349,28 +349,31 @@
   }
   function renderAnalises(list) {
     const cods = META.eixos.map(e => e.cod);
+    const COLS = [...UF_ORDER, "NAC"];
+    const COL_LABEL = Object.assign({ NAC: "Nac./Multi" }, UF_NOME);
     const grid = {}, pre = {};
-    cods.forEach(c => { grid[c] = {}; pre[c] = {}; UF_ORDER.forEach(u => { grid[c][u] = 0; pre[c][u] = 0; }); });
+    cods.forEach(c => { grid[c] = {}; pre[c] = {}; COLS.forEach(u => { grid[c][u] = 0; pre[c][u] = 0; }); });
     let maxc = 1;
     list.forEach(i => {
-      const u = ufTokens(i.estado)[0]; if (!u || !UF_NOME[u] || !i.eixo_cod) return;
-      grid[i.eixo_cod][u]++; if (i.preselecionada) pre[i.eixo_cod][u]++;
-      maxc = Math.max(maxc, grid[i.eixo_cod][u]);
+      if (!i.eixo_cod) return;
+      const u0 = ufTokens(i.estado)[0], col = (u0 && UF_NOME[u0]) ? u0 : "NAC";
+      grid[i.eixo_cod][col]++; if (i.preselecionada) pre[i.eixo_cod][col]++;
+      maxc = Math.max(maxc, grid[i.eixo_cod][col]);
     });
     const shade = n => n === 0 ? "#fff" : `rgba(41,45,118,${0.08 + 0.6 * (n / maxc)})`;
     const ink = n => n / maxc > 0.55 ? "#fff" : "var(--ink)";
     let h = "<table><thead><tr><th class='rowh'>Eixo \\ Estado</th>" +
-      UF_ORDER.map(u => `<th>${UF_NOME[u]}</th>`).join("") + "<th class='tot'>Total</th></tr></thead><tbody>";
+      COLS.map(u => `<th${u === "NAC" ? " class='nac'" : ""}>${COL_LABEL[u]}</th>`).join("") + "<th class='tot'>Total</th></tr></thead><tbody>";
     cods.forEach(c => {
-      const tot = UF_ORDER.reduce((s, u) => s + grid[c][u], 0);
+      const tot = COLS.reduce((s, u) => s + grid[c][u], 0);
       h += `<tr><th class="rowh"><span class="eixo-dot" style="background:${eixoColor(c)}"></span>${nameByCod[c]}</th>` +
-        UF_ORDER.map(u => {
+        COLS.map(u => {
           const n = grid[c][u], p = pre[c][u];
-          return `<td style="background:${shade(n)};color:${ink(n)}">${n ? `<span class="v">${n}</span>` : ""}${p ? `<span class="pre">${p} pré</span>` : ""}</td>`;
+          return `<td class="${u === "NAC" ? "nac" : ""}" style="background:${shade(n)};color:${ink(n)}">${n ? `<span class="v">${n}</span>` : ""}${p ? `<span class="pre">${p} pré</span>` : ""}</td>`;
         }).join("") + `<td class="tot">${tot}</td></tr>`;
     });
-    const colTot = UF_ORDER.map(u => cods.reduce((s, c) => s + grid[c][u], 0));
-    h += `<tr class="tot"><th class="rowh">Total</th>` + colTot.map(t => `<td>${t}</td>`).join("") +
+    const colTot = COLS.map(u => cods.reduce((s, c) => s + grid[c][u], 0));
+    h += `<tr class="tot"><th class="rowh">Total</th>` + colTot.map((t, idx) => `<td${COLS[idx] === "NAC" ? " class='nac'" : ""}>${t}</td>`).join("") +
       `<td>${colTot.reduce((a, b) => a + b, 0)}</td></tr></tbody></table>`;
     $("#heatmap").innerHTML = h;
 
@@ -455,7 +458,7 @@
       borderColor: s.col, backgroundColor: s.col + "22", borderWidth: 2, pointBackgroundColor: s.col, pointRadius: 3
     }));
     if (showAvg) datasets.push({
-      label: "Média geral (82)", data: crits.map(c => +AVGCRIT[c.key].toFixed(2)),
+      label: `Média geral (${ITEMS.length})`, data: crits.map(c => +AVGCRIT[c.key].toFixed(2)),
       borderColor: "#9aa0b0", backgroundColor: "transparent", borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, fill: false
     });
     if (radarChart) radarChart.destroy();
@@ -471,7 +474,7 @@
       <div class="ci-h">Como usar esta comparação</div>
       <ul>
         <li>Adicione iniciativas pelo seletor ou pelos atalhos acima — ou clicando na tabela e nos cartões.</li>
-        <li>O <b>gráfico de teia</b> mostra o perfil nos dez critérios; a linha tracejada é a <b>média das 82</b> iniciativas.</li>
+        <li>O <b>gráfico de teia</b> mostra o perfil nos dez critérios; a linha tracejada é a <b>média das ${ITEMS.length}</b> iniciativas.</li>
         <li>A <b>matriz por critério</b> destaca quem se sai melhor em cada um e compara com a média.</li>
         <li>As <b>maiores diferenças</b> apontam os critérios decisivos entre as escolhidas.</li>
       </ul>
@@ -527,7 +530,7 @@
       const win = sel.length > 1 && tot[idx] === tmx && tmx > tmn;
       return `<td class="mc-tot${win ? " win" : ""}"${win ? ` style="box-shadow:inset 0 0 0 2px ${s.col}"` : ""}>${tot[idx]}</td>`;
     }).join("");
-    return `<div class="mc-title">Comparação por critério <small>nota de 0 a 3 · célula destacada = melhor entre as selecionadas · coluna cinza = média das 82</small></div>
+    return `<div class="mc-title">Comparação por critério <small>nota de 0 a 3 · célula destacada = melhor entre as selecionadas · coluna cinza = média das ${ITEMS.length}</small></div>
       <div class="mc-scroll"><table class="cmp-mtx"><thead><tr>${head}</tr></thead><tbody>${rows}
         <tr class="mc-totrow"><th class="mc-crit">Nota total (0–30)</th>${totCells}${showAvg ? `<td class="mc-avg">${AVGTOTAL.toFixed(1)}</td>` : ""}</tr></tbody></table></div>`;
   }

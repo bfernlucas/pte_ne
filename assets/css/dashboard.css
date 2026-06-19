@@ -185,6 +185,7 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .heatmap td .v{font-variant-numeric:tabular-nums;font-weight:600}
 .heatmap td .pre{display:block;font-size:.68rem;color:var(--pre);font-weight:600;margin-top:1px}
 .heatmap tr.tot td,.heatmap td.tot{background:#eef1fb;font-weight:700}
+.heatmap th.nac,.heatmap td.nac{border-left:2px solid var(--brand-3)}
 
 /* selo de vínculo nas abas */
 .tabs button .tbadge{display:inline-block;margin-left:7px;background:var(--green);color:#fff;border-radius:10px;
