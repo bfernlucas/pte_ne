@@ -360,6 +360,7 @@
       </div>
       <div class="rc-group">
         <span class="rc-title">Candidatas — quais iniciativas podem entrar na rota</span>
+        <div class="rc-field"><label>Origem das candidatas</label><select id="rf-source"><option value="selecao">Selecionadas na aba Seleção</option><option value="filtros">Todas (pelos filtros abaixo)</option></select></div>
         <div class="rc-field"><label>Eixo</label><select id="rf-eixo"><option value="">Todos os eixos</option>${H.META.eixos.map(e => `<option value="${e.cod}">${e.nome}</option>`).join("")}</select></div>
         <div class="rc-field"><label>Estado</label><select id="rf-uf"><option value="">Todos os estados</option>${UFS.map(u => `<option value="${u}">${H.UF_NOME[u]}</option>`).join("")}</select></div>
         <div class="rc-field"><label>Natureza jurídica</label><select id="rf-nat"><option value="">Todas</option>${optTags(distinct(H.ITEMS, "natureza"))}</select></div>
@@ -383,6 +384,7 @@
     document.getElementById("r-run").addEventListener("click", () => draw(H));
     document.getElementById("r-clear").addEventListener("click", () => showAll(H));
     document.getElementById("r-clear-anchors").addEventListener("click", () => clearAnchors());
+    document.getElementById("rf-source").value = (H.selItems && H.selItems().length) ? "selecao" : "filtros";
     const addInput = document.getElementById("rf-anchor-add");
     const tryAddAnchor = () => {
       const val = addInput.value.trim();
@@ -523,20 +525,30 @@
     mode = "route";
     const params = readParams();
     const f = readFilters();
-    const candidates = applyFilters(H.ITEMS, f, H);
+    const statusEl = document.getElementById("r-status");
+    const srcEl = document.getElementById("rf-source");
+    const useSel = srcEl && srcEl.value === "selecao" && H.selItems;
+    let candidates, fromSel = false;
+    if (useSel) {
+      const fs = H.fieldSel ? H.fieldSel() : { visita: new Set(), entrevista: new Set() };
+      candidates = H.selItems().filter(o => o.lat != null && !o.fora_ne)
+        .map(o => Object.assign({}, o, { preselecionada: true, __tipo: fs.visita.has(o.id) ? "visita" : "entrevista" }));
+      fromSel = true;
+    } else {
+      candidates = applyFilters(H.ITEMS, f, H);
+    }
     // âncoras entram sempre, mesmo se não casarem com os outros filtros
     const cidset = new Set(candidates.map(c => c.id));
     H.ITEMS.forEach(i => { if (anchorIds.has(i.id) && i.lat != null && !i.fora_ne && !cidset.has(i.id)) candidates.push(i); });
-    const statusEl = document.getElementById("r-status");
     const prov = makeProvider(params);
-    statusEl.textContent = "Distâncias estimadas por geografia (linha reta × 1,3).";
+    statusEl.textContent = (fromSel ? `Candidatas: ${candidates.length} selecionadas na aba Seleção. ` : "") + "Distâncias estimadas por geografia (linha reta × 1,3).";
     params.prov = prov;
     const plan = planMissions(candidates, HUBS, params);
     routeLayer.clearLayers(); allLayer.clearLayers();
     const panel = document.getElementById("rotas-itinerary");
     const cob = plan.cobertura;
     if (cob.candTotal === 0) {
-      panel.innerHTML = `<div class="cover warn">Nenhuma iniciativa atende aos filtros escolhidos. Ajuste os filtros e tente novamente.</div>`;
+      panel.innerHTML = `<div class="cover warn">${fromSel ? "Nenhuma iniciativa selecionada na aba <b>Seleção</b>. Escolha visitas/entrevistas lá, ou troque a origem das candidatas para “Todas (pelos filtros)”." : "Nenhuma iniciativa atende aos filtros escolhidos. Ajuste os filtros e tente novamente."}</div>`;
       return;
     }
     const bounds = [];
@@ -601,9 +613,9 @@
         d.stops.forEach(s => {
           counter++;
           if (s.legKm > 1) html += `<div class="leg-line">deslocamento: ${Math.round(s.legKm)} km (${s.legH.toFixed(1)} h)</div>`;
-          const anc = anchorIds.has(s.node.id), pre = s.node.preselecionada;
-          const tagCls = anc ? "tanc" : pre ? "tpre" : "topt";
-          const tagTxt = anc ? "âncora" : pre ? "pré-selecionada" : "no caminho";
+          const anc = anchorIds.has(s.node.id), pre = s.node.preselecionada, tipo = s.node.__tipo;
+          const tagCls = anc ? "tanc" : (pre || tipo) ? "tpre" : "topt";
+          const tagTxt = anc ? "âncora" : tipo === "entrevista" ? "entrevista" : tipo === "visita" ? "visita técnica" : pre ? "pré-selecionada" : "no caminho";
           const nbg = (anc || pre) ? color : "#fff", nfg = (anc || pre) ? "#fff" : color, nbd = anc ? "#f6a609" : color;
           html += `<div class="stop ${(pre || anc) ? "pre" : "opt"}"><span class="n" style="background:${nbg};color:${nfg};border-color:${nbd}">${counter}</span><span class="nm">${H.esc(s.node.nome)} <span class="tag ${tagCls}">${tagTxt}</span> <span class="sc">${s.node.pontuacao} pts</span></span></div>`;
         });

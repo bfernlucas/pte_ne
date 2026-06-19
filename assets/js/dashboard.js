@@ -19,6 +19,31 @@
   const state = { view: "ranking", sort: { key: "pontuacao", dir: -1 }, selected: new Set() };
   const filters = { busca: "", eixo: "", estado: "", bioma: "", pre: false };
 
+  // ----- seleção de campo (base para Análises e Rotas): visitas e entrevistas -----
+  const SEL = { visita: new Set(), entrevista: new Set() };
+  try {
+    const sv = JSON.parse((window.localStorage && localStorage.getItem("pte_sel")) || "{}");
+    (sv.visita || []).forEach(id => SEL.visita.add(id));
+    (sv.entrevista || []).forEach(id => SEL.entrevista.add(id));
+  } catch (e) { /* ignore */ }
+  function saveSel() { try { if (window.localStorage) localStorage.setItem("pte_sel", JSON.stringify({ visita: [...SEL.visita], entrevista: [...SEL.entrevista] })); } catch (e) {} }
+  const selUnion = () => new Set([...SEL.visita, ...SEL.entrevista]);
+  const selItems = () => [...selUnion()].map(id => byId(id)).filter(Boolean);
+  function toggleSel(group, id) { const s = SEL[group]; if (s.has(id)) s.delete(id); else s.add(id); saveSel(); }
+  const selFilters = { busca: "", eixo: "", estado: "", bioma: "", natureza: "" };
+  function selFiltered() {
+    const q = selFilters.busca.trim().toLowerCase();
+    return ITEMS.filter(i => {
+      if (i.lat == null || i.lon == null) return false;
+      if (selFilters.eixo && i.eixo_cod !== selFilters.eixo) return false;
+      if (selFilters.estado && !ufTokens(i.estado).includes(selFilters.estado)) return false;
+      if (selFilters.bioma && !(i.biomas || "").toLowerCase().includes(selFilters.bioma.toLowerCase())) return false;
+      if (selFilters.natureza && i.natureza !== selFilters.natureza) return false;
+      if (q) { const hay = [i.nome, i.org, i.municipio, i.tematica].filter(Boolean).join(" ").toLowerCase(); if (!hay.includes(q)) return false; }
+      return true;
+    });
+  }
+
   function filtered() {
     const q = filters.busca.trim().toLowerCase();
     return ITEMS.filter(i => {
@@ -212,8 +237,93 @@
       <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${i.preselecionada ? " · pré-selecionada" : ""}`;
   }
 
+  // ---------- SELEÇÃO ESTRATÉGICA ----------
+  let selMap = { visita: null, entrevista: null }, selLayer = { visita: null, entrevista: null };
+  function ensureSelMap(group) {
+    if (selMap[group]) return;
+    const id = group === "visita" ? "map-sel-visita" : "map-sel-entrevista";
+    const m = L.map(id, { zoomControl: true }).setView([-8.6, -39.5], 5);
+    if (window.PTE_MAP) window.PTE_MAP.setup(m, { base: "Ruas e estradas", boundaries: true });
+    else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 20 }).addTo(m);
+    selLayer[group] = L.layerGroup().addTo(m);
+    selMap[group] = m;
+  }
+  function selStyle(i, group) {
+    const on = SEL[group].has(i.id);
+    const r = 5 + 12 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN));
+    return { radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: on ? .9 : .28, color: on ? "#16a34a" : "#fff", weight: on ? 3.5 : 1 };
+  }
+  function renderSelMap(group) {
+    ensureSelMap(group);
+    const lay = selLayer[group]; lay.clearLayers();
+    selFiltered().forEach(i => {
+      const locs = (i.locais && i.locais.length) ? i.locais : [{ lat: i.lat, lon: i.lon }];
+      locs.forEach(loc => {
+        const other = group === "visita" ? "entrevista" : "visita";
+        const inOther = SEL[other].has(i.id);
+        L.circleMarker([loc.lat, loc.lon], selStyle(i, group))
+          .bindTooltip(`${esc(i.nome)} · ${i.pontuacao} pts${SEL[group].has(i.id) ? " ✓" : ""}${inOther ? (group === "visita" ? " (já em entrevistas)" : " (já em visitas)") : ""}`, { direction: "top" })
+          .on("click", () => { toggleSel(group, i.id); renderSelecao(); })
+          .addTo(lay);
+      });
+    });
+    setTimeout(() => selMap[group].invalidateSize(), 30);
+  }
+  function renderSelList(group) {
+    const box = $(group === "visita" ? "#sel-list-visita" : "#sel-list-entrevista");
+    const ids = [...SEL[group]];
+    const opts = [...ITEMS].filter(i => i.lat != null).sort((a, b) => a.nome.localeCompare(b.nome, "pt"))
+      .map(i => `<option value="${i.id}">${esc(i.nome)}</option>`).join("");
+    const chips = ids.length
+      ? ids.map(id => { const i = byId(id); return `<span class="selchip"><span class="d" style="background:${eixoColor(i.eixo_cod)}"></span>${esc(trunc(i.nome, 30))}<button data-id="${id}" data-g="${group}" title="remover">×</button></span>`; }).join("")
+      : `<span class="sel-empty">Nenhuma selecionada. Clique nos pontos do mapa ou use o seletor abaixo.</span>`;
+    box.innerHTML = `<select class="sel-add-sel" data-g="${group}"><option value="">Adicionar pela lista…</option>${opts}</select><div class="selchips">${chips}</div>`;
+    box.querySelector(".sel-add-sel").addEventListener("change", e => { if (e.target.value) { SEL[group].add(+e.target.value); saveSel(); renderSelecao(); } });
+    box.querySelectorAll(".selchip button").forEach(b => b.addEventListener("click", () => { SEL[b.dataset.g].delete(+b.dataset.id); saveSel(); renderSelecao(); }));
+  }
+  function renderSelecao() {
+    const n = selFiltered().length;
+    if ($("#sel-fcount")) $("#sel-fcount").textContent = `${n} iniciativa${n === 1 ? "" : "s"} no filtro`;
+    $("#sel-count-visita").textContent = SEL.visita.size;
+    $("#sel-count-entrevista").textContent = SEL.entrevista.size;
+    if ($("#sel-summary")) $("#sel-summary").textContent = `${SEL.visita.size} visita(s) · ${SEL.entrevista.size} entrevista(s) · ${selUnion().size} no total`;
+    renderSelMap("visita"); renderSelMap("entrevista");
+    renderSelList("visita"); renderSelList("entrevista");
+  }
+  function initSelecao() {
+    META.eixos.forEach(e => $("#sf-eixo").insertAdjacentHTML("beforeend", `<option value="${e.cod}">${e.nome}</option>`));
+    UF_ORDER.forEach(u => $("#sf-estado").insertAdjacentHTML("beforeend", `<option value="${u}">${UF_NOME[u]} (${u})</option>`));
+    const biomas = new Set(); ITEMS.forEach(i => (i.biomas || "").split(/[,/;]+/).forEach(b => { b = b.trim(); if (b) biomas.add(b); }));
+    [...biomas].sort((a, b) => a.localeCompare(b, "pt")).forEach(b => $("#sf-bioma").insertAdjacentHTML("beforeend", `<option value="${b}">${b}</option>`));
+    const nat = new Set(); ITEMS.forEach(i => { if (i.natureza) nat.add(i.natureza); });
+    [...nat].sort((a, b) => a.localeCompare(b, "pt")).forEach(nv => $("#sf-nat").insertAdjacentHTML("beforeend", `<option value="${esc(nv)}">${esc(nv)}</option>`));
+    $("#sf-busca").addEventListener("input", e => { selFilters.busca = e.target.value; renderSelecao(); });
+    $("#sf-eixo").addEventListener("change", e => { selFilters.eixo = e.target.value; renderSelecao(); });
+    $("#sf-estado").addEventListener("change", e => { selFilters.estado = e.target.value; renderSelecao(); });
+    $("#sf-bioma").addEventListener("change", e => { selFilters.bioma = e.target.value; renderSelecao(); });
+    $("#sf-nat").addEventListener("change", e => { selFilters.natureza = e.target.value; renderSelecao(); });
+    $("#sf-reset").addEventListener("click", () => {
+      Object.assign(selFilters, { busca: "", eixo: "", estado: "", bioma: "", natureza: "" });
+      ["#sf-busca", "#sf-eixo", "#sf-estado", "#sf-bioma", "#sf-nat"].forEach(s => { $(s).value = ""; });
+      renderSelecao();
+    });
+    $("#sel-clear-visita").addEventListener("click", () => { SEL.visita.clear(); saveSel(); renderSelecao(); });
+    $("#sel-clear-entrevista").addEventListener("click", () => { SEL.entrevista.clear(); saveSel(); renderSelecao(); });
+    $("#sel-go-analises").addEventListener("click", () => setView("analises"));
+    $("#sel-go-rotas").addEventListener("click", () => setView("rotas"));
+  }
+
   // ---------- ANÁLISES ----------
-  let histChart, eixoChart;
+  let histChart, eixoChart, anBase = "sel";
+  function analiseBase() { const sel = selItems(); const useSel = anBase === "sel" && sel.length > 0; return { list: useSel ? sel : ITEMS, useSel, n: sel.length }; }
+  function renderAnBanner(b) {
+    const el = $("#an-base"); if (!el) return;
+    if (!b.n) { el.innerHTML = `<span class="an-hint">Analisando todas as ${ITEMS.length} iniciativas. Use a aba <b>Seleção</b> para analisar apenas as escolhidas.</span>`; return; }
+    el.innerHTML = `<span class="an-lab">Base da análise:</span>
+      <button class="an-tg ${b.useSel ? "on" : ""}" data-b="sel">Selecionadas (${b.n})</button>
+      <button class="an-tg ${!b.useSel ? "on" : ""}" data-b="todas">Todas (${ITEMS.length})</button>`;
+    el.querySelectorAll(".an-tg").forEach(btn => btn.addEventListener("click", () => { anBase = btn.dataset.b; refresh(); }));
+  }
   function renderAnalises(list) {
     const cods = META.eixos.map(e => e.cod);
     const grid = {}, pre = {};
@@ -427,7 +537,7 @@
     $$("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
     $$(".view").forEach(el => el.classList.add("hidden"));
     $("#view-" + v).classList.remove("hidden");
-    $("#filters").style.display = (v === "rotas" || v === "comparar") ? "none" : "";
+    $("#filters").style.display = (v === "rotas" || v === "comparar" || v === "selecao") ? "none" : "";
     refresh();
   }
   $$("#tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
@@ -438,11 +548,12 @@
     if (state.view === "ranking") renderRanking(list);
     else if (state.view === "cards") renderCards(list);
     else if (state.view === "mapa") renderMapGeral(list);
-    else if (state.view === "analises") renderAnalises(list);
+    else if (state.view === "selecao") renderSelecao();
+    else if (state.view === "analises") { const b = analiseBase(); renderAnBanner(b); renderAnalises(b.list); }
     else if (state.view === "rotas" && window.PTE_ROTAS) window.PTE_ROTAS.render(helpers());
     else if (state.view === "comparar") renderCompare();
   }
-  function helpers() { return { ITEMS, META, byId, eixoColor, nameByCod, popupHtml, ufTokens, esc, trunc, orgSub, UF_NOME }; }
+  function helpers() { return { ITEMS, META, byId, eixoColor, nameByCod, popupHtml, ufTokens, esc, trunc, orgSub, UF_NOME, selItems, fieldSel: () => ({ visita: new Set(SEL.visita), entrevista: new Set(SEL.entrevista) }) }; }
 
   function esc(s) { return (s == null ? "" : String(s)).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function trunc(s, n) { s = s == null ? "" : String(s); return s.length > n ? s.slice(0, n - 1) + "…" : s; }
@@ -480,7 +591,7 @@
     return tidyOrg(o);
   }
 
-  renderKpis(); initFilters(); initCompare();
+  renderKpis(); initFilters(); initCompare(); initSelecao();
   window.PTE_DASH = { refresh, helpers, state, filtered };
   setView("ranking");
 })();

@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/dashboard.css?v=21" />
+<link rel="stylesheet" href="assets/css/dashboard.css?v=22" />
 </head>
 <body>
 <header class="topbar">
@@ -39,6 +39,7 @@
   <button data-view="ranking" class="active">Ranking</button>
   <button data-view="cards">Cartões</button>
   <button data-view="mapa">Mapa geral</button>
+  <button data-view="selecao">Seleção</button>
   <button data-view="analises">Análises</button>
   <button data-view="rotas">Rotas de campo</button>
   <button data-view="comparar">Comparar</button>
@@ -92,9 +93,49 @@
     </div>
   </div>
 
+  <!-- SELEÇÃO -->
+  <div class="view hidden" id="view-selecao">
+    <h2 class="view-head">Seleção estratégica <small>escolha as iniciativas para visitas e entrevistas — alimenta Análises e Rotas</small></h2>
+    <div class="sel-flowbar">
+      <span class="flowstep on">1 · Seleção</span><span class="flowarrow">→</span>
+      <span class="flowstep">2 · Análises</span><span class="flowarrow">→</span>
+      <span class="flowstep">3 · Rotas de campo</span>
+      <span class="sel-summary" id="sel-summary"></span>
+    </div>
+    <div class="sel-filters">
+      <input type="search" id="sf-busca" placeholder="Buscar iniciativa, organização ou município..." />
+      <select id="sf-eixo"><option value="">Todos os eixos</option></select>
+      <select id="sf-estado"><option value="">Todos os estados</option></select>
+      <select id="sf-bioma"><option value="">Todos os biomas</option></select>
+      <select id="sf-nat"><option value="">Todas as naturezas</option></select>
+      <span class="count" id="sel-fcount"></span>
+      <button id="sf-reset" class="ghost">Limpar filtros</button>
+    </div>
+
+    <div class="sel-block">
+      <div class="sel-head"><h3>1 · Visitas técnicas <span class="sel-badge" id="sel-count-visita">0</span></h3>
+        <button class="ghost sm" id="sel-clear-visita">Limpar visitas</button></div>
+      <div class="ph-sub">Aplique os filtros e clique nos pontos para marcar as iniciativas que receberão visita técnica de campo.</div>
+      <div class="sel-map-wrap"><div id="map-sel-visita" class="map"></div><aside class="sel-side" id="sel-list-visita"></aside></div>
+    </div>
+
+    <div class="sel-block">
+      <div class="sel-head"><h3>2 · Entrevistas em profundidade <span class="sel-badge" id="sel-count-entrevista">0</span></h3>
+        <button class="ghost sm" id="sel-clear-entrevista">Limpar entrevistas</button></div>
+      <div class="ph-sub">Aplique os filtros e clique nos pontos para marcar as iniciativas que terão entrevista em profundidade.</div>
+      <div class="sel-map-wrap"><div id="map-sel-entrevista" class="map"></div><aside class="sel-side" id="sel-list-entrevista"></aside></div>
+    </div>
+
+    <div class="sel-actions">
+      <button class="btn" id="sel-go-analises">Ver Análises das selecionadas →</button>
+      <button class="btn secondary" id="sel-go-rotas">Planejar Rotas de campo →</button>
+    </div>
+  </div>
+
   <!-- ANÁLISES -->
   <div class="view hidden" id="view-analises">
     <h2 class="view-head">Análises <small>cobertura e desempenho por eixo e estado</small></h2>
+    <div class="an-base" id="an-base"></div>
     <div class="analises-grid">
       <div class="panel full">
         <h3>Cobertura por estado e eixo</h3>
@@ -163,10 +204,10 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=21"></script>
-<script src="assets/data/uf_ne.js?v=21"></script>
-<script src="assets/js/maplayers.js?v=21"></script>
-<script src="assets/js/rota.js?v=21"></script>
-<script src="assets/js/dashboard.js?v=21"></script>
+<script src="assets/data/iniciativas.js?v=22"></script>
+<script src="assets/data/uf_ne.js?v=22"></script>
+<script src="assets/js/maplayers.js?v=22"></script>
+<script src="assets/js/rota.js?v=22"></script>
+<script src="assets/js/dashboard.js?v=22"></script>
 </body>
 </html>

@@ -186,6 +186,46 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .heatmap td .pre{display:block;font-size:.68rem;color:var(--pre);font-weight:600;margin-top:1px}
 .heatmap tr.tot td,.heatmap td.tot{background:#eef1fb;font-weight:700}
 
+/* ---------- seleção estratégica ---------- */
+.sel-flowbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.flowstep{font-family:var(--display);text-transform:uppercase;font-size:.72rem;letter-spacing:.04em;color:var(--muted);
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 12px}
+.flowstep.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.flowarrow{color:var(--faint);font-weight:700}
+.sel-summary{margin-left:auto;font-size:.82rem;color:var(--brand);font-weight:600}
+.sel-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;margin-bottom:16px}
+.sel-filters input[type=search],.sel-filters select{border:1px solid var(--border);border-radius:9px;padding:8px 11px;
+  font-size:.85rem;background:#fff;font-family:var(--font);color:var(--ink)}
+.sel-filters input[type=search]{min-width:240px;flex:1 1 240px}
+.sel-filters .count{font-size:.82rem;color:var(--muted);margin-left:auto;font-weight:500}
+.sel-block{margin-bottom:22px}
+.sel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:3px}
+.sel-head h3{font-size:1rem;display:flex;align-items:center;gap:9px}
+.sel-badge{background:var(--green);color:#fff;border-radius:20px;font-family:var(--font);font-size:.78rem;font-weight:700;
+  min-width:24px;text-align:center;padding:1px 9px}
+.sel-block .ph-sub{margin-bottom:10px}
+.sel-map-wrap{display:grid;grid-template-columns:1fr 290px;gap:16px;align-items:start}
+.sel-map-wrap .map{height:clamp(360px,52vh,520px)}
+.sel-side{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;max-height:520px;overflow:auto}
+.sel-add-sel{width:100%;border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:.82rem;font-family:var(--font);background:#fff;color:var(--ink);margin-bottom:10px}
+.selchips{display:flex;flex-direction:column;gap:6px}
+.selchip{display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink);background:var(--surface-2);
+  border:1px solid var(--border-2);border-radius:8px;padding:5px 8px}
+.selchip .d{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.selchip button{margin-left:auto;border:none;background:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:0 2px}
+.selchip button:hover{color:var(--red)}
+.sel-empty{font-size:.8rem;color:var(--muted);line-height:1.4;display:block}
+.sel-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.ghost.sm{padding:6px 11px;font-size:.78rem}
+/* banner de base da análise */
+.an-base{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;font-size:.82rem}
+.an-lab{color:var(--muted);font-weight:600}
+.an-tg{border:1px solid var(--border);background:var(--surface);color:var(--muted);border-radius:8px;padding:5px 11px;
+  font-size:.8rem;font-weight:600;cursor:pointer;font-family:var(--font)}
+.an-tg.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.an-hint{color:var(--muted)}.an-hint b{color:var(--brand)}
+
 /* ---------- rotas de campo ---------- */
 .rotas-wrap{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
 .rotas-results{grid-column:1;grid-row:1;min-width:0;display:flex;flex-direction:column;gap:14px}
@@ -392,8 +432,9 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
   .cmp-layout{grid-template-columns:1fr}
 }
 @media (max-width:860px){
-  .map-layout,.analises-grid,.cmp-cards{grid-template-columns:1fr}
+  .map-layout,.analises-grid,.cmp-cards,.sel-map-wrap{grid-template-columns:1fr}
   .map{height:clamp(360px,58vh,560px)}
+  .sel-side{max-height:none}
   .map-side{flex-direction:row;flex-wrap:wrap}
   .map-side .legend{flex:1 1 220px}
   .kpis{width:100%;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding-bottom:2px;scrollbar-width:none}
