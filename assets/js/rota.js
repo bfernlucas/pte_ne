@@ -166,6 +166,28 @@
     return { days, visited, overflow, back };
   }
 
+  // ---------- prioridade composta: diversidade regional + interiorização + nº de iniciativas ----------
+  const NE_UF = new Set(["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"]);
+  function ufOf(n) {
+    const s = n.estado != null ? String(n.estado) : (n.uf || "");
+    const m = s.match(/\b[A-Z]{2}\b/); return m ? m[0] : "";
+  }
+  function interiorScore(n) { // 0 = litoral/capital ; 1 = interior do NE (≥400 km da capital mais próxima)
+    if (!NE_UF.has(ufOf(n))) return 0; // fora do NE não recebe bônus de interiorização
+    let d = Infinity; for (const h of HUBS) { const x = haversineKm(h, n); if (x < d) d = x; }
+    return Math.min(d, 400) / 400;
+  }
+  function hasNELoc(n) { // a iniciativa pode ser visitada presencialmente no NE?
+    if (n.locais && n.locais.length) return n.locais.some(l => NE_UF.has(l.uf));
+    return NE_UF.has(ufOf(n));
+  }
+  // valor de prioridade (base recompensa o nº; +diversidade de estado do NE; +interior; nota = ajuste fino)
+  function nodeValue(n, coveredUFs) {
+    const u = ufOf(n);
+    const div = (coveredUFs && NE_UF.has(u) && !coveredUFs.has(u)) ? 1 : 0;
+    return 1 + 1.2 * div + 0.8 * interiorScore(n) + 0.4 * ((n.pontuacao || 0) / 30);
+  }
+
   // ---------- monta uma missão (cluster + opcionais) ----------
   function buildMission(core, optionalPool, hubs, params) {
     // hub = capital mais próxima do centroide do cluster
@@ -176,14 +198,15 @@
     [...core, ...optionalPool].forEach(n => { if (n.locais && n.locais.length) applyLoc(n, hub); });
 
     // ordena o núcleo (NN + 2-opt) e ajusta para caber nos dias.
-    // Critério de corte = menor DENSIDADE DE VALOR (nota ÷ tempo marginal):
-    // remove primeiro a iniciativa que custa mais deslocamento por ponto de nota.
-    let nodes = core.slice().sort((a, b) => b.pontuacao - a.pontuacao);
+    // Critério de corte = menor PRIORIDADE por tempo marginal (prioriza diversidade
+    // regional, interiorização e nº de iniciativas; nota é ajuste fino).
+    let nodes = core.slice();
     let order = twoOpt(hub, nearestNeighbor(hub, nodes, params.prov), params.prov, true);
     let packed = packDays(hub, order, params.prov, params);
     const anchorSet = params.anchorSet || new Set();
     const dropped = [];
     while (packed.overflow.length && nodes.length > 1) {
+      const stCount = {}; order.forEach(n => { const u = ufOf(n); if (u) stCount[u] = (stCount[u] || 0) + 1; });
       let worst = null, worstEff = Infinity;
       for (let idx = 0; idx < order.length; idx++) {
         const n = order[idx];
@@ -191,7 +214,10 @@
         const a = idx === 0 ? hub : order[idx - 1];
         const b = idx === order.length - 1 ? hub : order[idx + 1];
         const marg = params.prov.h(a, n) + params.prov.h(n, b) - params.prov.h(a, b) + params.visitaH;
-        const eff = (n.pontuacao || 1) / Math.max(0.1, marg); // pontos por hora marginal
+        const uu = ufOf(n);
+        const uniqueUF = (NE_UF.has(uu) && stCount[uu] === 1) ? 1 : 0; // protege o único representante de um estado do NE
+        const v = 1 + 1.2 * uniqueUF + 0.8 * interiorScore(n) + 0.4 * ((n.pontuacao || 0) / 30);
+        const eff = v / Math.max(0.1, marg); // prioridade por hora marginal
         if (eff < worstEff) { worstEff = eff; worst = n; }
       }
       if (!worst) break; // só restam âncoras: não dá para encurtar mais
@@ -201,13 +227,15 @@
       packed = packDays(hub, order, params.prov, params);
     }
 
-    // inserção gulosa de opcionais (melhor custo-benefício nota/Δtempo) enquanto couber
+    // inserção gulosa de opcionais: prioriza novos estados (diversidade), interior e
+    // inserções baratas (mais iniciativas), enquanto couber no orçamento de dias
     if (params.incluirOpcionais) {
       let curOrder = order.slice();
       const used = new Set(curOrder.map(n => n.id));
       let pool = optionalPool.filter(n => !used.has(n.id));
       let guard = 0;
-      while (guard++ < 60) {
+      while (guard++ < 80) {
+        const covered = new Set(); curOrder.forEach(n => { const u = ufOf(n); if (u) covered.add(u); });
         let bestGain = -Infinity, bestNode = null, bestOrder = null;
         for (const cand of pool) {
           // melhor posição de inserção
@@ -221,7 +249,7 @@
           const trial = curOrder.slice(0, bpos).concat([cand], curOrder.slice(bpos));
           const tp = packDays(hub, trial, params.prov, params);
           if (tp.overflow.length) continue; // não cabe
-          const gain = cand.pontuacao / Math.max(0.25, bdelta); // nota por hora extra
+          const gain = nodeValue(cand, covered) / Math.max(0.25, bdelta); // prioridade por hora extra
           if (gain > bestGain) { bestGain = gain; bestNode = cand; bestOrder = trial; }
         }
         if (!bestNode) break;
@@ -252,7 +280,7 @@
     const preAll = valid.filter(n => n.preselecionada);
     // núcleo = âncoras (obrigatórias) + visitas técnicas; se vazio, roteia todas as candidatas
     let core = valid.filter(n => n.preselecionada || isAnc(n));
-    let opt = valid.filter(n => !n.preselecionada && !isAnc(n));
+    let opt = valid.filter(n => !n.preselecionada && !isAnc(n) && hasNELoc(n)); // opcionais "no caminho" só dentro do NE
     if (core.length === 0) { core = valid; opt = []; }
     if (!params.incluirOpcionais) opt = [];
     // local provisório das iniciativas multi-locais = mais próximo do centroide do núcleo
@@ -279,12 +307,15 @@
     const totalScore = missions.reduce((s, m) => s + m.score, 0);
     const totalKm = missions.reduce((s, m) => s + m.totalKm, 0);
     const totalDays = missions.reduce((s, m) => s + m.days.length, 0);
+    const ufsCob = new Set(); missions.forEach(m => m.visited.forEach(n => { const u = ufOf(n); if (u && NE_UF.has(u)) ufsCob.add(u); }));
+    const interiorVis = missions.reduce((s, m) => s + m.visited.filter(n => interiorScore(n) >= 0.4).length, 0);
     return {
       missions, params,
       cobertura: {
         preTotal: preAll.length, preVis, candTotal: valid.length, candVis,
         optVis: candVis - preVis, totalScore, totalKm: Math.round(totalKm), totalDays, droppedPre,
-        ancTotal: ancAll.length, ancVis: ancAll.length - ancMissed.length, ancMissed
+        ancTotal: ancAll.length, ancVis: ancAll.length - ancMissed.length, ancMissed,
+        ufsCobertas: ufsCob.size, interiorVis, candVisTotal: candVis
       }
     };
   }
@@ -564,16 +595,18 @@
     html += `<div class="opt-card">
       <div class="opt-title">Cenário ótimo · ${k} incursão(ões) de até ${params.dias} dias</div>
       <div class="opt-grid">
+        <div class="opt-m"><b>${cob.candVisTotal}</b><span>iniciativas (total)</span></div>
         <div class="opt-m"><b>${cob.preTotal ? cob.preVis + "/" + cob.preTotal : cob.candVis}</b><span>${cob.preTotal ? "visitas técnicas" : "iniciativas"}</span>${cob.preTotal ? `<div class="opt-bar"><i style="width:${pct}%"></i></div>` : ""}</div>
         ${ancMetric}
         <div class="opt-m"><b>+${cob.optVis}</b><span>in loco no caminho</span></div>
+        <div class="opt-m"><b>${cob.ufsCobertas}/9</b><span>estados (diversidade)</span></div>
+        <div class="opt-m"><b>${cob.interiorVis}</b><span>no interior</span></div>
         <div class="opt-m"><b>${cob.totalScore}</b><span>valor (pts)</span></div>
         <div class="opt-m"><b>${cob.totalKm}</b><span>km</span></div>
         <div class="opt-m"><b>${cob.totalDays}</b><span>dias (total)</span></div>
-        <div class="opt-m"><b>${effKm.toFixed(1)}</b><span>pts / 100 km</span></div>
       </div>
       ${ancWarn}
-      <div class="opt-help">O roteiro cobre as <b>visitas técnicas</b> (presenciais) selecionadas; as <b>âncoras</b> são sempre incluídas e, em volta delas, o ótimo encaixa visitas de maior <b>densidade de valor</b> (nota por tempo) e as <b>in loco no caminho</b> de melhor custo-benefício.</div>
+      <div class="opt-help">O roteiro prioriza <b>diversidade regional</b> (cobrir mais estados), <b>interiorização</b> (iniciativas longe das capitais) e o <b>maior nº de iniciativas</b>. As <b>âncoras</b> são sempre incluídas; a nota entra como ajuste fino.</div>
     </div>`;
     // ---- comparador de cenários (nº de incursões) ----
     const cmp = [];
