@@ -1,7 +1,7 @@
 window.PTE_DATA = {
  "meta": {
   "fonte": "PTE2026_matriz_dashboard.xlsx",
-  "total": 80,
+  "total": 79,
   "preselecionadas": 31,
   "eixos": [
    {
@@ -1215,48 +1215,6 @@ window.PTE_DATA = {
    "pre_ufs": [
     "MA"
    ],
-   "fora_ne": false
-  },
-  {
-   "id": 28,
-   "nome": "Programa Sertão Vivo",
-   "objetivo": "Garantir a resiliência climática e autonomia produtiva no Semiárido, integrando o uso produtivo da energia solar fotovoltaica (principalmente em sistemas de bombeamento) à infraestrutura hídrica e à agroecologia. A iniciativa visa substituir motores a diesel para reduzir custos e mitigar GEE, garantindo o suprimento seguro de água e energia para a produção familiar (irrigação, resfriamento), o que fortalece a segurança alimentar e a justiça socioambiental.",
-   "resumo": "Integra energia solar ao bombeamento de água e à agroecologia no Semiárido, substituindo o diesel para reduzir custos e emissões e garantir água e energia à produção familiar.",
-   "tematica": "Resiliência climática; sustentabilidade produtiva no Semiárido; integração de tecnologias sociais; infraestrutura hídrica; uso produtivo da energia solar.",
-   "org": "Governo Federal – Ministério do Desenvolvimento Agrário e Agricultura Familiar (MDA), com apoio do FIDA",
-   "cnpj": "01.612.452/0001-97",
-   "fundacao": "08/01/1997",
-   "cnae": "8411-6/00 - Administração pública em geral",
-   "endereco": "Brasília: SAUS, Quadra 1, Lotes 3A e 5, Bloco I - Sobreloja - Sala 201 - Brasília/DF - CEP: 70070-010\n\n\nSalvador: 3ª Avenida, nº 310 - Centro Administrativo da Bahia. CEP 41.745-005 - Salvador/BA",
-   "lat": -15.7942,
-   "lon": -47.8822,
-   "avaliador": "Lucas",
-   "municipio": "Brasília",
-   "estado": "BA, PE, CE, RN, AL, PI, PB, SE",
-   "biomas": "Cerrado, Caatinga",
-   "eixo": "Transição Energética",
-   "eixo_cod": "TE",
-   "eixo_sec": "BIO, EC, NIVA",
-   "setor": "Terciário",
-   "natureza": "Órgão Público do Poder Executivo Federal",
-   "tipo_inst": "Iniciativa",
-   "salvaguardas": "Atende",
-   "criterios": {
-    "relevancia": 3,
-    "clima": 3,
-    "cadeias": 3,
-    "viabilidade": 3,
-    "replicabilidade": 3,
-    "inovacao": 2,
-    "investimentos": 3,
-    "inclusao": 3,
-    "equidade": 3,
-    "governanca": 3
-   },
-   "pontuacao": 29,
-   "observacoes": "SSM: é um projeto financiado por vários organismos internacional, assumo que atende as salvaguardas mínimas.\n\nCritérios: a iniciativa tem foco em três componentes, como sistemas produtivos resilentes ao clima, acesso à água para produção e gestão do conhecimento em tecnologias sociais. Possui uma forte relevância territorial, pois atende todos os estados do Nordeste e mais de 70 municípios, é financiado e apoiado por organizações robustas como FIDA, BNDES e Fundo Clima. O foco de fato é em cadeias da sociobiodiversidade, conservação e restauração ambiental, pagamento por serviços ambientais e de forma transversal os temas de gênero e juventude, mas não identifiquei qualquer relação com transição energética ou tecnologias sociais que centralizem esse tema. Minha sugestão é migrar esta iniciativa para um dos eixos secundários, com maior atenção para eixo de nova economia verde-azul.\n\nSugestão: fazer uma consulta online/entrevista para enteder a estrutura e implementação do projeto dado sua relevância.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
