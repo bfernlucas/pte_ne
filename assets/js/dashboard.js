@@ -298,11 +298,37 @@
     if ($(cid)) $(cid).textContent = `${fl.length} no filtro`;
     renderSelMap(group); renderSelList(group);
   }
+  function renderSelTable(group, sel, cnt) {
+    const box = $(sel); if (!box) return;
+    const ids = [...SEL[group]];
+    const cEl = $(cnt); if (cEl) cEl.textContent = ids.length;
+    if (!ids.length) { box.innerHTML = `<div class="sel-tbl-empty">Nenhuma iniciativa pré-selecionada para ${group === "visita" ? "visita técnica" : "entrevista em profundidade"}. Marque-as no mapa acima.</div>`; return; }
+    const rows = ids.map(id => byId(id)).filter(Boolean).sort((a, b) => (b.pontuacao || 0) - (a.pontuacao || 0));
+    const body = rows.map(i => {
+      const uf = ufTokens(i.estado).join(", ") || "—", sub = orgSub(i);
+      return `<tr>
+        <td class="num">${i.id}</td>
+        <td class="t-nome"><span class="nm">${esc(i.nome)}</span>${sub ? `<span class="sub">${esc(sub)}</span>` : ""}</td>
+        <td>${esc(locLabel(i))}</td>
+        <td>${esc(uf)}</td>
+        <td class="t-eixo"><span class="eixo-dot" style="background:${eixoColor(i.eixo_cod)}"></span><span class="eixo-name">${esc(i.eixo || "—")}</span></td>
+        <td class="num">${i.pontuacao}</td>
+        <td><button class="seltbl-rm" data-g="${group}" data-id="${i.id}" title="remover da seleção">×</button></td>
+      </tr>`;
+    }).join("");
+    box.innerHTML = `<table class="sel-tbl"><thead><tr><th class="num">ID</th><th>Iniciativa / organização</th><th>Local</th><th>UF</th><th>Eixo</th><th class="num">Nota</th><th></th></tr></thead><tbody>${body}</tbody></table>`;
+    box.querySelectorAll(".seltbl-rm").forEach(b => b.addEventListener("click", () => { SEL[b.dataset.g].delete(+b.dataset.id); saveSel(); renderSelecao(); }));
+  }
+  function renderSelTables() {
+    renderSelTable("visita", "#tbl-sel-visita", "#seltbl-cv");
+    renderSelTable("entrevista", "#tbl-sel-entrevista", "#seltbl-ce");
+  }
   function renderSelecao() {
     renderSelGroup("visita"); renderSelGroup("entrevista");
     $("#sel-count-visita").textContent = SEL.visita.size;
     $("#sel-count-entrevista").textContent = SEL.entrevista.size;
     if ($("#sel-summary")) $("#sel-summary").textContent = `${SEL.visita.size} visita(s) · ${SEL.entrevista.size} entrevista(s) · ${selUnion().size} no total`;
+    renderSelTables();
     updateTabLinks(); renderKpis();
   }
   function setupSelFilters(group, p) {

@@ -227,6 +227,20 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .sel-empty{font-size:.8rem;color:var(--muted);line-height:1.4;display:block}
 .sel-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
 .ghost.sm{padding:6px 11px;font-size:.78rem}
+/* tabelas de pré-selecionadas (visita / entrevista) */
+.sel-tables{display:flex;flex-direction:column;gap:22px;margin-top:8px}
+.sel-tbl-block h3{font-size:1rem}
+.sel-tbl-block .sel-head{margin-bottom:8px}
+.sel-tbl{width:100%;border-collapse:collapse;font-size:.84rem;min-width:640px}
+.sel-tbl thead th{background:var(--surface);color:var(--muted);text-align:left;font-weight:600;font-size:.72rem;
+  text-transform:uppercase;letter-spacing:.03em;padding:8px 10px;border-bottom:2px solid var(--brand);white-space:nowrap}
+.sel-tbl td{padding:8px 10px;border-bottom:1px solid var(--border-2);vertical-align:top}
+.sel-tbl tbody tr:hover{background:var(--surface-2)}
+.sel-tbl td.num,.sel-tbl th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sel-tbl .t-eixo{white-space:normal;min-width:160px}
+.seltbl-rm{border:none;background:none;color:var(--muted);cursor:pointer;font-size:1.05rem;line-height:1;padding:0 2px}
+.seltbl-rm:hover{color:var(--red)}
+.sel-tbl-empty{color:var(--muted);font-size:.85rem;padding:14px 16px;background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius)}
 /* banner de base da análise */
 .an-base{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;font-size:.82rem}
 .an-lab{color:var(--muted);font-weight:600}
