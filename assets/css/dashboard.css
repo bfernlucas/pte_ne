@@ -115,6 +115,11 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .card h3{font-family:var(--font);text-transform:none;color:var(--ink);font-size:1rem;font-weight:700;line-height:1.28;letter-spacing:0}
 .card .org{font-size:.82rem;color:var(--muted);line-height:1.35}
 .card .desc{font-size:.8rem;color:var(--muted);line-height:1.5;margin:6px 0 2px}
+.card .card-more{align-self:flex-start;background:none;border:none;padding:0;margin:-3px 0 0;
+  color:var(--brand-2);font-size:.76rem;font-weight:600;cursor:pointer;font-family:var(--font)}
+.card .card-more:hover{text-decoration:underline}
+.card .card-full{font-size:.8rem;color:var(--ink);line-height:1.55;margin:1px 0 2px;padding:10px 12px;
+  background:var(--surface-2);border:1px solid var(--border-2);border-radius:8px}
 .card .facts{display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--ink);margin-top:2px}
 .card .facts .f{display:flex;gap:7px}
 .card .facts .k{color:var(--faint);min-width:74px;flex:0 0 auto}

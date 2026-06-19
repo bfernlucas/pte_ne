@@ -130,6 +130,7 @@
           <h3>${esc(i.nome)}</h3>
           ${orgSub(i) ? `<div class="org">${esc(orgSub(i))}</div>` : ""}
           ${(i.resumo || i.objetivo) ? `<p class="desc">${esc(i.resumo || truncWords(i.objetivo, 160))}</p>` : ""}
+          ${i.objetivo && i.objetivo.trim() !== (i.resumo || "").trim() ? `<button class="card-more" data-id="${i.id}" aria-expanded="false">Ver objetivo completo</button><div class="card-full" hidden>${esc(i.objetivo)}</div>` : ""}
           <div class="facts">
             ${fact("Local", local)}
             ${fact("Setor", i.setor)}
@@ -144,6 +145,13 @@
       </div>`;
     }).join("");
     $$("#cards-grid .card").forEach(c => c.addEventListener("click", () => toggleSelect(+c.dataset.id)));
+    $$("#cards-grid .card-more").forEach(b => b.addEventListener("click", e => {
+      e.stopPropagation();
+      const full = b.nextElementSibling, open = full.hasAttribute("hidden");
+      if (open) { full.removeAttribute("hidden"); b.textContent = "Ocultar objetivo"; b.setAttribute("aria-expanded", "true"); }
+      else { full.setAttribute("hidden", ""); b.textContent = "Ver objetivo completo"; b.setAttribute("aria-expanded", "false"); }
+    }));
+    $$("#cards-grid .card-full").forEach(d => d.addEventListener("click", e => e.stopPropagation()));
     $$("#cards-grid .card-anchor").forEach(b => b.addEventListener("click", e => {
       e.stopPropagation();
       if (window.PTE_ROTAS) window.PTE_ROTAS.toggleAnchor(+b.dataset.id);
