@@ -986,7 +986,7 @@ window.PTE_DATA = {
    "lat": -6.9528,
    "lon": -35.8331,
    "avaliador": "Lucas",
-   "municipio": "Remígio (PB) / Araripina (PE)",
+   "municipio": "Remígio",
    "estado": "PB, PE",
    "biomas": "Mata Atlântica, Caatinga, Cerrado, Amazônia",
    "eixo": "Transição Energética",
@@ -1240,7 +1240,7 @@ window.PTE_DATA = {
    "lat": -12.9777,
    "lon": -38.5016,
    "avaliador": "Leide",
-   "municipio": "Salvador, Fortaleza",
+   "municipio": "Salvador",
    "estado": "BA, CE, PE, PB",
    "biomas": "Caatinga, Zona Costeira/Marinho, Mata Atlântica",
    "eixo": "Economia Circular e Solidária",
@@ -1531,10 +1531,10 @@ window.PTE_DATA = {
    "fundacao": "04/06/2002",
    "cnae": "9430-8/00 - Atividades de associações de defesa de direitos sociais",
    "endereco": "Rua da Aurora, 125 - Boa Vista, Recife - PE",
-   "lat": -8.0476,
-   "lon": -34.877,
+   "lat": -9.6204,
+   "lon": -42.0939,
    "avaliador": "Leide",
-   "municipio": "Recife",
+   "municipio": "Remanso",
    "estado": "PE, CE, BA, RN, AL, PI, PB, SE, MA",
    "biomas": "Caatinga",
    "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
@@ -1558,7 +1558,27 @@ window.PTE_DATA = {
    },
    "pontuacao": 29,
    "observacoes": "- ASA, desenvolve trabalhos focados exclusivamente no semiárido. \n- projetos que compõem o \"programa de captação de água\" estão: P1MC (atender a uma necessidade básica da população que vive no campo: água de beber); P1+2 (ampliar o estoque de água das famílias para o plantio e para a criação de animais); e, Cisterna nas escolas (levar água para as escolas rurais do Semiárido).\n- Além de projetos que cobrem o eixo 6 do projeto, desenvollvem ações que \"reforça a cultura do estoque de sementes crioulas no Semiárido, através do manejo da agrobiodiversidade,  resgate e conservação\" (BIO); fortalecimento da autonomia econômica, social e política de mulhers e a soberania e segurança alimentar e nutricional no território semiárido (NIVA e BIO); e, contribuir no enfrentamento às mudanças climáticas em três regiões semiáridas da América Latina.",
-   "fora_ne": false
+   "fora_ne": false,
+   "locais": [
+    {
+     "municipio": "Remanso",
+     "uf": "BA",
+     "lat": -9.6204,
+     "lon": -42.0939
+    },
+    {
+     "municipio": "Pilão Arcado",
+     "uf": "BA",
+     "lat": -9.9975,
+     "lon": -42.4961
+    },
+    {
+     "municipio": "Sento Sé",
+     "uf": "BA",
+     "lat": -9.7427,
+     "lon": -41.8806
+    }
+   ]
   },
   {
    "id": 37,
@@ -2054,7 +2074,7 @@ window.PTE_DATA = {
    "lat": -3.5619,
    "lon": -41.0922,
    "avaliador": "Leide",
-   "municipio": "Viçosa do Ceará (CE)/ Piracuruca (PI)",
+   "municipio": "Viçosa do Ceará",
    "estado": "PI, CE",
    "biomas": "Caatinga",
    "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
@@ -2145,10 +2165,10 @@ window.PTE_DATA = {
    "fundacao": "28/10/1992",
    "cnae": "8411-6/00 - Administração pública em geral",
    "endereco": "Esplanada dos Ministérios, Bloco E, 3º Andar, Sala 355, Zona Cívico-Administrativa, Brasília/DF.",
-   "lat": -15.7942,
-   "lon": -47.8822,
+   "lat": -9.8989,
+   "lon": -39.1486,
    "avaliador": "Caio",
-   "municipio": "Brasília",
+   "municipio": "Canudos",
    "estado": "BA, PB, CE, RN, PI, PE, AL, SE",
    "biomas": "Caatinga",
    "eixo": "Bioeconomia e Sistemas Agroalimentares Adaptados",
@@ -2172,7 +2192,51 @@ window.PTE_DATA = {
    },
    "pontuacao": 30,
    "observacoes": "O programa parece ser o \"tipo ideal\" do que estamos procurando: parte de um conceito inovador (recaatingar), composto por uma gama de teccnologias sociais disponíveis, focalizado para populações vulneráveis a partir de indicadores, metas mensuráveis, governança multinível (federal, estadual e municipal), com financiamento externo (BNDES e BNB) e parceria com a sociedade civil, além de impacto social direto (carbono e regeneração). Além disso, está articulada com o PNE. Sem dúvida deve estar na carteira de projetos.",
-   "fora_ne": false
+   "fora_ne": false,
+   "locais": [
+    {
+     "municipio": "Canudos",
+     "uf": "BA",
+     "lat": -9.8989,
+     "lon": -39.1486
+    },
+    {
+     "municipio": "Uauá",
+     "uf": "BA",
+     "lat": -9.842,
+     "lon": -39.4814
+    },
+    {
+     "municipio": "Curaçá",
+     "uf": "BA",
+     "lat": -8.9905,
+     "lon": -39.9094
+    },
+    {
+     "municipio": "Casa Nova",
+     "uf": "BA",
+     "lat": -9.1619,
+     "lon": -40.9706
+    },
+    {
+     "municipio": "Remanso",
+     "uf": "BA",
+     "lat": -9.6204,
+     "lon": -42.0939
+    },
+    {
+     "municipio": "Sento Sé",
+     "uf": "BA",
+     "lat": -9.7427,
+     "lon": -41.8806
+    },
+    {
+     "municipio": "Sobradinho",
+     "uf": "BA",
+     "lat": -9.4286,
+     "lon": -40.8203
+    }
+   ]
   },
   {
    "id": 52,

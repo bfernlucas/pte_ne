@@ -32,6 +32,20 @@ ALT_LOCAIS = {
         {"municipio": "Rio de Janeiro", "uf": "RJ", "lat": -22.9068, "lon": -43.1729},
         {"municipio": "Salvador", "uf": "BA", "lat": -12.9777, "lon": -38.5016},
     ],
+    39: [  # Programas Complementares de Captação de Água da ASA — núcleos no sertão da BA
+        {"municipio": "Remanso", "uf": "BA", "lat": -9.6204, "lon": -42.0939},
+        {"municipio": "Pilão Arcado", "uf": "BA", "lat": -9.9975, "lon": -42.4961},
+        {"municipio": "Sento Sé", "uf": "BA", "lat": -9.7427, "lon": -41.8806},
+    ],
+    54: [  # Programa Reecatingar — municípios do sertão / Rio São Francisco (BA)
+        {"municipio": "Canudos", "uf": "BA", "lat": -9.8989, "lon": -39.1486},
+        {"municipio": "Uauá", "uf": "BA", "lat": -9.8420, "lon": -39.4814},
+        {"municipio": "Curaçá", "uf": "BA", "lat": -8.9905, "lon": -39.9094},
+        {"municipio": "Casa Nova", "uf": "BA", "lat": -9.1619, "lon": -40.9706},
+        {"municipio": "Remanso", "uf": "BA", "lat": -9.6204, "lon": -42.0939},
+        {"municipio": "Sento Sé", "uf": "BA", "lat": -9.7427, "lon": -41.8806},
+        {"municipio": "Sobradinho", "uf": "BA", "lat": -9.4286, "lon": -40.8203},
+    ],
 }
 
 # Ajuste de classificação de eixo (id antigo -> eixo principal / código do secundário)
@@ -234,6 +248,7 @@ def main():
             it["locais"] = ALT_LOCAIS[it["id"]]
             it["lat"] = it["locais"][0]["lat"]
             it["lon"] = it["locais"][0]["lon"]
+            it["municipio"] = it["locais"][0]["municipio"]  # município primário = 1º local
 
     # renumera os IDs sequencialmente (1..N), sem lacunas, após aplicar
     # exclusões e tudo que dependia dos IDs originais (PRE, FORA_NE, overrides, ALT_LOCAIS)
