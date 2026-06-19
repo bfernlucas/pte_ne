@@ -97,6 +97,8 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .eixo-name{display:inline-block;max-width:210px;vertical-align:middle;font-size:.82rem;color:var(--ink);line-height:1.25}
 .badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:.7rem;font-weight:600;letter-spacing:.02em}
 .badge-pre{color:var(--pre);background:var(--pre-bg);border:1px solid var(--pre-bd)}
+.badge-vis{color:#b4500f;background:#ffe9d6;border:1px solid #f6c79e}
+.badge-ent{color:#1d6b2a;background:#e7f6e9;border:1px solid #bfe3c5}
 .badge-no{color:var(--faint)}
 
 /* ---------- cartões ---------- */
@@ -161,6 +163,7 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .uf-label{display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;
   font-size:.72rem;color:#292d76;opacity:.6;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff}
 .legend .dot.ring-pre{background:#fff;border:3px solid #f37520;width:14px;height:14px}
+.legend .dot.ring-ent{background:#fff;border:3px solid #16a34a;width:14px;height:14px}
 .legend .apt-leg{box-shadow:none;width:18px;height:18px;font-size:10px;border-width:2px}
 .legend .uf-leg{display:inline-block;width:14px;height:0;border-top:2px solid #292d76;opacity:.6;flex:0 0 auto}
 .leaflet-control-layers{border-radius:10px;border:1px solid var(--border);box-shadow:0 2px 10px rgba(20,25,60,.12);font-family:var(--font)}

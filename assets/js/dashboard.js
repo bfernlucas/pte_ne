@@ -30,6 +30,9 @@
   const selUnion = () => new Set([...SEL.visita, ...SEL.entrevista]);
   const selItems = () => [...selUnion()].map(id => byId(id)).filter(Boolean);
   function toggleSel(group, id) { const s = SEL[group]; if (s.has(id)) s.delete(id); else s.add(id); saveSel(); }
+  // "pré-selecionada" em todo o painel = escolhida na aba Seleção (visita ou entrevista)
+  const isPre = id => SEL.visita.has(id) || SEL.entrevista.has(id);
+  const selType = id => SEL.visita.has(id) ? "visita" : SEL.entrevista.has(id) ? "entrevista" : "";
   const selFilters = { visita: { busca: "", eixo: "", estado: "", bioma: "", natureza: "" }, entrevista: { busca: "", eixo: "", estado: "", bioma: "", natureza: "" } };
   function selFiltered(group) {
     const f = selFilters[group], q = f.busca.trim().toLowerCase();
@@ -47,7 +50,7 @@
   function filtered() {
     const q = filters.busca.trim().toLowerCase();
     return ITEMS.filter(i => {
-      if (filters.pre && !i.preselecionada) return false;
+      if (filters.pre && !isPre(i.id)) return false;
       if (filters.eixo && i.eixo_cod !== filters.eixo) return false;
       if (filters.estado && !ufTokens(i.estado).includes(filters.estado)) return false;
       if (filters.bioma && !(i.biomas || "").toLowerCase().includes(filters.bioma.toLowerCase())) return false;
@@ -63,7 +66,7 @@
   function renderKpis() {
     const ufs = new Set(); ITEMS.forEach(i => ufTokens(i.estado).forEach(u => ufs.add(u)));
     const avg = (ITEMS.reduce((s, i) => s + (i.pontuacao || 0), 0) / ITEMS.length).toFixed(1);
-    const kpis = [["Iniciativas", META.total], ["Pré-selecionadas", META.preselecionadas],
+    const kpis = [["Iniciativas", META.total], ["Pré-selecionadas", selUnion().size],
       ["Estados", ufs.size], ["Nota média", avg], ["Nota máxima", PMAX]];
     $("#kpis").innerHTML = kpis.map(([l, v]) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join("");
   }
@@ -93,7 +96,7 @@
   function renderRanking(list) {
     const k = state.sort.key, dir = state.sort.dir;
     const val = (i) => k === "pontuacao" ? (i.pontuacao || 0) : k === "id" ? i.id
-      : k === "preselecionada" ? (i.preselecionada ? 1 : 0) : k === "eixo" ? (i.eixo || "")
+      : k === "preselecionada" ? (isPre(i.id) ? 1 : 0) : k === "eixo" ? (i.eixo || "")
       : (i[k] || "");
     const sorted = [...list].sort((a, b) => {
       const va = val(a), vb = val(b);
@@ -116,7 +119,7 @@
         <td>${esc(i.municipio || "—")}</td>
         <td>${esc(uf)}</td>
         <td class="t-eixo"><span class="eixo-dot" style="background:${eixoColor(i.eixo_cod)}"></span><span class="eixo-name">${esc(i.eixo || "—")}</span></td>
-        <td>${i.preselecionada ? '<span class="badge badge-pre">Sim</span>' : '<span class="badge badge-no">Não</span>'}</td>
+        <td>${selType(i.id) === "visita" ? '<span class="badge badge-vis">Visita</span>' : selType(i.id) === "entrevista" ? '<span class="badge badge-ent">Entrevista</span>' : '<span class="badge badge-no">—</span>'}</td>
         <td class="t-nota"><span class="nota-track"><span class="nota-fill" style="width:${w}%"></span></span><span class="nota-num">${i.pontuacao}</span></td>
         <td><button class="card-anchor ${anc ? "on" : ""}" data-id="${i.id}" title="Fixar como âncora no planejamento de rotas">${anc ? "Âncora" : "Fixar"}</button></td>
       </tr>`;
@@ -150,7 +153,7 @@
         <div class="pad">
           <div class="row1">
             <span class="eixo-chip" style="background:${cor}">${esc(i.eixo || "—")}</span>
-            <span class="idtag">#${i.id}${i.preselecionada ? ' · <span style="color:var(--pre)">pré-selecionada</span>' : ""}</span>
+            <span class="idtag">#${i.id}${selType(i.id) === "visita" ? ' · <span style="color:var(--orange)">visita técnica</span>' : selType(i.id) === "entrevista" ? ' · <span style="color:var(--green)">entrevista</span>' : ""}</span>
           </div>
           <h3>${esc(i.nome)}</h3>
           ${orgSub(i) ? `<div class="org">${esc(orgSub(i))}</div>` : ""}
@@ -205,10 +208,11 @@
     $("#map-side").innerHTML = `
       <div class="legend"><h4>Eixo (cor do círculo)</h4>${cores}</div>
       <div class="legend"><h4>Nota (tamanho do círculo)</h4><div class="sizes">${szs}</div>
-        <div class="li" style="margin-top:8px"><span class="dot ring-pre"></span>Pré-selecionada (contorno laranja)</div>
+        <div class="li" style="margin-top:8px"><span class="dot ring-pre"></span>Visita técnica (Seleção)</div>
+        <div class="li"><span class="dot ring-ent"></span>Entrevista (Seleção)</div>
         <div class="li"><span class="apt-ico apt-leg">✈</span>Aeroporto</div>
         <div class="li"><span class="uf-leg"></span>Limite estadual</div>
-        <div class="note">Use o controle de camadas no canto do mapa (↗) para alternar entre ruas, satélite e relevo, e ligar/desligar limites e aeroportos.</div></div>`;
+        <div class="note">Os contornos destacam as iniciativas escolhidas na aba <b>Seleção</b>. Use o controle de camadas (↗) para alternar base e ligar/desligar limites e aeroportos.</div></div>`;
   }
   function renderMapGeral(list) {
     ensureMapGeral();
@@ -219,9 +223,10 @@
       const r = markerR(i.pontuacao);
       locs.forEach((loc, li) => {
         const extra = locs.length > 1 ? `<br><span class="pp-k">Local ${li + 1} de ${locs.length}:</span> ${esc(loc.municipio || "")}${loc.uf ? "/" + esc(loc.uf) : ""}` : "";
+        const t = selType(i.id);
         L.circleMarker([loc.lat, loc.lon], {
           radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: i.fora_ne ? .5 : .85,
-          color: i.preselecionada ? "#f37520" : "#fff", weight: i.preselecionada ? 3.5 : 1.4
+          color: t === "visita" ? "#f37520" : t === "entrevista" ? "#16a34a" : "#fff", weight: t ? 3.4 : 1.4
         }).bindPopup(popupHtml(i) + extra).addTo(layerGeral);
       });
     });
@@ -234,7 +239,7 @@
       ${sub ? esc(sub) + "<br>" : ""}
       <span class="pp-k">Local:</span> ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br>
       <span class="pp-k">Eixo:</span> ${esc(i.eixo || "")}<br>
-      <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${i.preselecionada ? " · pré-selecionada" : ""}`;
+      <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${selType(i.id) === "visita" ? " · visita técnica" : selType(i.id) === "entrevista" ? " · entrevista" : ""}`;
   }
 
   // ---------- SELEÇÃO ESTRATÉGICA ----------
@@ -292,7 +297,7 @@
     $("#sel-count-visita").textContent = SEL.visita.size;
     $("#sel-count-entrevista").textContent = SEL.entrevista.size;
     if ($("#sel-summary")) $("#sel-summary").textContent = `${SEL.visita.size} visita(s) · ${SEL.entrevista.size} entrevista(s) · ${selUnion().size} no total`;
-    updateTabLinks();
+    updateTabLinks(); renderKpis();
   }
   function setupSelFilters(group, p) {
     const g = id => document.getElementById(p + "-" + id);
@@ -357,7 +362,7 @@
     list.forEach(i => {
       if (!i.eixo_cod) return;
       const u0 = ufTokens(i.estado)[0], col = (u0 && UF_NOME[u0]) ? u0 : "NAC";
-      grid[i.eixo_cod][col]++; if (i.preselecionada) pre[i.eixo_cod][col]++;
+      grid[i.eixo_cod][col]++; if (isPre(i.id)) pre[i.eixo_cod][col]++;
       maxc = Math.max(maxc, grid[i.eixo_cod][col]);
     });
     const shade = n => n === 0 ? "#fff" : `rgba(41,45,118,${0.08 + 0.6 * (n / maxc)})`;
@@ -542,7 +547,7 @@
       return `<div class="cmp-card" style="border-top-color:${s.col}">
         <div class="cc-h"><span>${esc(i.nome)}</span><b>${i.pontuacao}</b></div>
         ${sub ? `<div class="cc-sub">${esc(sub)}</div>` : ""}
-        <div class="cc-meta"><span class="cc-rk">${ordinal(RANK[i.id])} de ${ITEMS.length}</span> · ${esc(i.eixo || "")} · ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}${i.preselecionada ? ' · <span class="cc-pre">pré-selecionada</span>' : ""}</div>
+        <div class="cc-meta"><span class="cc-rk">${ordinal(RANK[i.id])} de ${ITEMS.length}</span> · ${esc(i.eixo || "")} · ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}${selType(i.id) === "visita" ? ' · <span class="cc-pre">visita técnica</span>' : selType(i.id) === "entrevista" ? ' · <span class="cc-pre">entrevista</span>' : ""}</div>
         ${strong.length ? `<div class="cc-tags"><span class="cc-lab good">Fortes</span>${strong.map(l => `<span class="cc-chip good">${esc(l)}</span>`).join("")}</div>` : ""}
         ${weak.length ? `<div class="cc-tags"><span class="cc-lab warn">A desenvolver</span>${weak.map(l => `<span class="cc-chip warn">${esc(l)}</span>`).join("")}</div>` : ""}
         <button class="cc-rm" data-id="${i.id}">Remover</button>
@@ -569,7 +574,7 @@
   $$("#tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
 
   function refresh() {
-    updateTabLinks();
+    updateTabLinks(); renderKpis();
     const list = filtered();
     $("#f-count").textContent = `${list.length} de ${META.total} iniciativas`;
     if (state.view === "ranking") renderRanking(list);
