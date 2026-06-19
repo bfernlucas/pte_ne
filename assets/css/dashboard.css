@@ -249,6 +249,7 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .rc-group + .rc-group{margin-top:14px;padding-top:14px;border-top:1px solid var(--border-2)}
 .rc-title{font-family:var(--display);text-transform:uppercase;font-size:.72rem;letter-spacing:.06em;color:var(--brand);
   width:100%;margin-bottom:2px}
+.rc-note{font-size:.76rem;color:var(--muted);line-height:1.45}.rc-note b{color:var(--ink)}
 .rc-field{display:flex;flex-direction:column;gap:4px;min-width:0}
 .rc-field label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .rc-field select,.rc-field input[type=text],.rc-field input[type=password]{border:1px solid var(--border);border-radius:8px;

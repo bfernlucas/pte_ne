@@ -250,7 +250,7 @@
     params.anchorSet = anchorSet;
     const isAnc = n => anchorSet.has(n.id);
     const preAll = valid.filter(n => n.preselecionada);
-    // núcleo = âncoras (obrigatórias) + pré-selecionadas; se vazio, roteia todas as candidatas
+    // núcleo = âncoras (obrigatórias) + visitas técnicas; se vazio, roteia todas as candidatas
     let core = valid.filter(n => n.preselecionada || isAnc(n));
     let opt = valid.filter(n => !n.preselecionada && !isAnc(n));
     if (core.length === 0) { core = valid; opt = []; }
@@ -311,6 +311,9 @@
 
   let map, allLayer, routeLayer, lastH, mode = "all";
   const anchorIds = new Set();
+  // seleção da aba "Seleção": visitas (presenciais → roteiro) e entrevistas (remotas → fora do roteiro)
+  let curSel = { visita: new Set(), entrevista: new Set() };
+  const isVis = id => curSel.visita.has(id), isEnt = id => curSel.entrevista.has(id);
   const MCOLOR = ["#1f4da1", "#f37520", "#43a047", "#7a3fb8", "#e0392b", "#0d9488"];
   function ensureMap() {
     if (map) return;
@@ -348,8 +351,7 @@
         <div class="rc-field"><label>Horas por visita</label><input id="r-visita" type="range" min="1" max="4" step="0.5" value="2"><span class="val" id="r-visita-v">2 h</span></div>
         <div class="rc-field"><label>Direção máx. por dia</label><input id="r-dir" type="range" min="6" max="10" step="1" value="8"><span class="val" id="r-dir-v">8 h</span></div>
         <div class="rc-field"><label>Dias por incursão (máx. 7 corridos)</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><span class="val" id="r-dias-v">5 dias</span></div>
-        <label class="rc-chk"><input type="checkbox" id="r-opt" checked> Incluir outras iniciativas que estejam no caminho</label>
-        <label class="rc-chk"><input type="checkbox" id="r-entrev-opt" checked> Entrevistas como paradas opcionais (no caminho)</label>
+        <label class="rc-chk"><input type="checkbox" id="r-opt" checked> Incluir visitas in loco de outras iniciativas no caminho</label>
         <label class="rc-chk"><input type="checkbox" id="r-ctx" checked> Mostrar demais iniciativas (em cinza)</label>
       </div>
       <div class="rc-group">
@@ -360,14 +362,8 @@
           <div class="rc-anchors" id="rf-anchors"></div></div>
       </div>
       <div class="rc-group">
-        <span class="rc-title">Candidatas — quais iniciativas podem entrar na rota</span>
-        <div class="rc-field"><label>Origem das candidatas</label><select id="rf-source"><option value="selecao">Selecionadas na aba Seleção</option><option value="filtros">Todas (pelos filtros abaixo)</option></select></div>
-        <div class="rc-field"><label>Eixo</label><select id="rf-eixo"><option value="">Todos os eixos</option>${H.META.eixos.map(e => `<option value="${e.cod}">${e.nome}</option>`).join("")}</select></div>
-        <div class="rc-field"><label>Estado</label><select id="rf-uf"><option value="">Todos os estados</option>${UFS.map(u => `<option value="${u}">${H.UF_NOME[u]}</option>`).join("")}</select></div>
-        <div class="rc-field"><label>Natureza jurídica</label><select id="rf-nat"><option value="">Todas</option>${optTags(distinct(H.ITEMS, "natureza"))}</select></div>
-        <div class="rc-field"><label>Tipo de organização</label><select id="rf-tipo"><option value="">Todos</option>${optTags(distinct(H.ITEMS, "tipo_inst"))}</select></div>
-        <div class="rc-field"><label>Setor</label><select id="rf-setor"><option value="">Todos</option>${optTags(distinct(H.ITEMS, "setor"))}</select></div>
-        <div class="rc-field"><label>Bioma</label><select id="rf-bioma"><option value="">Todos</option>${optTags(biomasList(H.ITEMS))}</select></div>
+        <span class="rc-title">Candidatas</span>
+        <div class="rc-note">O roteiro é definido pelas <b>visitas técnicas</b> (mapa 1 da aba Seleção). As <b>entrevistas</b> (mapa 2) são remotas e não entram no roteiro. Marque a opção acima para encaixar visitas in loco de outras iniciativas que fiquem no caminho.</div>
       </div>
       <div class="rc-actions">
         <button class="btn" id="r-run">Otimizar rotas</button>
@@ -385,7 +381,6 @@
     document.getElementById("r-run").addEventListener("click", () => draw(H));
     document.getElementById("r-clear").addEventListener("click", () => showAll(H));
     document.getElementById("r-clear-anchors").addEventListener("click", () => clearAnchors());
-    document.getElementById("rf-source").value = (H.selItems && H.selItems().length) ? "selecao" : "filtros";
     const addInput = document.getElementById("rf-anchor-add");
     const tryAddAnchor = () => {
       const val = addInput.value.trim();
@@ -449,6 +444,7 @@
 
   function render(H) {
     lastH = H;
+    curSel = H.fieldSel ? H.fieldSel() : { visita: new Set(), entrevista: new Set() };
     ensureMap();
     buildControls(H);
     setTimeout(() => map.invalidateSize(), 60);
@@ -457,12 +453,12 @@
 
   let allMarkers = {}, ovPmin = 10, ovPmax = 30;
   function ovStyle(i) {
-    const anc = anchorIds.has(i.id);
+    const anc = anchorIds.has(i.id), vis = isVis(i.id), ent = isEnt(i.id);
     return {
       radius: 3 + 6 * ((i.pontuacao - ovPmin) / Math.max(1, ovPmax - ovPmin)),
-      fillColor: lastH.eixoColor(i.eixo_cod), fillOpacity: i.fora_ne ? .45 : .82,
-      color: anc ? "#f6a609" : (i.preselecionada ? "#f37520" : "#fff"),
-      weight: anc ? 3 : (i.preselecionada ? 2 : 1)
+      fillColor: lastH.eixoColor(i.eixo_cod), fillOpacity: (vis || ent) ? .9 : (i.fora_ne ? .35 : .55),
+      color: anc ? "#f6a609" : vis ? "#f37520" : ent ? "#16a34a" : "#fff",
+      weight: anc ? 3 : vis ? 2.6 : ent ? 2 : 1
     };
   }
   function locsOf(i, H) {
@@ -474,9 +470,10 @@
     const anc = anchorIds.has(i.id), multi = locs.length > 1, cur = locs[li] || {};
     const locLine = `<br><span class="pp-k">Local:</span> ${H.esc(cur.municipio || "Multiestadual")}${cur.uf ? "/" + H.esc(cur.uf) : ""}${multi ? ` (${li + 1} de ${locs.length} — a rota escolhe o melhor)` : ""}`;
     const sub = H.orgSub ? H.orgSub(i) : "";
+    const status = isVis(i.id) ? " · visita técnica (presencial)" : isEnt(i.id) ? " · entrevista (remota)" : "";
     return `<span class="pp-h">${H.esc(i.nome)}</span>${sub ? H.esc(sub) + "<br>" : ""}
       <span class="pp-k">Eixo:</span> ${H.esc(i.eixo || "")}<br>
-      <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${i.preselecionada ? " · pré-selecionada" : ""}${locLine}<br>
+      <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${status}${locLine}<br>
       <button class="pp-anchor ${anc ? "on" : ""}" onclick="window.PTE_ROTAS.toggleAnchor(${i.id})">${anc ? "Remover âncora" : "Fixar como âncora"}</button>`;
   }
   function showAll(H) {
@@ -497,9 +494,9 @@
     });
     if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
     const s = document.getElementById("r-status");
-    if (s) s.textContent = `Mostrando todas as ${mapped} iniciativas mapeadas. Clique num ponto para fixá-lo como âncora; ajuste os filtros e clique em “Otimizar rotas”.`;
+    if (s) s.textContent = `Mostrando todas as ${mapped} iniciativas. Destacadas: visitas técnicas (laranja) e entrevistas remotas (verde) da aba Seleção. Clique num ponto para fixá-lo como âncora; depois clique em “Otimizar rotas”.`;
     document.getElementById("rotas-itinerary").innerHTML =
-      `<div class="cover empty">Fixe âncoras (no mapa, nos cartões ou no seletor), defina os filtros e parâmetros e clique em <b>Otimizar rotas</b>. O roteiro aparece aqui.</div>`;
+      `<div class="cover empty">O roteiro é montado a partir das <b>visitas técnicas</b> escolhidas na aba <b>Seleção</b> (mapa 1). Defina os parâmetros e clique em <b>Otimizar rotas</b>. As entrevistas (mapa 2) são remotas e não entram no roteiro.</div>`;
   }
   function toggleAnchor(id) {
     id = +id;
@@ -524,46 +521,36 @@
 
   async function draw(H) {
     mode = "route";
-    const params = readParams();
-    const f = readFilters();
+    const params = readParams(); // params.incluirOpcionais = visitas in loco no caminho
     const statusEl = document.getElementById("r-status");
-    const srcEl = document.getElementById("rf-source");
-    const useSel = srcEl && srcEl.value === "selecao" && H.selItems;
-    let candidates, fromSel = false;
-    if (useSel) {
-      const fs = H.fieldSel ? H.fieldSel() : { visita: new Set(), entrevista: new Set() };
-      const entrevOpt = document.getElementById("r-entrev-opt") ? document.getElementById("r-entrev-opt").checked : true;
-      candidates = H.selItems().filter(o => o.lat != null && !o.fora_ne).map(o => {
-        const tipo = fs.visita.has(o.id) ? "visita" : "entrevista";
-        return Object.assign({}, o, { preselecionada: tipo === "visita" ? true : !entrevOpt, __tipo: tipo });
+    // backbone do roteiro = visitas técnicas (presenciais) selecionadas no mapa 1 da aba Seleção
+    let candidates = H.ITEMS.filter(i => isVis(i.id) && i.lat != null && !i.fora_ne)
+      .map(i => Object.assign({}, i, { preselecionada: true, __tipo: "visita" }));
+    const nVis = candidates.length;
+    // opcionais "in loco no caminho" = demais iniciativas presenciais (não selecionadas); entrevistas (remotas) ficam de fora
+    if (params.incluirOpcionais) {
+      H.ITEMS.forEach(i => {
+        if (i.lat != null && !i.fora_ne && !isVis(i.id) && !isEnt(i.id))
+          candidates.push(Object.assign({}, i, { preselecionada: false, __tipo: "opcional" }));
       });
-      // se só há entrevistas (nenhuma visita obrigatória), elas viram obrigatórias para a rota se formar
-      if (candidates.length && !candidates.some(c => c.preselecionada)) candidates.forEach(c => { c.preselecionada = true; });
-      // entrevistas opcionais entram como paradas "no caminho"
-      if (entrevOpt && candidates.some(c => c.__tipo === "entrevista" && !c.preselecionada)) params.incluirOpcionais = true;
-      fromSel = true;
-    } else {
-      candidates = applyFilters(H.ITEMS, f, H);
     }
-    // âncoras entram sempre, mesmo se não casarem com os outros filtros
+    // âncoras entram sempre (presença forçada), mesmo fora da seleção
     const cidset = new Set(candidates.map(c => c.id));
-    H.ITEMS.forEach(i => { if (anchorIds.has(i.id) && i.lat != null && !i.fora_ne && !cidset.has(i.id)) candidates.push(i); });
+    H.ITEMS.forEach(i => { if (anchorIds.has(i.id) && i.lat != null && !i.fora_ne && !cidset.has(i.id)) candidates.push(Object.assign({}, i, { preselecionada: true, __tipo: "visita" })); });
     const prov = makeProvider(params);
-    let fromSelMsg = "";
-    if (fromSel) {
-      const nv = candidates.filter(c => c.__tipo === "visita").length, ne = candidates.filter(c => c.__tipo === "entrevista").length;
-      fromSelMsg = `Candidatas da aba Seleção: ${nv} visita(s) e ${ne} entrevista(s). `;
-    }
-    statusEl.textContent = fromSelMsg + "Distâncias estimadas por geografia (linha reta × 1,3).";
+    const nEnt = curSel.entrevista.size;
+    statusEl.textContent = `Roteiro a partir de ${nVis} visita(s) técnica(s).${nEnt ? ` ${nEnt} entrevista(s) remota(s) fora do roteiro.` : ""} Distâncias estimadas (linha reta × 1,3).`;
     params.prov = prov;
     const plan = planMissions(candidates, HUBS, params);
     routeLayer.clearLayers(); allLayer.clearLayers();
     const panel = document.getElementById("rotas-itinerary");
     const cob = plan.cobertura;
     if (cob.candTotal === 0) {
-      panel.innerHTML = `<div class="cover warn">${fromSel ? "Nenhuma iniciativa selecionada na aba <b>Seleção</b>. Escolha visitas/entrevistas lá, ou troque a origem das candidatas para “Todas (pelos filtros)”." : "Nenhuma iniciativa atende aos filtros escolhidos. Ajuste os filtros e tente novamente."}</div>`;
+      panel.innerHTML = `<div class="cover warn">Nenhuma <b>visita técnica</b> selecionada. Vá à aba <b>Seleção</b> e escolha as iniciativas a visitar presencialmente no <b>mapa 1</b> (as entrevistas do mapa 2 são remotas e não entram no roteiro).</div>`;
       return;
     }
+    const remoteNote = curSel.entrevista.size
+      ? `<div class="cover ok" style="background:#eef2fb;color:var(--brand);border-color:#cdd7f0">${curSel.entrevista.size} entrevista(s) em profundidade serão <b>remotas</b> — conduzidas à distância, fora do roteiro de campo.</div>` : "";
     const bounds = [];
     const k = plan.missions.length;
     const effKm = cob.totalKm ? (cob.totalScore / cob.totalKm * 100) : 0;
@@ -573,20 +560,20 @@
     const ancWarn = (cob.ancMissed && cob.ancMissed.length)
       ? `<div class="opt-warn">${cob.ancMissed.length} âncora(s) não couberam no orçamento: ${cob.ancMissed.map(n => H.esc(n.nome)).join("; ")}. Aumente os dias ou o nº de incursões.</div>` : "";
     const showCtx = document.getElementById("r-ctx") ? document.getElementById("r-ctx").checked : true;
-    let html = showCtx ? `<div class="ctx-legend"><span><i class="d-route"></i> paradas da rota</span><span><i class="d-pre"></i> pré-selecionada fora da rota</span><span><i class="d-other"></i> outras iniciativas</span></div>` : "";
+    let html = remoteNote + (showCtx ? `<div class="ctx-legend"><span><i class="d-route"></i> paradas da rota</span><span><i class="d-pre"></i> visita técnica fora da rota</span><span><i class="d-other"></i> outras iniciativas</span></div>` : "");
     html += `<div class="opt-card">
       <div class="opt-title">Cenário ótimo · ${k} incursão(ões) de até ${params.dias} dias</div>
       <div class="opt-grid">
-        <div class="opt-m"><b>${cob.preTotal ? cob.preVis + "/" + cob.preTotal : cob.candVis}</b><span>${cob.preTotal ? "pré-selecionadas" : "iniciativas"}</span>${cob.preTotal ? `<div class="opt-bar"><i style="width:${pct}%"></i></div>` : ""}</div>
+        <div class="opt-m"><b>${cob.preTotal ? cob.preVis + "/" + cob.preTotal : cob.candVis}</b><span>${cob.preTotal ? "visitas técnicas" : "iniciativas"}</span>${cob.preTotal ? `<div class="opt-bar"><i style="width:${pct}%"></i></div>` : ""}</div>
         ${ancMetric}
-        <div class="opt-m"><b>+${cob.optVis}</b><span>no caminho</span></div>
+        <div class="opt-m"><b>+${cob.optVis}</b><span>in loco no caminho</span></div>
         <div class="opt-m"><b>${cob.totalScore}</b><span>valor (pts)</span></div>
         <div class="opt-m"><b>${cob.totalKm}</b><span>km</span></div>
         <div class="opt-m"><b>${cob.totalDays}</b><span>dias (total)</span></div>
         <div class="opt-m"><b>${effKm.toFixed(1)}</b><span>pts / 100 km</span></div>
       </div>
       ${ancWarn}
-      <div class="opt-help">As <b>âncoras</b> são sempre incluídas; em volta delas o ótimo encaixa as pré-selecionadas de maior <b>densidade de valor</b> (nota por tempo de deslocamento) e as iniciativas <b>no caminho</b> de melhor custo-benefício.</div>
+      <div class="opt-help">O roteiro cobre as <b>visitas técnicas</b> (presenciais) selecionadas; as <b>âncoras</b> são sempre incluídas e, em volta delas, o ótimo encaixa visitas de maior <b>densidade de valor</b> (nota por tempo) e as <b>in loco no caminho</b> de melhor custo-benefício.</div>
     </div>`;
     // ---- comparador de cenários (nº de incursões) ----
     const cmp = [];
@@ -595,9 +582,9 @@
       cmp.push({ k: kk, pre: c.preTotal ? `${c.preVis}/${c.preTotal}` : "—", opt: c.optVis, score: c.totalScore, km: c.totalKm, dias: c.totalDays });
     }
     html += `<div class="cmp-scen"><div class="cs-h">Comparar cenários — incursões de ${params.dias} dias</div>
-      <table><thead><tr><th>Incursões</th><th>Pré-sel.</th><th>No caminho</th><th>Valor</th><th>Km</th><th>Dias</th></tr></thead><tbody>
+      <table><thead><tr><th>Incursões</th><th>Visitas</th><th>No caminho</th><th>Valor</th><th>Km</th><th>Dias</th></tr></thead><tbody>
       ${cmp.map(r => `<tr class="${r.k === k ? "cur" : ""}"><td>${r.k}</td><td>${r.pre}</td><td>+${r.opt}</td><td>${r.score}</td><td>${r.km}</td><td>${r.dias}</td></tr>`).join("")}
-      </tbody></table><div class="cs-note">Linha destacada = cenário atual (ajuste pelo controle “Nº de incursões”). Mais incursões cobrem mais pré-selecionadas, com mais esforço.</div></div>`;
+      </tbody></table><div class="cs-note">Linha destacada = cenário atual (ajuste pelo controle “Nº de incursões”). Mais incursões cobrem mais visitas técnicas, com mais esforço.</div></div>`;
     // ---- cada incursão ----
     plan.missions.forEach((m, mi) => {
       const color = MCOLOR[mi % MCOLOR.length];
@@ -612,12 +599,12 @@
         const uf = H.ufTokens(node.estado).join(", ");
         const anc = anchorIds.has(node.id);
         L.marker([node.lat, node.lon], { icon: numIcon(n, color, !node.preselecionada, anc) })
-          .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b> · ${anc ? "âncora" : node.preselecionada ? "pré-selecionada" : "no caminho"}`)
+          .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b> · ${anc ? "âncora" : node.__tipo === "opcional" ? "in loco no caminho" : "visita técnica"}`)
           .addTo(routeLayer);
       });
       html += `<div class="incursao">
         <div class="ih" style="background:${color}"><span class="in">Incursão ${mi + 1}</span><span class="imoment">momento ${mi + 1}</span><span class="ihub">base: ${m.hub.nome} (${m.hub.uf})</span></div>
-        <div class="isum"><span><b>${m.visited.length}</b> paradas · <b>${m.preCount}</b> pré · ${m.optCount} no caminho</span><span><b>${m.days.length}</b> dias</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.score}</b> pts</span></div>`;
+        <div class="isum"><span><b>${m.visited.length}</b> paradas · <b>${m.preCount}</b> visitas · ${m.optCount} no caminho</span><span><b>${m.days.length}</b> dias</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.score}</b> pts</span></div>`;
       let counter = 0;
       m.days.forEach((d, di) => {
         const jh = d.driveH + d.visitH, fill = Math.min(100, jh / params.jornadaH * 100);
@@ -626,9 +613,9 @@
         d.stops.forEach(s => {
           counter++;
           if (s.legKm > 1) html += `<div class="leg-line">deslocamento: ${Math.round(s.legKm)} km (${s.legH.toFixed(1)} h)</div>`;
-          const anc = anchorIds.has(s.node.id), pre = s.node.preselecionada, tipo = s.node.__tipo;
-          const tagCls = anc ? "tanc" : (pre || tipo) ? "tpre" : "topt";
-          const tagTxt = anc ? "âncora" : tipo === "entrevista" ? "entrevista" : tipo === "visita" ? "visita técnica" : pre ? "pré-selecionada" : "no caminho";
+          const anc = anchorIds.has(s.node.id), pre = s.node.preselecionada, opt = s.node.__tipo === "opcional";
+          const tagCls = anc ? "tanc" : opt ? "topt" : "tpre";
+          const tagTxt = anc ? "âncora" : opt ? "in loco no caminho" : "visita técnica";
           const nbg = (anc || pre) ? color : "#fff", nfg = (anc || pre) ? "#fff" : color, nbd = anc ? "#f6a609" : color;
           html += `<div class="stop ${(pre || anc) ? "pre" : "opt"}"><span class="n" style="background:${nbg};color:${nfg};border-color:${nbd}">${counter}</span><span class="nm">${H.esc(s.node.nome)} <span class="tag ${tagCls}">${tagTxt}</span> <span class="sc">${s.node.pontuacao} pts</span></span></div>`;
         });
@@ -649,7 +636,7 @@
           <span class="u-score">${n.pontuacao}<small>pts</small></span></li>`;
       }).join("");
       html += `<div class="uncovered">
-        <div class="uh"><span>Pré-selecionadas fora destas ${k} incursões</span><span class="ucount">${cob.droppedPre.length}</span></div>
+        <div class="uh"><span>Visitas técnicas fora destas ${k} incursões</span><span class="ucount">${cob.droppedPre.length}</span></div>
         <div class="usub">Somam <b>${wp} pts</b>. Para incluí-las, aumente o nº de incursões ou de dias — ou reserve-as para uma incursão futura.</div>
         <ul class="ulist">${lis}</ul></div>`;
     }
@@ -658,12 +645,13 @@
       const visitedIds = new Set(plan.missions.flatMap(m => m.visited.map(n => n.id)));
       H.ITEMS.forEach(i => {
         if (visitedIds.has(i.id)) return;
-        const pre = i.preselecionada;
+        const vis = isVis(i.id), ent = isEnt(i.id), sel = vis || ent;
+        const label = vis ? "Visita técnica · fora da rota" : ent ? "Entrevista remota · fora do roteiro" : "Não selecionada";
         locsOf(i, H).forEach(loc => {
           L.circleMarker([loc.lat, loc.lon], {
-            radius: pre ? 5.5 : 4, fillColor: pre ? "#7d8290" : "#c5c8d2",
-            fillOpacity: pre ? .85 : .55, color: "#fff", weight: 1
-          }).bindPopup(`<span class="pp-h">${H.esc(i.nome)}</span>${pre ? "Pré-selecionada · fora da rota" : "Não selecionada · fora da rota"}<br><span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>`).addTo(allLayer);
+            radius: sel ? 5.5 : 4, fillColor: sel ? "#7d8290" : "#c5c8d2",
+            fillOpacity: sel ? .85 : .55, color: "#fff", weight: 1
+          }).bindPopup(`<span class="pp-h">${H.esc(i.nome)}</span>${label}<br><span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>`).addTo(allLayer);
         });
       });
     }
