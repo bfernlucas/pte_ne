@@ -20,6 +20,10 @@ ALT_LOCAIS = {
         {"municipio": "Remígio", "uf": "PB", "lat": -6.9528, "lon": -35.8331},
         {"municipio": "Araripina", "uf": "PE", "lat": -7.5764, "lon": -40.4983},
     ],
+    32: [  # Solos — atuação em dois locais: Salvador (BA) e Fortaleza (CE)
+        {"municipio": "Salvador", "uf": "BA", "lat": -12.9777, "lon": -38.5016},
+        {"municipio": "Fortaleza", "uf": "CE", "lat": -3.7319, "lon": -38.5267},
+    ],
 }
 
 # Revisão editorial dos nomes: nome principal padronizado, sem siglas de UF,

@@ -1250,7 +1250,21 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "- Startup nascida no Nordeste, com atuação em alguns estados do Brasil \n- Biomas: de acordo com o site, a startup ja atendera instituições públicas e privadas dos estados BA, CE, PE e PB (mapinha apresentado no site), no entanto, os cases/experiencias realizadas no Nordeste apresentadas foram: Patos (PB/Caatinga) e Salvador (BA/Mata Atlantica); \n- Salvaguardas: \"100% formato por mulheres\" (site)\n- Viabilidade operacional, Potencial de replicabilidade/escala, Inovação tecnológica e social e Potencial de atração de investimentos verdes/alinhamento a fontes de financiamento climático: com base nos prêmios/reconhecimentos",
-   "fora_ne": false
+   "fora_ne": false,
+   "locais": [
+    {
+     "municipio": "Salvador",
+     "uf": "BA",
+     "lat": -12.9777,
+     "lon": -38.5016
+    },
+    {
+     "municipio": "Fortaleza",
+     "uf": "CE",
+     "lat": -3.7319,
+     "lon": -38.5267
+    }
+   ]
   },
   {
    "id": 30,
