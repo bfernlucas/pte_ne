@@ -2,7 +2,6 @@ window.PTE_DATA = {
  "meta": {
   "fonte": "PTE2026_matriz_dashboard.xlsx",
   "total": 79,
-  "preselecionadas": 31,
   "eixos": [
    {
     "nome": "Finanças Sustentáveis e Inclusivas",
@@ -117,10 +116,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 20,
    "observacoes": "Atende SSM: tem práticas verificáveis nos eixos social, como atendimento direto a mulheres, jovens e agricultoras familiares vulneráveis do agreste pernambucano e de equidade de gênero (o Fundo \"As Marias\", voltado ao empoderamento feminino). Já nos eixos de conservação/uso sustentável de recursos, segurança alimentar/hídrica e participação social deliberativa, não há menções ao apoio à agroecologia e à origem em gestão colegiada, mas sem ações ambientais mensuradas ou conselho/assembleia deliberativo documentado atualmente. \n\nAtribuição das notas: os critérios climáticos (atração de investimentos e mitigação/adaptação) são os pontos mais frágeis, mas com possível potencialidade. Não identifiquei uma linha específica sobre os temas, mas a sua implementação acontece no semiárido, relaciona-se fortemente. As evidências dos demais critérios são bastantes robustas.\n\nSugestão de visita, parece uma iniciativa muito interessante e bem formatada para acesso à finanças solidárias para pequenas economias",
-   "preselecionada": true,
-   "pre_ufs": [
-    "PE"
-   ],
    "fora_ne": false
   },
   {
@@ -161,8 +156,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "Atende SSM: a iniciativa possui diversas evidências independentes, como estudos da UFC e Ministério do Trabalho, que comprovam relação com os subcritérios da segurança alimentar e ou hídrica, qualidade de vida das comunidades, equidade de gênero e raça, participação social. Apenas com relação a conservação e uso sustentável dos recursos naturais não foram encontradas evidências tão robustas.\n\nAtribuição das notas: a iniciativa possuí mais de três décadas de operação, atua em rede e com interação em mais de 17 estados, tem forte participação comunitária e diversos projetos que vão além da moeda social e microcrédito. É uma iniciativa muito consolidada e com iniciativas focalizadas, existe uma oportunidade de escalabilidade, mas importante compreender se é um projeto que necessita de adicionalidade, dado sua maturidade.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -203,10 +196,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "Atende SSM: ações de conservação ambiental desenvolvidas na Reserva Ambiental Barra do Vento, o apoio à agricultura familiar e a participação em espaços de governança como o Consea. A organização também demonstra compromisso com a equidade de gênero, com a sua trajetória institucional e vínculo com o movimento de mulheres rurais. Além disso, sua estrutura participativa, que reúne dezenas de entidades filiadas, favorece a representação e a tomada de decisão compartilhada pelas comunidades.\n\nAtribuilçao das notas:  as notas mais altas refletem a maturidade e a consolidação, presença em vários estados do Nordeste e capacidade de exportar seu modelo, com o fortalecimento do sistemas de finanças solidárias em outros territórios. A governança é um ponto forte, por articular movimentos sociais, poder público estadual e municipal, sistema cooperativo de crédito, instituições de ensino e instâncias nacionais de participação, com decisão compartilhada entre as entidades que o compõem. A inclusão produtiva também se destaca, já que o crédito sustenta cadeias da agricultura familiar..",
-   "preselecionada": true,
-   "pre_ufs": [
-    "BA"
-   ],
    "fora_ne": false
   },
   {
@@ -247,8 +236,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 17,
    "observacoes": "Atende SSM: iniciativa muito recente e voltada essencialmente à circulação de uma moeda social no comércio de um único município e à inclusão financeira de seus moradores. Não foram encontradas evidências de ações de conservação ou uso sustentável de recursos naturais, nem de segurança alimentar ou hídrica, dimensões ausentes do seu escopo. A melhoria de qualidade de vida é uma intenção plausível, já que atua num dos municípios de menor renda do estado, mas ainda sem qualquer resultado verificável. Existe uma menção a crédito voltado a mulheres, porém genérica e não estruturada como política, e o recorte racial não aparece.\n\nAtribuição das notas: o desenho operacional é coerente, semelhante ao Banco Palmas com moeda social lastreada, possuem aplicativo próprio, agência física e apoio do governo estadual via fomento de inovação. Mas, não identifiquei um histórico ou documentos mais estruturados sobre a atuação da iniciativa e nem mesmo a vinculação institucional ao Banco Cidade. O modelo parece mesmo de uma start-up, mas com aspectos de associação comunitária, não foram mencionados nas consultas vinculações aos temas ambientais, clima, inclusão produtiva com geração de renda, foi mais no sentido de desenvolvimento da bancarização da população local. No fim, parece um projeto com potencial, mas ainda bem prematuro e distante de alguns critérios mais gerais que foram aplicados: equidade; clima etc.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -289,8 +276,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "Salvaguardas: a organização apresenta evidências robustas sobre sua atuação em relação ao crédito e conservação ambiental, especialmente, com foco na agricultura familiar. Tem um recorte muito forte sobre populações e comunidades tradicionais e cadeias da sociobiodiversidade brasileira. Além disso, tem forte recorte para questões de gênero, como cotas de participação da equipe técnica e dos públicos.\n\nAtribuição das notas: A Conexsus é reconhecida nacionalmente pela atuaçã, mas o que chamou mais atenção na pesquisa foi a iniciativa CrediAmbiental, com foco no bioma amazônico. É uma iniciativa madura e já em escala: atua há anos como agente de crédito do Banco da Amazônia, está presente em diferentes biomas e estados, teve iniciativas já na Caatinga e Cerrado,  ajudou a mudar a própria política pública de crédito rural, caso do Plano Safra e da resolução do Conselho Monetário Nacional que aproximou crédito, conservação e restauração. Pode ser uma importante iniciativa a ser considerada como visita para catalisar projetos ou iniciativas nos biomas prioritários.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -331,10 +316,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 22,
    "observacoes": "Salvaguardas: a organização é nacionalmente e internacionalmente reconhecida pela sua atuação na defesa do direitos das mulheres rurais, produção agroecológica e desenvolvimento local. Não há relato ou indícios de que possa haver qualquer problema relacionado a salvaguardas, pelo contrário, possui diversos projetos com financiadores externos como União Europeia, Fundação Banco do Brasil, Banco Mundial e etc.\n\nAtribuição das notas: é uma organização que tem atuação em mais de 10 territórios do RN, com cerca de 400 famílias associadas. O foco da atuação é nos temas da comercialização em circuitos curtos, feiras agroecológicas, estratégia de Bodegas Solidárias. A Rede Xique Xique tem direcionado sua atuação nas cadeias da sociobiodiversidade da Caatinga, com foco na orgnanização e certificação participativa orgânica. o maior destaque é sua comercialização direta ao consumidor e nos progrmas públicos. De fato, a organização estaria melhor posicionada no eixo de Bioeconomia dado sua expertise e projetos na área, com relação a estratégia de finanças solidária, já teve no passado alguma atuação na lógica dos fundos rotativos solidários, contudo, não atua com tanta focalização neste tema.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "RN"
-   ],
    "fora_ne": false
   },
   {
@@ -375,8 +356,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 20,
    "observacoes": "Salvaguardas: a inciativa ainda está em desenvolvimento, não temos informações disponíveis para classificar a salvaguardas dos projetos financiados ou mesmo da atuação.\n\nAtribuição das notas: é uma iniciativa que ainda está em construção e com foco em financiamento climático para descarbonização com parceria do Governo Federal e o Reino Unido, buscam financiar até 20 startups de tecnlogias limpas, possuí uma forte capacidade de atração de investimentos verdes e iniciativas inovadoras, com forte presença de governança multinível, sendo um piloto como o objetivo de ser replicado tanto na escala nacional e internacional. Não é mencionada nenhuma abordagem sobre cadeias produtivas ou equidade/trabalho digno, também não apresenta um recorte específico para o Nordeste, embora mencionados os Portos do Pecém e Suape. Talvez, a iniciativa se vincule mais ao eixo de transição energética e transversal às finanças solidárias.\n\nSugestão: a inciativa poderia ser uma interessante entrevista em profundidade (remota) para verificar o desenho de governança para financiamento e escolha dos projetos.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -417,10 +396,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 21,
    "observacoes": "Iniciativa realizada pelo Governo de Alagoas. Uma estrutura muito bem construída, em quatro frentes de atuação (lab, educação, trabalho e plataforma online). Possui indicados de sucesso sistematizados (+200 cursos realizados; +10k estudantes formados; +425 vagas de emprego; +300 empregos efetivados) e já captou financiamento ao longo da história. Ainda se atém ao âmbito estadual, mas tem muito potencial de expansão para pensar em empregos na área de tecnologia. Contudo, não apresenta centralidade em questões ambientais e não faz recortes específicos de equidade.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "AL"
-   ],
    "fora_ne": false
   },
   {
@@ -461,15 +436,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "Trata-se de uma organização social com contrato de gestão via MCTI. Possui contrato com outros ministérios. Em síntese, opera a partir de parceria com unidades de CT com excelência e credenciadas para criação de soluções inovadoras para a indústria, a partir de fundos não reembolsáveis e contínuos. A rede possui 91 unidades, sendo que dessas 17 estão no nordeste (5 em PE, 4 em PB, 2 na BA, 1 em AL, 3 no CE e 2 no RN). Contudo, em 2025 dizem ter atuado em todos os estados brasileiros, movimentando mais de R$1bi em investimento no ano. Possui um nível muito interessante de arciulação e governança multinível, além de planejamento e métricas especificadas. Também apresenta preocupação de atuar em cadeias sustentáveis e em tecnologias com impacto socioambiental.\nA rede de inovação em IA, em si, é uma das iniciativas da organização. Hoje são 17 unidades que integrama rede dentro dessa temática, mas não possui especificidade no nordeste.\nAs notas mais baixas foram dadas devido a falta de especificidade com atuação no Nordeste e com a inclusão de grupos vulneráveis. Por se tratar de uma iniciativa federal, precisamos avaliar se faz sentido na nossa carteira. Investimentos poderiam estar alinhadas à estruturação de novas UE na região ou nas já existentes, como centros importantes de captação de iniciativas, starat ups e desenvolvimento tecnológico.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "CE",
-    "RN",
-    "PB",
-    "PE",
-    "AL",
-    "BA"
-   ],
    "fora_ne": false
   },
   {
@@ -510,8 +476,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 21,
    "observacoes": "Formação educacional voltada ao empreendedorismo em diferentes níveis da formação de alunos, a partir de disciplinas especiais que se adaptam a cada série - lúdicas e mais práticas. Vai do ensino básico até o ensino superior, com alguns recortes como a educação no campo.\nSEBRAE oferece formação para os professores ofertarem essas disciplinas.\nTeve atuação em Sobral com mais de 900 escolas.\nOperacionalidade e replicabilidade: se utiliza da infraestrutura e corpo docente escolar então tem alto potencial de replicação e baixos custos de implementação, pois a metodologia já está estabelecida para diferentes contextos.\nImpacto ambiental e inclusão: tema ambiental está permeado em diferentes atividades do currículo dos cursos. De maneira tangencial. Tem como público prioritário os estudantes de escola público, podendo ter um bom potencial de inclusão.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": true
   },
   {
@@ -552,10 +516,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "Iniciativa é uma ação dentro do Programa Recaatingar, que possui lastro mais amplo. É a aplicação das tecnologias sociais do reecatingamento em comunidades tradicionais da caatinga. Investimento de R$4,7mi e impacto em 400 famílias em 13 territórios. Lançado em 2025, ainda é cedo para conseguir mensurar impacto e possui muito pouca informação sobre disponível. Em termos de meta, o projeto que sustenta a iniciativa traça como parâmetros 6 metas para o projeto com atividades vinculantes. Não há indicadores de mensuração estabelecidos quantitativamente.\nTenho minhas dúvidas sobre a classificação como “Andensamento tecnológico”, ou eixo principal em biossistemas. Ainda, me parece mais adequado indicar o Recaatingar como um todo e essa iniciativa mais como um programa dentro deste outro.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "PE"
-   ],
    "fora_ne": false
   },
   {
@@ -596,10 +556,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 24,
    "observacoes": "O Porto Digital é uma política pública de referência no Brasil para a área de negócios e startups digitais. Um bairro histórico que foi transformado em um HUB de inovação e atração de empresas e sinergia. \nOperacionalidade: Criado em 2000, já tem uma longa trajetória para mostrar seu sucesso. Hoje reúne 540 empresas embarcadas e 24 mil colaboradores, que geraram R$ 7,4 bilhões de faturamento em 2025.\nReplicabilidade: Possuem um HUB em Caruaru que poderia ser um bom local para visitação - pensar na replicação do modelo e possibilidade de interiorização. Pode ser um vetor de atração de investimento de replicar essa interiorização para outros estados. Possuem também uma unidade internacional em Portugal, além de uma unidade em Goiás.\nInclusão: possuem o programa Embarque Digital voltado para bolsas de estudo para alunos do ensino médio se inserirem no ambiente. Também citam capacitação para jovens e profissionais das comunidades do entorno.\nGovernança: a partir do NGPD (Núcleo de Gestão do Porto Digital), uma OS. Possuem mais de 100 funcionários para fazer a gestão do Porto. Possuem também um Conselho Administrativo com representantes do governo e de empresas privadas. Articulação entre prefeitura e governo do Estado. Além disso, possuem um modelo de parceria com ICT dos territórios em que atua.\nEquidade: chama bastante atenção dentre os documentos disponibilizados na área de transparência um intitulado “Relatório de Transparência e Igualdade Salarial de Mulheres e Homens”, em que se é analisado e exposto a diferença salarial entre trabalhadores do NGPD considerando raça e gênero.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "PE"
-   ],
    "fora_ne": false
   },
   {
@@ -640,8 +596,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 19,
    "observacoes": "Uma aceleradora de negócios que tem como foco recortes de raça e de populações periféricas em Salvador. Ainda é muito restrita territorialmente. Possui uma metodologia interessante de catalização de inciiativas para empreendedoras negras e negros, mas não é exatamente algo de adensamento tecnológico nos termos mais clássicos de inovação. Mas, se mostra como um modelo replicável. Já atendeu mais de 233 negócios e impactou mais de 1000 empreendimentos.\nInclusão e equidade: aceleração direcionada a empreendedoras negras e negros e perfiféricos da Bahia. Foco em raça e geolocalidade.\nAtração de investimento: houve parceria em todos os ciclos de aceleração realizados (Spotify, British Council, FIIMP e Assaí Atacadista). Os valores foram arrecadados para oferecer grants e bolsas às iniciativas selecionadas (mas são com valores relativamente baixos). Também apresentam parceria com Google e Brazil Foundation.\nOperacionalidade: funciona apenas com recursos privados, sem apoio do governo. Mas é dependente desses recursos para seus processos.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -682,8 +636,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "Se trata de uma iniciativa de crédito especial articulada pelo BNDES e pelo FIA, em que o público pleiteante são governos dos estados do Nordeste. Na primeira edição, foram contemplados BA, CE, PB, PI e SE. Não se trata especificamente de uma iniciativa territorializada, mas um programa de crédito com bastante potencial de incidir na agricultura familiar e convivência com o semiárido. Contudo, cabe decidirmos se está dentro do enquadramento do que estamos procurando.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -724,10 +676,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "Iniciativa desenvolvida pela Embrapa e financiada pelo BID. Custo total de R$3mi e potencial de retorno de R$1,5mi por ano (estimativas pouco sustentada por evidências, mas é o que os analistas indicam). Coloca no centro do modelo de negócio associações e gestão coletiva, com destaque para mulheres, jovens e comunidades tradicionais. Alto valor em equidade e inclusão produtiva. Modelo é interessante, mas ainda é recente (2025), o que dificulta notas mais altas para métricas consolidadas. Não é tão disruptivo (centra-se no conceito de turismo de base comunitária), mas tem uma abordagem inovadora e participativa. Alto potencial de replicabilidade - reconhecido pelo próprio BID.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "AL"
-   ],
    "fora_ne": false
   },
   {
@@ -768,10 +716,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "A iniciativa se organiza na forma de rede desde 2019, mas foi estruturada em 2015 a partir de um encontro nacional sobre turismo comunitário.  É bastante premiada como um modelo de solução sustentável e inclusiva para o turismo na Bahia, colocando no centro do seu processo oprotagonismo das ocmunidades - 90% das rotas turísticas são de mão de obra familiar. Isso justifica altas notas em adaptação climática, inclusão produtiva, equidade e fortalecimento das cadeias produtivas. Em relação à governança e relevância territorial, se mostra em um desenho intraestaudal em 27 regiões diferentes, além de uma governança compartilhada. Contudo, apesar dos prêmios, mantive nota 2 para atração de investimento devido a falta de um CNPJ centralizado e considerei a inovação nota 2, por ser mais na forma de organização do que serviço oferecido.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "BA"
-   ],
    "fora_ne": false
   },
   {
@@ -812,8 +756,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 17,
    "observacoes": "Mais do que uma iniciativa “econômica”, a associação é uma plataforma de articulação política. É o braço estadual da Coordenação Nacional de Articulação das Comunidades Negras Rurais Quilombolas (CONAQ) no território.\nAtua principalmente na pauta da terra, em especial na área de regularização fundiária. Cumpre função pública de cadastramento das comunidades quilombolas. Considerar se está no escopo das iniciativas ou se pode ser algo polêmico demais.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -854,8 +796,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 29,
    "observacoes": "Por se tratar do principal programa de desenvolvimento territorial do governo federal, a iniciativa recebeu notas máximas em quase todos os aspectos - possui história e lastro o suficiente para ser disruptivo, escalável, catalisador de equidade e sustentabilidade. A única nota que não foi dado valor máximo foi de viabilidade operacional, pois está estuturado como uma política dependente de orçamento - não produz, por si só, receita. A lógica é outra. Mas, novamente, é preciso analisar se faz parte do escopo do que estamos procurando.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": true
   },
   {
@@ -896,10 +836,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "Programa do MMA em parceria com a FAO e GEF. Capacitação de agricultores (400 em 18 meses) para elaboração de Plano de Gestão Integrada de Recursos Naturais (GIRN) e Planos de Uso Potencial e Sustentável. Possui metas de combate à desertificação. Atua com potencialidade no estabelecimento de SAFs e na cadeia de Mel. Notas atribuídas:\nViabilidade operacional - depende de financiamento externo\nInovação - me parece mais inovador no foco/público do que no método",
-   "preselecionada": true,
-   "pre_ufs": [
-    "CE"
-   ],
    "fora_ne": false
   },
   {
@@ -940,10 +876,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 20,
    "observacoes": "Salvaguardas: ao que parece, com base nas informações disponíveis, o projeto tem licença, mas é a licença prévia, e não está sendo implementada no sentido de obras em andamento. Não foi possível determinar a situação das salvaguardas, pois não há informações sobre os impactos socioambientais que ainda estão sendo estudados e mapeados. Incialmente, os problemas apresentados são: comprometimento da sociobiodiverisdade na região do Delta do parnaíba, modo de vida das famílias extrativistas e o uso intensivo da água, utilizando-se da água do rio Paranaíba e afetando a população no entorno, além da possibilidad de contaminação. Por último, MPF informa que não foi realizada a consulta prévia, livre e informada.\n\nCritérios: é um mega projeto privado de hidrogênio e amônia verde, com parceria de grupos europeus (Croácia e Espanha), com foco na exportação para Europa. O investimento deve ser por volta de 250 bilhões de reais, com a participação técnica do ITA. Em geral, é um projeto \"carro-chefe\" do Governo do Piauí com forte atração de investimentos, inovação tecnológica com adensamento; contudo, questiona-se a sua viabilidade operacional se relacionar aos impactos socioambientais, além do mais, diversos questionamentos sobre os eixos de trabalho digno, equidade de gênero e cadeias da sociobiodiversidade que poderão ser impactados de forma negativa, inclusive.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "PI"
-   ],
    "fora_ne": false
   },
   {
@@ -984,8 +916,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 22,
    "observacoes": "SSM: foi difícil mensurar com base nas informações que tinha, como a ideia, indiquei a existência das salvaguardas mínimas obitidas pelo Porto de Suape e que seria suficiente para informar que atende os critérios.\n\nCritérios: de maneira geral, é uma iniciativa de descarbonização da logística portuária do Complexo do Suape, tem algum foco na atração de investimentos de projetos de hidrogênio verde e descarbonização das atividades do Porto, inclusive, tem alguma relação com o ID Hub (Brasil e Reino Unido) para investimentos neste projeto. É complexa qualquer proposta de pontuação pois é uma iniciativa que ainda está em construção, contudo, a iniciativa tem foco em mitigação e atração de investimentos verdes, com forte governança do governo estadual e iniciativa privada, além de apresentar forte relevância para a região Nordeste, mas não apresenta qualquer menção para trabalho digno, sociobiodiversidade, equidade etc. As notas tentam refletir este cenário, embora tenha sido um exércicio complexo.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1026,8 +956,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 21,
    "observacoes": "SSM: como é uma iniciativa de formação técnica, associada à educação, não foram identificadas evidências que violasse qualquer salvaguarda mínima. Além do mais, Senai, como instituição bem estabelcida é submetida aos marcos legais e regulatórios, não foram identificadas qualquer infração ou irregularidade durante a pesquisa.\n\nCritérios: na verdade, é uma iniciativa mais ampla, que apoia no desenvolvimento tecnológico. Possivelmente, se relaciona mais com adensamento tecnológico, em relação a transição energética. Uma das linhas de atuação é o desenvolvimento de capacitação e mão de obra especializada para tecnologias limpas, como hidrogênio verde, bioenergia, armazenamento e smart grids. Ao que parece, a inciativa possuí forte viabilidade operacional, com operação consolidada em diversas áreas; além disso, tem forte relação com governança multinível pois reúne diversos setores produtivos e governamentais, além das organizações de representação sindical da indústria, contudo não se apresenta nenhuma relação com equidade de gênero, sociobiodiversidade ou forte articulação territórial etc.\n\nSugestão: entrevista em profundidade para compreender o ecossistema de habilidades verdes <> mercado de trabalho e no contexto de transição energética.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1068,11 +996,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 26,
    "observacoes": "Salvaguardas: definição reputacional, com base no histórico de intervenção do P1MC da ASA, projeto ainda em desenvolvimento não há informações robustas sobre violação de salvaguardas, por exemplo.\n\nCritérios: iniciativa da Asa em parceria com a Fundação Banco do Brasil, promove a geração solar fotovoltaica descentralizada para famílias rurais de baixa renda do Semiárido, com foco no combate à pobreza energética e no uso produtivo da energia, como o bombeamento para irrigação. Na primeira fase, vai implantar pequenas usinas de geração solar para 400 famílias rurais e três escolas-fábrica de painéis fotovoltaicos, em Remígio (PB), Araripina (PE) e Porteirinha (MG). O projeto tem forte relevância territorial, capacidade de replicabilidade e governança, dado a experiência do P1MC, além disso, dialóga muito fortemente com temas de adaptação e mitigação climática e potencial de financiamento. Mas, o projeto ainda está em estágio inicial, pois foi lançado em março de 2026, ainda não se sabe ao certo sobre a reaplicabilidade e viabilidade do projeto.\n\nSugestão: realizar a visita as experiências em andamento, consultar o nível de desenvolvimento em Remígio ou Araripina.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "PB",
-    "PE"
-   ],
    "fora_ne": false,
    "locais": [
     {
@@ -1127,8 +1050,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "SSM: é uma política federal já consolidada de acesso à água potável para comunidades rurais vulneráveis do Semiárido, que incorpora cuidados ambientais e sociais na gestão dos dessalinizadores. No lado ambiental, trata o principal risco da dessalinização, que é o rejeito salino, com tanques de contenção e reúso do concentrado na criação de tilápia e no cultivo da erva-sal para alimentação animal. No lado social, funciona por gestão compartilhada e acordos de gestão entre União, estados, municípios e a própria comunidade. Não há notícia ou processo de irregularidade, então o vetor negativo é nulo.\n\nCritérios: programa coordenado pelo MIDR, voltado à dessalinização de água salobra e do mar para abastecer comunidades rurais do Semiárido. É uma iniciativa madura, com mais de mil sistemas instalados, mais de 400 mil pessoas atendidas e uma rede de cerca de 200 instituições em dez estados. Por isso tem relevância territorial, viabilidade, replicabilidade e governança, e dialoga bem com adaptação climática, já que é tratado como medida de adaptação à seca. O ponto fraco para este eixo é a integração energética, que ainda é incipiente: a energia solar para alimentar os dessalinizadores aparece como perspectiva e em piloto, como o de João Câmara (RN), além da parceria recente com a Eletrobras/AXIA, mas não como prática consolidada. Ou seja, na essência é um programa de segurança hídrica com um componente energético ainda emergente, mais do que uma iniciativa de transição energética.\n\nSugestão: entrevista em profundidade para compreender as dificuldades de integração da estratégia de transição energética",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1169,8 +1090,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 15,
    "observacoes": "SSM: o registro trata a APROBAMBU como uma iniciativa do Maranhão, mas ela é a associação nacional dos produtores de bambu, sediada em SP. O que existe no Maranhão é cultivo de bambu para biomassa industrial (cerca de 22 mil hectares), voltado a abastecer cerâmicas, cervejarias e outras indústrias da região, com empresas de manejo como a Proflora à frente. Ou seja, não é uma iniciativa comunitária ou de agricultura familiar, e sim uma atividade comercial, então não há um perfil claro de salvaguardas sociais para avaliar. No lado ambiental, o bambu tem pontos positivos, mas o plantio industrial em larga escala carrega as questões usuais de monocultura, sem documentação específica para as áreas do Maranhão. Não encontrei notícia ou processo de irregularidade, mas também não há evidência positiva de salvaguardas comunitárias, então fica inconclusivo.\n\nCritérios: é a associação nacional dos produtores de bambu (SP, 2014), não uma entidade do Maranhão. O recorte do Maranhão parece se referir ao cultivo de bambu para biomassa energética no estado, que é comercial e abastece a indústria regional. O vínculo com a transição energética é que o bambu funciona como floresta energética, uma biomassa renovável que substitui a lenha e sequestra carbono, o que dialoga com mitigação climática e com cadeias produtivas sustentáveis. Os pontos fortes são esses: a cadeia da biomassa de bambu já está montada comercialmente no Maranhão, com escala e benefício climático. Os pontos fracos são o caráter industrial e pouco inclusivo da atividade, que enfraquece inclusão produtiva, equidade e desenvolvimento territorial comunitário, além da própria indefinição de quem é o proponente (associação nacional, empresas de manejo ou indústrias usuárias). Por isso as notas ficam modestas, com valor concentrado na dimensão climática e da cadeia, e ressalvas na parte social e na viabilidade como iniciativa inclusiva",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1211,10 +1130,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "SSM: o projeto instala usinas fotovoltaicas sob gestão das próprias comunidades quilombolas, com a energia gerada sendo monetizada e a receita revertida a projetos comunitários. Beneficia diretamente comunidades quilombolas, , apoia os sistemas produtivos locais como a cooperativa agroextrativista e a casa de farinha. O piloto, o quilombo Piqui da Rampa, foi escolhido justamente pela sua organização interna.\n\nCritérios: programa da Secretaria de Desenvolvimento Econômico e Programas Estratégicos do Maranhão (SEDEPE), com a Fundação Sousândrade como executora e apoio de UFMA, UEMA e IFMA. A proposta é implantar usinas solares em modelo cooperativo nas comunidades quilombolas do estado, vendendo a energia gerada para gerar renda e fortalecer os sistemas produtivos comunitários. O piloto é o quilombo Piqui da Rampa, em Vargem Grande, no Vale do Itapecuru. Os pontos fortes são muitos: relevância territorial alta, pois o Maranhão é o estado com mais comunidades quilombolas do país; forte inovação social com uso de energia comunitária com receita reinvestida na própria comunidade, inclusão produtiva e geração de renda, recorte étnico-racial central, governança multinível com autogestão e um desenho pensado para ser replicado em outros quilombos. O ponto a observar é a maturidade: o termo foi assinado em 2023 e, na visita do governo federal em 2025, ainda se falava em locais potenciais para instalação das usinas, então a viabilidade operacional e a escala efetiva ainda estão em construção ou precisa ser checada. O financiamento também está sendo montado, via parcerias que a SEDEPE articula. No conjunto, é uma das iniciativas mais aderentes para visitas ou entrevistas.\n\nSugestão: confirmar o estágio atual de implantação. Vale checar com a SEDEPE e a FSADU se a usina de Piqui da Rampa já está instalada e operando, qual a potência, quantas famílias são atendidas e se já houve replicação para outros quilombos.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "MA"
-   ],
    "fora_ne": false
   },
   {
@@ -1255,8 +1170,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "- Programa de Certificação Ambiental pública, instituído pela Lei Estadual nº13.304/03, alterada pela Lei nº16.128, de 14 de Outubro de 2016 e regulamentado pelos Decretos n.º27.073/03 e n.º27.074/03.\n-  identifica a cada dois anos, os municípios cearenses que desenvolvem ações protetivas do meio ambiente com melhores resultados possíveis na salvaguarda ambiental, atendendo a critérios preestabelecidos de conservação e uso sustentável dos recursos naturais.\n- colegiado, de caráter interinstitucional, constitui-se por 20 conselheiros formados por especialistas indicados por 9 órgãos públicos, 5 universidades e 6 entidades representativas da sociedade civil organizada e de classes profissionais.\nAtende SSM: os critérios de certificação exigem conservação e uso sustentável dos recursos naturais, melhorias de qualidade de vida da população, e participação social por meio da existência obrigatória do COMDEMA e de um Comitê Gestor interinstitucional , além de alinhar-se a ODS que incluem segurança hídrica e alimentar.  \n\nCritérios de avaliação com base na Cartilha",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1297,8 +1210,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 24,
    "observacoes": "- Biomas identificados com base na lista de CESOLs (ver link sobre)\n- Identificado Potencial de atração de investimentos verdes/alinhamento a fontes de financiamento climático, contudo precisamos acessar mais informações sobre \n- Inclusão produtiva (trabalho digno), Equidade de gênero, raça e etnia (povos e comunidades tradiocionais) e Governança multinível: com base na legislação \n- necessidade de aprofundar com outros documentos comprobatórios",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1339,10 +1250,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "- Startup nascida no Nordeste, com atuação em alguns estados do Brasil \n- Biomas: de acordo com o site, a startup ja atendera instituições públicas e privadas dos estados BA, CE, PE e PB (mapinha apresentado no site), no entanto, os cases/experiencias realizadas no Nordeste apresentadas foram: Patos (PB/Caatinga) e Salvador (BA/Mata Atlantica); \n- Salvaguardas: \"100% formato por mulheres\" (site)\n- Viabilidade operacional, Potencial de replicabilidade/escala, Inovação tecnológica e social e Potencial de atração de investimentos verdes/alinhamento a fontes de financiamento climático: com base nos prêmios/reconhecimentos",
-   "preselecionada": true,
-   "pre_ufs": [
-    "CE"
-   ],
    "fora_ne": false
   },
   {
@@ -1383,8 +1290,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 22,
    "observacoes": "Além do decreto e de material do BENCHMARKING_mapeamento geral, não encontrei mais informações sobre o Programa. No entanto, foram indentificados materiais sobre outro programa que tem bastante similaridades, chamado \"Cata Mais Alagoas\". Este, é desenvolvido pela Secretaria do Trabalho, Emprego e Qualificação de Alagoas (Seteq) com o \"objetivo de dar mais qualidade e segurança aos trabalhadores da reciclagem, incluindo levantamento do perfil de catadoras e catadores (em parceria com Maos Verdes); investimentos de mais de R$ 2,5 milhões em equipamentos para cooperativas, cursos de capacitação e Equipamentos de Proteção Individual (EPI’s)\".\n- Embora no Relatório de sistematização de cadastros (2024) tenha sido dignosticado um percentual maior de mulheres (53,9%) entre pessoas catadoras, nao identificamos ações que aborde o recorte de gênero. Não há informações sobre raça/etnia neste relatório\n\n\nPara responder bioma utlizamos os municípios que já foram sistematizados no relatório de cadastros: Maceió, Marechal Deodoro, Pilar, União dos Palmares, Satuba e Arapiraca",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1425,10 +1330,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 20,
    "observacoes": "- Poucos dados encontrados\n- Não identificado informações sobre o \"Modelo\" em si, mas uma cooperativa de reciclagem da cidade de Arez, lançada em dezembro de 2019, idealizada pela FIERN e pelo SindRecicla-RN, em parceria com a prefeitura do município. \n- A iniciativa possibilita a coleta de cerca de 20 toneladas de resíduos todos os meses, que são repassados para as indústrias como matéria prima.\n- gênero, raça e etnia ,a partir das fontes disponíveis, não foi possivel identificar\n- Governança multinível: setor publico, privado e terceiro setor",
-   "preselecionada": true,
-   "pre_ufs": [
-    "RN"
-   ],
    "fora_ne": false
   },
   {
@@ -1469,8 +1370,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 21,
    "observacoes": "Bioma: as fontes acessadas não dão conta de responder em quais biomas da Bahia a inicitiva atua, sendo assim, consideramos todos os biomas do estado, visto que informa ser uma experiência na Bahia.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1511,8 +1410,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 21,
    "observacoes": "O CPMRS-RI integra oito municípios do Ceará (Carnaubal, Croatá, Guaraciaba do Norte, Ibiapina, São Benedito, Tianguá, Ubajara e Viçosa do Ceará) numa proposta de gestão consorciada combinando \"infraestrutura, inclusão de catadoras e catadores e práticas de economia circular para eliminar lixões e transformar resíduos em desenvolvimento sustentável\"",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1553,8 +1450,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 20,
    "observacoes": "- Responsável pelo desenvolvimento de projetos como o Juventude Digital e o Fortaleza Bilíngue, nas áreas de educação e economia, o Re-ciclo, na área de resíduos sólidos e mobilidade urbana, os Microparques Urbanos e a Política de Vigilância da Qualidade do Ar, na área de meio ambiente, o Rastreio Covid, na área da saúde, além do Ponto do Entregador, do Parada Segura e do Centro de Recondicionamento Tecnológico (CRT).\n- atua no fomento à inovação e no desenvolvimento de políticas públicas, promovendo projetos que abordam os principais desafios urbanos da capital cearense\n- Projetos incluem: monitores de qualidade do ar com painéis fotovoltaicos e transmissão de dados em tempo real; triciclos elétricos para coleta seletiva; paradas de ônibus com Wi-Fi, USB e videomonitoramento; plataforma gratuita de coleta de recicláveis (Re-ciclo); centro de recondicionamento tecnológico. Inovação social presente no Juventude Digital e Fortaleza Bilíngue.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1595,10 +1490,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 20,
    "observacoes": "- Surgiu a partir dos resultados esperados da Política Ambiental, parte de projetos que são complementares e interdependentes;\n- Prevê a implementação de projetos do componente Águas da Cidade da Política Ambiental do Município, que viabilizará a ligação gratuita à rede pública de abastecimento de água e coleta de esgoto em 16 mil domicílios de baixa renda (Essa medida vai resultar na regularização dos imóveis na Bacia da Vertente Marítima)\n- Ao lado dessas ações, que são técnicas e de incidência sobretudo para a população de baixa renda, haverá intensificação da fiscalização em alto padrão para regularizar a coleta de esgoto. Esta iniciativa é a continuação de uma parceria que já ocorre entre a Secretaria Municipal de Urbanismo e Meio Ambiente e a Companhia de Água e Esgoto do Ceará (Cagece). Por meio de um Termo de Convênio, os dois órgãos, monitoram edificações que não estejam interligadas à rede e notificam para que elas se regularizem.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "CE"
-   ],
    "fora_ne": false
   },
   {
@@ -1639,10 +1530,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 29,
    "observacoes": "- ASA, desenvolve trabalhos focados exclusivamente no semiárido. \n- projetos que compõem o \"programa de captação de água\" estão: P1MC (atender a uma necessidade básica da população que vive no campo: água de beber); P1+2 (ampliar o estoque de água das famílias para o plantio e para a criação de animais); e, Cisterna nas escolas (levar água para as escolas rurais do Semiárido).\n- Além de projetos que cobrem o eixo 6 do projeto, desenvollvem ações que \"reforça a cultura do estoque de sementes crioulas no Semiárido, através do manejo da agrobiodiversidade,  resgate e conservação\" (BIO); fortalecimento da autonomia econômica, social e política de mulhers e a soberania e segurança alimentar e nutricional no território semiárido (NIVA e BIO); e, contribuir no enfrentamento às mudanças climáticas em três regiões semiáridas da América Latina.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "PE"
-   ],
    "fora_ne": false
   },
   {
@@ -1683,8 +1570,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "-Atualmente (30/01/2026), o Projeto SARA soma 372 unidades implantadas ou em processo de implantação, distribuídas em 9 estados do Semiárido. Previsão de ampliar o alcance da tecnologia em regiões marcadas por escassez hídrica e déficit histórico de saneamento rural (chegando a 413 sistemas).\n- Ampliação através Fundo Nacional do Desenvolvimento Científico e Tecnológico (FNDCT) e operacionalizados pela Financiadora de Estudos e Projetos (FINEP)\n- Investimento de R$ 21 milhões, serão implantadas novas 41 unidades do sistema.\n- Sobre a tecnologia: integra a coleta e o tratamento de esgoto ao reúso de água e de nutrientes, por meio de um ciclo virtuoso de desenvolvimento sustentável, baseado na melhoria da saúde da população rural, conservação dos recursos hídricos e ambientais, aumentos da produção agrícola e renda dos agricultores. O SARA tem potencial de aplicabilidade no Semiárido brasileiro, propiciando uma fonte alternativa de água segura do ponto de vista sanitário para produção agrícola\n- Objetivos secundários: Diminuir as doenças de veiculação hídrica na zona rural e incrementar a renda dos agricultores através do reúso de água.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1725,8 +1610,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 18,
    "observacoes": "Biomas: Embora o zoneamento tenha tenha como recorte geoambiental a Zona costeira do CE, alguns municipios que compuseram o público-alvo, encontram-se também no bioma Caatinga.\n\nForam envolvidos os municípios: Chaval, Barroquinha, Camocim, Jijoca de Jericoacoara, Cruz, Acaraú, Itarema, Amontada, Itapipoca, Trairi, Paraipaba, Paracuru, São Gonçalo do Amarante, Caucaia, Fortaleza, Eusébio, Aquiraz, Pindoretama, Cascavel, Beberibe, Fortim, Aracati e Icapuí.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1767,8 +1650,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 20,
    "observacoes": "- Maior infraestrutura metroviária do Nordeste, atendendo mais de 56 mil pessoas todos os dias, nas cidades de Fortaleza, Caucaia, Maracanaú, Pacatuba, Sobral, Juazeiro do Norte e Crato.\n- Além dos sistemas em operação e implantação na Região Metropolitana, a Cia Cearense de Transportes Metropolitanos opera ainda dois sistemas no interior do Ceará: o VLT do Cariri e o VLT de Sobral. A linha do Cariri corta as cidades de Juazeiro do Norte e Crato, sendo a opção mais barata de deslocamento entre essas duas cidades. O VLT do Cariri possui 9 estações em 13,6 km de extensão e transporta cerca de 35,7 mil pessoas por mês. Já em Sobral, o sistema é composto por duas linhas – Norte e Sul. Juntas, elas totalizam 12 estações, 13,9 km de via férrea e transportam cerca de 72,8 mil pessoas por mês.\n- Acessos gratuitos reforçam a visão do transporte sobre trilhos como ferramenta de inclusão social, acesso ao trabalho e à educação, assegurando mobilidade para diferentes públicos em todo o estado.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1809,8 +1690,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "- Desenvolvido em 11 comunidades rurais e 5 assentamentos de reforma agrária situados nos municípios de Assú, Alto do Rodrigues, Carnaubais e Guamaré (Caatinga predominante + Zona COsteira)\n- Recuperar áreas de reserva legal e de preservação permanente através do enriquecimento da cobertura florestal, além de promover ações de educação ambiental e de fortalecimento da agricultura familiar e da pesca artesanal nos municípios de Areia Branca, Alto do Rodrigues, Assú, Carnaubais, Guamaré, Galinhos, Macau, Serra do Mel e Porto do Mangue (RN)",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1851,8 +1730,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 20,
    "observacoes": "- Encontrado informações mais técnicas; pouco aprofundamento sobre o projeto\n- projeto do Ministério do Meio Ambiente e Mudança do Clima, que fomenta a conservação da biodiversidade, a recuperação de vegetação e dos corpos d’água, é implementado pela Agência GEF FUNBIO.\n- início previsto para o segundo semestre de 2025 (duração estimada de cinco anos)\n- beneficiará cerca de 14 mil pessoas em 500 mil hectares  \n- estreita parceria com outro projeto (também financiado pelo GEF). o Área Protegidas da Caatinga (ARCA) que destina ao bioma USD 10 milhões do Fundo do Marco Global para a Biodiversidade (GBFF, na sigla em inglês), sob gestão do GEF e executado pelo FUNBIO.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1893,8 +1770,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "- Mitigar as emissões de Gases de Efeito Estufa (GEE), combater a pobreza e aumentar a renda de pequenos e\nmédios agricultores no bioma Caatinga (semiárido) por meio da adoção de tecnologias de agricultura de baixa emissão de carbon (ABC)\n- Articula producao de conhecimento, fortalecimento de capacidades e consolidação de conhecimento enre gerações",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1935,8 +1810,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 24,
    "observacoes": "- É uma ferramenta de articulação nacional de mulheres gerida pela Rede Pintadas para combater as desigualdades de gênero, promover o empoderamento das mulheres, a resiliência ambiental e a sustentabilidade no contexto das mudanças climáticas. \n\n- vinculada à entidade internacional Huairou Commission - uma coalizão de mulheres de base, formada por organizações de 50 países, que tem a missão de empoderar lideranças femininas e transformar as políticas públicas em níveis local, nacional e global. \n\n- A Plataforma tem contribuído com a resiliência das comunidades por meio de projetos como o Cadenas de Valores, Gestão das Águas de Produção, Apoio à Cooperativa ReAção - Reciclagem de resíduos sólidos e orgânicos; projeto Liderança Inovadora, Vozes das Mulheres, Fundo Rotativo Solidário, incidência política (influenciado políticas públicas estruturantes para o desenvolvimento sustentável, com a promoção da justiça social e econômica)\n\n- Rede Pintadas – Cooperação e articulação no semiárido baiano – é integrada por 15 organizações localizadas no município de Pintadas, Bahia. Oficializada em 2003, é fruto da luta e resistência do movimento social e foi pioneira na implantação de programas de convivência com o semiárido com apoio de instituições como a Igreja Católica, organizações regionais, nacionais e internacionais sediadas na França, Itália, Bélgica, Alemanha, Holanda e Nova Iorque.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -1977,10 +1850,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 21,
    "observacoes": "- SimaCaatinga integra o Projeto de Pesquisa Monitoramento de Seca e Desertificação, do INSA, e auxilia nas informações do estado de saúde da vegetação, mas também das áreas degradadas\n- parceria com a Organização Europeia para a Exploração de Satélites Meteorológicos (EUMETSAT)\n- missão: caracterizar a dinâmica fenológica da vegetação da Caatinga e sua relação com os padrões de precipitação anual",
-   "preselecionada": true,
-   "pre_ufs": [
-    "AL"
-   ],
    "fora_ne": false
   },
   {
@@ -2021,8 +1890,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "- Área de atuação: 73 municípios da PB e RN\n- Aproximadamente 800 agricultoras e agricultores associados (2022 - dado retirado do filme \"Algodão da Gente\")",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2063,8 +1930,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 29,
    "observacoes": "- RENOVA-SEMIÁRIDO foi fomentado pelo Fundo Internacional de Desenvolvimento Agrícola (FIDA) da Organização das Nações Unidas (ONU) e desenvolvido pelo INSA (Instituto Nacional do Semiárido)\n- Região Semiárida (abrangência nacional, com foco no NE).\n- É possível substituir em NIVA, Projeto Tecnologia SARA, posto que o RENOVA-SEMIÁRIDO envolve outras práticas de adaptaão e resiliência climática.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2105,10 +1970,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 22,
    "observacoes": "- não identifiquei empresas de bioinsumo do Nordeste \n- não há leis que regulamentam bioinsumos no Nordeste  (apenas em estados de outras regioes) - https://www.gov.br/agricultura/pt-br/assuntos/inovacao/bioinsumos/iniciativas-estaduais \n- Nordeste atua majoritariamente como distribuidora \n- só encontrei o centro de pesquisa no Nordeste sobre bioinsumos em Alagoas BIOINSULAB da Embrapa, em Aracaju, atua em pesquisa e desenvolvimento de bioinsumos para agropecuária\n- foi descoberta uma bacteria na Caatinga com ação bioherbicida pela Embrapa MEio Ambiente em parceria com USP (nao é investigada por instituições da região)\n- existe o Programa Nacional de bioinsumos  https://www.gov.br/agricultura/pt-br/assuntos/inovacao/bioinsumos",
-   "preselecionada": true,
-   "pre_ufs": [
-    "SE"
-   ],
    "fora_ne": false
   },
   {
@@ -2149,8 +2010,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 27,
    "observacoes": "A base central do trabalho do No Clima da Caatinga é a Reserva Natural Serra das Almas (RNSA), unidade de conservação na categoria Reserva Particular do Patrimônio Natural (RPPN), gerida pela Associação Caatinga. A área possui 6.285 hectares de extensão e está localizada entre Crateús (CE) e Buriti dos Montes (PI). Ao redor da RPPN existem 40 comunidades rurais que abrigam cerca de 4 mil famílias, que são atendidas pelas ações do projeto.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2191,11 +2050,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 24,
    "observacoes": "sobre a Trilha:\n- Primeira trilha de longo curso no ecótopo triplo entre Caatinga, Cerrado e Mata Atlântica, com percurso de 130 quilômetros de extensão (inteiramente sinalizados), inseridos na Área de Proteção Ambiental (APA) Serra da Ibiapaba, conectando em suas extremidades os Parques Nacionais de Ubajara (CE) e Sete Cidades (PI).\n- compoe a Rede Brasileira de Trilhas;\n- Seu percurso atravessa seis municípios, sendo três no Ceará (Ubajara, Tianguá e Ibiapina) e três no Piauí (Brasileira, Piracuruca e São João da Fronteira), em uma região marcada pela transição entre os biomas Caatinga e Cerrado, com formações florestais diversas e uma expressiva mancha de Mata Atlântica serrana.\n\nSobre turismo verde/ecoturismo\n- Turismo em Unidades de Conservação injetou R$ 40,7 bilhões na economia brasileira em 2025, R$ 20,3 bilhões de contribuição ao Produto Interno Bruto (PIB) e R$ 9,8 bilhões em renda para as famílias. Indica ainda que 175 Unidades de Conservação federais somaram 28,5 milhões de visitas",
-   "preselecionada": true,
-   "pre_ufs": [
-    "PI",
-    "CE"
-   ],
    "fora_ne": false
   },
   {
@@ -2236,10 +2090,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 27,
    "observacoes": "- A Fazenda é pioneira no setor orgânico e biodinâmico, com recursos hídricos limitados;\n- Com uma área de 300 hectares, a fazenda está situada em uma região semiárida, onde a escassez de água é um dos maiores desafios. No entanto, a Fazenda Tamanduá adota tecnologias avançadas de irrigação, como microaspersão e gotejamento, além de investir no armazenamento de águas pluviais. A agricultura biodinâmica implementada na fazenda se reflete na produção diversificada: mangas (Exportação para a Europa), spirulina, melões e práticas como a polinização com abelhas, que têm contribuído para a melhoria da produtividade. \n- A Fazenda Tamanduá tem registrado um crescimento anual de 20% a 30%, consolidando-se como uma referência no setor agropecuário do Sertão da Paraíba. \n- adota um modelo de fazenda-escola, onde compartilha conhecimento sobre práticas sustentáveis e inovações tecnológicas com pequenos produtores e especialistas do setor. \n- \"A agricultura regenerativa tem ganhado crescente reconhecimento como um modelo capaz de fortalecer a saúde do solo, conservar a biodiversidade, aumentar a resiliência climática e promover o uso mais eficiente dos recursos naturais\" (GUIA, p. 10)",
-   "preselecionada": true,
-   "pre_ufs": [
-    "PB"
-   ],
    "fora_ne": false
   },
   {
@@ -2280,8 +2130,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 30,
    "observacoes": "O programa parece ser o \"tipo ideal\" do que estamos procurando: parte de um conceito inovador (recaatingar), composto por uma gama de teccnologias sociais disponíveis, focalizado para populações vulneráveis a partir de indicadores, metas mensuráveis, governança multinível (federal, estadual e municipal), com financiamento externo (BNDES e BNB) e parceria com a sociedade civil, além de impacto social direto (carbono e regeneração). Além disso, está articulada com o PNE. Sem dúvida deve estar na carteira de projetos.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2322,8 +2170,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "Programa do Governo de Pernambuco para a agricultura familiar e destinado a fortalecer as ações do IPA. Não tem muita inovação no sue modelo - é mais um reforço de verbas públicas para programas exisrtentes (PAA, ATER). Um dos diferenciais é a aquisição de máquinas para trabalho no campo. Mas, não tem cara de um projeto de carteira de investimentos, inova pouco e dependente do governo do Estado. Lançado em 2025, ainda tem uma implementação recente.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2364,10 +2210,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 27,
    "observacoes": "A Associação dos Produtores de Crédito de Carbono Social do Bioma Caatinga conta com 108 associados, entre agricultores familiares, assentados, quilombolas e indígenas, além de professores e técnicos.\nO grupo desenvolve metodologia própria para medir a capacidade de absorção de carbono em áreas de vegetação da caatinga. Cada hectare preservado do bioma tem capacidade para absorver aproximadamente cinco toneladas de carbono por ano, gerando cinco créditos, que podem ser negociados no mercado, buscando a valorização da biodiversidade local e geração de renda. A iniciativa conta com o apoio do Sebrae, parceira em ações de inovação e desenvolvimento sustentável. Empresas, organizações e até mesmo eventos que geram emissões de gases de efeito estufa podem comprar esses créditos para compensar a pegada de carbono. A associação atua como emissora e vendedora desses títulos.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "AL"
-   ],
    "fora_ne": false
   },
   {
@@ -2408,10 +2250,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "A maior fazenda de acerola orgânica do mundo, com 1.269 hectares. Produz a vitamina C natural usada em suplementos Nutrilite. Mantém parceria com mais de 100 agricultoras e agricultores familiares na região, gerando cerca de 10 mil empregos na safra . Possui certificação orgânica e halal. A propriedade utiliza práticas como fertilização natural com esterco bovino e controle biológico de pragas com óleo de nim",
-   "preselecionada": true,
-   "pre_ufs": [
-    "CE"
-   ],
    "fora_ne": false
   },
   {
@@ -2452,10 +2290,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "Negócio de impacto socioambiental, acelerado pelo InovAtiva e certificado como \"Graduada Inovativa\". Possui selo \"Empresa Filha com Potencial Empreendedor\" da UNESP. Desenvolve pesquisas sobre a alga Hypnea pseudomusciformis e tem publicações na Science Direct. Atua com a espécie nativa de algas, mensurando a sustentabilidade da produção e gerando impacto positivo para comunidades tradicionais.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "CE"
-   ],
    "fora_ne": false
   },
   {
@@ -2496,8 +2330,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 21,
    "observacoes": "Órgão colegiado criado em 5 de junho de 2001, vinculado ao Conselho Nacional de Recursos Hídricos (CNRH) e à Agência Nacional de Águas (ANA). É composto por 62 membras e membros titulares (poder público, usuárias/usuários de água, sociedade civil e comunidades tradicionais). Possui Câmaras Consultivas Regionais (Alto, Médio, SubMédio e Baixo São Francisco) e Câmaras Técnicas. A Agência Peixe Vivo (sediada em MG) é quem faz a execução, implementando as ações do Comitê com recursos da cobrança pelo uso da água. A gestão participativa e a busca pela sustentabilidade dos recursos hídricos. Abrange 503 municípios em 7 estados do Brasil, sendo  4 do Nordeste: BA, PE, AL e SE",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": true
   },
   {
@@ -2538,8 +2370,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 21,
    "observacoes": "Iniciativa de natureza distinta (ferramenta de transparência e monitoramento), avaliada como ativo de governança e salvaguardas para a transição justa. Destaca-se na inovação tecnológica e social e no potencial de replicabilidade/escala: é uma ferramenta inédita que cruza dados públicos dispersos (infraestrutura renovável e de mineração com territórios protegidos), de metodologia altamente replicável e escalável. A equidade de gênero, raça e etnia é o ponto mais forte do modelo — a justiça climática e a visibilidade de povos e comunidades tradicionais (indígenas, quilombolas e assentados) estão no centro da proposta, com denúncia da invisibilidade racial e territorial das eólicas. Em adaptação/mitigação climática e atração de investimentos verdes a avaliação é intermediária: contribui para uma transição menos lesiva (prevenção de conflitos e melhor localização dos empreendimentos) e capta financiamento de fundações climáticas (Ford, Rainforest, Pulitzer), embora não atraia investimento verde de mercado. A relevância territorial é intermediária — plataforma nacional, com cobertura sistemática e relevante do Nordeste, epicentro eólico do país. Não atua em cadeias produtivas nem em inclusão produtiva direta, critérios em que recebe as notas mais baixas. A viabilidade operacional é intermediária: recém-lançada (mar/2026), porém por instituições consolidadas (Repórter Brasil, desde 2001, INESC e PoEMAS/UFJF). A governança multinível é intermediária, assentada em parceria interinstitucional (três organizações, academia e filantropia internacional). Salvaguardas: a própria iniciativa é um instrumento de salvaguarda — atende ao vetor negativo.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": true
   },
   {
@@ -2580,8 +2410,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 27,
    "observacoes": "Âncora regional e interestadual da industrialização verde do Ceará, o que lhe garante relevância territorial máxima. Apresenta nota máxima em adaptação/mitigação climática e em fortalecimento das cadeias produtivas sustentáveis do NE, com métricas de CO2 evitado definidas e integração a cadeias industriais verdes. A viabilidade operacional é elevada (EIA/RIMA aprovado, financiamento do Banco Mundial e porto em operação), assim como a replicabilidade/escala e a inovação tecnológica e social (modelo escalável na fronteira tecnológica do H2V). A atração de investimentos verdes é o ponto alto, com US$ 24 bilhões em pré-contratos. A inclusão produtiva é intermediária (gera empregos, mas sem foco em grupos vulneráveis) e a equidade de gênero, raça e etnia é frágil (sem política explícita). Salvaguardas socioambientais marcadas como INCONCLUSIVO: há conflitos documentados com pescadores artesanais e comunidades costeiras (Agência Pública / Instituto EcoMaretório) a despeito do EIA aprovado — requer verificação aprofundada.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2622,8 +2450,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 24,
    "observacoes": "Combina relevância territorial e adaptação/mitigação climática máximas (importância regional e métricas de descarbonização definidas). A viabilidade operacional é intermediária: projeto muito avançado — Estudo de Impacto e licença da Semace obtidos —, mas ainda sem operação sustentada no tempo (pré-FID). Destaca-se na inovação tecnológica e social e na atração de investimentos verdes (fronteira tecnológica e forte captação de capital). A inclusão produtiva é intermediária e a equidade de gênero, raça e etnia é frágil (empregos sem recorte de vulnerabilidade ou equidade). Salvaguardas socioambientais INCONCLUSIVO: insere-se no mesmo contexto de conflito com a pesca artesanal do hub do Pecém.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2664,8 +2490,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "Nota máxima em relevância territorial, adaptação/mitigação climática e fortalecimento das cadeias produtivas sustentáveis do NE: planta-âncora baiana, com métricas de descarbonização e integração à cadeia de fertilizantes e química verde. A viabilidade operacional é intermediária — planta pioneira construída, mas as dificuldades financeiras reportadas da Unigel em 2023-24 colocam risco às fases 2 e 3 (verificar status antes de elevar a nota). Destaca-se na inovação tecnológica e social (primeira planta industrial de H2V do país) e na atração de investimentos verdes (US$ 1,5 bilhão). A inclusão produtiva é intermediária e a equidade de gênero, raça e etnia é frágil (sem recorte social ou de equidade explícito).",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2706,8 +2530,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "Pontuação alta e equilibrada. Relevância territorial máxima (porto-âncora regional) e nota máxima em adaptação/mitigação climática e fortalecimento das cadeias produtivas sustentáveis do NE (e-metanol a partir de CO2 biogênico do setor sucroenergético local). A viabilidade operacional é elevada (porto em operação e hub selecionado pelo MME), com replicabilidade/escala e inovação tecnológica e social máximas (modelo escalável e inovador) e forte atração de investimentos verdes (recursos do CIF/MME e de investidores europeus). A governança multinível é máxima (MME, estado, SENAI, CTG e parceiros privados). A equidade de gênero, raça e etnia é intermediária, com transição justa e qualificação explícitas, mas equidade ainda tangencial. As plantas seguem em fase inicial de licenciamento.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2748,10 +2570,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "Pontuação muito alta. Relevância territorial máxima (cadeia regional na Bahia e em Minas Gerais) e adaptação/mitigação climática máxima (captura estimada de 60 Mt de CO2 e 80% menos emissões que o fóssil, com métricas). Destaca-se no fortalecimento das cadeias produtivas sustentáveis do NE e na inclusão produtiva (cadeia da macaúba com agricultores, cerca de 200 empregos na fazenda-modelo e encontros com comunidades — inclusão produtiva mensurável). A viabilidade operacional é elevada (FID confirmada em mai/2025) e a atração de investimentos verdes é máxima (IFC e Mubadala). A equidade de gênero, raça e etnia é intermediária (engajamento comunitário, equidade tangencial). Forte candidata à primeira leva, com operação a partir de 2027.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "BA"
-   ],
    "fora_ne": false
   },
   {
@@ -2792,10 +2610,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "Relevância territorial intermediária (operação concentrada em Alagoas, com alcance nacional pela tecnologia). Nota máxima em adaptação/mitigação climática e fortalecimento das cadeias produtivas sustentáveis do NE (biometano e CO2 biogênico com métricas; aliança com três usinas integra a cadeia sucroenergética). A viabilidade operacional é elevada (em operação/construção) e a replicabilidade/escala é máxima (replicável ao cinturão canavieiro do NE). Destaca-se na inovação tecnológica e social (pioneira em etanol de segunda geração no Hemisfério Sul) e na atração de investimentos verdes (R$ 1,5 bilhão). A inclusão produtiva é intermediária e a equidade de gênero, raça e etnia é frágil (sem recorte de vulnerabilidade ou equidade explícito).",
-   "preselecionada": true,
-   "pre_ufs": [
-    "AL"
-   ],
    "fora_ne": false
   },
   {
@@ -2836,10 +2650,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "Destaque na inclusão produtiva: modelo cooperativo histórico (mais de 1.000 associados e produtos em 14 estados), com governança comunitária e avaliação intermediária em equidade de gênero, raça e etnia. Apresenta nota máxima no fortalecimento das cadeias produtivas sustentáveis do NE (cadeia sucroenergética consolidada) e na viabilidade operacional (operação sustentada desde 1966). Em adaptação/mitigação climática, inovação tecnológica e social e atração de investimentos verdes a avaliação é intermediária: o projeto de biometano com a Veolia ainda é pré-obras (2028), sem métricas nem captação consolidada. A replicabilidade/escala é intermediária (modelo replicável com ajustes).",
-   "preselecionada": true,
-   "pre_ufs": [
-    "AL"
-   ],
    "fora_ne": false
   },
   {
@@ -2880,8 +2690,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "Relevância territorial máxima (cluster no Rio Grande do Norte com PPAs interestaduais junto a Braskem e Copel) e nota máxima em adaptação/mitigação climática e fortalecimento das cadeias produtivas sustentáveis do NE (métricas definidas e fornecimento à indústria). A viabilidade operacional é elevada (operação plena, R$ 3 bilhões investidos), a replicabilidade/escala é máxima (maior complexo do grupo no mundo) e a atração de investimentos verdes é alta (histórico de captação e PPAs). A inovação tecnológica e social é intermediária (híbrido eólico-solar, inovação potencial). A inclusão produtiva é intermediária (qualificação local com o SENAI e relação com proprietários de terra) e a equidade de gênero, raça e etnia é frágil (sem política explícita).",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2922,8 +2730,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "Relevância territorial máxima (maior usina solar da América do Sul, com importância no semiárido piauiense de baixo IDH) e adaptação/mitigação climática máxima (1,3 Mt de CO2 evitadas por ano, com métricas). A viabilidade operacional é elevada (operação plena, conectada antes do prazo do leilão), a replicabilidade/escala é máxima e a inovação tecnológica e social também (módulos bifaciais e digitalização), com forte atração de investimentos verdes (Enel e ambiente de leilão). O fortalecimento das cadeias produtivas sustentáveis do NE é intermediário (geração com menor encadeamento local), assim como a inclusão produtiva (valor compartilhado); a equidade de gênero, raça e etnia é frágil. Recomenda-se usar o CNPJ da SPE específica do complexo quando localizado.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -2964,8 +2770,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 26,
    "observacoes": "Destaque na democratização da energia: a inclusão produtiva é máxima (modelo de geração distribuída compartilhada com acesso de consumidores de menor renda, central ao negócio), assim como a inovação tecnológica e social (inovação de modelo e certificação B Corp). A relevância territorial é máxima (atuação multiestadual no NE), a viabilidade operacional é elevada (operação consolidada, mais de R$ 1,2 bilhão captado), a replicabilidade/escala é máxima (altamente escalável) e a atração de investimentos verdes é alta (R$ 500 milhões captados). A equidade de gênero, raça e etnia é intermediária (Programa Social e certificação B Corp). Em adaptação/mitigação climática e fortalecimento das cadeias produtivas sustentáveis do NE a avaliação é intermediária (geração limpa, mas métricas de adaptação e encadeamento menos sistematizadas). Coordenadas em branco por operação multi-sítio.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": true
   },
   {
@@ -3006,8 +2810,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 26,
    "observacoes": "Governança multinível máxima (nove estados, governo federal, sociedade civil e academia) e relevância territorial máxima (escopo regional alinhado ao PTE-NE). Nota máxima no fortalecimento das cadeias produtivas sustentáveis do NE (política industrial verde, com as cadeias no centro), na replicabilidade/escala (modelo de coordenação regional), na inovação tecnológica e social (inovação institucional e conceito de powershoring) e na atração de investimentos verdes (mobiliza capital com o BNB e o iCS). A viabilidade operacional é intermediária (articulação política, sem ativos físicos próprios) e a adaptação/mitigação climática também (impacto climático indireto, sem métricas próprias). Coordenadas em branco (atuação regional).",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -3048,10 +2850,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 25,
    "observacoes": "Nota máxima no fortalecimento das cadeias produtivas sustentáveis do NE (com as cadeias no centro do programa) e na governança multinível (articula empresas, municípios, pesquisa e governo). A viabilidade operacional é elevada (a FIEB é instituição consolidada do Sistema S), a replicabilidade/escala é máxima (modelo replicável a outras federações) e a atração de investimentos verdes é alta (R$ 78 bilhões mapeados). A relevância territorial é intermediária (escopo estadual baiano, com influência regional), assim como a adaptação/mitigação climática (impacto indireto), a inovação tecnológica e social (programa inovador potencial) e a equidade de gênero, raça e etnia (tangencial).",
-   "preselecionada": true,
-   "pre_ufs": [
-    "BA"
-   ],
    "fora_ne": false
   },
   {
@@ -3092,8 +2890,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "Relevância territorial máxima (o Maranhão tem baixo footprint na matriz e o porto oferece importância logística regional via Carajás) e governança multinível máxima (parceria internacional com Valência, ANTAQ, UFMA e Vale). Destaca-se na inovação tecnológica e social (turbina hidrocinética de DNA nacional e plataforma HYDEAS de aço verde) e na atração de investimentos verdes (parcerias internacionais). A viabilidade operacional e a adaptação/mitigação climática são intermediárias (plano em implementação e inventário em curso; aço verde ainda em estudo, sem operação zero-emissão), assim como o fortalecimento das cadeias produtivas sustentáveis do NE e a replicabilidade/escala (encadeamento e replicabilidade portuários com ajustes). A equidade de gênero, raça e etnia é frágil.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -3134,10 +2930,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "Inovação tecnológica e social máxima (offshore pioneiro e disruptivo no país), com relevância territorial máxima (importância regional), adaptação/mitigação climática máxima (4 GW, com métricas), replicabilidade/escala máxima e forte atração de investimentos verdes (R$ 18 bilhões). A viabilidade operacional é frágil: ainda em licenciamento, com o Ibama cauteloso à espera da consolidação do marco regulatório — não opera. Salvaguardas socioambientais INCONCLUSIVO: preocupação documentada de pescadores artesanais e comunidades costeiras — risco socioambiental relevante. A inclusão produtiva é intermediária (empregos projetados) e a equidade de gênero, raça e etnia é frágil. CNPJ da SPE a verificar.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "CE"
-   ],
    "fora_ne": false
   },
   {
@@ -3178,10 +2970,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 24,
    "observacoes": "Relevância territorial máxima (Sergipe tem baixo footprint na matriz e o projeto é importante para o equilíbrio regional) e governança multinível máxima (estado, MME, academia e setor privado). Destaca-se na inovação tecnológica e social (P&D em H2V para o semiárido e aproveitamento de resíduos e macrófitas do São Francisco) e na atração de investimentos verdes (US$ 5 bilhões da GEP). A viabilidade operacional é intermediária (MoUs e parecer de acesso obtidos; planta em fase pré-licenciamento), assim como a adaptação/mitigação climática, o fortalecimento das cadeias produtivas sustentáveis do NE e a replicabilidade/escala (impacto e encadeamento ainda potenciais). A equidade de gênero, raça e etnia é intermediária.",
-   "preselecionada": true,
-   "pre_ufs": [
-    "SE"
-   ],
    "fora_ne": false
   },
   {
@@ -3222,10 +3010,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 24,
    "observacoes": "Destaque máximo na equidade de gênero, raça e etnia e na inclusão produtiva (povos e comunidades tradicionais, agricultores familiares e quilombolas no centro do modelo), com inovação tecnológica e social máxima (inovação social, transição energética popular) e replicabilidade/escala máxima (modelo fortemente replicável). A relevância territorial é intermediária (semiárido paraibano, com intercâmbios), assim como a adaptação/mitigação climática e o fortalecimento das cadeias produtivas sustentáveis do NE (adaptação e encadeamento agrícola potenciais). A viabilidade operacional é intermediária (opera, mas em pequena escala, dependente do marco de geração distribuída comunitária — Lei 14.300/22) e a atração de investimentos verdes também (financiamento por projetos, sem captação verde de grande porte).",
-   "preselecionada": true,
-   "pre_ufs": [
-    "PB"
-   ],
    "fora_ne": false
   },
   {
@@ -3266,8 +3050,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 22,
    "observacoes": "Nota máxima no fortalecimento das cadeias produtivas sustentáveis do NE (integração à cadeia sucroenergética, com aproveitamento da vinhaça) e na replicabilidade/escala (replicável no cinturão canavieiro de Alagoas e Pernambuco), com forte atração de investimentos verdes (parceria com a ZEG/Vibra, maior distribuidora de combustíveis do país). A relevância territorial é intermediária (dois estados, projeto-piloto), assim como a adaptação/mitigação climática (substituição de diesel, sem métricas consolidadas — pré-construção), a viabilidade operacional (MoU/contrato em celebração, não opera) e a inovação tecnológica e social (biometano, inovação potencial). A inclusão produtiva é intermediária e a equidade de gênero, raça e etnia é frágil. CNPJ das entidades a verificar.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -3308,8 +3090,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 27,
    "observacoes": "Infraestrutura habilitadora da transição. Destaca-se na inovação tecnológica e social (P&D em H2V e powershoring), no fortalecimento das cadeias produtivas sustentáveis do NE (capacitação para cadeias verdes) e na governança multinível (cooperação Brasil-Alemanha, MME, universidades e SENAI), com viabilidade operacional elevada (SENAI e universidades consolidados), replicabilidade/escala máxima e forte atração de investimentos verdes (R$ 21 milhões bilaterais, iH2Brasil). A relevância territorial é máxima (atuação multiestadual no NE), enquanto a adaptação/mitigação climática é intermediária (impacto indireto) e a inclusão produtiva e a equidade de gênero, raça e etnia são intermediárias. OBS.: por ser entrada agregadora, recomenda-se, se a matriz exigir pessoa jurídica única, substituir pelo executor específico (ex.: SENAI-PE) com CNPJ próprio. Coordenadas em branco (rede multiestadual).",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -3350,8 +3130,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 26,
    "observacoes": "Plataforma-carro-chefe do eixo de Finanças Sustentáveis do PTE. Destaca-se na atração de investimentos verdes e na inovação tecnológica e social, o núcleo do eixo: hedge cambial inédito e capital catalítico mobilizaram cerca de R$ 46 bilhões externos. A viabilidade operacional e a replicabilidade/escala são máximas (R$ 14 bilhões contratados, cerca de R$ 75 bilhões mobilizados e modelo internacionalizado com o BID), assim como a adaptação/mitigação climática e o fortalecimento das cadeias produtivas sustentáveis do NE (SAF de macaúba, restauração de terras degradadas e resiliência elétrica na Bahia). A relevância territorial é intermediária (mandato nacional, com alocação concreta na BA); a inclusão produtiva é intermediária e a equidade de gênero, raça e etnia é frágil (impacto via cadeias, sem recorte direto). A governança multinível é máxima (Fazenda, BNDES, BID e bancos privados).",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -3392,8 +3170,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 23,
    "observacoes": "Green bond rotulado e verificado externamente (parecer de segunda opinião da SITAWI, alinhado aos Green Bond Principles do ICMA) e listado na B3, o que lhe garante nota máxima em atração de investimentos verdes (mobiliza investidores institucionais para o NE). A relevância territorial é máxima (ativo físico em João Câmara/RN) e a adaptação/mitigação climática também (evita 662 mil t de CO2 por ano nesta tranche). A viabilidade operacional e a replicabilidade/escala são máximas (emissão concluída, rating AA e modelo replicável, com emissões subsequentes na BA e no RN). A inovação tecnológica e social é intermediária (primeira coordenação de debêntures pelo BNDES). A inclusão produtiva e a equidade de gênero, raça e etnia são frágeis: o arrendamento de terras no semiárido é objeto de crítica social (Agência Pública). OBS.: a empresa Casa dos Ventos já consta na matriz (Eixo 4, geração); esta entrada refere-se ao instrumento financeiro (green bond).",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -3434,8 +3210,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 27,
    "observacoes": "Plataforma catalítica que mobiliza filantropia internacional e articula finanças climáticas para o NE, com nota máxima em atração de investimentos verdes e em governança multinível (cooperação formal com o Consórcio Nordeste e o BNB, MoU de financiamento com o Banco do Brasil na COP30 e papel de mantenedor do LAB). A relevância territorial é máxima (atuação nos nove estados via Consórcio) e a adaptação/mitigação climática e o fortalecimento das cadeias produtivas sustentáveis do NE também (transição justa e industrialização verde/powershoring). Destaca-se ainda na inovação tecnológica e social (taxonomia de powershoring e estruturas inovadoras de financiamento). A replicabilidade/escala é intermediária (modelo de regranting); a inclusão produtiva e a equidade de gênero, raça e etnia são intermediárias (empregos verdes e lente de justiça socioambiental). OBS.: o Fórum de Powershoring em si já consta na matriz; esta entrada é o iCS como entidade/veículo de financiamento.",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   },
   {
@@ -3476,8 +3250,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 26,
    "observacoes": "Infraestrutura financeira pioneira para a economia de impacto, com inovação tecnológica e social máxima (crowdlending de impacto e blended finance) e destaque na inclusão produtiva e na equidade de gênero, raça e etnia (foco em pequenos negócios sem acesso a crédito e debate explícito de equidade racial e de gênero, incluindo mulheres indígenas Krikati/MA). Apresenta nota máxima no fortalecimento das cadeias produtivas sustentáveis do NE (sociobiodiversidade e agricultura familiar) e na viabilidade operacional e replicabilidade/escala (mais de 15 anos, mais de R$ 475 milhões mobilizados e plataforma replicável por região). A relevância territorial é intermediária (chamadas e capacitações específicas no NE, mas atuação nacional), assim como a atração de investimentos verdes (mobiliza capital filantrópico e de impacto em escala menor que bancos e plataformas federais) e a governança multinível (parcerias público-privadas e filantrópicas).",
-   "preselecionada": false,
-   "pre_ufs": [],
    "fora_ne": false
   }
  ]

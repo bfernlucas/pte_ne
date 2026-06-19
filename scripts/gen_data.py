@@ -8,12 +8,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 XLSX = os.path.join(ROOT, "PTE2026_matriz_dashboard.xlsx")
 OUT = os.path.join(ROOT, "assets", "data", "iniciativas.js")
 
-# Pré-selecionadas (aba Cruzamento): id -> UFs onde aparece
-PRE = {27: ["MA"], 21: ["PI"], 52: ["PI", "CE"], 10: ["CE", "RN", "PB", "PE", "AL", "BA"],
-       20: ["CE"], 74: ["CE"], 32: ["CE"], 38: ["CE"], 57: ["CE"], 58: ["CE"], 6: ["RN"],
-       34: ["RN"], 24: ["PB", "PE"], 76: ["PB"], 53: ["PB"], 1: ["PE"], 12: ["PE"], 13: ["PE"],
-       39: ["PE"], 56: ["AL"], 9: ["AL"], 16: ["AL"], 66: ["AL"], 67: ["AL"], 47: ["AL"],
-       50: ["SE"], 75: ["SE"], 3: ["BA"], 17: ["BA"], 65: ["BA"], 72: ["BA"]}
+# A pré-seleção agora é definida pelo usuário na aba "Seleção" do painel — não há
+# mais lista estática de pré-selecionadas na base.
 FORA_NE = {11, 19, 59, 60, 70}  # sede fora do NE (não são sites de visita de campo)
 EXCLUDE = {29, 8, 28}  # 29: mesma entidade da ID 56 · 8: Pacto Global de Jovens pelo Clima · 28: Sertão Vivo duplicado (mantida a ID 15)
 
@@ -213,7 +209,7 @@ def main():
             "eixo": eixo, "eixo_cod": EIXO_COD.get(eixo), "eixo_sec": val(r, 17),
             "setor": val(r, 18), "natureza": val(r, 19), "tipo_inst": val(r, 20), "salvaguardas": val(r, 21),
             "criterios": crit, "pontuacao": val(r, 32), "observacoes": val(r, 33),
-            "preselecionada": idn in PRE, "pre_ufs": PRE.get(idn, []), "fora_ne": idn in FORA_NE,
+            "fora_ne": idn in FORA_NE,
         })
 
     # coordenadas alternativas (rota escolhe a ótima; mapa mostra todas)
@@ -229,14 +225,13 @@ def main():
         it["id"] = n
 
     meta = {"fonte": "PTE2026_matriz_dashboard.xlsx", "total": len(items),
-            "preselecionadas": sum(1 for i in items if i["preselecionada"]),
             "eixos": [{"nome": n, "cod": c, "cor": cor} for n, c, cor in EIXO_CORES],
             "criterios": [{"key": k, "label": l} for k, l in CRIT]}
     out = {"meta": meta, "iniciativas": items}
     js = "window.PTE_DATA = " + json.dumps(out, ensure_ascii=False, indent=1) + ";\n"
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(js)
-    print(f"OK: {OUT} ({len(js)} bytes) | {meta['total']} iniciativas, {meta['preselecionadas']} pré-selecionadas")
+    print(f"OK: {OUT} ({len(js)} bytes) | {meta['total']} iniciativas")
 
 
 if __name__ == "__main__":

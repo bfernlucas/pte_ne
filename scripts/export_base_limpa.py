@@ -28,8 +28,7 @@ def main():
                  "CNPJ", "Fundação", "CNAE", "Endereço", "Latitude", "Longitude", "Avaliador",
                  "Município", "Estado", "Biomas", "Eixo", "Eixo secundário", "Setor",
                  "Natureza jurídica", "Tipo de organização", "Salvaguardas"]
-    headers = base_cols + [c["label"] for c in crit] + ["Nota (0–30)", "Observações",
-                 "Pré-selecionada", "UFs (pré-seleção)", "Sede fora do NE"]
+    headers = base_cols + [c["label"] for c in crit] + ["Nota (0–30)", "Observações", "Sede fora do NE"]
 
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -43,10 +42,7 @@ def main():
                i.get("biomas"), i.get("eixo"), i.get("eixo_sec"), i.get("setor"), i.get("natureza"),
                i.get("tipo_inst"), i.get("salvaguardas")]
         row += [cr.get(k) for k in crit_keys]
-        row += [i.get("pontuacao"), i.get("observacoes"),
-                "Sim" if i.get("preselecionada") else "Não",
-                ", ".join(i.get("pre_ufs") or []),
-                "Sim" if i.get("fora_ne") else "Não"]
+        row += [i.get("pontuacao"), i.get("observacoes"), "Sim" if i.get("fora_ne") else "Não"]
         ws.append(row)
 
     # estilo do cabeçalho
