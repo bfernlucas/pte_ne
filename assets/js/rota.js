@@ -349,6 +349,7 @@
         <div class="rc-field"><label>Direção máx. por dia</label><input id="r-dir" type="range" min="6" max="10" step="1" value="8"><span class="val" id="r-dir-v">8 h</span></div>
         <div class="rc-field"><label>Dias por incursão (máx. 7 corridos)</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><span class="val" id="r-dias-v">5 dias</span></div>
         <label class="rc-chk"><input type="checkbox" id="r-opt" checked> Incluir outras iniciativas que estejam no caminho</label>
+        <label class="rc-chk"><input type="checkbox" id="r-entrev-opt" checked> Entrevistas como paradas opcionais (no caminho)</label>
         <label class="rc-chk"><input type="checkbox" id="r-ctx" checked> Mostrar demais iniciativas (em cinza)</label>
       </div>
       <div class="rc-group">
@@ -531,8 +532,15 @@
     let candidates, fromSel = false;
     if (useSel) {
       const fs = H.fieldSel ? H.fieldSel() : { visita: new Set(), entrevista: new Set() };
-      candidates = H.selItems().filter(o => o.lat != null && !o.fora_ne)
-        .map(o => Object.assign({}, o, { preselecionada: true, __tipo: fs.visita.has(o.id) ? "visita" : "entrevista" }));
+      const entrevOpt = document.getElementById("r-entrev-opt") ? document.getElementById("r-entrev-opt").checked : true;
+      candidates = H.selItems().filter(o => o.lat != null && !o.fora_ne).map(o => {
+        const tipo = fs.visita.has(o.id) ? "visita" : "entrevista";
+        return Object.assign({}, o, { preselecionada: tipo === "visita" ? true : !entrevOpt, __tipo: tipo });
+      });
+      // se só há entrevistas (nenhuma visita obrigatória), elas viram obrigatórias para a rota se formar
+      if (candidates.length && !candidates.some(c => c.preselecionada)) candidates.forEach(c => { c.preselecionada = true; });
+      // entrevistas opcionais entram como paradas "no caminho"
+      if (entrevOpt && candidates.some(c => c.__tipo === "entrevista" && !c.preselecionada)) params.incluirOpcionais = true;
       fromSel = true;
     } else {
       candidates = applyFilters(H.ITEMS, f, H);
@@ -541,7 +549,12 @@
     const cidset = new Set(candidates.map(c => c.id));
     H.ITEMS.forEach(i => { if (anchorIds.has(i.id) && i.lat != null && !i.fora_ne && !cidset.has(i.id)) candidates.push(i); });
     const prov = makeProvider(params);
-    statusEl.textContent = (fromSel ? `Candidatas: ${candidates.length} selecionadas na aba Seleção. ` : "") + "Distâncias estimadas por geografia (linha reta × 1,3).";
+    let fromSelMsg = "";
+    if (fromSel) {
+      const nv = candidates.filter(c => c.__tipo === "visita").length, ne = candidates.filter(c => c.__tipo === "entrevista").length;
+      fromSelMsg = `Candidatas da aba Seleção: ${nv} visita(s) e ${ne} entrevista(s). `;
+    }
+    statusEl.textContent = fromSelMsg + "Distâncias estimadas por geografia (linha reta × 1,3).";
     params.prov = prov;
     const plan = planMissions(candidates, HUBS, params);
     routeLayer.clearLayers(); allLayer.clearLayers();

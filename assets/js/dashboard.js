@@ -30,15 +30,15 @@
   const selUnion = () => new Set([...SEL.visita, ...SEL.entrevista]);
   const selItems = () => [...selUnion()].map(id => byId(id)).filter(Boolean);
   function toggleSel(group, id) { const s = SEL[group]; if (s.has(id)) s.delete(id); else s.add(id); saveSel(); }
-  const selFilters = { busca: "", eixo: "", estado: "", bioma: "", natureza: "" };
-  function selFiltered() {
-    const q = selFilters.busca.trim().toLowerCase();
+  const selFilters = { visita: { busca: "", eixo: "", estado: "", bioma: "", natureza: "" }, entrevista: { busca: "", eixo: "", estado: "", bioma: "", natureza: "" } };
+  function selFiltered(group) {
+    const f = selFilters[group], q = f.busca.trim().toLowerCase();
     return ITEMS.filter(i => {
       if (i.lat == null || i.lon == null) return false;
-      if (selFilters.eixo && i.eixo_cod !== selFilters.eixo) return false;
-      if (selFilters.estado && !ufTokens(i.estado).includes(selFilters.estado)) return false;
-      if (selFilters.bioma && !(i.biomas || "").toLowerCase().includes(selFilters.bioma.toLowerCase())) return false;
-      if (selFilters.natureza && i.natureza !== selFilters.natureza) return false;
+      if (f.eixo && i.eixo_cod !== f.eixo) return false;
+      if (f.estado && !ufTokens(i.estado).includes(f.estado)) return false;
+      if (f.bioma && !(i.biomas || "").toLowerCase().includes(f.bioma.toLowerCase())) return false;
+      if (f.natureza && i.natureza !== f.natureza) return false;
       if (q) { const hay = [i.nome, i.org, i.municipio, i.tematica].filter(Boolean).join(" ").toLowerCase(); if (!hay.includes(q)) return false; }
       return true;
     });
@@ -256,7 +256,7 @@
   function renderSelMap(group) {
     ensureSelMap(group);
     const lay = selLayer[group]; lay.clearLayers();
-    selFiltered().forEach(i => {
+    selFiltered(group).forEach(i => {
       const locs = (i.locais && i.locais.length) ? i.locais : [{ lat: i.lat, lon: i.lon }];
       locs.forEach(loc => {
         const other = group === "visita" ? "entrevista" : "visita";
@@ -281,36 +281,59 @@
     box.querySelector(".sel-add-sel").addEventListener("change", e => { if (e.target.value) { SEL[group].add(+e.target.value); saveSel(); renderSelecao(); } });
     box.querySelectorAll(".selchip button").forEach(b => b.addEventListener("click", () => { SEL[b.dataset.g].delete(+b.dataset.id); saveSel(); renderSelecao(); }));
   }
+  function renderSelGroup(group) {
+    const fl = selFiltered(group);
+    const cid = group === "visita" ? "#sfv-count" : "#sfe-count";
+    if ($(cid)) $(cid).textContent = `${fl.length} no filtro`;
+    renderSelMap(group); renderSelList(group);
+  }
   function renderSelecao() {
-    const n = selFiltered().length;
-    if ($("#sel-fcount")) $("#sel-fcount").textContent = `${n} iniciativa${n === 1 ? "" : "s"} no filtro`;
+    renderSelGroup("visita"); renderSelGroup("entrevista");
     $("#sel-count-visita").textContent = SEL.visita.size;
     $("#sel-count-entrevista").textContent = SEL.entrevista.size;
     if ($("#sel-summary")) $("#sel-summary").textContent = `${SEL.visita.size} visita(s) · ${SEL.entrevista.size} entrevista(s) · ${selUnion().size} no total`;
-    renderSelMap("visita"); renderSelMap("entrevista");
-    renderSelList("visita"); renderSelList("entrevista");
+    updateTabLinks();
+  }
+  function setupSelFilters(group, p) {
+    const g = id => document.getElementById(p + "-" + id);
+    META.eixos.forEach(e => g("eixo").insertAdjacentHTML("beforeend", `<option value="${e.cod}">${e.nome}</option>`));
+    UF_ORDER.forEach(u => g("estado").insertAdjacentHTML("beforeend", `<option value="${u}">${UF_NOME[u]} (${u})</option>`));
+    const biomas = new Set(); ITEMS.forEach(i => (i.biomas || "").split(/[,/;]+/).forEach(b => { b = b.trim(); if (b) biomas.add(b); }));
+    [...biomas].sort((a, b) => a.localeCompare(b, "pt")).forEach(b => g("bioma").insertAdjacentHTML("beforeend", `<option value="${b}">${b}</option>`));
+    const nat = new Set(); ITEMS.forEach(i => { if (i.natureza) nat.add(i.natureza); });
+    [...nat].sort((a, b) => a.localeCompare(b, "pt")).forEach(nv => g("nat").insertAdjacentHTML("beforeend", `<option value="${esc(nv)}">${esc(nv)}</option>`));
+    g("busca").addEventListener("input", e => { selFilters[group].busca = e.target.value; renderSelGroup(group); });
+    g("eixo").addEventListener("change", e => { selFilters[group].eixo = e.target.value; renderSelGroup(group); });
+    g("estado").addEventListener("change", e => { selFilters[group].estado = e.target.value; renderSelGroup(group); });
+    g("bioma").addEventListener("change", e => { selFilters[group].bioma = e.target.value; renderSelGroup(group); });
+    g("nat").addEventListener("change", e => { selFilters[group].natureza = e.target.value; renderSelGroup(group); });
+    g("reset").addEventListener("click", () => {
+      Object.assign(selFilters[group], { busca: "", eixo: "", estado: "", bioma: "", natureza: "" });
+      ["busca", "eixo", "estado", "bioma", "nat"].forEach(s => { g(s).value = ""; });
+      renderSelGroup(group);
+    });
   }
   function initSelecao() {
-    META.eixos.forEach(e => $("#sf-eixo").insertAdjacentHTML("beforeend", `<option value="${e.cod}">${e.nome}</option>`));
-    UF_ORDER.forEach(u => $("#sf-estado").insertAdjacentHTML("beforeend", `<option value="${u}">${UF_NOME[u]} (${u})</option>`));
-    const biomas = new Set(); ITEMS.forEach(i => (i.biomas || "").split(/[,/;]+/).forEach(b => { b = b.trim(); if (b) biomas.add(b); }));
-    [...biomas].sort((a, b) => a.localeCompare(b, "pt")).forEach(b => $("#sf-bioma").insertAdjacentHTML("beforeend", `<option value="${b}">${b}</option>`));
-    const nat = new Set(); ITEMS.forEach(i => { if (i.natureza) nat.add(i.natureza); });
-    [...nat].sort((a, b) => a.localeCompare(b, "pt")).forEach(nv => $("#sf-nat").insertAdjacentHTML("beforeend", `<option value="${esc(nv)}">${esc(nv)}</option>`));
-    $("#sf-busca").addEventListener("input", e => { selFilters.busca = e.target.value; renderSelecao(); });
-    $("#sf-eixo").addEventListener("change", e => { selFilters.eixo = e.target.value; renderSelecao(); });
-    $("#sf-estado").addEventListener("change", e => { selFilters.estado = e.target.value; renderSelecao(); });
-    $("#sf-bioma").addEventListener("change", e => { selFilters.bioma = e.target.value; renderSelecao(); });
-    $("#sf-nat").addEventListener("change", e => { selFilters.natureza = e.target.value; renderSelecao(); });
-    $("#sf-reset").addEventListener("click", () => {
-      Object.assign(selFilters, { busca: "", eixo: "", estado: "", bioma: "", natureza: "" });
-      ["#sf-busca", "#sf-eixo", "#sf-estado", "#sf-bioma", "#sf-nat"].forEach(s => { $(s).value = ""; });
-      renderSelecao();
-    });
+    setupSelFilters("visita", "sfv");
+    setupSelFilters("entrevista", "sfe");
     $("#sel-clear-visita").addEventListener("click", () => { SEL.visita.clear(); saveSel(); renderSelecao(); });
     $("#sel-clear-entrevista").addEventListener("click", () => { SEL.entrevista.clear(); saveSel(); renderSelecao(); });
     $("#sel-go-analises").addEventListener("click", () => setView("analises"));
     $("#sel-go-rotas").addEventListener("click", () => setView("rotas"));
+  }
+  function updateTabLinks() {
+    const n = selUnion().size;
+    $$("#tabs button").forEach(b => {
+      const v = b.dataset.view;
+      if (v === "selecao" || v === "analises" || v === "rotas") {
+        let badge = b.querySelector(".tbadge");
+        if (n > 0) {
+          if (!badge) { badge = document.createElement("span"); badge.className = "tbadge"; b.appendChild(badge); }
+          badge.textContent = n;
+          b.title = v === "selecao" ? `${n} iniciativa(s) selecionada(s)` : `Vinculado à seleção (${n})`;
+        } else if (badge) { badge.remove(); b.removeAttribute("title"); }
+      }
+    });
   }
 
   // ---------- ANÁLISES ----------
@@ -543,6 +566,7 @@
   $$("#tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
 
   function refresh() {
+    updateTabLinks();
     const list = filtered();
     $("#f-count").textContent = `${list.length} de ${META.total} iniciativas`;
     if (state.view === "ranking") renderRanking(list);

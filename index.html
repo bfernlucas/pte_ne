@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/dashboard.css?v=22" />
+<link rel="stylesheet" href="assets/css/dashboard.css?v=23" />
 </head>
 <body>
 <header class="topbar">
@@ -102,20 +102,19 @@
       <span class="flowstep">3 · Rotas de campo</span>
       <span class="sel-summary" id="sel-summary"></span>
     </div>
-    <div class="sel-filters">
-      <input type="search" id="sf-busca" placeholder="Buscar iniciativa, organização ou município..." />
-      <select id="sf-eixo"><option value="">Todos os eixos</option></select>
-      <select id="sf-estado"><option value="">Todos os estados</option></select>
-      <select id="sf-bioma"><option value="">Todos os biomas</option></select>
-      <select id="sf-nat"><option value="">Todas as naturezas</option></select>
-      <span class="count" id="sel-fcount"></span>
-      <button id="sf-reset" class="ghost">Limpar filtros</button>
-    </div>
-
     <div class="sel-block">
       <div class="sel-head"><h3>1 · Visitas técnicas <span class="sel-badge" id="sel-count-visita">0</span></h3>
         <button class="ghost sm" id="sel-clear-visita">Limpar visitas</button></div>
       <div class="ph-sub">Aplique os filtros e clique nos pontos para marcar as iniciativas que receberão visita técnica de campo.</div>
+      <div class="sel-filters">
+        <input type="search" id="sfv-busca" placeholder="Buscar iniciativa, organização ou município..." />
+        <select id="sfv-eixo"><option value="">Todos os eixos</option></select>
+        <select id="sfv-estado"><option value="">Todos os estados</option></select>
+        <select id="sfv-bioma"><option value="">Todos os biomas</option></select>
+        <select id="sfv-nat"><option value="">Todas as naturezas</option></select>
+        <span class="count" id="sfv-count"></span>
+        <button id="sfv-reset" class="ghost">Limpar filtros</button>
+      </div>
       <div class="sel-map-wrap"><div id="map-sel-visita" class="map"></div><aside class="sel-side" id="sel-list-visita"></aside></div>
     </div>
 
@@ -123,6 +122,15 @@
       <div class="sel-head"><h3>2 · Entrevistas em profundidade <span class="sel-badge" id="sel-count-entrevista">0</span></h3>
         <button class="ghost sm" id="sel-clear-entrevista">Limpar entrevistas</button></div>
       <div class="ph-sub">Aplique os filtros e clique nos pontos para marcar as iniciativas que terão entrevista em profundidade.</div>
+      <div class="sel-filters">
+        <input type="search" id="sfe-busca" placeholder="Buscar iniciativa, organização ou município..." />
+        <select id="sfe-eixo"><option value="">Todos os eixos</option></select>
+        <select id="sfe-estado"><option value="">Todos os estados</option></select>
+        <select id="sfe-bioma"><option value="">Todos os biomas</option></select>
+        <select id="sfe-nat"><option value="">Todas as naturezas</option></select>
+        <span class="count" id="sfe-count"></span>
+        <button id="sfe-reset" class="ghost">Limpar filtros</button>
+      </div>
       <div class="sel-map-wrap"><div id="map-sel-entrevista" class="map"></div><aside class="sel-side" id="sel-list-entrevista"></aside></div>
     </div>
 
@@ -204,10 +212,10 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=22"></script>
-<script src="assets/data/uf_ne.js?v=22"></script>
-<script src="assets/js/maplayers.js?v=22"></script>
-<script src="assets/js/rota.js?v=22"></script>
-<script src="assets/js/dashboard.js?v=22"></script>
+<script src="assets/data/iniciativas.js?v=23"></script>
+<script src="assets/data/uf_ne.js?v=23"></script>
+<script src="assets/js/maplayers.js?v=23"></script>
+<script src="assets/js/rota.js?v=23"></script>
+<script src="assets/js/dashboard.js?v=23"></script>
 </body>
 </html>

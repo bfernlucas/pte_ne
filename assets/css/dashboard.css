@@ -186,6 +186,10 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .heatmap td .pre{display:block;font-size:.68rem;color:var(--pre);font-weight:600;margin-top:1px}
 .heatmap tr.tot td,.heatmap td.tot{background:#eef1fb;font-weight:700}
 
+/* selo de vínculo nas abas */
+.tabs button .tbadge{display:inline-block;margin-left:7px;background:var(--green);color:#fff;border-radius:10px;
+  font-size:.64rem;font-weight:700;padding:1px 6px;font-family:var(--font);vertical-align:middle;line-height:1.45}
+
 /* ---------- seleção estratégica ---------- */
 .sel-flowbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .flowstep{font-family:var(--display);text-transform:uppercase;font-size:.72rem;letter-spacing:.04em;color:var(--muted);
