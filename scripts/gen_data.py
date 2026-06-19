@@ -28,7 +28,15 @@ ALT_LOCAIS = {
         {"municipio": "Viçosa do Ceará", "uf": "CE", "lat": -3.5619, "lon": -41.0922},
         {"municipio": "Piracuruca", "uf": "PI", "lat": -3.9285, "lon": -41.7090},
     ],
+    15: [  # Programa Sertão Vivo — sede no Rio de Janeiro + Salvador (BA) como local secundário
+        {"municipio": "Rio de Janeiro", "uf": "RJ", "lat": -22.9068, "lon": -43.1729},
+        {"municipio": "Salvador", "uf": "BA", "lat": -12.9777, "lon": -38.5016},
+    ],
 }
+
+# Ajuste de classificação de eixo (id antigo -> eixo principal / código do secundário)
+EIXO_OVERRIDES = {15: "Nova Infraestrutura Verde-Azul e Adaptação Climática"}
+EIXO_SEC_OVERRIDES = {15: "BIO"}
 
 # Revisão editorial dos nomes: nome principal padronizado, sem siglas de UF,
 # sem subtítulos/descrições e sem acrônimo da organização (que vira subtítulo).
@@ -208,13 +216,13 @@ def main():
             continue
         nm = NAME_OVERRIDES.get(idn, nm)
         crit = {key: val(r, 22 + k) for k, (key, _) in enumerate(CRIT)}
-        eixo = val(r, 16)
+        eixo = EIXO_OVERRIDES.get(idn, val(r, 16))
         items.append({
             "id": idn, "nome": nm, "objetivo": val(r, 3), "resumo": RESUMO.get(idn), "tematica": val(r, 4), "org": ORG_OVERRIDES.get(idn, val(r, 5)),
             "cnpj": val(r, 6), "fundacao": val(r, 7), "cnae": val(r, 8), "endereco": val(r, 9),
             "lat": val(r, 10), "lon": val(r, 11), "avaliador": val(r, 12),
             "municipio": val(r, 13), "estado": val(r, 14), "biomas": val(r, 15),
-            "eixo": eixo, "eixo_cod": EIXO_COD.get(eixo), "eixo_sec": val(r, 17),
+            "eixo": eixo, "eixo_cod": EIXO_COD.get(eixo), "eixo_sec": EIXO_SEC_OVERRIDES.get(idn, val(r, 17)),
             "setor": val(r, 18), "natureza": val(r, 19), "tipo_inst": val(r, 20), "salvaguardas": val(r, 21),
             "criterios": crit, "pontuacao": val(r, 32), "observacoes": val(r, 33),
             "fora_ne": idn in FORA_NE,

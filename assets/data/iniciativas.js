@@ -615,9 +615,9 @@ window.PTE_DATA = {
    "municipio": "Rio de Janeiro",
    "estado": "SE, BA, CE, PI, PB",
    "biomas": "Caatinga",
-   "eixo": "Bioeconomia e Sistemas Agroalimentares Adaptados",
-   "eixo_cod": "BIO",
-   "eixo_sec": "NIVA",
+   "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
+   "eixo_cod": "NIVA",
+   "eixo_sec": "BIO",
    "setor": "Primário",
    "natureza": "Órgão Público do Poder Executivo Federal",
    "tipo_inst": "Governo Federal",
@@ -636,7 +636,21 @@ window.PTE_DATA = {
    },
    "pontuacao": 28,
    "observacoes": "Se trata de uma iniciativa de crédito especial articulada pelo BNDES e pelo FIA, em que o público pleiteante são governos dos estados do Nordeste. Na primeira edição, foram contemplados BA, CE, PB, PI e SE. Não se trata especificamente de uma iniciativa territorializada, mas um programa de crédito com bastante potencial de incidir na agricultura familiar e convivência com o semiárido. Contudo, cabe decidirmos se está dentro do enquadramento do que estamos procurando.",
-   "fora_ne": false
+   "fora_ne": false,
+   "locais": [
+    {
+     "municipio": "Rio de Janeiro",
+     "uf": "RJ",
+     "lat": -22.9068,
+     "lon": -43.1729
+    },
+    {
+     "municipio": "Salvador",
+     "uf": "BA",
+     "lat": -12.9777,
+     "lon": -38.5016
+    }
+   ]
   },
   {
    "id": 15,
