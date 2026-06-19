@@ -33,6 +33,12 @@
   // "pré-selecionada" em todo o painel = escolhida na aba Seleção (visita ou entrevista)
   const isPre = id => SEL.visita.has(id) || SEL.entrevista.has(id);
   const selType = id => SEL.visita.has(id) ? "visita" : SEL.entrevista.has(id) ? "entrevista" : "";
+  // rótulo de local: lista os dois pontos quando a iniciativa atua em mais de um lugar
+  function locLabel(i) {
+    if (i.locais && i.locais.length > 1) return i.locais.map(l => `${l.municipio}/${l.uf}`).join(" · ");
+    const uf = ufTokens(i.estado).join(", ");
+    return [i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual";
+  }
   const selFilters = { visita: { busca: "", eixo: "", estado: "", bioma: "", natureza: "" }, entrevista: { busca: "", eixo: "", estado: "", bioma: "", natureza: "" } };
   function selFiltered(group) {
     const f = selFilters[group], q = f.busca.trim().toLowerCase();
@@ -116,7 +122,7 @@
       return `<tr data-id="${i.id}" class="${state.selected.has(i.id) ? "sel" : ""}">
         <td class="num t-id">${i.id}</td>
         <td class="t-nome"><span class="nm">${esc(i.nome)}</span>${sub ? `<span class="sub">${esc(sub)}</span>` : ""}</td>
-        <td>${esc(i.municipio || "—")}</td>
+        <td>${esc(i.municipio || "—")}${i.locais && i.locais.length > 1 ? ` <span class="multi-loc">${i.locais.length} locais</span>` : ""}</td>
         <td>${esc(uf)}</td>
         <td class="t-eixo"><span class="eixo-dot" style="background:${eixoColor(i.eixo_cod)}"></span><span class="eixo-name">${esc(i.eixo || "—")}</span></td>
         <td>${selType(i.id) === "visita" ? '<span class="badge badge-vis">Visita</span>' : selType(i.id) === "entrevista" ? '<span class="badge badge-ent">Entrevista</span>' : '<span class="badge badge-no">—</span>'}</td>
@@ -145,7 +151,7 @@
       const w = Math.round(100 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN)));
       const cor = eixoColor(i.eixo_cod);
       const uf = ufTokens(i.estado).join(", ");
-      const local = [i.municipio, uf].filter(Boolean).join(" · ") || "Atuação multiestadual";
+      const local = locLabel(i);
       const anc = window.PTE_ROTAS ? window.PTE_ROTAS.isAnchor(i.id) : false;
       const fact = (k, v) => v ? `<div class="f"><span class="k">${k}</span><span>${esc(v)}</span></div>` : "";
       return `<div class="card ${state.selected.has(i.id) ? "sel" : ""}" data-id="${i.id}">
@@ -237,7 +243,7 @@
     const sub = orgSub(i);
     return `<span class="pp-h">${esc(i.nome)}</span>
       ${sub ? esc(sub) + "<br>" : ""}
-      <span class="pp-k">Local:</span> ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br>
+      <span class="pp-k">Local:</span> ${esc(locLabel(i))}<br>
       <span class="pp-k">Eixo:</span> ${esc(i.eixo || "")}<br>
       <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${selType(i.id) === "visita" ? " · visita técnica" : selType(i.id) === "entrevista" ? " · entrevista" : ""}`;
   }
@@ -547,7 +553,7 @@
       return `<div class="cmp-card" style="border-top-color:${s.col}">
         <div class="cc-h"><span>${esc(i.nome)}</span><b>${i.pontuacao}</b></div>
         ${sub ? `<div class="cc-sub">${esc(sub)}</div>` : ""}
-        <div class="cc-meta"><span class="cc-rk">${ordinal(RANK[i.id])} de ${ITEMS.length}</span> · ${esc(i.eixo || "")} · ${esc([i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}${selType(i.id) === "visita" ? ' · <span class="cc-pre">visita técnica</span>' : selType(i.id) === "entrevista" ? ' · <span class="cc-pre">entrevista</span>' : ""}</div>
+        <div class="cc-meta"><span class="cc-rk">${ordinal(RANK[i.id])} de ${ITEMS.length}</span> · ${esc(i.eixo || "")} · ${esc(locLabel(i))}${selType(i.id) === "visita" ? ' · <span class="cc-pre">visita técnica</span>' : selType(i.id) === "entrevista" ? ' · <span class="cc-pre">entrevista</span>' : ""}</div>
         ${strong.length ? `<div class="cc-tags"><span class="cc-lab good">Fortes</span>${strong.map(l => `<span class="cc-chip good">${esc(l)}</span>`).join("")}</div>` : ""}
         ${weak.length ? `<div class="cc-tags"><span class="cc-lab warn">A desenvolver</span>${weak.map(l => `<span class="cc-chip warn">${esc(l)}</span>`).join("")}</div>` : ""}
         <button class="cc-rm" data-id="${i.id}">Remover</button>
