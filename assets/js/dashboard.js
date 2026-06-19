@@ -129,7 +129,7 @@
           </div>
           <h3>${esc(i.nome)}</h3>
           ${orgSub(i) ? `<div class="org">${esc(orgSub(i))}</div>` : ""}
-          ${i.objetivo ? `<p class="desc">${esc(i.objetivo)}</p>` : ""}
+          ${(i.resumo || i.objetivo) ? `<p class="desc">${esc(i.resumo || truncWords(i.objetivo, 160))}</p>` : ""}
           <div class="facts">
             ${fact("Local", local)}
             ${fact("Setor", i.setor)}
