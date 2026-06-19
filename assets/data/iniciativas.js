@@ -380,7 +380,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 9,
+   "id": 8,
    "nome": "OxeTech",
    "objetivo": "Promover capacitação técnica e profissiional de qualidade na área de tecnologia e fomentar o empreendedorismo local e a atração de investimentos.",
    "resumo": "Programa alagoano de capacitação técnica em tecnologia que fomenta o empreendedorismo local e a atração de investimentos.",
@@ -424,7 +424,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 10,
+   "id": 9,
    "nome": "Rede MCTI/EMBRAPII de Inovação em Inteligência Artificial",
    "objetivo": "Fomentar a capacidade produtiva e a competitividade das empresas brasileiras por meio do uso de tecnologias de fronteiras no processo produtivo da indústria nacional",
    "resumo": "Fomenta a competitividade da indústria brasileira pela adoção de inteligência artificial e tecnologias de fronteira nos processos produtivos.",
@@ -473,7 +473,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 11,
+   "id": 10,
    "nome": "Programa Jovem Empreendedor Primeiros Passos (JEPP)",
    "objetivo": "Estimular a criatividade e o pensamento crítico, fomentando a “mentalidade empreendedora\" de alunos do ensino fundamental de forma lúdica com histórias com temáticas diversas, dente elas a sustentabilidade.",
    "resumo": "Estimula criatividade, pensamento crítico e mentalidade empreendedora em alunos do ensino fundamental, de forma lúdica e com temas como a sustentabilidade.",
@@ -515,7 +515,7 @@ window.PTE_DATA = {
    "fora_ne": true
   },
   {
-   "id": 12,
+   "id": 11,
    "nome": "Projeto Etnocaatinga",
    "objetivo": "Atuar na conservação e recuperação da Caatinga em territórios tradicionais, utilizando tecnologias sociais e promovendo a inclusão produtiva das comunidades locais.",
    "resumo": "Atua na conservação e recuperação da Caatinga em territórios tradicionais, com tecnologias sociais e inclusão produtiva das comunidades.",
@@ -559,7 +559,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 13,
+   "id": 12,
    "nome": "Parque Tecnológico Porto Digital",
    "objetivo": "Atuar como um robusto ecossistema de inovação que integra empresas, governos, universidades, organizações diversas na área de Tecnologia dinamizando a região e alavancando projetos em TI e Economia criativa",
    "resumo": "Ecossistema de inovação que integra empresas, governo e universidades, dinamizando projetos em TI e economia criativa.",
@@ -603,7 +603,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 14,
+   "id": 13,
    "nome": "Vale do Dendê",
    "objetivo": "Fomentar ecossistemas de inovação e criatividade com foco em diversidade atuando em 4 frentes: aceleração de negócios, promoções de eventos, Hubs de apoio para empreendedores e inovação",
    "resumo": "Fomenta ecossistemas de inovação com foco em diversidade, atuando na aceleração de negócios, em eventos e em hubs de apoio a empreendedores.",
@@ -645,7 +645,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 15,
+   "id": 14,
    "nome": "Programa Sertão Vivo",
    "objetivo": "Fortalecer a agricultura familiar no Semiárido, ampliando a resiliência climática, a segurança hídrica e a inclusão produtiva por meio de práticas agroecológicas e investimentos em infraestrutura rural.",
    "resumo": "Fortalece a agricultura familiar no Semiárido, ampliando resiliência climática, segurança hídrica e inclusão produtiva com práticas agroecológicas e infraestrutura rural.",
@@ -687,7 +687,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 16,
+   "id": 15,
    "nome": "Paisagens Alimentares",
    "objetivo": "Valorizar saberes tradicionais, produtos da sociobiodiversidade e gastronomia regional, criando rotas de turismo de base comunitária que geram renda e fortalecem identidades locais.",
    "resumo": "Valoriza saberes tradicionais e produtos da sociobiodiversidade criando rotas de turismo de base comunitária que geram renda e fortalecem identidades locais.",
@@ -731,7 +731,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 17,
+   "id": 16,
    "nome": "Rede BATUC de Turismo Comunitário",
    "objetivo": "Promover o turismo comunitário em comunidades tradicionais da Bahia, fortalecendo economias locais, autonomia social, práticas culturais e conservação ambiental.",
    "resumo": "Promove o turismo comunitário em comunidades tradicionais da Bahia, fortalecendo economias locais, cultura e conservação ambiental.",
@@ -775,7 +775,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 18,
+   "id": 17,
    "nome": "Associação das Comunidades Negras Rurais Quilombolas do Maranhão",
    "objetivo": "Fortalecer a autonomia produtiva e territorial de mulheres quilombolas no Nordeste, promovendo práticas agroecológicas, uso sustentável da sociobiodiversidade e integração a cadeias solidárias e comunitárias da bioeconomia.",
    "resumo": "Fortalece a autonomia produtiva e territorial de mulheres quilombolas com práticas agroecológicas, uso sustentável da sociobiodiversidade e cadeias solidárias.",
@@ -817,7 +817,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 19,
+   "id": 18,
    "nome": "Territórios da Cidadania",
    "objetivo": "Promover o desenvolvimento territorial sustentável no Nordeste, fortalecendo a inclusão produtiva, a participação social e a articulação entre políticas públicas para reduzir desigualdades socioeconômicas, estimular atividades produtivas sustentáveis e ampliar o acesso a direitos em territórios rurais, tradicionais e vulnerabilizados.",
    "resumo": "Promove o desenvolvimento territorial sustentável no Nordeste, articulando políticas públicas para inclusão produtiva e acesso a direitos em territórios rurais e vulnerabilizados.",
@@ -859,7 +859,7 @@ window.PTE_DATA = {
    "fora_ne": true
   },
   {
-   "id": 20,
+   "id": 19,
    "nome": "Programa Redeser",
    "objetivo": "Promover uma economia regional de baixo carbono no Semiárido nordestino, por meio do uso sustentável da biodiversidade da Caatinga, da inovação produtiva, da restauração ecológica e da organização socioprodutiva de comunidades rurais, fortalecendo cadeias da sociobiodiversidade, ampliando a agregação de valor e garantindo a implementação efetiva da meta de desmatamento zero.",
    "resumo": "Promove uma economia de baixo carbono no Semiárido pelo uso sustentável da Caatinga, restauração ecológica e fortalecimento de cadeias da sociobiodiversidade.",
@@ -903,7 +903,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 21,
+   "id": 20,
    "nome": "Green Energy Park",
    "objetivo": "Estabelecer um polo de produção e exportação de Hidrogênio H2V e seus derivados (principalmente Amônia Verde, NH3V) no litoral do Piauí. A iniciativa visa aproveitar o abundante potencial eólico e solar da região para gerar energia limpa em grande escala, descarbonizar o transporte marítimo e a indústria global, e impulsionar a industrialização verde do estado.",
    "resumo": "Polo de produção e exportação de hidrogênio verde e amônia verde no litoral do Piauí, aproveitando o potencial eólico e solar para descarbonizar indústria e transporte marítimo.",
@@ -947,7 +947,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 22,
+   "id": 21,
    "nome": "Logística Verde e Operações Sustentáveis no Porto de Suape",
    "objetivo": "Transformar o complexo industrial portuário em um polo de energia verde e um corredor logístico descarbonizado. Isso será atingido por meio da atração de projetos de Hidrogênio Verde H2V e seus derivados (como amônia aerde e e-metanol) para descarbonizar as operações portuárias, o transporte marítimo e a indústria local, garantindo eficiência e sustentabilidade ambiental na gestão de resíduos e infraestrutura.",
    "resumo": "Transforma o complexo portuário de Suape em polo de energia verde e corredor logístico descarbonizado, atraindo projetos de hidrogênio verde e derivados.",
@@ -989,7 +989,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 23,
+   "id": 22,
    "nome": "SENAI CIMATEC",
    "objetivo": "Ser um complexo de educação profissional, pesquisa aplicada e inovação tecnológica, voltado à capacitação de mão de obra especializada e ao desenvolvimento de tecnologias limpas em áreas como hidrogênio verde, bioenergia, armazenamento e smart grids, promovendo a industrialização e a transição energética do Nordeste.",
    "resumo": "Complexo de educação profissional, pesquisa e inovação em tecnologias limpas — hidrogênio verde, bioenergia e smart grids — para a transição energética do Nordeste.",
@@ -1031,7 +1031,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 24,
+   "id": 23,
    "nome": "Programa 1 Milhão de Tetos Solares (P1MTS)",
    "objetivo": "Promover a produção descentralizada de energia fotovoltaica em residências e unidades comunitárias do Semiárido, fortalecendo a autonomia energética, a inclusão social e a justiça climática para famílias de baixa renda e em situação de vulnerabilidade.",
    "resumo": "Promove energia fotovoltaica descentralizada em residências e unidades comunitárias do Semiárido, fortalecendo a autonomia energética e a justiça climática para famílias de baixa renda.",
@@ -1090,7 +1090,7 @@ window.PTE_DATA = {
    ]
   },
   {
-   "id": 25,
+   "id": 24,
    "nome": "Programa Água Doce",
    "objetivo": "Promover a dessalinização de águas salobras e salinas, garantindo o abastecimento seguro de água para consumo humano e atividades produtivas em comunidades rurais do Semiárido brasileiro, integrando essa solução com a geração de energia renovável descentralizada.",
    "resumo": "Dessaliniza águas salobras para garantir abastecimento seguro a comunidades rurais do Semiárido, integrando a solução à geração de energia renovável descentralizada.",
@@ -1132,7 +1132,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 26,
+   "id": 25,
    "nome": "APROBAMBU",
    "objetivo": "Promover uma cadeia de valor sustentável de bioeconomia e bioenergia, utilizando o bambu para a produção de etanol de segunda geração (2G), biomassa energética e bioprodutos de alto valor, fortalecendo a inovação tecnológica e o desenvolvimento rural.",
    "resumo": "Desenvolve uma cadeia de bioeconomia do bambu para etanol de segunda geração, biomassa energética e bioprodutos, aliando inovação e desenvolvimento rural.",
@@ -1174,7 +1174,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 27,
+   "id": 26,
    "nome": "Raízes Solares",
    "objetivo": "Implantar um modelo inovador de transição energética justa em comunidades tradicionais (quilombolas), instalando uma usina solar fotovoltaica comunitária para reduzir a pobreza energética, fortalecer a autonomia econômica e produtiva (agroecologia) e criar um Fundo Econômico Comunitário autossustentável para reinvestimento.",
    "resumo": "Implanta uma usina solar comunitária em território quilombola para reduzir a pobreza energética e criar um fundo econômico comunitário autossustentável.",
@@ -1218,7 +1218,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 30,
+   "id": 27,
    "nome": "Programa Município Selo Verde",
    "objetivo": "Certificação ambiental pública que reconhece e valoriza os municípios que adotam políticas e práticas efetivas de conservação ambiental e uso sustentável dos recursos naturais, promovendo a melhoria contínua da gestão ambiental local.",
    "resumo": "Certificação ambiental pública que reconhece municípios com políticas efetivas de conservação e uso sustentável dos recursos naturais.",
@@ -1260,7 +1260,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 31,
+   "id": 28,
    "nome": "Programa Bahia Solidária",
    "objetivo": "O programa busca articular políticas públicas de inclusão produtiva, inovação social e valorização de empreendimentos econômicos solidários (EES), especialmente de base comunitária e cooperativa de territórios de identidade da Bahia.",
    "resumo": "Articula políticas de inclusão produtiva e inovação social para fortalecer empreendimentos econômicos solidários de base comunitária e cooperativa na Bahia.",
@@ -1302,7 +1302,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 32,
+   "id": 29,
    "nome": "Solos",
    "objetivo": "A Solos é uma startup que desenvolve soluções integradas para estimular o descarte correto, fortalecer cooperativas e aprimorar a logística reversa.",
    "resumo": "Startup que desenvolve soluções para o descarte correto de resíduos, fortalecendo cooperativas e aprimorando a logística reversa.",
@@ -1346,7 +1346,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 33,
+   "id": 30,
    "nome": "Programa Cata Mais Alagoas",
    "objetivo": "O programa estimula a expansão da coleta seletiva, o reaproveitamento e a reciclagem de resíduos sólidos, e a valorização do trabalho dos catadores como agentes fundamentais da gestão de resíduos.",
    "resumo": "Amplia a coleta seletiva e a reciclagem de resíduos sólidos e valoriza o trabalho dos catadores como agentes centrais da gestão de resíduos.",
@@ -1388,7 +1388,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 34,
+   "id": 31,
    "nome": "Modelo de Gestão Municipal de Resíduos Sólidos de Arez",
    "objetivo": "Desativação de lixão com implantação de sistemas integrados de gestão de resíduos com suporte técnico e financeiro, articulando redução de impactos ambientais, eficiência no manejo e promoção de soluções circulares.",
    "resumo": "Desativa lixão e implanta gestão integrada de resíduos com suporte técnico e financeiro, reduzindo impactos ambientais e promovendo soluções circulares.",
@@ -1432,7 +1432,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 35,
+   "id": 32,
    "nome": "Rede Recicla Bahia",
    "objetivo": "Rede de Cooperativas que oferece suporte técnico e administrativo às cooperativas, promove capacitações, apoia a digitalização da gestão (com emissão de notas fiscais e manifestos de transporte) e atua junto às prefeituras na elaboração de Planos Municipais de Gestão de Resíduos Sólidos, especialmente em municípios de pequeno e médio porte.",
    "resumo": "Rede que apoia cooperativas de reciclagem com capacitação, digitalização da gestão e elaboração de planos municipais de resíduos, sobretudo em pequenos municípios.",
@@ -1474,7 +1474,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 36,
+   "id": 33,
    "nome": "Consórcio Público de Manejo de Resíduos Sólidos da Ibiapaba",
    "objetivo": "Promover a gestão integrada e sustentável dos resíduos sólidos nos municípios da Região da Ibiapaba, por meio da cooperação entre os entes consorciados, visando a preservação ambiental, a melhoria da saúde pública e o desenvolvimento regional sustentável.",
    "resumo": "Promove a gestão integrada e sustentável dos resíduos sólidos nos municípios da Ibiapaba por meio da cooperação intermunicipal.",
@@ -1516,7 +1516,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 37,
+   "id": 34,
    "nome": "Labifor",
    "objetivo": "Laboratório de Inovação da Prefeitura de Fortaleza que cria soluções criativas e tecnológicas para os desafios urbanos, com ênfase na sustentabilidade e na economia circular, como o Projeto Re-Ciclo, gestão de resíduos orgânicos por meio de biodigestores, criação de microparques urbanos e oficinas de educação ambiental.]",
    "resumo": "Laboratório de inovação da Prefeitura de Fortaleza que cria soluções urbanas sustentáveis, como compostagem por biodigestores, microparques e educação ambiental.",
@@ -1558,7 +1558,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 38,
+   "id": 35,
    "nome": "Programa Fortaleza Cidade Sustentável",
    "objetivo": "Integrar desenvolvimento urbano com sustentabilidade ambiental, promovendo resiliência urbana e uso eficiente de recursos naturais",
    "resumo": "Integra desenvolvimento urbano e sustentabilidade ambiental, promovendo a resiliência das cidades e o uso eficiente dos recursos naturais.",
@@ -1602,7 +1602,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 39,
+   "id": 36,
    "nome": "Programas Complementares de Captação de Água da ASA",
    "objetivo": "Garantir acesso à água para consumo humano, produção de alimentos e educação no Semiárido",
    "resumo": "Garante acesso à água para consumo, produção de alimentos e educação no Semiárido por meio de tecnologias sociais de captação.",
@@ -1646,7 +1646,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 40,
+   "id": 37,
    "nome": "Projeto Tecnologia SARA",
    "objetivo": "Promover saneamento rural e segurança hídrica através de tratamento de esgoto e reúso agrícola",
    "resumo": "Promove saneamento rural e segurança hídrica com tratamento de esgoto e reúso agrícola da água.",
@@ -1688,7 +1688,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 41,
+   "id": 38,
    "nome": "Zoneamento Ecológico-Econômico da Zona Costeira do Ceará",
    "objetivo": "Ordenar e organizar decisões no território costeiro para conservação do capital natural e desenvolvimento sustentável e a melhoria das condições de vida da população",
    "resumo": "Ordena o uso do território costeiro cearense para conservar o capital natural e promover desenvolvimento sustentável e melhoria de vida da população.",
@@ -1730,7 +1730,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 42,
+   "id": 39,
    "nome": "Sistema Metroviário do Ceará",
    "objetivo": "Oferecer transporte público sustentável e de baixo carbono",
    "resumo": "Oferece transporte público sustentável e de baixo carbono.",
@@ -1772,7 +1772,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 43,
+   "id": 40,
    "nome": "Projeto Vale Sustentável",
    "objetivo": "Recuperar áreas degradadas e promover desenvolvimento territorial integrado",
    "resumo": "Recupera áreas degradadas e promove o desenvolvimento territorial integrado.",
@@ -1814,7 +1814,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 44,
+   "id": 41,
    "nome": "Conecta Caatinga",
    "objetivo": "Promover criação de corredores ecológicos ligando áreas protegidas públicas e também privadas.",
    "resumo": "Cria corredores ecológicos conectando áreas protegidas públicas e privadas da Caatinga.",
@@ -1856,7 +1856,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 45,
+   "id": 42,
    "nome": "Projeto Rural Sustentável Caatinga",
    "objetivo": "Promover a adoção de tecnologias de agricultura de baixa emissão de carbono (Tecs ABC) no semiárido brasileiro",
    "resumo": "Promove a adoção de tecnologias de agricultura de baixa emissão de carbono (ABC) no Semiárido.",
@@ -1898,7 +1898,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 46,
+   "id": 43,
    "nome": "Plataforma Mulheres de Base Praticantes de Resiliência",
    "objetivo": "Promover empoderamento político e econômico de mulheres rurais com resiliência climática",
    "resumo": "Promove o empoderamento político e econômico de mulheres rurais aliado à resiliência climática.",
@@ -1940,7 +1940,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 47,
+   "id": 44,
    "nome": "SIMACaatinga",
    "objetivo": "Permitir o acesso a um sistema de monitoramento contínuo da cobertura vegetal do bioma Caatinga",
    "resumo": "Sistema de monitoramento contínuo da cobertura vegetal do bioma Caatinga.",
@@ -1984,7 +1984,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 48,
+   "id": 45,
    "nome": "Instituto Casaca de Couro",
    "objetivo": "Promover a produção sustentável de algodão orgânico e colorido no semiárido nordestino por meio de sistemas de agricultura regenerativa, envolvendo agricultores e agricultoras familiares numa cadeia produtiva integrada e certificada, conectando produção local a mercados nacionais e internacionais de moda sustentável.",
    "resumo": "Promove a produção de algodão orgânico e colorido no Semiárido com agricultura regenerativa, conectando agricultores familiares ao mercado de moda sustentável.",
@@ -2026,7 +2026,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 49,
+   "id": 46,
    "nome": "Renova-Semiárido",
    "objetivo": "É uma plataforma digital que mapeia projetos de sucesso com energias renováveis (solar, eólica), biodigestores, bioágua e ecofogão no Semiárido, destinada a produtoras e produtores, agentes públicos e sociedade civil. Inclui protótipos educacionais como dessalinizadores e fornos solares. Oferece um mapa interativo com a localização dos casos de sucesso com informações, fotografias e vídeos com depoimentos reais.",
    "resumo": "Plataforma digital que mapeia casos de sucesso em energias renováveis e tecnologias sociais no Semiárido, com mapa interativo, informações e depoimentos.",
@@ -2068,7 +2068,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 50,
+   "id": 47,
    "nome": "BIOINSULAB",
    "objetivo": "Atuar em pesquisa e desenvolvimento (P&D) de bioinsumos para agropecuária, como biofertilizantes, biopesticidas e probióticos animais, desde a investigação laboratorial até testes de campo e disseminação para agricultores .",
    "resumo": "Pesquisa e desenvolve bioinsumos para a agropecuária — biofertilizantes, biopesticidas e probióticos — do laboratório ao campo.",
@@ -2112,7 +2112,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 51,
+   "id": 48,
    "nome": "No Clima da Caatinga",
    "objetivo": "Contribuir para a mitigação do aquecimento global e adaptação climática de comunidades rurais (4 mil famílias) por meio da conservação da Caatinga, proteção de recursos hídricos e da biodiversidade - Sete linhas ação: Criação e gestão de áreas protegidas, restauração florestal, políticas públicas ambientais, tecnologias sociais, educação ambiental, comunicação e fomento à pesquisa.",
    "resumo": "Contribui para a mitigação e a adaptação climática de comunidades rurais conservando a Caatinga, os recursos hídricos e a biodiversidade, em sete linhas de ação.",
@@ -2154,7 +2154,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 52,
+   "id": 49,
    "nome": "Trilha Caminhos da Ibiapaba",
    "objetivo": "Promover o turismo de natureza, a valorização do patrimônio histórico-cultural e o desenvolvimento territorial sustentável, integrando comunidades tradicionais e conservando a biodiversidade .",
    "resumo": "Promove o turismo de natureza e a valorização do patrimônio cultural, integrando comunidades tradicionais e conservando a biodiversidade.",
@@ -2199,7 +2199,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 53,
+   "id": 50,
    "nome": "Fazenda Tamanduá",
    "objetivo": "Produzir alimentos e fibras de forma regenerativa e biodinâmica, restaurando a saúde do solo, conservando a Caatinga, sequestrando carbono e gerando renda no Semiárido paraibano.",
    "resumo": "Produz alimentos e fibras de forma regenerativa e biodinâmica, restaurando o solo, conservando a Caatinga e sequestrando carbono no Semiárido paraibano.",
@@ -2243,7 +2243,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 54,
+   "id": 51,
    "nome": "Programa Reecatingar",
    "objetivo": "Recuperar 10 milhões de hectares de terras degradadas na Caatinga até 2045, com protagonismo das comunidades do Semiárido, conservação do solo, da biodiversidade e da água, resiliência climática e promoção do Bem Viver na Caatinga.",
    "resumo": "Busca recuperar 10 milhões de hectares degradados na Caatinga até 2045, com protagonismo das comunidades e conservação do solo, da água e da biodiversidade.",
@@ -2285,7 +2285,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 55,
+   "id": 52,
    "nome": "Programa Terra Plantar",
    "objetivo": "é a maior iniciativa de infraestrutura e apoio direto ao produtor rural do Estado de Pernambuco. Coordenado pelo Governo de Pernambuco por meio do Instituto Agronômico de Pernambuco (IPA), o projeto conta com um investimento previsto de mais de R$ 200 milhões direcionados para fortalecer e modernizar a agricultura familiar local",
    "resumo": "Maior programa de infraestrutura e apoio direto ao produtor rural de Pernambuco, com mais de R$ 200 milhões para modernizar a agricultura familiar.",
@@ -2327,7 +2327,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 56,
+   "id": 53,
    "nome": "Projetos de Conservação e Sustentabilidade do Bioma Caatinga",
    "objetivo": "A Associação dos Produtores de Crédito de Carbono Social do Bioma Caatinga reúne, desde 2022, agricultores familiares, comunidades tradicionais e técnicos para desenvolver um modelo de crédito de carbono integral, buscando a valorização da biodiversidade local e geração de renda. Seu objetivo é gerar renda por meio da preservação da floresta em pé, atuando principalmente na região do cânion do Rio São Francisco e se expandindo para todo o semiárido brasileiro.",
    "resumo": "Reúne agricultores familiares e comunidades tradicionais em um modelo de crédito de carbono integral que gera renda pela floresta em pé, do cânion do São Francisco a todo o Semiárido.",
@@ -2371,7 +2371,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 57,
+   "id": 54,
    "nome": "Fazenda Nutrilite Brasil",
    "objetivo": "Produzir matéria-prima orgânica (principalmente acerola verde) para suplementos vitamínicos, com foco em alta concentração de nutrientes, rastreabilidade total e geração de emprego e renda por meio de parcerias com agricultores locais.",
    "resumo": "Produz matéria-prima orgânica (sobretudo acerola) para suplementos, com rastreabilidade total e geração de renda em parceria com agricultores locais.",
@@ -2415,7 +2415,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 58,
+   "id": 55,
    "nome": "BlueC",
    "objetivo": "Cultivar macroalgas nativas em parceria com comunidades tradicionais marinhas, gerando renda, fortalecendo a identidade cultural e promovendo a conservação da biodiversidade marinha. Oferece soluções tecnológicas e produtos à base de algas para os setores alimentício, cosmético e farmacêutico.",
    "resumo": "Cultiva macroalgas nativas com comunidades marinhas tradicionais, gerando renda e conservando a biodiversidade, com produtos para os setores alimentício, cosmético e farmacêutico.",
@@ -2459,7 +2459,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 59,
+   "id": 56,
    "nome": "Comitê da Bacia Hidrográfica do Rio São Francisco (CBHSF)",
    "objetivo": "Realizar a gestão descentralizada, democrática e participativa dos recursos hídricos da bacia do rio São Francisco, promovendo seu uso sustentável, a proteção dos mananciais e a mediação de conflitos, em busca do desenvolvimento sustentável do território.",
    "resumo": "Faz a gestão participativa dos recursos hídricos da bacia do Rio São Francisco, promovendo uso sustentável, proteção dos mananciais e mediação de conflitos.",
@@ -2501,7 +2501,7 @@ window.PTE_DATA = {
    "fora_ne": true
   },
   {
-   "id": 60,
+   "id": 57,
    "nome": "Observatório da Transição Energética",
    "objetivo": "Plataforma de monitoramento socioambiental da transição energética desenvolvida por Repórter Brasil, INESC (Instituto de Estudos Socioeconômicos) e PoEMAS (Grupo de Pesquisa Política, Economia, Mineração, Ambiente e Sociedade), no âmbito do projeto Justiça na Transição Energética, lançada em 26/03/2026 com apoio da Fundação Ford, da Rainforest Foundation e do Pulitzer Center. Cruza dados de geolocalização de quatro tipos de empreendimentos (usinas eólicas, usinas solares fotovoltaicas, linhas de transmissão de alta tensão e mineração de minerais críticos) com 12.395 territórios de interesse socioambiental — terras indígenas (638), territórios quilombolas (429), unidades de conservação (3.110) e assentamentos de reforma agrária (8.218) — para identificar áreas impactadas ou ameaçadas, sob a ótica da justiça climática. Aponta que 34% dos territórios já sofrem influência de empreendimentos em operação e 58% poderão ser impactados. Tem forte recorte no Nordeste (p.ex., 14 projetos de eólica offshore no litoral do RN, somando mais de 25 GW). Público: jornalistas, pesquisadores, gestores públicos, comunidades e sociedade civil.",
    "resumo": "Plataforma que cruza a geolocalização de empreendimentos de energia e mineração com milhares de territórios socioambientais para apontar áreas impactadas, sob a ótica da justiça climática.",
@@ -2543,7 +2543,7 @@ window.PTE_DATA = {
    "fora_ne": true
   },
   {
-   "id": 61,
+   "id": 58,
    "nome": "Hub de Hidrogênio Verde do Complexo do Pecém",
    "objetivo": "Hub de H2V e amônia verde na Zona de Processamento de Exportação do Porto do Pecém, em joint venture do Governo do Ceará com o Porto de Roterdã. Reúne sete pré-contratos (Auren, Casa dos Ventos, EDF, Fortescue, FRV e Fuella) que somam cerca de US$ 24 bilhões em investimentos, com apoio do Banco Mundial (US$ 134 mi) para infraestrutura crítica. EIA/RIMA aprovado pelo COEMA com mais de 25 programas de mitigação. É o projeto de H2V mais avançado do país e âncora da neoindustrialização verde cearense (powershoring).",
    "resumo": "Hub de hidrogênio e amônia verde na ZPE do Pecém, em parceria com o Porto de Roterdã; reúne pré-contratos de cerca de US$ 24 bilhões e é o projeto de H2V mais avançado do país.",
@@ -2585,7 +2585,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 62,
+   "id": 59,
    "nome": "Projeto Pecém – Fortescue",
    "objetivo": "Planta de H2V e amônia verde no Setor 2 da ZPE Ceará, com capacidade prevista de 175 mil t/ano de hidrogênio (~0,9 milhão t de amônia) usando 1,2 GW de energia renovável. Investimento de cerca de R$ 20 bilhões e ~5 mil empregos na construção. Recebeu Decisão Antecipada de Investimento (EID) em 2024 e licença da Semace para preparação de terreno; selecionada para a Plataforma de Investimentos em Transformação Climática (BIP).",
    "resumo": "Planta de hidrogênio e amônia verde na ZPE Ceará, com 175 mil t/ano de H2V usando 1,2 GW renovável e investimento de cerca de R$ 20 bilhões.",
@@ -2627,7 +2627,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 63,
+   "id": 60,
    "nome": "Unigel / Ecohydrogen – Planta de Hidrogênio e Amônia Verde de Camaçari",
    "objetivo": "Primeira planta de H2V em escala industrial do Brasil, no Polo Petroquímico de Camaçari. Investimento previsto de até US$ 1,5 bilhão em três fases, chegando a 100 mil t/ano de H2V (600 mil t de amônia verde) até 2027. Usa três eletrolisadores de 20 MW (thyssenkrupp nucera) e energia eólica contratada. Integrada à produção de amônia/fertilizantes da Unigel e ao terminal de amônia do Porto de Aratu.",
    "resumo": "Primeira planta de hidrogênio verde em escala industrial do Brasil, no Polo de Camaçari, com até US$ 1,5 bilhão para chegar a 100 mil t/ano de H2V até 2027.",
@@ -2669,7 +2669,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 64,
+   "id": 61,
    "nome": "Hub Suape de Transição Energética / TechHub Hidrogênio Verde",
    "objetivo": "Transforma o Complexo Industrial Portuário de Suape em polo de H2V, e-metanol e combustíveis de baixo carbono, com investimentos previstos acima de R$ 15,8 bilhões até 2030. Inclui o TechHub (P&D, R$ 45 mi, com CTG Brasil e SENAI-PE) e projetos com European Energy (e-metanol, licença prévia emitida), GoVerde e Qair (planta de 1 GW). Selecionado pelo MME entre 12 hubs de hidrogênio de baixa emissão (acesso ao Climate Investment Funds). 1ª fase prevista: 76 mil t/ano de H2V e 400 mil t/ano de e-metanol, com integração ao CO2 biogênico do setor sucroenergético.",
    "resumo": "Transforma o porto de Suape em polo de hidrogênio verde, e-metanol e combustíveis de baixo carbono, com mais de R$ 15,8 bilhões previstos e um TechHub de P&D e capacitação.",
@@ -2711,7 +2711,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 65,
+   "id": 62,
    "nome": "Acelen Renováveis – Biorrefinaria de SAF e Diesel Verde",
    "objetivo": "Será a maior biorrefinaria de SAF/HVO da América Latina, em São Francisco do Conde (ao lado da Refinaria de Mataripe). Capacidade de 1 bilhão de litros/ano (20 mil barris/dia) de SAF e diesel renovável. Investimento de US$ 1,5 bi na 1ª fase (FID confirmada em maio/2025); projeto total de US$ 3 bi incluindo cultivo de macaúba em 180 mil hectares de pastagens degradadas (plantio-modelo iniciado em Cachoeira-BA). Cerca de 90% da produção com contratos de off-take para EUA/Europa; início previsto para 2027-2029.",
    "resumo": "Maior biorrefinaria de SAF e diesel verde da América Latina (1 bilhão de litros/ano), na Bahia, com cultivo de macaúba em pastagens degradadas.",
@@ -2755,7 +2755,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 66,
+   "id": 63,
    "nome": "EXYGEN / GranBio – Biorrefinaria Integrada de Biocombustíveis",
    "objetivo": "Complexo de biorrefinarias integradas em São Miguel dos Campos, produzindo etanol de baixo carbono (160 milhões L/ano a partir de 2026, de resíduos de cana), biometano (50 milhões m³/ano da vinhaça), CO2 biogênico, biofertilizantes e futuramente e-metanol (110 milhões L/ano, pioneiro na América Latina). Investimento de R$ 1,5 bilhão até 2028, em aliança com as usinas Caeté, Santo Antônio e Impacto Bioenergia; ~510 empregos diretos + 1.200 nas obras. Inaugurado em janeiro de 2025 com decreto estadual de incentivo.",
    "resumo": "Complexo de biorrefinarias em Alagoas que produz etanol de baixo carbono, biometano, CO2 biogênico e biofertilizantes a partir de resíduos da cana.",
@@ -2799,7 +2799,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 67,
+   "id": 64,
    "nome": "Cooperativa Pindorama – Bioenergias da Vinhaça",
    "objetivo": "Cooperativa fundada em 1966, com mais de 1.000 associados e cultivo em mais de 30 mil hectares; maior produtora de etanol de AL e detentora da primeira usina flex do Norte-Nordeste. Em parceria com a Veolia, o projeto 'Bioenergias Pindorama' (início no 2º semestre de 2028) prevê biodigestão de vinhaça (cana, milho e sorgo) para gerar biogás, vapor verde e 10.000 m³/dia de biometano em substituição ao diesel da frota, tornando a cooperativa autossuficiente em vapor.",
    "resumo": "Maior produtora de etanol de Alagoas que, com a Veolia, biodigere a vinhaça para gerar biogás, vapor verde e biometano, tornando-se autossuficiente em energia.",
@@ -2843,7 +2843,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 68,
+   "id": 65,
    "nome": "Voltalia – Cluster Serra Branca",
    "objetivo": "Maior complexo eólico-solar da Voltalia no mundo, entre Areia Branca e Serra do Mel (RN), com potencial de atingir 2,4 GW de capacidade instalada. Desenvolvido desde 2008 em ~40.000 hectares, combina parques eólicos em operação (VSM 1-4) e usinas solares (SSM 1-6), conectados ao SIN por linha de 500 kV com Centro de Operações em Mossoró. PPAs com Braskem e Copel; mais de R$ 3 bilhões investidos no RN. Programa 'Transformando com Energia' (qualificação local com o SENAI). Abre espaço para projetos de H2V.",
    "resumo": "Maior complexo eólico-solar da Voltalia no mundo, no Rio Grande do Norte, com potencial de 2,4 GW e mais de R$ 3 bilhões investidos, abrindo espaço para hidrogênio verde.",
@@ -2885,7 +2885,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 69,
+   "id": 66,
    "nome": "Complexo Solar São Gonçalo – Enel Green Power",
    "objetivo": "Um dos maiores parques solares em operação da América do Sul, em São Gonçalo do Gurguéia (PI): 864 MW, 2,2 milhões de painéis (primeiros bifaciais da Enel no Brasil, com até +18% de geração), gerando mais de 2,0 TWh/ano e evitando cerca de 1,3 milhão de toneladas de CO2. A seção São Gonçalo III (256 MW) envolveu investimento de cerca de R$ 870 milhões. Ações de Criação de Valor Compartilhado com a comunidade local desde 2018.",
    "resumo": "Um dos maiores parques solares da América do Sul (864 MW), no Piauí, gerando mais de 2 TWh/ano e evitando cerca de 1,3 milhão de toneladas de CO2.",
@@ -2927,7 +2927,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 70,
+   "id": 67,
    "nome": "Órigo Energia – Geração Distribuída Solar Compartilhada",
    "objetivo": "Líder brasileira em geração distribuída compartilhada, com mais de 200 fazendas solares e mais de 110 mil clientes (capacidade ~350 MWp, meta 2 GWp). Modelo de 'aluguel de cotas' sem instalação para o consumidor, com economia na conta. Fazendas em vários estados do NE (CE, PE, BA, PI, RN, MA), com filiais em Petrolina-PE e Crateús-CE. Empresa B certificada e signatária do Pacto Global; Programa Órigo Social doa energia a instituições sociais.",
    "resumo": "Líder brasileira em geração distribuída solar compartilhada, com mais de 200 fazendas solares e 110 mil clientes pelo modelo de assinatura sem instalação.",
@@ -2969,7 +2969,7 @@ window.PTE_DATA = {
    "fora_ne": true
   },
   {
-   "id": 71,
+   "id": 68,
    "nome": "Fórum Interinstitucional de Powershoring – Consórcio Nordeste",
    "objetivo": "Plataforma estratégica lançada em outubro de 2025 em Fortaleza (Consórcio Nordeste + Banco do Nordeste + iCS) para coordenar a atração e aceleração de cadeias produtivas verdes baseadas no potencial energético da região. Cinco eixos: infraestrutura logística; indústrias estratégicas e atração de investimentos; cadeia de valor e política industrial verde; financiamento; e capacitação e empregos verdes. Acordos com o iCS e com o prof. Jorge Arbache (criador do termo 'powershoring'); lançou a plataforma Powershoring Intelligence (Ceplan + DEx). Conceito central do PTE-NE.",
    "resumo": "Plataforma do Consórcio Nordeste, Banco do Nordeste e iCS para coordenar a atração de cadeias produtivas verdes baseadas no potencial energético da região.",
@@ -3011,7 +3011,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 72,
+   "id": 69,
    "nome": "Programa Indústria Verde – FIEB",
    "objetivo": "Programa coordenado pelo Sistema FIEB (lançado em maio de 2026) para apoiar cadeias produtivas sustentáveis, bioeconomia, descarbonização e transição energética na Bahia, articulando empresas, municípios, pesquisa e governo. Segundo a FIEB, a Bahia concentra R$ 78 bilhões em investimentos verdes previstos — 59% do total industrial mapeado no estado — com destaque para energia eólica, solar, biocombustíveis e veículos elétricos.",
    "resumo": "Programa do Sistema FIEB que apoia cadeias sustentáveis, bioeconomia e transição energética na Bahia, estado que concentra R$ 78 bilhões em investimentos verdes previstos.",
@@ -3055,7 +3055,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 73,
+   "id": 70,
    "nome": "Plano de Descarbonização e Hub de H2V – Porto do Itaqui / EMAP",
    "objetivo": "Plano de descarbonização do Porto do Itaqui (parceria com o Porto de Valência) para zerar emissões até 2050, com inventário de pegada de carbono. O Maranhão recebe propostas internacionais de H2V; há projeto de turbina hidrocinética com UFMA/EMAP/INCT e a plataforma HYDEAS (Vale + Green Energy Park) para aço verde com H2V, com o estado escolhido pela logística (Itaqui), pelo potencial renovável e pela proximidade de Carajás. Itaqui está entre os 5 portos brasileiros líderes em descarbonização (estudo ANTAQ).",
    "resumo": "Plano de descarbonização do Porto do Itaqui rumo à neutralidade até 2050, com projetos de hidrogênio e aço verde aproveitando a logística e o potencial renovável do Maranhão.",
@@ -3097,7 +3097,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 74,
+   "id": 71,
    "nome": "Complexo Eólico Marinho Dragão do Mar – Energo",
    "objetivo": "Projeto pioneiro de eólica offshore no Ceará (Acaraú, litoral oeste), desenvolvido pela Energo. Investimento previsto de R$ 18 bilhões, potencial de geração de 4 GW e cerca de 2,8 mil empregos diretos+indiretos na construção (125 permanentes). Em licenciamento ambiental no Ibama; integra os mais de 25 projetos offshore mapeados no litoral cearense. O marco legal (Lei 15.097/2025) deu segurança jurídica ao setor.",
    "resumo": "Projeto pioneiro de energia eólica offshore no Ceará, com R$ 18 bilhões previstos e potencial de 4 GW, em fase de licenciamento ambiental.",
@@ -3141,7 +3141,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 75,
+   "id": 72,
    "nome": "Hub de Hidrogênio Verde de Sergipe – Green Energy Park / SergipeTec",
    "objetivo": "Hub de H2V coordenado pela Desenvolve-SE, com a Green Energy Park prevendo investir até US$ 5 bilhões, integrado ao Terminal Marítimo Inácio Barbosa (TMIB) e à ZPE. Obteve parecer de acesso à rede básica do SIN (SNTEP/MME, mai/2025). O SergipeTec, via Núcleo de Energias Renováveis (NEREES), conduz pesquisa em H2V a partir de energia solar para o semiárido e de biomassa/biogás (projeto com a BioWatt usando macrófitas do Rio São Francisco). Projetos apresentados na COP30.",
    "resumo": "Hub de hidrogênio verde coordenado pela Desenvolve-SE, com até US$ 5 bilhões previstos, integrado ao terminal marítimo e à ZPE, com pesquisa em solar e biogás.",
@@ -3185,7 +3185,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 76,
+   "id": 73,
    "nome": "Cooperativa de Energia Solar Bem Viver / CERSA",
    "objetivo": "Cooperativa de compartilhamento de energia solar formada a partir do projeto 'Cuidando da Nossa Casa Comum', articulada pelo Comitê de Energias Renováveis do Semiárido (CERSA, ativo desde 2014). Usina solar instalada no Centro de Educação Popular e Formação Social em Matureia (PB); modelo coletivo de geração comunitária no semiárido, com agricultores de Patos/PB e captação de água de chuva integrada aos painéis. Quatro eixos: problematização, experiências comunitárias, políticas públicas, e trabalho e renda. Intercâmbios com comunidades quilombolas (PI/BA).",
    "resumo": "Cooperativa de energia solar compartilhada do Semiárido paraibano, com geração comunitária, captação de água de chuva e forte componente de formação social.",
@@ -3229,7 +3229,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 77,
+   "id": 74,
    "nome": "Grupo EQM / ZEG Biogás – Biometano da Vinhaça",
    "objetivo": "Parceria entre o Grupo EQM (Usina Utinga/AL e Usina Cucau/PE) e a ZEG Biogás (braço de biogás/biometano da Vibra Energia) para produzir biometano de alta pureza a partir da vinhaça em dois estados do NE, com a Usina Cucau (PE) como projeto pioneiro. MoU assinado em 2024, com contrato em fase de celebração e investimentos na casa das centenas de milhões de reais.",
    "resumo": "Parceria que produz biometano de alta pureza a partir da vinhaça em usinas de Alagoas e Pernambuco, tendo a Usina Cucau como projeto pioneiro.",
@@ -3271,7 +3271,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 78,
+   "id": 75,
    "nome": "SENAI e Hubs de Inovação em Hidrogênio Verde / Powershoring",
    "objetivo": "Infraestrutura habilitadora de P&D e capacitação para a transição energética no NE. Além do TechHub Suape (SENAI-PE), inclui a rede de polos da chamada bilateral Brasil-Alemanha (R$ 21 milhões), o programa iH2Brasil/Aliança Brasil-Alemanha e o ecossistema universitário (UFC — pesquisa em H2V há 16+ anos, UFRN, UFPE, UFBA, UFMA). A plataforma Powershoring Intelligence (Ceplan + DEx) reúne dados econômicos, energéticos e logísticos para identificar oportunidades de economia verde no NE.",
    "resumo": "Rede de P&D e capacitação para a transição energética no Nordeste, com TechHubs do SENAI, cooperação Brasil-Alemanha e ecossistema universitário.",
@@ -3313,7 +3313,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 79,
+   "id": 76,
    "nome": "Programa Eco Invest Brasil",
    "objetivo": "Programa federal de finanças sustentáveis lançado em fev/2024, liderado pela Secretaria do Tesouro Nacional (Ministério da Fazenda) com operação via BNDES, integrante do Plano de Transformação Ecológica – Novo Brasil. Mobiliza capital privado internacional por meio de blended finance e capital catalítico, com mecanismos inéditos no país: proteção (hedge) cambial, linhas de liquidez e estruturação de projetos, reduzindo o custo de capital. Encerrou 2025 com cerca de R$ 14 bilhões contratados (1º leilão) e cerca de R$ 75 bilhões mobilizados nos três leilões (R$ 46 bi captados no exterior). No Nordeste, o 1º desembolso (HSBC, ~R$ 125 mi) financiou a biorrefinaria de diesel verde/SAF a partir de macaúba em terras degradadas na Bahia, e o programa passou a apoiar a resiliência de redes elétricas na BA. Parceiros: BID e Embaixada do Reino Unido.",
    "resumo": "Programa federal de finanças sustentáveis que mobiliza capital privado internacional via blended finance e hedge cambial; mobilizou cerca de R$ 75 bilhões em três leilões.",
@@ -3355,7 +3355,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 80,
+   "id": 77,
    "nome": "Debêntures Verdes da Casa dos Ventos (Complexo Rio do Vento)",
    "objetivo": "Primeira emissão de títulos verdes (green bonds) da Casa dos Ventos: R$ 430 milhões em debêntures incentivadas (Lei 12.431/2011), realizada em 04/05/2022, prazo de 16 anos, com rating AA da Fitch, negociadas na B3 e parecer de segunda opinião (SPO) da SITAWI atestando alinhamento aos Green Bond Principles do ICMA. Os recursos financiaram a Fase II do Complexo Eólico Rio do Vento, em João Câmara (RN) — quatro parques somando 268 MW (~1.389 GWh/ano), evitando ~662 mil t CO2e/ano. Coordenação por BTG Pactual, Itaú BBA e BNDES (1ª participação do BNDES na coordenação de debêntures). O complexo completo prevê 1.038 MW e R$ 4,9 bi, com financiamento adicional do BNDES e do Banco do Nordeste. Demonstra a viabilidade do mercado de capitais verde com lastro no semiárido nordestino (emissões subsequentes na BA e no RN).",
    "resumo": "Primeira emissão de green bonds da Casa dos Ventos (R$ 430 milhões) para financiar a expansão do Complexo Eólico Rio do Vento, no Rio Grande do Norte.",
@@ -3397,7 +3397,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 81,
+   "id": 78,
    "nome": "Instituto Clima e Sociedade",
    "objetivo": "Organização filantrópica criada em 2015 que funciona como plataforma de filantropia climática, atuando como ponte (regranter) entre financiadores internacionais (Oak, CIFF, Hewlett, ClimateWorks) e parceiros locais para promover desenvolvimento de baixo carbono no Brasil sob uma lente de justiça social. No Nordeste, é coorganizador do Fórum Interinstitucional de Powershoring com o Consórcio Nordeste e o Banco do Nordeste e, na COP30 (nov/2025, em Belém), assinou com o Banco do Brasil e o Consórcio Nordeste um Memorando de Entendimento para estruturas inovadoras de financiamento e a elaboração de uma taxonomia de investimentos em powershoring. É, desde abr/2025, mantenedor do Laboratório de Inovação Financeira (LAB).",
    "resumo": "Plataforma de filantropia climática que conecta financiadores internacionais a parceiros locais para o desenvolvimento de baixo carbono com justiça social; coorganiza o Fórum de Powershoring.",
@@ -3439,7 +3439,7 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 82,
+   "id": 79,
    "nome": "SITAWI Finanças do Bem",
    "objetivo": "Organização sem fins lucrativos (OSCIP) fundada em 2008, pioneira no Brasil em infraestrutura financeira para a Economia de Impacto. Atua com Investimento de Impacto, Gestão de Filantropia, Fundos Patrimoniais e Finanças de Conservação e Clima, usando blended finance (capital empático, lógica 'impact first') e a Plataforma de Empréstimo Coletivo (crowdlending). Já mobilizou mais de R$ 475 milhões para 3.000+ iniciativas. No Nordeste, em parceria com o Instituto Sabin (via ecossistema Impacta Nordeste), realizou chamadas para negócios de impacto captarem entre R$ 100 mil e R$ 500 mil a juros de Selic+2% a.a., com carência de 6 meses e até 30 meses para pagamento; conduziu capacitação financeira presencial em Salvador (BA) e apoiou negócios na BA e no MA.",
    "resumo": "Pioneira em finanças de impacto no Brasil, mobiliza recursos via blended finance e crowdlending; no Nordeste apoia negócios de impacto com crédito acessível.",

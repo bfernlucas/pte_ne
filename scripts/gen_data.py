@@ -223,6 +223,11 @@ def main():
             it["lat"] = it["locais"][0]["lat"]
             it["lon"] = it["locais"][0]["lon"]
 
+    # renumera os IDs sequencialmente (1..N), sem lacunas, após aplicar
+    # exclusões e tudo que dependia dos IDs originais (PRE, FORA_NE, overrides, ALT_LOCAIS)
+    for n, it in enumerate(items, 1):
+        it["id"] = n
+
     meta = {"fonte": "PTE2026_matriz_dashboard.xlsx", "total": len(items),
             "preselecionadas": sum(1 for i in items if i["preselecionada"]),
             "eixos": [{"nome": n, "cod": c, "cor": cor} for n, c, cor in EIXO_CORES],

@@ -22,11 +22,11 @@
   // ----- seleção de campo (base para Análises e Rotas): visitas e entrevistas -----
   const SEL = { visita: new Set(), entrevista: new Set() };
   try {
-    const sv = JSON.parse((window.localStorage && localStorage.getItem("pte_sel")) || "{}");
+    const sv = JSON.parse((window.localStorage && localStorage.getItem("pte_sel2")) || "{}");
     (sv.visita || []).forEach(id => SEL.visita.add(id));
     (sv.entrevista || []).forEach(id => SEL.entrevista.add(id));
   } catch (e) { /* ignore */ }
-  function saveSel() { try { if (window.localStorage) localStorage.setItem("pte_sel", JSON.stringify({ visita: [...SEL.visita], entrevista: [...SEL.entrevista] })); } catch (e) {} }
+  function saveSel() { try { if (window.localStorage) localStorage.setItem("pte_sel2", JSON.stringify({ visita: [...SEL.visita], entrevista: [...SEL.entrevista] })); } catch (e) {} }
   const selUnion = () => new Set([...SEL.visita, ...SEL.entrevista]);
   const selItems = () => [...selUnion()].map(id => byId(id)).filter(Boolean);
   function toggleSel(group, id) { const s = SEL[group]; if (s.has(id)) s.delete(id); else s.add(id); saveSel(); }
