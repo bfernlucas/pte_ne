@@ -2064,7 +2064,21 @@ window.PTE_DATA = {
    },
    "pontuacao": 24,
    "observacoes": "sobre a Trilha:\n- Primeira trilha de longo curso no ecótopo triplo entre Caatinga, Cerrado e Mata Atlântica, com percurso de 130 quilômetros de extensão (inteiramente sinalizados), inseridos na Área de Proteção Ambiental (APA) Serra da Ibiapaba, conectando em suas extremidades os Parques Nacionais de Ubajara (CE) e Sete Cidades (PI).\n- compoe a Rede Brasileira de Trilhas;\n- Seu percurso atravessa seis municípios, sendo três no Ceará (Ubajara, Tianguá e Ibiapina) e três no Piauí (Brasileira, Piracuruca e São João da Fronteira), em uma região marcada pela transição entre os biomas Caatinga e Cerrado, com formações florestais diversas e uma expressiva mancha de Mata Atlântica serrana.\n\nSobre turismo verde/ecoturismo\n- Turismo em Unidades de Conservação injetou R$ 40,7 bilhões na economia brasileira em 2025, R$ 20,3 bilhões de contribuição ao Produto Interno Bruto (PIB) e R$ 9,8 bilhões em renda para as famílias. Indica ainda que 175 Unidades de Conservação federais somaram 28,5 milhões de visitas",
-   "fora_ne": false
+   "fora_ne": false,
+   "locais": [
+    {
+     "municipio": "Viçosa do Ceará",
+     "uf": "CE",
+     "lat": -3.5619,
+     "lon": -41.0922
+    },
+    {
+     "municipio": "Piracuruca",
+     "uf": "PI",
+     "lat": -3.9285,
+     "lon": -41.709
+    }
+   ]
   },
   {
    "id": 50,

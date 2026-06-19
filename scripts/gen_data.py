@@ -24,6 +24,10 @@ ALT_LOCAIS = {
         {"municipio": "Salvador", "uf": "BA", "lat": -12.9777, "lon": -38.5016},
         {"municipio": "Fortaleza", "uf": "CE", "lat": -3.7319, "lon": -38.5267},
     ],
+    52: [  # Trilha Caminhos da Ibiapaba — Viçosa do Ceará (CE) e Piracuruca (PI)
+        {"municipio": "Viçosa do Ceará", "uf": "CE", "lat": -3.5619, "lon": -41.0922},
+        {"municipio": "Piracuruca", "uf": "PI", "lat": -3.9285, "lon": -41.7090},
+    ],
 }
 
 # Revisão editorial dos nomes: nome principal padronizado, sem siglas de UF,
