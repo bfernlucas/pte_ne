@@ -15,7 +15,7 @@ PRE = {27: ["MA"], 21: ["PI"], 52: ["PI", "CE"], 10: ["CE", "RN", "PB", "PE", "A
        39: ["PE"], 56: ["AL"], 9: ["AL"], 16: ["AL"], 66: ["AL"], 67: ["AL"], 47: ["AL"],
        50: ["SE"], 75: ["SE"], 3: ["BA"], 17: ["BA"], 65: ["BA"], 72: ["BA"]}
 FORA_NE = {11, 19, 59, 60, 70}  # sede fora do NE (não são sites de visita de campo)
-EXCLUDE = {29}  # ID 29 (Crédito de Carbono Integral/CCI-BSHE) removida — mesma entidade da ID 56
+EXCLUDE = {29, 8}  # 29: mesma entidade da ID 56 · 8: Projeto Pacto Global de Jovens pelo Clima (a pedido)
 
 # Iniciativas com mais de um local de visita possível. A rota escolhe a
 # coordenada ótima entre estes pontos; o mapa mostra todos.

@@ -1,7 +1,7 @@
 window.PTE_DATA = {
  "meta": {
   "fonte": "PTE2026_matriz_dashboard.xlsx",
-  "total": 81,
+  "total": 80,
   "preselecionadas": 31,
   "eixos": [
    {
@@ -375,48 +375,6 @@ window.PTE_DATA = {
    },
    "pontuacao": 20,
    "observacoes": "Salvaguardas: a inciativa ainda está em desenvolvimento, não temos informações disponíveis para classificar a salvaguardas dos projetos financiados ou mesmo da atuação.\n\nAtribuição das notas: é uma iniciativa que ainda está em construção e com foco em financiamento climático para descarbonização com parceria do Governo Federal e o Reino Unido, buscam financiar até 20 startups de tecnlogias limpas, possuí uma forte capacidade de atração de investimentos verdes e iniciativas inovadoras, com forte presença de governança multinível, sendo um piloto como o objetivo de ser replicado tanto na escala nacional e internacional. Não é mencionada nenhuma abordagem sobre cadeias produtivas ou equidade/trabalho digno, também não apresenta um recorte específico para o Nordeste, embora mencionados os Portos do Pecém e Suape. Talvez, a iniciativa se vincule mais ao eixo de transição energética e transversal às finanças solidárias.\n\nSugestão: a inciativa poderia ser uma interessante entrevista em profundidade (remota) para verificar o desenho de governança para financiamento e escolha dos projetos.",
-   "preselecionada": false,
-   "pre_ufs": [],
-   "fora_ne": false
-  },
-  {
-   "id": 8,
-   "nome": "Projeto Pacto Global de Jovens pelo Clima",
-   "objetivo": "Preparar jovens estudantes, por meio da educação ambiental ativa e participativa, para ocupar os espaços de poder ativamente na luta por justiça socioambiental no contexto das crises climáticas para que se tornem \" sentinelas\" em defesa do desenvolvimento sustentável local.",
-   "resumo": "Prepara jovens estudantes, pela educação ambiental ativa, para atuar como protagonistas na luta por justiça socioambiental diante das crises climáticas.",
-   "tematica": "Educação ambiental, soluções inovadoras de impacto social.",
-   "org": "Organização das Nações Unidas (ONU) – Pacto Global",
-   "cnpj": "37.321.091/0001-77",
-   "fundacao": "11/05/2020",
-   "cnae": "9430-8/00 - Atividades de associações de defesa de direitos sociais",
-   "endereco": "Centro de Estudos Avançados, Campus Recife da UFPE, Biblioteca Central -segundo andar, Avenida Reitor Joaquim Amazonas s/n; CEP 50740-570.",
-   "lat": -8.0476,
-   "lon": -34.877,
-   "avaliador": "Caio",
-   "municipio": null,
-   "estado": null,
-   "biomas": null,
-   "eixo": "Adensamento Tecnológico",
-   "eixo_cod": "ADT",
-   "eixo_sec": null,
-   "setor": "Terciário",
-   "natureza": "Associação Privada",
-   "tipo_inst": null,
-   "salvaguardas": null,
-   "criterios": {
-    "relevancia": null,
-    "clima": null,
-    "cadeias": null,
-    "viabilidade": null,
-    "replicabilidade": null,
-    "inovacao": null,
-    "investimentos": null,
-    "inclusao": null,
-    "equidade": null,
-    "governanca": null
-   },
-   "pontuacao": 0,
-   "observacoes": "Iniciativa se trata de uma mobilização de educação ambiental e científica da ONU. Não encontrei incidência no nordeste (no ciclo 2015 - 2018 eram apenas estados DF, SP e SC). Não penso que seja um projeto que faça sentido estar dentro da carteira de investimentos.",
    "preselecionada": false,
    "pre_ufs": [],
    "fora_ne": false
