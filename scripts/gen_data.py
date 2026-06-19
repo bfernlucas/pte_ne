@@ -15,6 +15,7 @@ PRE = {27: ["MA"], 21: ["PI"], 52: ["PI", "CE"], 10: ["CE", "RN", "PB", "PE", "A
        39: ["PE"], 56: ["AL"], 9: ["AL"], 16: ["AL"], 66: ["AL"], 67: ["AL"], 47: ["AL"],
        50: ["SE"], 75: ["SE"], 3: ["BA"], 17: ["BA"], 65: ["BA"], 72: ["BA"]}
 FORA_NE = {11, 19, 59, 60, 70}  # sede fora do NE (não são sites de visita de campo)
+EXCLUDE = {29}  # ID 29 (Crédito de Carbono Integral/CCI-BSHE) removida — mesma entidade da ID 56
 
 # Iniciativas com mais de um local de visita possível. A rota escolhe a
 # coordenada ótima entre estes pontos; o mapa mostra todos.
@@ -57,6 +58,7 @@ NAME_OVERRIDES = {
     47: "SIMACaatinga",
     49: "Renova-Semiárido",
     51: "No Clima da Caatinga",
+    56: "Projetos de Conservação e Sustentabilidade do Bioma Caatinga",
     59: "Comitê da Bacia Hidrográfica do Rio São Francisco (CBHSF)",
     60: "Observatório da Transição Energética",
     61: "Hub de Hidrogênio Verde do Complexo do Pecém",
@@ -73,6 +75,11 @@ NAME_OVERRIDES = {
     80: "Debêntures Verdes da Casa dos Ventos (Complexo Rio do Vento)",
     81: "Instituto Clima e Sociedade",
     82: "SITAWI Finanças do Bem",
+}
+
+# Ajuste de organização (subtítulo) — quando difere do que consta na planilha
+ORG_OVERRIDES = {
+    56: "Associação de Produtores de Crédito da Caatinga",
 }
 
 EIXO_COD = {"Finanças Sustentáveis e Inclusivas": "FSI", "Adensamento Tecnológico": "ADT",
@@ -108,11 +115,13 @@ def main():
         if not nm or str(nm).strip().upper() == "NOVAS INICIATIVAS":
             continue
         idn = int(val(r, 1))
+        if idn in EXCLUDE:
+            continue
         nm = NAME_OVERRIDES.get(idn, nm)
         crit = {key: val(r, 22 + k) for k, (key, _) in enumerate(CRIT)}
         eixo = val(r, 16)
         items.append({
-            "id": idn, "nome": nm, "objetivo": val(r, 3), "tematica": val(r, 4), "org": val(r, 5),
+            "id": idn, "nome": nm, "objetivo": val(r, 3), "tematica": val(r, 4), "org": ORG_OVERRIDES.get(idn, val(r, 5)),
             "cnpj": val(r, 6), "fundacao": val(r, 7), "cnae": val(r, 8), "endereco": val(r, 9),
             "lat": val(r, 10), "lon": val(r, 11), "avaliador": val(r, 12),
             "municipio": val(r, 13), "estado": val(r, 14), "biomas": val(r, 15),

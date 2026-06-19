@@ -1,7 +1,7 @@
 window.PTE_DATA = {
  "meta": {
   "fonte": "PTE2026_matriz_dashboard.xlsx",
-  "total": 82,
+  "total": 81,
   "preselecionadas": 31,
   "eixos": [
    {
@@ -1274,47 +1274,6 @@ window.PTE_DATA = {
    "fora_ne": false
   },
   {
-   "id": 29,
-   "nome": "Crédito de Carbono Integral (CCI-BSHE)",
-   "objetivo": "Desenvolver e validar uma metodologia brasileira para certificar a absorção de carbono em vegetação nativa da Caatinga, criando um Mercado de Crédito de Carbono Social que remunera a conservação do bioma e promove a justiça socioambiental para pequenos produtores rurais.",
-   "tematica": "Mercado de carbono social; conservação da Caatinga",
-   "org": "Associação dos Produtores de Crédito de Carbono Social do Bioma Caatinga",
-   "cnpj": "48.123.437/0001-49",
-   "fundacao": "11/08/2022",
-   "cnae": "9430-8/00 - Atividades de associações de defesa de direitos sociais",
-   "endereco": "Fazenda Olho D'Aguinha S/N, Delmiro Gouveia - AL\n\nZona Rural\n\nCEP: 57480-000",
-   "lat": -9.3856,
-   "lon": -37.9966,
-   "avaliador": "Lucas",
-   "municipio": "Delmiro Gouveia",
-   "estado": "AL",
-   "biomas": "Caatinga",
-   "eixo": "Transição Energética",
-   "eixo_cod": "TE",
-   "eixo_sec": "BIO, EC",
-   "setor": "Terciário",
-   "natureza": "Associação Privada",
-   "tipo_inst": "Associação / Cooperativa",
-   "salvaguardas": "Atende",
-   "criterios": {
-    "relevancia": 1,
-    "clima": 3,
-    "cadeias": 2,
-    "viabilidade": 1,
-    "replicabilidade": 1,
-    "inovacao": 3,
-    "investimentos": 3,
-    "inclusao": 3,
-    "equidade": 2,
-    "governanca": 3
-   },
-   "pontuacao": 22,
-   "observacoes": "SSM: atende com algumas suposições. Na verdade, a metodologia é desenvolvida pela Associação e Cooperativa de Crédito de Carbono Social do Bioma Caatinga, em Delmiro Gouveia, Alagoas. Tem algum apoio do IC, Centro Brasil no Clima e da União Europeia, mas ainda é uma metodologia experimental, conceitualmente não apresenta nenhum problema de salvaguarda.\n\nCritérios: a metodologia foi desenvolvida pelo Centro Brasil no Clima, com apoio do Lab de Economia Regenerativa do Rio São Francisco, para instituir um processo de certificação de carbono na Caatinga a partir das cooperativas da agricultura familiar, que é o ponto forte da iniciativa. O diferencial foi integrar os elementos de captura do carbono, pagamento por serviços ambientais, redes agro-solares (usinas fotovoltáicas) e valor de perda por danos e justiça climática. A transição energética é o foco central, com relevância para sociobioeconomia, equidade de gênero, finanças climáticas. Mas, ainda é uma iniciativa muito inecipiente, que está sendo desenvolvida, não foi possível verificar sua robustez ou possível escala. Além do mais, é a primeira cooperativa de crédito de carbono da Caatinga, com um modelo integrado e regenerativo pensado para um bioma esquecido pelo mercado de carbono. Os pontos fracos são a viabilidade e o estágio: a iniciativa está em fase de formulação (levantamento de áreas, cálculo de créditos e articulação de investidores), sem créditos certificados ou comercializados em escala, e roda no mercado voluntário. \n\nSugestão: realizar visita.",
-   "preselecionada": false,
-   "pre_ufs": [],
-   "fora_ne": false
-  },
-  {
    "id": 30,
    "nome": "Programa Município Selo Verde",
    "objetivo": "Certificação ambiental pública que reconhece e valoriza os municípios que adotam políticas e práticas efetivas de conservação ambiental e uso sustentável dos recursos naturais, promovendo a melhoria contínua da gestão ambiental local.",
@@ -2399,10 +2358,10 @@ window.PTE_DATA = {
   },
   {
    "id": 56,
-   "nome": "Associação dos Produtores de Crédito de Carbono Social do Bioma Caatinga",
+   "nome": "Projetos de Conservação e Sustentabilidade do Bioma Caatinga",
    "objetivo": "A Associação dos Produtores de Crédito de Carbono Social do Bioma Caatinga reúne, desde 2022, agricultores familiares, comunidades tradicionais e técnicos para desenvolver um modelo de crédito de carbono integral, buscando a valorização da biodiversidade local e geração de renda. Seu objetivo é gerar renda por meio da preservação da floresta em pé, atuando principalmente na região do cânion do Rio São Francisco e se expandindo para todo o semiárido brasileiro.",
    "tematica": "Enfrentamento as mudanças climáticas, preservação ambiental, recuperação de área degradadas, certificação ambiental e atesto de processos de absorção de Carbono",
-   "org": "SEBRAE",
+   "org": "Associação de Produtores de Crédito da Caatinga",
    "cnpj": "48.123.437/0001-49",
    "fundacao": "11/08/2022",
    "cnae": "9430-8/00 | Atividades de associações de defesa de direitos sociais",
