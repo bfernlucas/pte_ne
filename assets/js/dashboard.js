@@ -193,6 +193,38 @@
     }));
   }
 
+  // ---------- agrupamento de marcadores sobrepostos ----------
+  // Quando há iniciativas no mesmo município (ou muito próximas) os círculos ficam
+  // sobrepostos. Com o Leaflet.markercluster eles viram um único círculo com o nº de
+  // iniciativas; ao clicar, ele "abre" (spiderfy/zoom) para ver e clicar cada uma.
+  function clusterIcon(cluster) {
+    const n = cluster.getChildCount();
+    const s = n < 10 ? 34 : n < 25 ? 40 : 46;
+    return L.divIcon({
+      className: "pte-cluster",
+      html: `<div style="width:${s}px;height:${s}px;border-radius:50%;background:rgba(41,45,118,.9);` +
+        `color:#fff;text-align:center;font:700 13px/${s}px Roboto,Arial,sans-serif;` +
+        `border:3px solid rgba(255,255,255,.92);box-shadow:0 1px 5px rgba(0,0,0,.35)">${n}</div>`,
+      iconSize: [s, s], iconAnchor: [s / 2, s / 2]
+    });
+  }
+  // camada de marcadores: usa cluster quando o plugin está disponível; senão, layerGroup simples
+  function makeMarkerLayer() {
+    if (!L.markerClusterGroup) return L.layerGroup();
+    return L.markerClusterGroup({
+      maxClusterRadius: 40,             // só agrupa pontos realmente próximos
+      showCoverageOnHover: false,
+      spiderfyDistanceMultiplier: 1.5,  // separa bem as iniciativas ao abrir
+      iconCreateFunction: clusterIcon,
+      chunkedLoading: true
+    });
+  }
+  // adiciona uma lista de marcadores à camada (bulk no cluster, individual no layerGroup)
+  function addMarkers(layer, markers) {
+    if (layer.addLayers) layer.addLayers(markers);
+    else markers.forEach(m => m.addTo(layer));
+  }
+
   // ---------- MAPA GERAL ----------
   let mapGeral, layerGeral;
   function ensureMapGeral() {
@@ -201,7 +233,7 @@
     if (window.PTE_MAP) PTE_MAP.setup(mapGeral, { base: "Ruas e estradas", boundaries: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
       { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20 }).addTo(mapGeral);
-    layerGeral = L.layerGroup().addTo(mapGeral);
+    layerGeral = makeMarkerLayer().addTo(mapGeral);
     renderMapLegend();
   }
   function markerR(v) { return 7 + 17 * ((v - PMIN) / Math.max(1, PMAX - PMIN)); }
@@ -223,6 +255,7 @@
   function renderMapGeral(list) {
     ensureMapGeral();
     layerGeral.clearLayers();
+    const markers = [];
     list.forEach(i => {
       const locs = (i.locais && i.locais.length) ? i.locais
         : (i.lat != null && i.lon != null ? [{ lat: i.lat, lon: i.lon, municipio: i.municipio, uf: ufTokens(i.estado).join(", ") }] : []);
@@ -230,12 +263,13 @@
       locs.forEach((loc, li) => {
         const extra = locs.length > 1 ? `<br><span class="pp-k">Local ${li + 1} de ${locs.length}:</span> ${esc(loc.municipio || "")}${loc.uf ? "/" + esc(loc.uf) : ""}` : "";
         const t = selType(i.id);
-        L.circleMarker([loc.lat, loc.lon], {
+        markers.push(L.circleMarker([loc.lat, loc.lon], {
           radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: i.fora_ne ? .5 : .85,
           color: t === "visita" ? "#f37520" : t === "entrevista" ? "#16a34a" : "#fff", weight: t ? 3.4 : 1.4
-        }).bindPopup(popupHtml(i) + extra).addTo(layerGeral);
+        }).bindPopup(popupHtml(i) + extra));
       });
     });
+    addMarkers(layerGeral, markers);
     setTimeout(() => mapGeral.invalidateSize(), 50);
   }
   function popupHtml(i) {
@@ -256,7 +290,7 @@
     const m = L.map(id, { zoomControl: true }).setView([-8.6, -39.5], 5);
     if (window.PTE_MAP) window.PTE_MAP.setup(m, { base: "Ruas e estradas", boundaries: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 20 }).addTo(m);
-    selLayer[group] = L.layerGroup().addTo(m);
+    selLayer[group] = makeMarkerLayer().addTo(m);
     selMap[group] = m;
   }
   function selStyle(i, group) {
@@ -267,17 +301,18 @@
   function renderSelMap(group) {
     ensureSelMap(group);
     const lay = selLayer[group]; lay.clearLayers();
+    const markers = [];
     selFiltered(group).forEach(i => {
       const locs = (i.locais && i.locais.length) ? i.locais : [{ lat: i.lat, lon: i.lon }];
       locs.forEach(loc => {
         const other = group === "visita" ? "entrevista" : "visita";
         const inOther = SEL[other].has(i.id);
-        L.circleMarker([loc.lat, loc.lon], selStyle(i, group))
+        markers.push(L.circleMarker([loc.lat, loc.lon], selStyle(i, group))
           .bindTooltip(`${esc(i.nome)} · ${i.pontuacao} pts${SEL[group].has(i.id) ? " ✓" : ""}${inOther ? (group === "visita" ? " (já em entrevistas)" : " (já em visitas)") : ""}`, { direction: "top" })
-          .on("click", () => { toggleSel(group, i.id); renderSelecao(); })
-          .addTo(lay);
+          .on("click", () => { toggleSel(group, i.id); renderSelecao(); }));
       });
     });
+    addMarkers(lay, markers);
     setTimeout(() => selMap[group].invalidateSize(), 30);
   }
   function renderSelList(group) {

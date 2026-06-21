@@ -2070,7 +2070,7 @@ window.PTE_DATA = {
    "cnpj": "08.829.974/0002-75",
    "fundacao": "26/04/2007",
    "cnae": "8411600 - Administração pública em geral",
-   "endereco": "Rodovia Prefeito Vicente Miranda Filho, Viçosa do Ceará, Ceará, 62300-000",
+   "endereco": "Parque Nacional de Sete Cidades, Piracuruca, PI, 64240-000",
    "lat": -3.5619,
    "lon": -41.0922,
    "avaliador": "Leide",
