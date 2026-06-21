@@ -194,12 +194,14 @@
   }
 
   // ---------- agrupamento de marcadores sobrepostos ----------
-  // Quando há iniciativas no mesmo município (ou muito próximas) os círculos ficam
-  // sobrepostos. Com o Leaflet.markercluster eles viram um único círculo com o nº de
-  // iniciativas; ao clicar, ele "abre" (spiderfy/zoom) para ver e clicar cada uma.
+  // Iniciativas no mesmo município compartilham a MESMA coordenada (centroide), então
+  // ficam empilhadas e as de baixo somem. Só esses casos são agrupados: viram um círculo
+  // com o nº de iniciativas e, ao clicar, ele se "abre" (spiderfy) para ver/clicar cada uma.
+  // Pontos em locais distintos NÃO são agrupados — preservam cor (eixo), tamanho (nota) e
+  // posição, mantendo a leitura da diversidade e da distribuição geográfica.
   function clusterIcon(cluster) {
     const n = cluster.getChildCount();
-    const s = n < 10 ? 34 : n < 25 ? 40 : 46;
+    const s = n < 10 ? 32 : n < 25 ? 38 : 44;
     return L.divIcon({
       className: "pte-cluster",
       html: `<div style="width:${s}px;height:${s}px;border-radius:50%;background:rgba(41,45,118,.9);` +
@@ -212,9 +214,12 @@
   function makeMarkerLayer() {
     if (!L.markerClusterGroup) return L.layerGroup();
     return L.markerClusterGroup({
-      maxClusterRadius: 40,             // só agrupa pontos realmente próximos
+      // raio mínimo: só agrupa pontos praticamente coincidentes (mesma coordenada).
+      // Locais distintos nunca colapsam, mesmo com o mapa bem afastado.
+      maxClusterRadius: 1,
       showCoverageOnHover: false,
-      spiderfyDistanceMultiplier: 1.5,  // separa bem as iniciativas ao abrir
+      spiderfyOnMaxZoom: true,          // pontos idênticos só se separam abrindo (spiderfy)
+      spiderfyDistanceMultiplier: 1.9,  // espalha bem os grupos maiores (8–10 iniciativas)
       iconCreateFunction: clusterIcon,
       chunkedLoading: true
     });
