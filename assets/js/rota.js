@@ -1002,7 +1002,8 @@
     mMap = L.map("map-rota-manual").setView([-8.6, -39.5], 5);
     if (window.PTE_MAP) PTE_MAP.setup(mMap, { base: "Ruas e estradas", boundaries: true, airports: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 20, crossOrigin: true }).addTo(mMap);
-    mAllLayer = L.layerGroup().addTo(mMap);
+    // agrupa pontos coincidentes (mesmo template do Mapa geral / Seleção)
+    mAllLayer = (mLastH && mLastH.makeMarkerLayer ? mLastH.makeMarkerLayer() : L.layerGroup()).addTo(mMap);
     mRouteLayer = L.layerGroup().addTo(mMap);
   }
   function mReadParams() {
@@ -1084,6 +1085,7 @@
   function mRenderMarkers(H) {
     if (!mAllLayer) return;
     mAllLayer.clearLayers();
+    const markers = [];
     H.ITEMS.forEach(it => {
       const vis = mSel.visita.has(it.id), ent = mSel.entrevista.has(it.id);
       const locs = locsOf(it, H);
@@ -1094,7 +1096,7 @@
         if (found) {
           mk = L.marker([loc.lat, loc.lon], { icon: numIcon(found.order, found.color, false, false) });
         } else {
-          // destaca as pré-selecionadas: visita = anel laranja, entrevista = anel verde
+          // destaca as pré-selecionadas: visita = anel dourado, entrevista = anel verde
           mk = L.circleMarker([loc.lat, loc.lon], {
             radius: vis ? 8 : ent ? 7 : 6,
             fillColor: H.eixoColor(it.eixo_cod),
@@ -1106,9 +1108,11 @@
         const tag = vis ? " · pré-selecionada p/ visita" : ent ? " · pré-selecionada p/ entrevista" : "";
         mk.bindTooltip(`${H.esc(it.nome)} · ${it.pontuacao} pts${tag}${found ? " — " + H.esc(mRoutes[found.ri].nome) + " #" + found.order : ""}`, { direction: "top", offset: [0, -6] });
         mk.on("click", () => mToggleStop(it.id, li));
-        mk.addTo(mAllLayer);
+        markers.push(mk);
       });
     });
+    if (H.addMarkers) H.addMarkers(mAllLayer, markers);
+    else markers.forEach(m => m.addTo(mAllLayer));
   }
   function mBuildNodes(r, H) {
     return r.stops.map(s => {

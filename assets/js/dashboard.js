@@ -711,7 +711,7 @@
     else if (state.view === "rota-manual" && window.PTE_ROTAS && window.PTE_ROTAS.renderManual) window.PTE_ROTAS.renderManual(helpers());
     else if (state.view === "comparar") renderCompare();
   }
-  function helpers() { return { ITEMS, META, byId, eixoColor, nameByCod, popupHtml, ufTokens, ufLabel, esc, trunc, orgSub, UF_NOME, selItems, fieldSel: () => ({ visita: new Set(SEL.visita), entrevista: new Set(SEL.entrevista) }) }; }
+  function helpers() { return { ITEMS, META, byId, eixoColor, nameByCod, popupHtml, ufTokens, ufLabel, esc, trunc, orgSub, UF_NOME, selItems, makeMarkerLayer, addMarkers, fieldSel: () => ({ visita: new Set(SEL.visita), entrevista: new Set(SEL.entrevista) }) }; }
 
   function esc(s) { return (s == null ? "" : String(s)).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function trunc(s, n) { s = s == null ? "" : String(s); return s.length > n ? s.slice(0, n - 1) + "…" : s; }
