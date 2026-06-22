@@ -146,7 +146,19 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .map-side{display:flex;flex-direction:column;gap:14px}
 .legend{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
 .legend h4{font-size:.74rem;color:var(--brand);margin-bottom:9px;letter-spacing:.05em}
+.legend h4 small{font-family:var(--font);text-transform:none;letter-spacing:0;color:var(--faint);font-size:.66rem;font-weight:400}
 .legend .li{display:flex;align-items:center;gap:9px;font-size:.8rem;padding:3px 0;color:var(--ink)}
+.legend .li.clk{cursor:pointer;border-radius:6px;padding:3px 6px;margin:0 -6px}
+.legend .li.clk:hover{background:var(--surface-2)}
+.legend .li.clk.active{background:#eef2fb;font-weight:600}
+.legend .dot.ext-dot{background:#fff;border:2px dashed #8a90a0;width:13px;height:13px}
+.map-count{background:rgba(255,255,255,.95);border:1px solid var(--border);border-radius:8px;padding:4px 10px;
+  font-size:.78rem;color:var(--ink);box-shadow:0 1px 4px rgba(20,25,60,.15)}
+.map-count b{color:var(--brand);font-variant-numeric:tabular-nums}
+.pp-resumo{font-size:.78rem;color:var(--muted);line-height:1.45;margin:7px 0 2px;max-width:250px}
+.pp-card{margin-top:6px;border:none;background:var(--brand);color:#fff;border-radius:6px;padding:5px 11px;
+  font-size:.76rem;font-weight:600;cursor:pointer;font-family:var(--font)}
+.pp-card:hover{background:var(--brand-2)}
 .legend .dot{width:13px;height:13px;border-radius:50%;flex:0 0 auto}
 .legend .sizes{display:flex;align-items:flex-end;gap:14px;padding:6px 2px 2px}
 .legend .sz{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:.7rem}

@@ -231,63 +231,106 @@
   }
 
   // ---------- MAPA GERAL ----------
-  let mapGeral, layerGeral, mapGeralFitted = false;
+  let mapGeral, layerGeral, mapGeralFitted = false, mapGeralCtrl = null, heatLayer = null, mapCountEl = null, mapGeralSig = "";
   const NE_BOUNDS = [[-18.4, -48.9], [-1.0, -34.2]]; // enquadra o Nordeste (foco do plano)
+  const filterActive = () => !!(filters.busca || filters.eixo || filters.estado || filters.bioma || filters.pre);
+  function isNEpoint(i, loc) {
+    let uf = (loc.uf && /^[A-Z]{2}$/.test(loc.uf)) ? loc.uf : (ufTokens(i.estado).find(u => u !== "NE") || "");
+    if (UF_ORDER.includes(uf)) return true;
+    if (uf) return false; // UF real fora do NE (RJ/SP/DF...)
+    return loc.lat <= -1 && loc.lat >= -18.6 && loc.lon >= -49 && loc.lon <= -34; // fallback por coordenada
+  }
   function ensureMapGeral() {
     if (mapGeral) return;
     mapGeral = L.map("map-geral", { zoomControl: true }).setView([-8.6, -39.5], 5);
-    if (window.PTE_MAP) PTE_MAP.setup(mapGeral, { base: "Ruas e estradas", boundaries: true, noAirports: true });
+    if (window.PTE_MAP) { const r = PTE_MAP.setup(mapGeral, { base: "Ruas e estradas", boundaries: true, noAirports: true }); mapGeralCtrl = r && r.control; }
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
       { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20 }).addTo(mapGeral);
     layerGeral = makeMarkerLayer().addTo(mapGeral);
+    // camada de calor (concentração geográfica), alternável no controle de camadas
+    if (L.heatLayer) { heatLayer = L.heatLayer([], { radius: 26, blur: 18, maxZoom: 9, minOpacity: .25 }); if (mapGeralCtrl) mapGeralCtrl.addOverlay(heatLayer, "Concentração (calor)"); }
+    // selo de contagem no canto do mapa
+    const cc = L.control({ position: "bottomleft" });
+    cc.onAdd = () => { const d = L.DomUtil.create("div", "map-count"); mapCountEl = d; return d; };
+    cc.addTo(mapGeral);
     renderMapLegend();
   }
   function markerR(v) { return 7 + 17 * ((v - PMIN) / Math.max(1, PMAX - PMIN)); }
   function renderMapLegend() {
-    const cores = META.eixos.map(e => `<div class="li"><span class="dot" style="background:${e.cor}"></span>${e.nome}</div>`).join("");
+    const cores = META.eixos.map(e => `<div class="li clk${filters.eixo === e.cod ? " active" : ""}" data-eixo="${e.cod}"><span class="dot" style="background:${e.cor}"></span>${e.nome}</div>`).join("");
     const szs = [PMIN, Math.round((PMIN + PMAX) / 2), PMAX].map(v => {
       const r = markerR(v);
       return `<div class="sz"><span class="szc" style="width:${r * 2}px;height:${r * 2}px"></span>${v}</div>`;
     }).join("");
     $("#map-side").innerHTML = `
-      <div class="legend"><h4>Eixo (cor do círculo)</h4>${cores}</div>
+      <div class="legend"><h4>Eixo (cor do círculo) <small>clique para filtrar</small></h4>${cores}</div>
       <div class="legend"><h4>Nota (tamanho do círculo)</h4><div class="sizes">${szs}</div>
         <div class="li" style="margin-top:8px"><span class="dot ring-pre"></span>Visita técnica (Seleção)</div>
         <div class="li"><span class="dot ring-ent"></span>Entrevista (Seleção)</div>
+        <div class="li"><span class="dot ext-dot"></span>Sede fora do NE</div>
         <div class="li"><span class="uf-leg"></span>Limite estadual</div>
-        <div class="note">Os contornos destacam as iniciativas escolhidas na aba <b>Seleção</b>. Use o controle de camadas (↗) para alternar a base do mapa e ligar/desligar os limites estaduais.</div></div>`;
+        <div class="note">Clique num eixo para filtrar. Os contornos destacam as iniciativas escolhidas na aba <b>Seleção</b>. Use o controle de camadas (↗) para alternar a base, ligar/desligar limites e a camada de calor.</div></div>`;
+    $$("#map-side .li.clk").forEach(el => el.addEventListener("click", () => {
+      const cod = el.dataset.eixo;
+      filters.eixo = (filters.eixo === cod) ? "" : cod;
+      const fe = $("#f-eixo"); if (fe) fe.value = filters.eixo;
+      refresh();
+    }));
   }
   function renderMapGeral(list) {
     ensureMapGeral();
+    renderMapLegend();
     layerGeral.clearLayers();
-    const markers = [];
+    const markers = [], heatPts = [], fitPts = [];
     list.forEach(i => {
       const locs = (i.locais && i.locais.length) ? i.locais
         : (i.lat != null && i.lon != null ? [{ lat: i.lat, lon: i.lon, municipio: i.municipio, uf: ufTokens(i.estado).join(", ") }] : []);
       const r = markerR(i.pontuacao);
       locs.forEach((loc, li) => {
         const extra = locs.length > 1 ? `<br><span class="pp-k">Local ${li + 1} de ${locs.length}:</span> ${esc(loc.municipio || "")}${loc.uf ? "/" + esc(loc.uf) : ""}` : "";
-        const t = selType(i.id);
-        markers.push(L.circleMarker([loc.lat, loc.lon], {
-          radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: i.fora_ne ? .5 : .85,
-          color: t === "visita" ? "#f37520" : t === "entrevista" ? "#16a34a" : "#fff", weight: t ? 3.4 : 1.4
-        }).bindPopup(popupHtml(i) + extra));
+        const t = selType(i.id), ne = isNEpoint(i, loc);
+        const base = ne
+          ? { radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: .85, color: t === "visita" ? "#f37520" : t === "entrevista" ? "#16a34a" : "#fff", weight: t ? 3.4 : 1.4 }
+          : { radius: Math.max(6, r * 0.8), fillColor: eixoColor(i.eixo_cod), fillOpacity: .4, color: "#8a90a0", weight: 1.5, dashArray: "3 3" };
+        const ext = ne ? "" : `<br><span class="pp-k">Sede fora do NE</span> (${esc(loc.municipio || "")})`;
+        const mk = L.circleMarker([loc.lat, loc.lon], base).bindPopup(popupHtml(i) + extra + ext);
+        mk.on("mouseover", () => { mk.setStyle({ weight: base.weight + 2.5, fillOpacity: Math.min(1, base.fillOpacity + .15) }); if (mk.bringToFront) mk.bringToFront(); });
+        mk.on("mouseout", () => mk.setStyle(base));
+        markers.push(mk);
+        heatPts.push([loc.lat, loc.lon, 0.35 + 0.65 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN))]);
+        if (ne) fitPts.push([loc.lat, loc.lon]);
       });
     });
     addMarkers(layerGeral, markers);
+    if (heatLayer) heatLayer.setLatLngs(heatPts);
+    if (mapCountEl) mapCountEl.innerHTML = `<b>${list.length}</b> de ${ITEMS.length} iniciativas`;
+    const sig = JSON.stringify(filters), changed = sig !== mapGeralSig; mapGeralSig = sig;
     setTimeout(() => {
       mapGeral.invalidateSize();
-      if (!mapGeralFitted) { mapGeral.fitBounds(NE_BOUNDS, { padding: [16, 16] }); mapGeralFitted = true; }
+      if (!mapGeralFitted || changed) {
+        if (filterActive() && fitPts.length) mapGeral.fitBounds(fitPts, { padding: [24, 24], maxZoom: 9 });
+        else mapGeral.fitBounds(NE_BOUNDS, { padding: [16, 16] });
+        mapGeralFitted = true;
+      }
     }, 60);
   }
   function popupHtml(i) {
-    const uf = ufTokens(i.estado).join(", ");
     const sub = orgSub(i);
     return `<span class="pp-h">${esc(i.nome)}</span>
       ${sub ? esc(sub) + "<br>" : ""}
       <span class="pp-k">Local:</span> ${esc(locLabel(i))}<br>
       <span class="pp-k">Eixo:</span> ${esc(i.eixo || "")}<br>
-      <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${selType(i.id) === "visita" ? " · visita técnica" : selType(i.id) === "entrevista" ? " · entrevista" : ""}`;
+      <span class="pp-k">Nota:</span> <b>${i.pontuacao}</b>${selType(i.id) === "visita" ? " · visita técnica" : selType(i.id) === "entrevista" ? " · entrevista" : ""}
+      ${i.resumo ? `<div class="pp-resumo">${esc(i.resumo)}</div>` : ""}
+      <button class="pp-card" onclick="window.PTE_DASH.openCard(${i.id})">Ver cartão completo →</button>`;
+  }
+  function openCard(id) {
+    const i = byId(id); if (!i) return;
+    Object.assign(filters, { busca: i.nome, eixo: "", estado: "", bioma: "", pre: false });
+    if ($("#f-busca")) $("#f-busca").value = i.nome;
+    ["#f-eixo", "#f-estado", "#f-bioma"].forEach(s => { if ($(s)) $(s).value = ""; });
+    if ($("#f-pre")) $("#f-pre").checked = false;
+    setView("cards");
   }
 
   // ---------- SELEÇÃO ESTRATÉGICA ----------
@@ -699,6 +742,6 @@
   }
 
   renderKpis(); initFilters(); initCompare(); initSelecao();
-  window.PTE_DASH = { refresh, helpers, state, filtered };
+  window.PTE_DASH = { refresh, helpers, state, filtered, openCard };
   setView("ranking");
 })();

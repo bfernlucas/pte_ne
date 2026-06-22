@@ -92,8 +92,9 @@ window.PTE_MAP = (function () {
     if (!opts.noAirports) overlays["Aeroportos"] = airportLayer();
     if (opts.boundaries !== false) overlays["Limites estaduais"].addTo(map);
     if (opts.airports && overlays["Aeroportos"]) overlays["Aeroportos"].addTo(map);
-    L.control.layers(b, overlays, { position: "topright", collapsed: true }).addTo(map);
-    return overlays;
+    const control = L.control.layers(b, overlays, { position: "topright", collapsed: true });
+    control.addTo(map);
+    return { overlays, control };
   }
 
   return { bases, overlays: () => ({ "Limites estaduais": ufLayer(), "Aeroportos": airportLayer() }), setup, AIRPORTS };
