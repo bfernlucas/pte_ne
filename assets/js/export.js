@@ -121,6 +121,8 @@ window.PTE_EXPORT = (function () {
     if (el.tagName === "CANVAS") return canvasToWhitePNG(el);
     const h2c = await ensureH2C();
     const isMap = el.classList && el.classList.contains("map");
+    // reenquadra o mapa nos pontos/rotas e aguarda os tiles antes de capturar
+    if (isMap && typeof el._pteFit === "function") { try { el._pteFit(); } catch (e) {} await new Promise(r => setTimeout(r, 950)); }
     const canvas = await h2c(el, {
       useCORS: true, allowTaint: false, backgroundColor: "#ffffff", logging: false,
       scale: isMap ? Math.max(2.5, (window.devicePixelRatio || 1) * 1.5) : 2,

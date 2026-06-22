@@ -312,13 +312,11 @@
     if (heatLayer) heatLayer.setLatLngs(heatPts);
     if (mapCountEl) mapCountEl.innerHTML = `<b>${list.length}</b> de ${ITEMS.length} iniciativas`;
     const sig = JSON.stringify(filters), changed = sig !== mapGeralSig; mapGeralSig = sig;
+    const fit = () => { if (fitPts.length) mapGeral.fitBounds(fitPts, { padding: [24, 24], maxZoom: 9 }); else mapGeral.fitBounds(NE_BOUNDS, { padding: [16, 16] }); };
+    const elG = $("#map-geral"); if (elG) elG._pteFit = () => { mapGeral.invalidateSize(); fit(); };
     setTimeout(() => {
       mapGeral.invalidateSize();
-      if (!mapGeralFitted || changed) {
-        if (filterActive() && fitPts.length) mapGeral.fitBounds(fitPts, { padding: [24, 24], maxZoom: 9 });
-        else mapGeral.fitBounds(NE_BOUNDS, { padding: [16, 16] });
-        mapGeralFitted = true;
-      }
+      if (!mapGeralFitted || changed) { fit(); mapGeralFitted = true; }
     }, 60);
   }
   function popupHtml(i) {
@@ -371,6 +369,12 @@
       });
     });
     addMarkers(lay, markers);
+    const elS = $(group === "visita" ? "#map-sel-visita" : "#map-sel-entrevista");
+    if (elS) elS._pteFit = () => {
+      selMap[group].invalidateSize();
+      const b = L.latLngBounds(markers.map(m => m.getLatLng()));
+      if (b.isValid()) selMap[group].fitBounds(b, { padding: [25, 25], maxZoom: 10, animate: false });
+    };
     setTimeout(() => selMap[group].invalidateSize(), 30);
   }
   function renderSelList(group) {

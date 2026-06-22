@@ -1149,6 +1149,12 @@
     });
     if (H.addMarkers) H.addMarkers(mAllLayer, markers);
     else markers.forEach(m => m.addTo(mAllLayer));
+    const elM = document.getElementById("map-rota-manual");
+    if (elM) elM._pteFit = () => {
+      mMap.invalidateSize();
+      const pts = markers.map(m => m.getLatLng()).filter(Boolean);
+      if (pts.length) mMap.fitBounds(L.latLngBounds(pts), { padding: [30, 30], animate: false });
+    };
   }
   function mBuildNodes(r, H) {
     return r.stops.map(s => {
@@ -1229,6 +1235,8 @@
     if (panel) panel.innerHTML = html;
     if (statusEl) statusEl.textContent = `${routes.length} rota(s) · ${totStops} paradas · ${Math.round(totKm)} km · ${totDays} dias.`;
     if (bounds.length) mMap.fitBounds(bounds, { padding: [30, 30] });
+    const elM = document.getElementById("map-rota-manual");
+    if (elM && bounds.length) elM._pteFit = () => { mMap.invalidateSize(); mMap.fitBounds(bounds, { padding: [30, 30], animate: false }); };
   }
   function renderManual(H) {
     mLastH = H;
