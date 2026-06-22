@@ -340,7 +340,7 @@
     const totalH = packed.days.reduce((s, d) => s + d.driveH + d.visitH, 0) + packed.back.legH;
     const score = packed.visited.reduce((s, n) => s + (n.pontuacao || 0), 0);
     const preCount = packed.visited.filter(n => n.preselecionada).length;
-    return { entryHub: entry, exitHub: exit, hub: entry, days: packed.days, back: packed.back, visited: packed.visited, dropped, totalKm, totalH, score, preCount, optCount: packed.visited.length - preCount };
+    return { entryHub: entry, exitHub: exit, hub: entry, carOnly: !!params.carOnly, regionLabel: params.regionLabel || "", days: packed.days, back: packed.back, visited: packed.visited, dropped, totalKm, totalH, score, preCount, optCount: packed.visited.length - preCount };
   }
 
   // ---------- planeja as 2 missões ----------
@@ -364,16 +364,39 @@
       const cx = core.reduce((s, n) => s + n.lat, 0) / core.length, cy = core.reduce((s, n) => s + n.lon, 0) / core.length;
       [...core, ...opt].forEach(n => { if (n.locais && n.locais.length) applyLoc(n, { lat: cx, lon: cy }); });
     }
-    const k = Math.max(1, params.numMissoes || 2);
-    let groups = kmeansK(core, k);
-    groups.sort((a, b) => avgLat(b) - avgLat(a)); // missão mais ao norte primeiro
-    const pools = groups.map(() => []);
-    opt.forEach(n => {
-      let bi = 0, bd = Infinity;
-      groups.forEach((g, i) => { const d = minDist(n, g); if (d < bd) { bd = d; bi = i; } });
-      pools[bi].push(n);
-    });
-    const missions = groups.map((g, i) => buildMission(g, pools[i], hubs, params));
+    const distrib = (items, gs) => { const p = gs.map(() => []); items.forEach(n => { let bi = 0, bd = Infinity; gs.forEach((g, i) => { const d = minDist(n, g); if (d < bd) { bd = d; bi = i; } }); p[bi].push(n); }); return p; };
+    let missions;
+    if (params.ufRestrict) {
+      // duas incursões obrigatórias de CARRO: Rota 1 = PI+CE (base Fortaleza); Rota 2 = RN+PB (base Natal)
+      const G1 = new Set(["PI", "CE"]), G2 = new Set(["RN", "PB"]);
+      const homeG1 = AIRPORTS_HUB.find(a => a.iata === "FOR") || hubs[2];
+      const homeG2 = AIRPORTS_HUB.find(a => a.iata === "NAT") || hubs[3];
+      const locInUFs = (n, set) => {
+        if (n.locais && n.locais.length) { const l = n.locais.find(x => set.has(x.uf)); return l || null; }
+        return set.has(ufOf(n)) ? { lat: n.lat, lon: n.lon, uf: ufOf(n), municipio: n.municipio } : null;
+      };
+      const snap = (n, l) => { n.lat = l.lat; n.lon = l.lon; n.municipio = l.municipio; n.estado = l.uf; };
+      const split = arr => { const g1 = [], g2 = [], rest = []; arr.forEach(n => { let l = locInUFs(n, G1); if (l) { snap(n, l); g1.push(n); return; } l = locInUFs(n, G2); if (l) { snap(n, l); g2.push(n); return; } rest.push(n); }); return { g1, g2, rest }; };
+      const C = split(core), O = split(opt);
+      if (C.rest.length) { const cx = C.rest.reduce((s, n) => s + n.lat, 0) / C.rest.length, cy = C.rest.reduce((s, n) => s + n.lon, 0) / C.rest.length; [...C.rest, ...O.rest].forEach(n => { if (n.locais && n.locais.length) applyLoc(n, { lat: cx, lon: cy }); }); }
+      missions = [];
+      const carP = (home, label) => Object.assign({}, params, { airports: [home], carOnly: true, regionLabel: label });
+      if (C.g1.length) missions.push(buildMission(C.g1, O.g1, hubs, carP(homeG1, "Rota PI + CE · carro")));
+      if (C.g2.length) missions.push(buildMission(C.g2, O.g2, hubs, carP(homeG2, "Rota RN + PB · carro")));
+      const freeCount = C.rest.length ? Math.max(1, (params.numMissoes || 2) - 2) : 0;
+      if (freeCount > 0) {
+        let fg = kmeansK(C.rest, freeCount); fg.sort((a, b) => avgLat(b) - avgLat(a));
+        const fpools = distrib(O.rest, fg);
+        const freeP = Object.assign({}, params, { airports: AIRPORTS_HUB, carOnly: false, regionLabel: "" });
+        fg.forEach((g, i) => missions.push(buildMission(g, fpools[i], hubs, freeP)));
+      }
+    } else {
+      const k = Math.max(1, params.numMissoes || 2);
+      let groups = kmeansK(core, k);
+      groups.sort((a, b) => avgLat(b) - avgLat(a)); // missão mais ao norte primeiro
+      const pools = distrib(opt, groups);
+      missions = groups.map((g, i) => buildMission(g, pools[i], hubs, params));
+    }
     const candVis = missions.reduce((s, m) => s + m.visited.length, 0);
     const preVis = missions.reduce((s, m) => s + m.visited.filter(n => n.preselecionada).length, 0);
     const visitedIds = new Set(missions.flatMap(m => m.visited.map(n => n.id)));
@@ -452,6 +475,10 @@
     const anchorCands = [...H.ITEMS].filter(i => i.lat != null && !i.fora_ne).sort((a, b) => a.nome.localeCompare(b.nome, "pt"));
     const anchorOpts = anchorCands.map(i => `<option value="${i.nome.replace(/"/g, "&quot;")}">${H.esc(i.municipio || "")}${i.estado ? " · " + H.esc(i.estado) : ""}</option>`).join("");
     c.innerHTML = `
+      <div class="rc-group rc-ufr">
+        <label class="rc-switch"><input type="checkbox" id="r-ufrestrict"> <b>Ativar restrição por UF</b></label>
+        <div class="rc-note">Garante <b>2 rotas de carro</b> fixas: <b>Rota 1 — Piauí + Ceará</b> (base Fortaleza) e <b>Rota 2 — RN + Paraíba</b> (base Natal). As demais incursões cobrem os outros estados livremente (carro ou avião). Use o nº de incursões para definir quantas rotas livres adicionais.</div>
+      </div>
       <div class="rc-group">
         <span class="rc-title">Parâmetros da rota</span>
         <div class="rc-field"><label>Nº de incursões</label><input id="r-miss" type="range" min="1" max="6" step="1" value="2"><span class="val" id="r-miss-v">2</span></div>
@@ -543,6 +570,7 @@
       dirMaxH: +document.getElementById("r-dir").value,
       visitaH: +document.getElementById("r-visita").value,
       incluirOpcionais: document.getElementById("r-opt").checked,
+      ufRestrict: document.getElementById("r-ufrestrict") ? document.getElementById("r-ufrestrict").checked : false,
       anchors: [...anchorIds],
       detour: 1.3, speedKmh: 65
     };
@@ -724,7 +752,7 @@
       }
     }
     params.prov = prov;
-    statusEl.textContent = `Roteiro a partir de ${nVis} visita(s) técnica(s).${nEnt ? ` ${nEnt} entrevista(s) remota(s) fora do roteiro.` : ""} Rota aberta: chegada e saída por aeroportos (podem ser cidades diferentes). Distâncias: ${distSource}.`;
+    statusEl.textContent = `Roteiro a partir de ${nVis} visita(s) técnica(s).${nEnt ? ` ${nEnt} entrevista(s) remota(s) fora do roteiro.` : ""} ${params.ufRestrict ? "Restrição por UF ativa: Rota 1 (PI+CE) e Rota 2 (RN+PB) de carro; demais livres." : "Rota aberta: chegada e saída por aeroportos (podem ser cidades diferentes)."} Distâncias: ${distSource}.`;
     const plan = planMissions(candidates, HUBS, params);
     routeLayer.clearLayers(); allLayer.clearLayers();
     const panel = document.getElementById("rotas-itinerary");
@@ -735,6 +763,8 @@
     }
     const remoteNote = curSel.entrevista.size
       ? `<div class="cover ok" style="background:#eef2fb;color:var(--brand);border-color:#cdd7f0">${curSel.entrevista.size} entrevista(s) em profundidade serão <b>remotas</b> — conduzidas à distância, fora do roteiro de campo.</div>` : "";
+    const ufrNote = params.ufRestrict
+      ? `<div class="cover ok" style="background:#fff6e9;color:#9a5a00;border-color:#f0d6ad">🚗 <b>Restrição por UF ativa.</b> Rota 1 cobre <b>Piauí + Ceará</b> e Rota 2 cobre <b>RN + Paraíba</b>, ambas <b>de carro</b> (ida e volta de Fortaleza e Natal). As demais incursões cobrem os outros estados livremente.</div>` : "";
     const bounds = [];
     const k = plan.missions.length;
     const effKm = cob.totalKm ? (cob.totalScore / cob.totalKm * 100) : 0;
@@ -745,7 +775,7 @@
       ? `<div class="opt-warn">${cob.ancMissed.length} âncora(s) não couberam no orçamento: ${cob.ancMissed.map(n => H.esc(n.nome)).join("; ")}. Aumente os dias ou o nº de incursões.</div>` : "";
     const showCtx = document.getElementById("r-ctx") ? document.getElementById("r-ctx").checked : true;
     const realDist = distSource.indexOf("reais") >= 0;
-    let html = remoteNote + (showCtx ? `<div class="ctx-legend"><span><i class="d-route"></i> paradas da rota</span><span><i class="d-pre"></i> visita técnica fora da rota</span><span><i class="d-other"></i> outras iniciativas</span></div>` : "");
+    let html = ufrNote + remoteNote + (showCtx ? `<div class="ctx-legend"><span><i class="d-route"></i> paradas da rota</span><span><i class="d-pre"></i> visita técnica fora da rota</span><span><i class="d-other"></i> outras iniciativas</span></div>` : "");
     html += `<div class="opt-card">
       <div class="opt-title">Cenário ótimo · ${k} incursão(ões) de até ${params.dias} dias</div>
       <div class="opt-grid">
@@ -777,15 +807,17 @@
     plan.missions.forEach((m, mi) => {
       const color = MCOLOR[mi % MCOLOR.length];
       const entry = m.entryHub || m.hub, exit = m.exitHub || m.hub;
-      const sameAir = entry && exit && entry.iata === exit.iata;
-      const airLbl = a => `${a.nome} (${a.iata || a.uf})`;
+      const car = !!m.carOnly;
+      const ico = car ? "🚗" : "✈";
+      const sameAir = car || (entry && exit && entry.iata === exit.iata);
+      const airLbl = a => `${a.nome}${a.iata && !car ? " (" + a.iata + ")" : ""}`;
       const pts = [[entry.lat, entry.lon], ...m.visited.map(n => [n.lat, n.lon]), [exit.lat, exit.lon]];
       pts.forEach(p => bounds.push(p));
       L.polyline(pts, { color, weight: 3, opacity: .8 }).addTo(routeLayer);
       L.marker([entry.lat, entry.lon], { icon: hubIcon(color) })
-        .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · ${sameAir ? "base (chegada e saída)" : "chegada"}</span>✈ ${airLbl(entry)}`).addTo(routeLayer);
+        .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · ${car ? "base de carro (ida e volta)" : sameAir ? "base (chegada e saída)" : "chegada"}</span>${ico} ${airLbl(entry)}`).addTo(routeLayer);
       if (!sameAir) L.marker([exit.lat, exit.lon], { icon: hubIcon(color) })
-        .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · saída</span>✈ ${airLbl(exit)}`).addTo(routeLayer);
+        .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · saída</span>${ico} ${airLbl(exit)}`).addTo(routeLayer);
       let n = 0;
       m.visited.forEach(node => {
         n++;
@@ -795,13 +827,15 @@
           .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b> · ${anc ? "âncora" : node.__tipo === "opcional" ? "in loco no caminho" : "visita técnica"}`)
           .addTo(routeLayer);
       });
-      const airInfo = sameAir
-        ? `chegada e saída: ${airLbl(entry)}`
-        : `chegada: ${airLbl(entry)} · saída: ${airLbl(exit)}`;
+      const airInfo = car
+        ? `${m.regionLabel || "rota de carro"} · ida e volta de ${airLbl(entry)}`
+        : sameAir
+          ? `chegada e saída: ${airLbl(entry)}`
+          : `chegada: ${airLbl(entry)} · saída: ${airLbl(exit)}`;
       html += `<div class="incursao">
-        <div class="ih" style="background:${color}"><span class="in">Incursão ${mi + 1}</span><span class="imoment">momento ${mi + 1}</span><span class="ihub">✈ ${airInfo}</span></div>
+        <div class="ih" style="background:${color}"><span class="in">Incursão ${mi + 1}${car ? " 🚗" : ""}</span><span class="imoment">momento ${mi + 1}</span><span class="ihub">${ico} ${airInfo}</span></div>
         <div class="isum"><span><b>${m.visited.length}</b> paradas · <b>${m.preCount}</b> visitas · ${m.optCount} no caminho</span><span><b>${m.days.length}</b> dias</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.score}</b> pts</span></div>
-        <div class="leg-line air-line">✈ chegada por ${airLbl(entry)}</div>`;
+        <div class="leg-line air-line">${ico} ${car ? "saída de carro de" : "chegada por"} ${airLbl(entry)}</div>`;
       let counter = 0;
       m.days.forEach((d, di) => {
         const jh = d.driveH + d.visitH, fill = Math.min(100, jh / params.jornadaH * 100);
@@ -818,7 +852,7 @@
         });
         html += `</div>`;
       });
-      html += `<div class="leg-line air-line">deslocamento até a saída: ${Math.round(m.back.legKm)} km · ✈ ${airLbl(exit)}</div></div>`;
+      html += `<div class="leg-line air-line">${car ? "retorno de carro à base" : "deslocamento até a saída"}: ${Math.round(m.back.legKm)} km · ${ico} ${airLbl(exit)}</div></div>`;
     });
     // ---- não cobertas (trade-off do ótimo) ----
     if (cob.droppedPre && cob.droppedPre.length) {
