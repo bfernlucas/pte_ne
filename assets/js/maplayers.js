@@ -97,5 +97,25 @@ window.PTE_MAP = (function () {
     return { overlays, control };
   }
 
-  return { bases, overlays: () => ({ "Limites estaduais": ufLayer(), "Aeroportos": airportLayer() }), setup, AIRPORTS };
+  // ---------- legenda no mapa (cores dos eixos + marcação) — visível e capturada no PNG ----------
+  function legend(opts) {
+    opts = opts || {};
+    const ctl = L.control({ position: opts.position || "bottomleft" });
+    ctl.onAdd = function () {
+      const eixos = (window.PTE_DATA && window.PTE_DATA.meta && window.PTE_DATA.meta.eixos) || [];
+      const d = L.DomUtil.create("div", "pte-legend");
+      const esc = s => String(s == null ? "" : s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+      let h = `<div class="pl-h">Eixos</div>` +
+        eixos.map(e => `<div class="pl-i"><span class="pl-dot" style="background:${e.cor}"></span>${esc(e.nome)}</div>`).join("") +
+        `<div class="pl-h">Marcação</div>` +
+        `<div class="pl-i"><span class="pl-ring gold"></span>pré-selecionada p/ visita</div>` +
+        `<div class="pl-i"><span class="pl-ring green"></span>pré-selecionada p/ entrevista</div>`;
+      if (opts.note) h += `<div class="pl-i pl-note">${esc(opts.note)}</div>`;
+      d.innerHTML = h;
+      return d;
+    };
+    return ctl;
+  }
+
+  return { bases, overlays: () => ({ "Limites estaduais": ufLayer(), "Aeroportos": airportLayer() }), setup, legend, AIRPORTS };
 })();

@@ -1008,6 +1008,7 @@
     mMap = L.map("map-rota-manual", { preferCanvas: true }).setView([-8.6, -39.5], 5);
     if (window.PTE_MAP) PTE_MAP.setup(mMap, { base: "Ruas e estradas", boundaries: true, airports: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 20, crossOrigin: true }).addTo(mMap);
+    if (window.PTE_MAP && PTE_MAP.legend) PTE_MAP.legend({ note: "número = ordem da parada na rota" }).addTo(mMap);
     // agrupa pontos coincidentes (mesmo template do Mapa geral / Seleção)
     mAllLayer = (mLastH && mLastH.makeMarkerLayer ? mLastH.makeMarkerLayer() : L.layerGroup()).addTo(mMap);
     mRouteLayer = L.layerGroup().addTo(mMap);

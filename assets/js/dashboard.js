@@ -347,6 +347,7 @@
     if (window.PTE_MAP) window.PTE_MAP.setup(m, { base: "Ruas e estradas", boundaries: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 20 }).addTo(m);
     selLayer[group] = makeMarkerLayer().addTo(m);
+    if (window.PTE_MAP && PTE_MAP.legend) PTE_MAP.legend({ note: "tamanho do círculo = nota" }).addTo(m);
     selMap[group] = m;
   }
   function selStyle(i, group) {

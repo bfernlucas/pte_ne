@@ -241,7 +241,18 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
   min-width:24px;text-align:center;padding:1px 9px}
 .sel-block .ph-sub{margin-bottom:10px}
 .sel-map-wrap{display:grid;grid-template-columns:1fr 440px;gap:16px;align-items:start}
-.sel-map-wrap .map{height:clamp(360px,52vh,520px)}
+.sel-map-wrap .map{height:clamp(480px,68vh,760px)}
+/* legenda no mapa (eixos + marcação) — também aparece no PNG exportado */
+.pte-legend{background:rgba(255,255,255,.94);border:1px solid var(--border);border-radius:8px;padding:7px 9px;
+  font:500 10.5px/1.35 Roboto,Arial,sans-serif;color:var(--ink);box-shadow:0 1px 5px rgba(0,0,0,.22);max-width:240px;pointer-events:none}
+.pte-legend .pl-h{font-weight:700;color:var(--brand);text-transform:uppercase;font-size:9px;letter-spacing:.04em;margin:5px 0 2px}
+.pte-legend .pl-h:first-child{margin-top:0}
+.pte-legend .pl-i{display:flex;align-items:center;gap:5px;margin:1.5px 0}
+.pte-legend .pl-dot{width:10px;height:10px;border-radius:50%;flex:none}
+.pte-legend .pl-ring{width:12px;height:12px;border-radius:50%;background:#cfd6e6;flex:none;box-sizing:border-box}
+.pte-legend .pl-ring.gold{border:3px solid var(--gold)}
+.pte-legend .pl-ring.green{border:2.5px solid #16a34a}
+.pte-legend .pl-note{color:var(--muted);font-style:italic}
 .sel-side{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;max-height:520px;overflow:auto}
 .sel-add-sel{width:100%;border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:.82rem;font-family:var(--font);background:#fff;color:var(--ink);margin-bottom:10px}
 .selchips{display:flex;flex-direction:column;gap:6px}
