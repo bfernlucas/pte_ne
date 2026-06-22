@@ -458,6 +458,7 @@
         <div class="rc-field"><label>Horas por visita</label><input id="r-visita" type="range" min="1" max="4" step="0.5" value="2"><span class="val" id="r-visita-v">2 h</span></div>
         <div class="rc-field"><label>Direção máx. por dia</label><input id="r-dir" type="range" min="6" max="10" step="1" value="8"><span class="val" id="r-dir-v">8 h</span></div>
         <div class="rc-field"><label>Dias por incursão (máx. 7 corridos)</label><input id="r-dias" type="range" min="3" max="7" step="1" value="5"><span class="val" id="r-dias-v">5 dias</span></div>
+        <label class="rc-chk"><input type="checkbox" id="r-road" checked> Usar distâncias reais por estrada (recomendado)</label>
         <label class="rc-chk"><input type="checkbox" id="r-opt" checked> Incluir visitas in loco de outras iniciativas no caminho</label>
         <label class="rc-chk"><input type="checkbox" id="r-ctx" checked> Mostrar demais iniciativas (em cinza)</label>
       </div>
@@ -471,6 +472,11 @@
       <div class="rc-group">
         <span class="rc-title">Candidatas</span>
         <div class="rc-note">O roteiro é definido pelas <b>visitas técnicas</b> (mapa 1 da aba Seleção). As <b>entrevistas</b> (mapa 2) são remotas e não entram no roteiro. Marque a opção acima para encaixar visitas in loco de outras iniciativas que fiquem no caminho.</div>
+      </div>
+      <div class="rc-group">
+        <span class="rc-title">Distâncias / roteamento</span>
+        <div class="rc-note">Com a opção <b>distâncias reais por estrada</b> ligada, o trajeto usa a <b>malha viária real</b> (tempo e km de carro). Padrão: <b>OSRM público</b> (sem chave). Para usar o <b>OpenRouteService</b>, cole sua chave abaixo — fica salva só neste navegador, nunca vai para o repositório. Sem internet ou conjunto muito grande, cai automaticamente para a estimativa (linha reta × 1,3).</div>
+        <input id="rf-ors-key" class="rc-orskey" type="text" placeholder="Chave OpenRouteService (opcional)" autocomplete="off">
       </div>
       <div class="rc-actions">
         <button class="btn" id="r-run">Otimizar rotas</button>
@@ -497,6 +503,14 @@
     };
     addInput.addEventListener("input", tryAddAnchor);
     addInput.addEventListener("change", tryAddAnchor);
+    const orsInput = document.getElementById("rf-ors-key");
+    if (orsInput) {
+      try { orsInput.value = localStorage.getItem("pte_ors_key") || ""; } catch (e) {}
+      orsInput.addEventListener("input", () => {
+        const v = orsInput.value.trim();
+        try { v ? localStorage.setItem("pte_ors_key", v) : localStorage.removeItem("pte_ors_key"); } catch (e) {}
+      });
+    }
     renderAnchors(H);
     sync();
   }
@@ -615,15 +629,59 @@
   }
   function isAnchor(id) { return anchorIds.has(+id); }
 
+  // ---------- roteamento real (malha viária) ----------
+  async function fetchWithTimeout(url, opt, ms) {
+    const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), ms || 15000);
+    try { return await fetch(url, Object.assign({ signal: ctrl.signal }, opt || {})); }
+    finally { clearTimeout(to); }
+  }
   async function fetchORSMatrix(points, key) {
     const body = { locations: points.map(p => [p.lon, p.lat]), metrics: ["duration", "distance"], units: "m" };
-    const res = await fetch("https://api.openrouteservice.org/v2/matrix/driving-car", {
+    const res = await fetchWithTimeout("https://api.openrouteservice.org/v2/matrix/driving-car", {
       method: "POST", headers: { Authorization: key, "Content-Type": "application/json" }, body: JSON.stringify(body)
-    });
+    }, 20000);
     if (!res.ok) throw new Error("HTTP " + res.status);
     const j = await res.json();
     if (!j.durations) throw new Error("resposta sem matriz");
-    return { durations: j.durations, distances: j.distances };
+    return { durations: j.durations, distances: j.distances, source: "OpenRouteService" };
+  }
+  async function fetchOSRMMatrix(points) {
+    const coords = points.map(p => `${p.lon},${p.lat}`).join(";");
+    const url = `https://router.project-osrm.org/table/v1/driving/${coords}?annotations=duration,distance`;
+    const res = await fetchWithTimeout(url, {}, 18000);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const j = await res.json();
+    if (j.code !== "Ok" || !j.durations) throw new Error("resposta inválida do OSRM");
+    return { durations: j.durations, distances: j.distances, source: "OSRM (malha pública)" };
+  }
+  async function fetchRoadMatrix(points) {
+    let key = ""; try { key = (localStorage.getItem("pte_ors_key") || "").trim(); } catch (e) {}
+    return key ? fetchORSMatrix(points, key) : fetchOSRMMatrix(points);
+  }
+  // limite de pontos por provedor (ORS grátis ≈ 50; OSRM público ≈ 100)
+  function roadMax() {
+    let key = ""; try { key = (localStorage.getItem("pte_ors_key") || "").trim(); } catch (e) {}
+    return key ? 50 : 95;
+  }
+  // conjunto de pontos para a matriz = todas as coordenadas das candidatas (inclui multi-locais) + aeroportos
+  function roadPoints(cands) {
+    const seen = new Set(), pts = [];
+    const add = (lat, lon) => { if (lat == null || lon == null) return; const k = lat.toFixed(4) + "," + lon.toFixed(4); if (!seen.has(k)) { seen.add(k); pts.push({ lat, lon }); } };
+    cands.forEach(c => { if (c.locais && c.locais.length) c.locais.forEach(l => add(l.lat, l.lon)); else add(c.lat, c.lon); });
+    AIRPORTS_HUB.forEach(a => add(a.lat, a.lon));
+    return pts;
+  }
+  const roadCache = new Map();
+  function ptsHash(points) { return points.length + ":" + points.map(p => p.lat.toFixed(3) + "," + p.lon.toFixed(3)).join("|"); }
+  async function getRoadMatrix(points) {
+    const h = ptsHash(points);
+    if (roadCache.has(h)) return roadCache.get(h);
+    try { const ls = JSON.parse(localStorage.getItem("pte_road_cache") || "null"); if (ls && ls.hash === h && ls.durations) { roadCache.set(h, ls); return ls; } } catch (e) {}
+    const m = await fetchRoadMatrix(points);
+    const rec = { hash: h, durations: m.durations, distances: m.distances, source: m.source };
+    roadCache.set(h, rec);
+    try { localStorage.setItem("pte_road_cache", JSON.stringify(rec)); } catch (e) {}
+    return rec;
   }
 
   async function draw(H) {
@@ -644,10 +702,29 @@
     // âncoras entram sempre (presença forçada), mesmo fora da seleção
     const cidset = new Set(candidates.map(c => c.id));
     H.ITEMS.forEach(i => { if (anchorIds.has(i.id) && i.lat != null && !i.fora_ne && !cidset.has(i.id)) candidates.push(Object.assign({}, i, { preselecionada: true, __tipo: "visita" })); });
-    const prov = makeProvider(params);
     const nEnt = curSel.entrevista.size;
-    statusEl.textContent = `Roteiro a partir de ${nVis} visita(s) técnica(s).${nEnt ? ` ${nEnt} entrevista(s) remota(s) fora do roteiro.` : ""} Rota aberta: chegada e saída pelos aeroportos mais próximos (podem ser cidades diferentes). Deslocamento rodoviário estimado (≈ linha reta × 1,3 a 65 km/h).`;
+    const fallback = makeProvider(params);
+    let prov = fallback, distSource = "estimativa (linha reta × 1,3, 65 km/h)";
+    const useRoad = document.getElementById("r-road") ? document.getElementById("r-road").checked : true;
+    if (useRoad && candidates.length) {
+      const max = roadMax();
+      let pts = roadPoints(candidates), scope = "todas as paradas e aeroportos";
+      if (pts.length > max) { pts = roadPoints(candidates.filter(c => c.preselecionada || anchorIds.has(c.id))); scope = "visitas e aeroportos (opcionais por estimativa)"; }
+      if (pts.length <= max) {
+        statusEl.textContent = "Calculando deslocamento real por estrada… (pode levar alguns segundos)";
+        try {
+          const m = await getRoadMatrix(pts);
+          prov = makeMatrixProvider(pts, m.durations, m.distances, fallback);
+          distSource = `distâncias reais por estrada · ${m.source}${scope.indexOf("opcionais") >= 0 ? " · " + scope : ""}`;
+        } catch (e) {
+          distSource = "estimativa (sem acesso à malha viária — linha reta × 1,3)";
+        }
+      } else {
+        distSource = "estimativa (conjunto grande demais para a malha viária — linha reta × 1,3)";
+      }
+    }
     params.prov = prov;
+    statusEl.textContent = `Roteiro a partir de ${nVis} visita(s) técnica(s).${nEnt ? ` ${nEnt} entrevista(s) remota(s) fora do roteiro.` : ""} Rota aberta: chegada e saída por aeroportos (podem ser cidades diferentes). Distâncias: ${distSource}.`;
     const plan = planMissions(candidates, HUBS, params);
     routeLayer.clearLayers(); allLayer.clearLayers();
     const panel = document.getElementById("rotas-itinerary");
@@ -667,6 +744,7 @@
     const ancWarn = (cob.ancMissed && cob.ancMissed.length)
       ? `<div class="opt-warn">${cob.ancMissed.length} âncora(s) não couberam no orçamento: ${cob.ancMissed.map(n => H.esc(n.nome)).join("; ")}. Aumente os dias ou o nº de incursões.</div>` : "";
     const showCtx = document.getElementById("r-ctx") ? document.getElementById("r-ctx").checked : true;
+    const realDist = distSource.indexOf("reais") >= 0;
     let html = remoteNote + (showCtx ? `<div class="ctx-legend"><span><i class="d-route"></i> paradas da rota</span><span><i class="d-pre"></i> visita técnica fora da rota</span><span><i class="d-other"></i> outras iniciativas</span></div>` : "");
     html += `<div class="opt-card">
       <div class="opt-title">Cenário ótimo · ${k} incursão(ões) de até ${params.dias} dias</div>
@@ -682,6 +760,7 @@
         <div class="opt-m"><b>${cob.totalDays}</b><span>dias (total)</span></div>
       </div>
       ${ancWarn}
+      <div class="opt-src ${realDist ? "real" : "est"}">${realDist ? "Distâncias reais por estrada" : "Distâncias estimadas"} — ${H.esc(distSource)}</div>
       <div class="opt-help">Cada incursão é uma <b>rota aberta</b>: chega pelo aeroporto mais próximo da 1ª parada e sai pelo mais próximo da última (entre os 17 aeroportos do NE) — <b>chegada e saída podem ser em cidades diferentes</b>, minimizando o deslocamento por estrada. O roteiro prioriza <b>diversidade regional</b> (cobrir mais estados), <b>interiorização</b> (iniciativas longe das capitais) e o <b>maior nº de iniciativas</b>. As <b>âncoras</b> são sempre incluídas; a nota entra como ajuste fino.</div>
     </div>`;
     // ---- comparador de cenários (nº de incursões) ----
