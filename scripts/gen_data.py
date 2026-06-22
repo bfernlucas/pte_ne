@@ -102,6 +102,39 @@ def _norm(s):
     s = unicodedata.normalize("NFD", str(s or "")).encode("ascii", "ignore").decode()
     return re.sub(r"[^a-z0-9]+", " ", s.lower()).strip()
 
+
+# rota manual padrão (aba "Elaboração manual"), resolvida por NOME no build.
+# Cada parada é um nome; para iniciativas multi-locais use (nome, UF) para fixar o local.
+ROTA_MANUAL_DEFAULT = [
+    {"nome": "Rota 1", "carOnly": True, "stops": [
+        "Rede Xique Xique de Comercialização Solidária", "Projeto Vale Sustentável",
+        "Modelo de Gestão Municipal de Resíduos Sólidos de Arez", "Instituto Casaca de Couro",
+        ("Programa 1 Milhão de Tetos Solares (P1MTS)", "PB"), "Renova-Semiárido",
+        "Cooperativa de Energia Solar Bem Viver / CERSA", "Fazenda Tamanduá", "Programa Redeser"]},
+    {"nome": "Rota 2", "carOnly": True, "stops": [
+        "BlueC", "Sistema Metroviário do Ceará", "Projeto Pecém – Fortescue",
+        "Hub de Hidrogênio Verde do Complexo do Pecém",
+        "Consórcio Público de Manejo de Resíduos Sólidos da Ibiapaba", "Fazenda Nutrilite Brasil",
+        "Trilha Caminhos da Ibiapaba", "No Clima da Caatinga"]},
+    {"nome": "Rota 3", "carOnly": True, "stops": [
+        "Parque Tecnológico Porto Digital", "Banco Comunitário de Araçoiaba", "Acreditar Microcrédito",
+        "Logística Verde e Operações Sustentáveis no Porto de Suape",
+        "Grupo EQM / ZEG Biogás – Biometano da Vinhaça", "SIMACaatinga", "Paisagens Alimentares",
+        "Cooperativa Pindorama – Bioenergias da Vinhaça",
+        "EXYGEN / GranBio – Biorrefinaria Integrada de Biocombustíveis"]},
+    {"nome": "Rota 4", "carOnly": True, "stops": [
+        "Hub de Hidrogênio Verde de Sergipe – Green Energy Park / SergipeTec",
+        "Projetos de Conservação e Sustentabilidade do Bioma Caatinga",
+        ("Programa Reecatingar", "BA"), "Conselho Gestor do Fundo Rotativo",
+        "Plataforma Mulheres de Base Praticantes de Resiliência",
+        "Acelen Renováveis – Biorrefinaria de SAF e Diesel Verde",
+        "Unigel / Ecohydrogen – Planta de Hidrogênio e Amônia Verde de Camaçari",
+        "Rede BATUC de Turismo Comunitário", ("Programa Sertão Vivo", "BA"),
+        "Programa Bahia Solidária", ("Solos", "BA"), "Vale do Dendê", "Rede Recicla Bahia",
+        "Programa Indústria Verde – FIEB", "SENAI e Hubs de Inovação em Hidrogênio Verde / Powershoring"]},
+]
+ROTA_COLORS = ["#1f4da1", "#f37520", "#43a047", "#7a3fb8", "#e0392b", "#0d9488"]
+
 # Revisão editorial dos nomes: nome principal padronizado, sem siglas de UF,
 # sem subtítulos/descrições e sem acrônimo da organização (que vira subtítulo).
 NAME_OVERRIDES = {
@@ -324,10 +357,32 @@ def main():
     selecao_default = {"visita": _resolve(SELECAO_DEFAULT_VISITA),
                        "entrevista": _resolve(SELECAO_DEFAULT_ENTREVISTA)}
 
+    by_id = {it["id"]: it for it in items}
+
+    def _resolve_stop(stop):
+        nm, uf = stop if isinstance(stop, tuple) else (stop, None)
+        iid = name_to_id.get(_norm(nm))
+        if not iid:
+            print("AVISO rota manual: não encontrada:", nm)
+            return None
+        li = 0
+        locs = by_id[iid].get("locais")
+        if uf and locs:
+            for k, l in enumerate(locs):
+                if l.get("uf") == uf:
+                    li = k
+                    break
+        return {"id": iid, "li": li}
+    rota_manual_default = []
+    for ri, r in enumerate(ROTA_MANUAL_DEFAULT):
+        stops = [s for s in (_resolve_stop(x) for x in r["stops"]) if s]
+        rota_manual_default.append({"nome": r["nome"], "color": ROTA_COLORS[ri % len(ROTA_COLORS)],
+                                    "carOnly": bool(r.get("carOnly")), "stops": stops})
+
     meta = {"fonte": "PTE2026_matriz_dashboard.xlsx", "total": len(items),
             "eixos": [{"nome": n, "cod": c, "cor": cor} for n, c, cor in EIXO_CORES],
             "criterios": [{"key": k, "label": l} for k, l in CRIT],
-            "selecao_default": selecao_default}
+            "selecao_default": selecao_default, "rota_manual_default": rota_manual_default}
     out = {"meta": meta, "iniciativas": items}
     js = "window.PTE_DATA = " + json.dumps(out, ensure_ascii=False, indent=1) + ";\n"
     with open(OUT, "w", encoding="utf-8") as f:

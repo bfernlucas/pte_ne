@@ -982,10 +982,16 @@
   let mSel = { visita: new Set(), entrevista: new Set() }; // seleção da aba "Seleção"
   function mNewRoute() { const i = mRoutes.length; mRoutes.push({ nome: "Rota " + (i + 1), color: MCOLOR[i % MCOLOR.length], stops: [], carOnly: false }); mActive = mRoutes.length - 1; }
   function mLoad() {
-    try { const s = JSON.parse(localStorage.getItem("pte_rota_manual") || "null"); if (s && Array.isArray(s.routes) && s.routes.length) { mRoutes = s.routes; mActive = Math.min(s.active || 0, s.routes.length - 1); return; } } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem("pte_rota_manual2") || "null"); if (s && Array.isArray(s.routes) && s.routes.length) { mRoutes = s.routes; mActive = Math.min(s.active || 0, s.routes.length - 1); return; } } catch (e) {}
+    // rota manual padrão embutida nos dados (independente do cache)
+    const d = (mLastH && mLastH.META && mLastH.META.rota_manual_default) || [];
+    if (d.length) {
+      mRoutes = d.map((r, i) => ({ nome: r.nome || ("Rota " + (i + 1)), color: r.color || MCOLOR[i % MCOLOR.length], carOnly: !!r.carOnly, stops: (r.stops || []).map(s => ({ id: s.id, li: s.li || 0 })) }));
+      mActive = 0; mSave(); return;
+    }
     mRoutes = []; mActive = 0; mNewRoute();
   }
-  function mSave() { try { localStorage.setItem("pte_rota_manual", JSON.stringify({ routes: mRoutes, active: mActive })); } catch (e) {} }
+  function mSave() { try { localStorage.setItem("pte_rota_manual2", JSON.stringify({ routes: mRoutes, active: mActive })); } catch (e) {} }
   function mFindStop(id, li) {
     for (let ri = 0; ri < mRoutes.length; ri++) { const j = mRoutes[ri].stops.findIndex(s => s.id === id && (s.li || 0) === li); if (j >= 0) return { ri, order: j + 1, color: mRoutes[ri].color }; }
     return null;
@@ -1035,6 +1041,10 @@
         </div>
         <div class="rm-routes" id="rm-routes"></div>
         <button class="btn secondary sm" id="rm-new">+ Nova rota</button>
+        <div class="rm-add-wrap">
+          <input type="search" id="rm-search" placeholder="Filtrar por nome ou organização…" autocomplete="off">
+          <select id="rm-add"><option value="">Adicionar iniciativa à rota ativa…</option></select>
+        </div>
       </div>
       <div class="rc-group" id="rm-active-box"></div>
       <div class="rc-actions">
@@ -1063,7 +1073,31 @@
     c.addEventListener("change", e => {
       if (e.target.id === "rm-car") { const r = mRoutes[mActive]; if (r) { r.carOnly = e.target.checked; mSave(); } }
       else if (e.target.id === "rm-name") { const r = mRoutes[mActive]; if (r) { r.nome = e.target.value.trim() || r.nome; mSave(); mRenderPanel(H); } }
+      else if (e.target.id === "rm-add") { if (e.target.value) { mAddStop(+e.target.value, 0); e.target.value = ""; } }
     });
+    c.addEventListener("input", e => { if (e.target.id === "rm-search") mFillAddOptions(H, e.target.value); });
+    mFillAddOptions(H, "");
+  }
+  function mAddStop(id, li) {
+    li = li || 0;
+    const r = mRoutes[mActive]; if (!r) { mNewRoute(); }
+    const ra = mRoutes[mActive];
+    if (ra.stops.some(s => s.id === id && (s.li || 0) === li)) return; // já está na rota ativa
+    mRoutes.forEach(x => { const k = x.stops.findIndex(s => s.id === id && (s.li || 0) === li); if (k >= 0) x.stops.splice(k, 1); });
+    ra.stops.push({ id, li });
+    mSave(); mRenderMarkers(mLastH); mRenderPanel(mLastH);
+  }
+  function mFillAddOptions(H, q) {
+    const sel = document.getElementById("rm-add"); if (!sel) return;
+    q = String(q || "").trim().toLowerCase();
+    const nm = s => String(s || "").toLowerCase();
+    const list = H.ITEMS.filter(i => i.lat != null)
+      .filter(i => !q || nm(i.nome).includes(q) || nm(i.org).includes(q) || nm(i.municipio).includes(q))
+      .sort((a, b) => a.nome.localeCompare(b.nome, "pt")).slice(0, 250);
+    sel.innerHTML = `<option value="">Adicionar iniciativa à rota ativa… (${list.length})</option>` + list.map(i => {
+      const org = (H.orgSub && H.orgSub(i)) || "";
+      return `<option value="${i.id}">${H.esc(i.nome)}${org ? " — " + H.esc(org) : ""}${i.municipio ? " · " + H.esc(i.municipio) : ""}</option>`;
+    }).join("");
   }
   function mRenderPanel(H) {
     const box = document.getElementById("rm-routes");
