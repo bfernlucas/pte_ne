@@ -687,7 +687,7 @@
     $$("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
     $$(".view").forEach(el => el.classList.add("hidden"));
     $("#view-" + v).classList.remove("hidden");
-    $("#filters").style.display = (v === "rotas" || v === "comparar" || v === "selecao") ? "none" : "";
+    $("#filters").style.display = (v === "rotas" || v === "rota-manual" || v === "comparar" || v === "selecao") ? "none" : "";
     refresh();
   }
   $$("#tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
@@ -702,6 +702,7 @@
     else if (state.view === "selecao") renderSelecao();
     else if (state.view === "analises") { const b = analiseBase(); renderAnBanner(b); renderAnalises(b.list); }
     else if (state.view === "rotas" && window.PTE_ROTAS) window.PTE_ROTAS.render(helpers());
+    else if (state.view === "rota-manual" && window.PTE_ROTAS && window.PTE_ROTAS.renderManual) window.PTE_ROTAS.renderManual(helpers());
     else if (state.view === "comparar") renderCompare();
   }
   function helpers() { return { ITEMS, META, byId, eixoColor, nameByCod, popupHtml, ufTokens, ufLabel, esc, trunc, orgSub, UF_NOME, selItems, fieldSel: () => ({ visita: new Set(SEL.visita), entrevista: new Set(SEL.entrevista) }) }; }

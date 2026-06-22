@@ -861,57 +861,7 @@
       ${cmp.map(r => `<tr class="${r.k === k ? "cur" : ""}"><td>${r.k}</td><td>${r.pre}</td><td>+${r.opt}</td><td>${r.score}</td><td>${r.km}</td><td>${r.dias}</td></tr>`).join("")}
       </tbody></table><div class="cs-note">Linha destacada = cenário atual. ${params.ufRestrict ? "Com restrição: as 2 primeiras são as rotas de carro (PI+CE e RN+PB); as demais cobrem outros estados." : "Mais incursões cobrem mais visitas técnicas, com mais esforço."}</div></div>`;
     // ---- cada incursão ----
-    plan.missions.forEach((m, mi) => {
-      const color = MCOLOR[mi % MCOLOR.length];
-      const entry = m.entryHub || m.hub, exit = m.exitHub || m.hub;
-      const car = !!m.carOnly;
-      const ico = car ? "🚗" : "✈";
-      const sameAir = car || (entry && exit && entry.iata === exit.iata);
-      const airLbl = a => `${a.nome}${a.iata && !car ? " (" + a.iata + ")" : ""}`;
-      const pts = [[entry.lat, entry.lon], ...m.visited.map(n => [n.lat, n.lon]), [exit.lat, exit.lon]];
-      pts.forEach(p => bounds.push(p));
-      L.polyline(pts, { color, weight: 3, opacity: .8 }).addTo(routeLayer);
-      L.marker([entry.lat, entry.lon], { icon: hubIcon(color) })
-        .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · ${car ? "base de carro (ida e volta)" : sameAir ? "base (chegada e saída)" : "chegada"}</span>${ico} ${airLbl(entry)}`).addTo(routeLayer);
-      if (!sameAir) L.marker([exit.lat, exit.lon], { icon: hubIcon(color) })
-        .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · saída</span>${ico} ${airLbl(exit)}`).addTo(routeLayer);
-      let n = 0;
-      m.visited.forEach(node => {
-        n++;
-        const ufl = H.ufLabel ? H.ufLabel(node) : H.ufTokens(node.estado).join(", ");
-        const uf = ufl === "—" ? "" : ufl;
-        const anc = anchorIds.has(node.id);
-        L.marker([node.lat, node.lon], { icon: numIcon(n, color, !node.preselecionada, anc) })
-          .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b> · ${anc ? "âncora" : node.__tipo === "opcional" ? "in loco no caminho" : "visita técnica"}`)
-          .addTo(routeLayer);
-      });
-      const airInfo = car
-        ? `${m.regionLabel || "rota de carro"} · ida e volta de ${airLbl(entry)}`
-        : sameAir
-          ? `chegada e saída: ${airLbl(entry)}`
-          : `chegada: ${airLbl(entry)} · saída: ${airLbl(exit)}`;
-      html += `<div class="incursao">
-        <div class="ih" style="background:${color}"><span class="in">Incursão ${mi + 1}${car ? " 🚗" : ""}</span><span class="imoment">momento ${mi + 1}</span><span class="ihub">${ico} ${airInfo}</span></div>
-        <div class="isum"><span><b>${m.visited.length}</b> paradas · <b>${m.preCount}</b> visitas · ${m.optCount} no caminho</span><span><b>${m.days.length}</b> dias</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.score}</b> pts</span></div>
-        <div class="leg-line air-line">${ico} ${car ? "saída de carro de" : "chegada de avião por"} ${airLbl(entry)}${car ? "" : " — daqui em diante, todo o trajeto é de carro"}</div>`;
-      let counter = 0;
-      m.days.forEach((d, di) => {
-        const jh = d.driveH + d.visitH, fill = Math.min(100, jh / params.jornadaH * 100);
-        html += `<div class="day"><div class="dh">Dia ${di + 1}<span>${Math.round(d.km)} km · ${jh.toFixed(1)} h de jornada</span></div>
-          <div class="dbar" title="${jh.toFixed(1)} h de ${params.jornadaH} h"><i style="width:${fill}%"></i></div>`;
-        d.stops.forEach(s => {
-          counter++;
-          if (s.legKm > 1) html += `<div class="leg-line">🚗 de carro: ${Math.round(s.legKm)} km (${s.legH.toFixed(1)} h)</div>`;
-          const anc = anchorIds.has(s.node.id), pre = s.node.preselecionada, opt = s.node.__tipo === "opcional";
-          const tagCls = anc ? "tanc" : opt ? "topt" : "tpre";
-          const tagTxt = anc ? "âncora" : opt ? "in loco no caminho" : "visita técnica";
-          const nbg = (anc || pre) ? color : "#fff", nfg = (anc || pre) ? "#fff" : color, nbd = anc ? "#f6a609" : color;
-          html += `<div class="stop ${(pre || anc) ? "pre" : "opt"}"><span class="n" style="background:${nbg};color:${nfg};border-color:${nbd}">${counter}</span><span class="nm">${H.esc(s.node.nome)} <span class="tag ${tagCls}">${tagTxt}</span> <span class="sc">${s.node.pontuacao} pts</span></span></div>`;
-        });
-        html += `</div>`;
-      });
-      html += `<div class="leg-line air-line">🚗 ${car ? "retorno de carro à base" : "de carro até a saída"}: ${Math.round(m.back.legKm)} km · ${ico} ${car ? "" : "saída de avião por "}${airLbl(exit)}</div></div>`;
-    });
+    plan.missions.forEach((m, mi) => { html += incursaoBlock(m, mi, MCOLOR[mi % MCOLOR.length], params, H, routeLayer, bounds); });
     // ---- não cobertas (trade-off do ótimo) ----
     if (cob.droppedPre && cob.droppedPre.length) {
       const wp = cob.droppedPre.reduce((s, n) => s + (n.pontuacao || 0), 0);
@@ -947,6 +897,64 @@
     panel.innerHTML = html;
     if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
   }
+
+  // Renderiza uma incursão (HTML do itinerário + traçado/markers no mapa). Reaproveitado
+  // pela aba automática (Rotas de campo) e pela manual (Elaboração manual da rota).
+  function incursaoBlock(m, mi, color, params, H, routeLayer, bounds, drawStops) {
+    if (drawStops === undefined) drawStops = true;
+    const entry = m.entryHub || m.hub, exit = m.exitHub || m.hub;
+    const car = !!m.carOnly;
+    const ico = car ? "🚗" : "✈";
+    const sameAir = car || (entry && exit && entry.iata === exit.iata);
+    const airLbl = a => `${a.nome}${a.iata && !car ? " (" + a.iata + ")" : ""}`;
+    const title = m.label || ("Incursão " + (mi + 1));
+    const pts = [[entry.lat, entry.lon], ...m.visited.map(n => [n.lat, n.lon]), [exit.lat, exit.lon]];
+    pts.forEach(p => bounds.push(p));
+    L.polyline(pts, { color, weight: 3, opacity: .8 }).addTo(routeLayer);
+    L.marker([entry.lat, entry.lon], { icon: hubIcon(color) })
+      .bindPopup(`<span class="pp-h">${H.esc(title)} · ${car ? "base de carro (ida e volta)" : sameAir ? "base (chegada e saída)" : "chegada"}</span>${ico} ${airLbl(entry)}`).addTo(routeLayer);
+    if (!sameAir) L.marker([exit.lat, exit.lon], { icon: hubIcon(color) })
+      .bindPopup(`<span class="pp-h">${H.esc(title)} · saída</span>${ico} ${airLbl(exit)}`).addTo(routeLayer);
+    if (drawStops) {
+      let n = 0;
+      m.visited.forEach(node => {
+        n++;
+        const ufl = H.ufLabel ? H.ufLabel(node) : H.ufTokens(node.estado).join(", ");
+        const uf = ufl === "—" ? "" : ufl;
+        const anc = anchorIds.has(node.id);
+        L.marker([node.lat, node.lon], { icon: numIcon(n, color, !node.preselecionada, anc) })
+          .bindPopup(`<span class="pp-h">${H.esc(title)} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b> · ${anc ? "âncora" : node.__tipo === "opcional" ? "in loco no caminho" : "visita técnica"}`)
+          .addTo(routeLayer);
+      });
+    }
+    const airInfo = car
+      ? `${m.regionLabel || "rota de carro"} · ida e volta de ${airLbl(entry)}`
+      : sameAir
+        ? `chegada e saída: ${airLbl(entry)}`
+        : `chegada: ${airLbl(entry)} · saída: ${airLbl(exit)}`;
+    let html = `<div class="incursao">
+      <div class="ih" style="background:${color}"><span class="in">${H.esc(title)}${car ? " 🚗" : ""}</span>${m.label ? "" : `<span class="imoment">momento ${mi + 1}</span>`}<span class="ihub">${ico} ${airInfo}</span></div>
+      <div class="isum"><span><b>${m.visited.length}</b> paradas${m.optCount ? ` · <b>${m.preCount}</b> visitas · ${m.optCount} no caminho` : ""}</span><span><b>${m.days.length}</b> dias</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.score}</b> pts</span></div>
+      <div class="leg-line air-line">${ico} ${car ? "saída de carro de" : "chegada de avião por"} ${airLbl(entry)}${car ? "" : " — daqui em diante, todo o trajeto é de carro"}</div>`;
+    let counter = 0;
+    m.days.forEach((d, di) => {
+      const jh = d.driveH + d.visitH, fill = Math.min(100, jh / params.jornadaH * 100);
+      html += `<div class="day"><div class="dh">Dia ${di + 1}<span>${Math.round(d.km)} km · ${jh.toFixed(1)} h de jornada</span></div>
+        <div class="dbar" title="${jh.toFixed(1)} h de ${params.jornadaH} h"><i style="width:${fill}%"></i></div>`;
+      d.stops.forEach(s => {
+        counter++;
+        if (s.legKm > 1) html += `<div class="leg-line">🚗 de carro: ${Math.round(s.legKm)} km (${s.legH.toFixed(1)} h)</div>`;
+        const anc = anchorIds.has(s.node.id), pre = s.node.preselecionada, opt = s.node.__tipo === "opcional";
+        const tagCls = anc ? "tanc" : opt ? "topt" : "tpre";
+        const tagTxt = anc ? "âncora" : opt ? "in loco no caminho" : "visita técnica";
+        const nbg = (anc || pre) ? color : "#fff", nfg = (anc || pre) ? "#fff" : color, nbd = anc ? "#f6a609" : color;
+        html += `<div class="stop ${(pre || anc) ? "pre" : "opt"}"><span class="n" style="background:${nbg};color:${nfg};border-color:${nbd}">${counter}</span><span class="nm">${H.esc(s.node.nome)} <span class="tag ${tagCls}">${tagTxt}</span> <span class="sc">${s.node.pontuacao} pts</span></span></div>`;
+      });
+      html += `</div>`;
+    });
+    html += `<div class="leg-line air-line">🚗 ${car ? "retorno de carro à base" : "de carro até a saída"}: ${Math.round(m.back.legKm)} km · ${ico} ${car ? "" : "saída de avião por "}${airLbl(exit)}</div></div>`;
+    return html;
+  }
   function numIcon(n, color, opt, anchor) {
     if (anchor) {
       return L.divIcon({
@@ -967,5 +975,198 @@
     });
   }
 
-  window.PTE_ROTAS = { render, toggleAnchor, isAnchor };
+  // ======================= Elaboração MANUAL da rota =======================
+  let mMap, mAllLayer, mRouteLayer, mLastH, mLoaded = false;
+  let mRoutes = [], mActive = 0;
+  function mNewRoute() { const i = mRoutes.length; mRoutes.push({ nome: "Rota " + (i + 1), color: MCOLOR[i % MCOLOR.length], stops: [], carOnly: false }); mActive = mRoutes.length - 1; }
+  function mLoad() {
+    try { const s = JSON.parse(localStorage.getItem("pte_rota_manual") || "null"); if (s && Array.isArray(s.routes) && s.routes.length) { mRoutes = s.routes; mActive = Math.min(s.active || 0, s.routes.length - 1); return; } } catch (e) {}
+    mRoutes = []; mActive = 0; mNewRoute();
+  }
+  function mSave() { try { localStorage.setItem("pte_rota_manual", JSON.stringify({ routes: mRoutes, active: mActive })); } catch (e) {} }
+  function mFindStop(id, li) {
+    for (let ri = 0; ri < mRoutes.length; ri++) { const j = mRoutes[ri].stops.findIndex(s => s.id === id && (s.li || 0) === li); if (j >= 0) return { ri, order: j + 1, color: mRoutes[ri].color }; }
+    return null;
+  }
+  function mToggleStop(id, li) {
+    const r = mRoutes[mActive]; if (!r) return;
+    const j = r.stops.findIndex(s => s.id === id && (s.li || 0) === li);
+    if (j >= 0) r.stops.splice(j, 1);
+    else { mRoutes.forEach(x => { const k = x.stops.findIndex(s => s.id === id && (s.li || 0) === li); if (k >= 0) x.stops.splice(k, 1); }); r.stops.push({ id, li }); }
+    mSave(); mRenderMarkers(mLastH); mRenderPanel(mLastH);
+  }
+  function mEnsureMap() {
+    if (mMap) return;
+    mMap = L.map("map-rota-manual").setView([-8.6, -39.5], 5);
+    if (window.PTE_MAP) PTE_MAP.setup(mMap, { base: "Ruas e estradas", boundaries: true, airports: true });
+    else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 20, crossOrigin: true }).addTo(mMap);
+    mAllLayer = L.layerGroup().addTo(mMap);
+    mRouteLayer = L.layerGroup().addTo(mMap);
+  }
+  function mReadParams() {
+    const v = id => { const el = document.getElementById(id); return el ? +el.value : null; };
+    return { dias: 60, jornadaH: 10, dirMaxH: v("rm-dir") || 8, visitaH: v("rm-visita") || 2, detour: 1.3, speedKmh: 65 };
+  }
+  function mSyncParams() {
+    const set = (id, suf) => { const a = document.getElementById(id), b = document.getElementById(id + "-v"); if (a && b) b.textContent = a.value + suf; };
+    set("rm-visita", " h"); set("rm-dir", " h");
+  }
+  function mBuildControls(H) {
+    const c = document.getElementById("rota-manual-controls");
+    if (!c || c.dataset.init) return;
+    c.dataset.init = "1";
+    c.innerHTML = `
+      <div class="rc-group">
+        <span class="rc-title">Parâmetros</span>
+        <div class="rc-field"><label>Horas por visita</label><input id="rm-visita" type="range" min="1" max="4" step="0.5" value="2"><span class="val" id="rm-visita-v">2 h</span></div>
+        <div class="rc-field"><label>Direção máx. por dia</label><input id="rm-dir" type="range" min="6" max="10" step="1" value="8"><span class="val" id="rm-dir-v">8 h</span></div>
+        <label class="rc-chk"><input type="checkbox" id="rm-road" checked> Usar distâncias reais por estrada</label>
+      </div>
+      <div class="rc-group">
+        <span class="rc-title">Rotas</span>
+        <div class="rc-note">Escolha a <b>rota ativa</b> abaixo e <b>clique nos pontos do mapa</b> na ordem desejada. Clicar de novo remove o ponto. Use ↑ ↓ para reordenar.</div>
+        <div class="rm-routes" id="rm-routes"></div>
+        <button class="btn secondary sm" id="rm-new">+ Nova rota</button>
+      </div>
+      <div class="rc-group" id="rm-active-box"></div>
+      <div class="rc-actions">
+        <button class="btn" id="rm-gerar">Gerar roteiro</button>
+        <button class="btn secondary" id="rm-clear-all">Limpar tudo</button>
+        <span class="rc-status" id="rm-status"></span>
+      </div>`;
+    ["rm-visita", "rm-dir"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("input", mSyncParams); });
+    c.addEventListener("click", e => {
+      const chip = e.target.closest(".rm-chip"); if (chip) { mActive = +chip.dataset.ri; mSave(); mRenderPanel(H); mRenderMarkers(H); return; }
+      const op = e.target.closest("[data-op]"); if (op) {
+        const si = +op.dataset.si, r = mRoutes[mActive]; if (!r) return;
+        if (op.dataset.op === "up" && si > 0) { const t = r.stops[si - 1]; r.stops[si - 1] = r.stops[si]; r.stops[si] = t; }
+        else if (op.dataset.op === "down" && si < r.stops.length - 1) { const t = r.stops[si + 1]; r.stops[si + 1] = r.stops[si]; r.stops[si] = t; }
+        else if (op.dataset.op === "rm") r.stops.splice(si, 1);
+        mSave(); mRenderPanel(H); mRenderMarkers(H); return;
+      }
+      const id = e.target.id;
+      if (id === "rm-new") { mNewRoute(); mSave(); mRenderPanel(H); mRenderMarkers(H); }
+      else if (id === "rm-gerar") mGerar(H);
+      else if (id === "rm-clear-all") { mRoutes = []; mActive = 0; mNewRoute(); mSave(); mRenderPanel(H); mRenderMarkers(H); const it = document.getElementById("rota-manual-itinerary"); if (it) it.innerHTML = ""; if (mRouteLayer) mRouteLayer.clearLayers(); }
+      else if (id === "rm-opt") mOptimize(H);
+      else if (id === "rm-clear") { const r = mRoutes[mActive]; if (r) r.stops = []; mSave(); mRenderPanel(H); mRenderMarkers(H); }
+      else if (id === "rm-del") { if (mRoutes.length) { mRoutes.splice(mActive, 1); if (!mRoutes.length) mNewRoute(); mActive = Math.max(0, mActive - 1); mSave(); mRenderPanel(H); mRenderMarkers(H); } }
+    });
+    c.addEventListener("change", e => {
+      if (e.target.id === "rm-car") { const r = mRoutes[mActive]; if (r) { r.carOnly = e.target.checked; mSave(); } }
+      else if (e.target.id === "rm-name") { const r = mRoutes[mActive]; if (r) { r.nome = e.target.value.trim() || r.nome; mSave(); mRenderPanel(H); } }
+    });
+  }
+  function mRenderPanel(H) {
+    const box = document.getElementById("rm-routes");
+    if (box) box.innerHTML = mRoutes.map((r, ri) => `<button class="rm-chip ${ri === mActive ? "on" : ""}" data-ri="${ri}"><span class="rm-dot" style="background:${r.color}"></span>${H.esc(r.nome)} <b>${r.stops.length}</b></button>`).join("");
+    const ed = document.getElementById("rm-active-box");
+    if (!ed) return;
+    const r = mRoutes[mActive];
+    if (!r) { ed.innerHTML = ""; return; }
+    const stops = r.stops.map((s, si) => {
+      const it = H.byId(s.id); const locs = it ? locsOf(it, H) : []; const loc = locs[s.li] || locs[0] || {};
+      return `<li><span class="rm-n" style="background:${r.color}">${si + 1}</span><span class="rm-nm">${H.esc(it ? it.nome : "?")}<small>${H.esc(loc.municipio || "")}</small></span><span class="rm-ops"><button data-op="up" data-si="${si}" title="subir">↑</button><button data-op="down" data-si="${si}" title="descer">↓</button><button data-op="rm" data-si="${si}" title="remover">×</button></span></li>`;
+    }).join("") || `<li class="rm-empty">Clique nos pontos do mapa para adicionar paradas a esta rota.</li>`;
+    ed.innerHTML = `<span class="rc-title">Rota ativa: ${H.esc(r.nome)}</span>
+      <input class="rm-name" id="rm-name" value="${H.esc(r.nome)}" aria-label="nome da rota" />
+      <label class="rc-chk"><input type="checkbox" id="rm-car" ${r.carOnly ? "checked" : ""}> 🚗 Só de carro (circular, sem avião)</label>
+      <ol class="rm-stops">${stops}</ol>
+      <div class="rm-row"><button class="btn secondary sm" id="rm-opt">Otimizar ordem</button><button class="btn secondary sm" id="rm-clear">Limpar rota</button><button class="btn secondary sm" id="rm-del">Remover rota</button></div>`;
+  }
+  function mRenderMarkers(H) {
+    if (!mAllLayer) return;
+    mAllLayer.clearLayers();
+    H.ITEMS.forEach(it => {
+      const locs = locsOf(it, H);
+      locs.forEach((loc, li) => {
+        if (loc.lat == null || loc.lon == null) return;
+        const found = mFindStop(it.id, li);
+        const mk = found
+          ? L.marker([loc.lat, loc.lon], { icon: numIcon(found.order, found.color, false, false) })
+          : L.circleMarker([loc.lat, loc.lon], { radius: 6, fillColor: H.eixoColor(it.eixo_cod), fillOpacity: it.fora_ne ? .35 : .7, color: "#fff", weight: 1.5 });
+        const ufl = H.ufLabel ? H.ufLabel(it) : "";
+        mk.bindTooltip(`${H.esc(it.nome)} · ${it.pontuacao} pts${found ? " — " + H.esc(mRoutes[found.ri].nome) + " #" + found.order : ""}`, { direction: "top", offset: [0, -6] });
+        mk.on("click", () => mToggleStop(it.id, li));
+        mk.addTo(mAllLayer);
+      });
+    });
+  }
+  function mBuildNodes(r, H) {
+    return r.stops.map(s => {
+      const it = H.byId(s.id); if (!it || it.lat == null) return null;
+      const locs = locsOf(it, H), loc = locs[s.li] || locs[0] || { lat: it.lat, lon: it.lon, municipio: it.municipio };
+      return Object.assign({}, it, { lat: loc.lat, lon: loc.lon, municipio: loc.municipio, estado: loc.uf || it.estado, preselecionada: true, __tipo: "visita" });
+    }).filter(Boolean);
+  }
+  function mOptimize(H) {
+    const r = mRoutes[mActive]; if (!r || r.stops.length < 3) return;
+    const nodes = mBuildNodes(r, H).map((n, i) => Object.assign({}, n, { __k: r.stops[i] }));
+    const ordered = openPathOptimize(nodes, makeProvider(mReadParams()), AIRPORTS_HUB);
+    r.stops = ordered.map(n => n.__k);
+    mSave(); mRenderPanel(H); mRenderMarkers(H);
+  }
+  async function mGerar(H) {
+    const panel = document.getElementById("rota-manual-itinerary"), statusEl = document.getElementById("rm-status");
+    const routes = mRoutes.filter(r => r.stops.length);
+    if (!routes.length) { if (panel) panel.innerHTML = `<div class="cover empty">Monte ao menos uma rota: escolha a rota ativa e clique nos pontos do mapa na ordem desejada.</div>`; if (mRouteLayer) mRouteLayer.clearLayers(); return; }
+    const params = mReadParams();
+    const routeNodes = routes.map(r => mBuildNodes(r, H));
+    const allNodes = routeNodes.flat();
+    const useRoad = document.getElementById("rm-road") ? document.getElementById("rm-road").checked : true;
+    const fallback = makeProvider(params);
+    let prov = fallback, distSource = "estimativa (linha reta × 1,3, 65 km/h)";
+    if (useRoad && allNodes.length) {
+      const max = roadMax(), pts = roadPoints(allNodes);
+      if (pts.length <= max) {
+        if (statusEl) statusEl.textContent = "Calculando deslocamento real por estrada…";
+        try { const mtx = await getRoadMatrix(pts); prov = makeMatrixProvider(pts, mtx.durations, mtx.distances, fallback); distSource = "distâncias reais por estrada · " + mtx.source; }
+        catch (e) { distSource = "estimativa (sem acesso à malha viária)"; }
+      } else distSource = "estimativa (conjunto grande demais para a malha viária)";
+    }
+    params.prov = prov;
+    mRouteLayer.clearLayers();
+    const bounds = [];
+    const real = distSource.indexOf("reais") >= 0;
+    const totStops = routeNodes.reduce((s, n) => s + n.length, 0);
+    let totKm = 0, totDays = 0;
+    let blocks = "";
+    routeNodes.forEach((nodes, ri) => {
+      const r = routes[ri];
+      let entry, exit;
+      if (r.carOnly) { const base = { nome: nodes[0].municipio || "início", lat: nodes[0].lat, lon: nodes[0].lon }; entry = base; exit = base; }
+      else { entry = nearestHub(nodes[0], AIRPORTS_HUB); exit = nearestHub(nodes[nodes.length - 1], AIRPORTS_HUB); }
+      const packed = packDays(entry, nodes, prov, params, exit);
+      const km = packed.days.reduce((s, d) => s + d.km, 0) + packed.back.legKm;
+      totKm += km; totDays += packed.days.length;
+      const m = { label: r.nome, entryHub: entry, exitHub: exit, carOnly: !!r.carOnly, regionLabel: r.carOnly ? r.nome + " · carro" : "", visited: packed.visited, days: packed.days, back: packed.back, totalKm: km, score: nodes.reduce((s, n) => s + (n.pontuacao || 0), 0), preCount: packed.visited.length, optCount: 0 };
+      blocks += incursaoBlock(m, ri, r.color, params, H, mRouteLayer, bounds, false);
+    });
+    let html = `<div class="opt-card">
+      <div class="opt-title">Roteiro manual · ${routes.length} rota(s)</div>
+      <div class="opt-grid">
+        <div class="opt-m"><b>${routes.length}</b><span>rotas</span></div>
+        <div class="opt-m"><b>${totStops}</b><span>paradas</span></div>
+        <div class="opt-m"><b>${Math.round(totKm)}</b><span>km</span></div>
+        <div class="opt-m"><b>${totDays}</b><span>dias (total)</span></div>
+      </div>
+      <div class="opt-src ${real ? "real" : "est"}">${real ? "Distâncias reais por estrada" : "Distâncias estimadas"} — ${H.esc(distSource)}</div>
+      <div class="opt-help">Cada rota foi montada por você. O avião é usado só na <b>chegada/saída</b> (rotas com avião); entre as paradas o trajeto é <b>de carro</b>. Marque “Só de carro” para uma rota circular sem avião.</div>
+    </div>` + blocks;
+    if (panel) panel.innerHTML = html;
+    if (statusEl) statusEl.textContent = `${routes.length} rota(s) · ${totStops} paradas · ${Math.round(totKm)} km · ${totDays} dias.`;
+    if (bounds.length) mMap.fitBounds(bounds, { padding: [30, 30] });
+  }
+  function renderManual(H) {
+    mLastH = H;
+    if (!mLoaded) { mLoad(); mLoaded = true; }
+    mEnsureMap();
+    mBuildControls(H);
+    setTimeout(() => mMap.invalidateSize(), 60);
+    mSyncParams();
+    mRenderMarkers(H);
+    mRenderPanel(H);
+  }
+
+  window.PTE_ROTAS = { render, toggleAnchor, isAnchor, renderManual };
 })();

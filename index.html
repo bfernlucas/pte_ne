@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/dashboard.css?v=50" />
+<link rel="stylesheet" href="assets/css/dashboard.css?v=51" />
 </head>
 <body>
 <header class="topbar">
@@ -47,6 +47,7 @@
   <button data-view="selecao">Seleção</button>
   <button data-view="analises">Análises</button>
   <button data-view="rotas">Rotas de campo</button>
+  <button data-view="rota-manual">Elaboração manual</button>
   <button data-view="comparar">Comparar</button>
 </nav>
 
@@ -222,6 +223,23 @@
     </div>
   </div>
 
+  <!-- ELABORAÇÃO MANUAL DA ROTA -->
+  <div class="view hidden" id="view-rota-manual">
+    <h2 class="view-head">Elaboração manual da rota <small>clique nos pontos do mapa para montar as rotas na ordem desejada</small></h2>
+    <div class="exp-bar">
+      <span class="exp-lab">Exportar:</span>
+      <button class="exp-btn" data-exp="png" data-target="#map-rota-manual" data-name="mapa-rota-manual">Imagem do mapa (PNG)</button>
+      <button class="exp-btn" data-exp="pdf-el" data-target="#rota-manual-itinerary" data-name="roteiro-manual" data-title="Roteiro manual de incursões">Roteiro (PDF)</button>
+    </div>
+    <div class="rotas-wrap">
+      <div class="rotas-controls" id="rota-manual-controls"></div>
+      <div class="rotas-results">
+        <div id="map-rota-manual" class="map"></div>
+        <aside class="rotas-side" id="rota-manual-itinerary"></aside>
+      </div>
+    </div>
+  </div>
+
   <!-- COMPARAR -->
   <div class="view hidden" id="view-comparar">
     <h2 class="view-head">Comparar iniciativas <small>desempenho lado a lado nos dez critérios de avaliação</small></h2>
@@ -265,11 +283,11 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=50"></script>
-<script src="assets/data/uf_ne.js?v=50"></script>
-<script src="assets/js/maplayers.js?v=50"></script>
-<script src="assets/js/rota.js?v=50"></script>
-<script src="assets/js/dashboard.js?v=50"></script>
-<script src="assets/js/export.js?v=50"></script>
+<script src="assets/data/iniciativas.js?v=51"></script>
+<script src="assets/data/uf_ne.js?v=51"></script>
+<script src="assets/js/maplayers.js?v=51"></script>
+<script src="assets/js/rota.js?v=51"></script>
+<script src="assets/js/dashboard.js?v=51"></script>
+<script src="assets/js/export.js?v=51"></script>
 </body>
 </html>
