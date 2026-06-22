@@ -978,6 +978,7 @@
   // ======================= Elaboração MANUAL da rota =======================
   let mMap, mAllLayer, mRouteLayer, mLastH, mLoaded = false;
   let mRoutes = [], mActive = 0;
+  let mSel = { visita: new Set(), entrevista: new Set() }; // seleção da aba "Seleção"
   function mNewRoute() { const i = mRoutes.length; mRoutes.push({ nome: "Rota " + (i + 1), color: MCOLOR[i % MCOLOR.length], stops: [], carOnly: false }); mActive = mRoutes.length - 1; }
   function mLoad() {
     try { const s = JSON.parse(localStorage.getItem("pte_rota_manual") || "null"); if (s && Array.isArray(s.routes) && s.routes.length) { mRoutes = s.routes; mActive = Math.min(s.active || 0, s.routes.length - 1); return; } } catch (e) {}
@@ -1025,6 +1026,11 @@
       <div class="rc-group">
         <span class="rc-title">Rotas</span>
         <div class="rc-note">Escolha a <b>rota ativa</b> abaixo e <b>clique nos pontos do mapa</b> na ordem desejada. Clicar de novo remove o ponto. Use ↑ ↓ para reordenar.</div>
+        <div class="rm-legend">
+          <span><i class="rml rml-vis"></i> pré-selecionada p/ visita</span>
+          <span><i class="rml rml-ent"></i> pré-selecionada p/ entrevista</span>
+          <span><i class="rml rml-out"></i> demais iniciativas</span>
+        </div>
         <div class="rm-routes" id="rm-routes"></div>
         <button class="btn secondary sm" id="rm-new">+ Nova rota</button>
       </div>
@@ -1078,15 +1084,26 @@
     if (!mAllLayer) return;
     mAllLayer.clearLayers();
     H.ITEMS.forEach(it => {
+      const vis = mSel.visita.has(it.id), ent = mSel.entrevista.has(it.id);
       const locs = locsOf(it, H);
       locs.forEach((loc, li) => {
         if (loc.lat == null || loc.lon == null) return;
         const found = mFindStop(it.id, li);
-        const mk = found
-          ? L.marker([loc.lat, loc.lon], { icon: numIcon(found.order, found.color, false, false) })
-          : L.circleMarker([loc.lat, loc.lon], { radius: 6, fillColor: H.eixoColor(it.eixo_cod), fillOpacity: it.fora_ne ? .35 : .7, color: "#fff", weight: 1.5 });
-        const ufl = H.ufLabel ? H.ufLabel(it) : "";
-        mk.bindTooltip(`${H.esc(it.nome)} · ${it.pontuacao} pts${found ? " — " + H.esc(mRoutes[found.ri].nome) + " #" + found.order : ""}`, { direction: "top", offset: [0, -6] });
+        let mk;
+        if (found) {
+          mk = L.marker([loc.lat, loc.lon], { icon: numIcon(found.order, found.color, false, false) });
+        } else {
+          // destaca as pré-selecionadas: visita = anel laranja, entrevista = anel verde
+          mk = L.circleMarker([loc.lat, loc.lon], {
+            radius: vis ? 8 : ent ? 7 : 6,
+            fillColor: H.eixoColor(it.eixo_cod),
+            fillOpacity: it.fora_ne ? .35 : (vis || ent ? .92 : .7),
+            color: vis ? "#f37520" : ent ? "#16a34a" : "#fff",
+            weight: vis ? 3.4 : ent ? 2.6 : 1.5
+          });
+        }
+        const tag = vis ? " · pré-selecionada p/ visita" : ent ? " · pré-selecionada p/ entrevista" : "";
+        mk.bindTooltip(`${H.esc(it.nome)} · ${it.pontuacao} pts${tag}${found ? " — " + H.esc(mRoutes[found.ri].nome) + " #" + found.order : ""}`, { direction: "top", offset: [0, -6] });
         mk.on("click", () => mToggleStop(it.id, li));
         mk.addTo(mAllLayer);
       });
@@ -1159,6 +1176,7 @@
   }
   function renderManual(H) {
     mLastH = H;
+    mSel = H.fieldSel ? H.fieldSel() : { visita: new Set(), entrevista: new Set() };
     if (!mLoaded) { mLoad(); mLoaded = true; }
     mEnsureMap();
     mBuildControls(H);

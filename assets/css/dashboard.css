@@ -307,6 +307,12 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .rc-switch input{width:16px;height:16px;accent-color:#e0892b;cursor:pointer}
 .rc-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%;margin-top:4px}
 /* elaboração manual da rota */
+.rm-legend{display:flex;flex-wrap:wrap;gap:4px 12px;margin:2px 0 10px;font-size:.72rem;color:var(--muted)}
+.rm-legend span{display:inline-flex;align-items:center;gap:5px}
+.rm-legend .rml{width:13px;height:13px;border-radius:50%;background:#9aa0b0;display:inline-block;box-sizing:border-box}
+.rm-legend .rml-vis{background:#cfd6e6;border:3px solid #f37520}
+.rm-legend .rml-ent{background:#cfd6e6;border:2.5px solid #16a34a}
+.rm-legend .rml-out{background:#9aa0b0;border:1.5px solid #fff;box-shadow:0 0 0 1px #cfd2dc}
 .rm-routes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .rm-chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font);font-size:.78rem;color:var(--ink);
   background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 10px;cursor:pointer}
