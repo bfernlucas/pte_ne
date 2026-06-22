@@ -365,7 +365,7 @@
       [...core, ...opt].forEach(n => { if (n.locais && n.locais.length) applyLoc(n, { lat: cx, lon: cy }); });
     }
     const distrib = (items, gs) => { const p = gs.map(() => []); items.forEach(n => { let bi = 0, bd = Infinity; gs.forEach((g, i) => { const d = minDist(n, g); if (d < bd) { bd = d; bi = i; } }); p[bi].push(n); }); return p; };
-    let missions;
+    let missions, restUncovered = [];
     if (params.ufRestrict) {
       // duas incursões obrigatórias de CARRO: Rota 1 = PI+CE (base Fortaleza); Rota 2 = RN+PB (base Natal)
       const G1 = new Set(["PI", "CE"]), G2 = new Set(["RN", "PB"]);
@@ -380,15 +380,20 @@
       const C = split(core), O = split(opt);
       if (C.rest.length) { const cx = C.rest.reduce((s, n) => s + n.lat, 0) / C.rest.length, cy = C.rest.reduce((s, n) => s + n.lon, 0) / C.rest.length; [...C.rest, ...O.rest].forEach(n => { if (n.locais && n.locais.length) applyLoc(n, { lat: cx, lon: cy }); }); }
       missions = [];
+      restUncovered = [];
       const carP = (home, label) => Object.assign({}, params, { airports: [home], carOnly: true, regionLabel: label });
       if (C.g1.length) missions.push(buildMission(C.g1, O.g1, hubs, carP(homeG1, "Rota PI + CE · carro")));
       if (C.g2.length) missions.push(buildMission(C.g2, O.g2, hubs, carP(homeG2, "Rota RN + PB · carro")));
-      const freeCount = C.rest.length ? Math.max(1, (params.numMissoes || 2) - 2) : 0;
-      if (freeCount > 0) {
+      // o nº de incursões é o TOTAL; as 2 primeiras são as rotas de carro (PI+CE e RN+PB).
+      // as livres = nº de incursões − 2 (não força extra). Sem rotas livres, os demais estados ficam fora.
+      const freeCount = Math.max(0, (params.numMissoes || 2) - 2);
+      if (freeCount > 0 && C.rest.length) {
         let fg = kmeansK(C.rest, freeCount); fg.sort((a, b) => avgLat(b) - avgLat(a));
         const fpools = distrib(O.rest, fg);
         const freeP = Object.assign({}, params, { airports: AIRPORTS_HUB, carOnly: false, regionLabel: "" });
         fg.forEach((g, i) => missions.push(buildMission(g, fpools[i], hubs, freeP)));
+      } else {
+        restUncovered = C.rest.slice(); // visitas de outros estados ficam fora (aumente o nº de incursões)
       }
     } else {
       const k = Math.max(1, params.numMissoes || 2);
@@ -400,7 +405,8 @@
     const candVis = missions.reduce((s, m) => s + m.visited.length, 0);
     const preVis = missions.reduce((s, m) => s + m.visited.filter(n => n.preselecionada).length, 0);
     const visitedIds = new Set(missions.flatMap(m => m.visited.map(n => n.id)));
-    const droppedPre = missions.flatMap(m => m.dropped.filter(n => n.preselecionada && !isAnc(n)));
+    const droppedPre = missions.flatMap(m => m.dropped.filter(n => n.preselecionada && !isAnc(n)))
+      .concat(restUncovered.filter(n => n.preselecionada && !isAnc(n)));
     const ancAll = valid.filter(isAnc);
     const ancMissed = ancAll.filter(a => !visitedIds.has(a.id));
     const totalScore = missions.reduce((s, m) => s + m.score, 0);
@@ -414,7 +420,7 @@
         preTotal: preAll.length, preVis, candTotal: valid.length, candVis,
         optVis: candVis - preVis, totalScore, totalKm: Math.round(totalKm), totalDays, droppedPre,
         ancTotal: ancAll.length, ancVis: ancAll.length - ancMissed.length, ancMissed,
-        ufsCobertas: ufsCob.size, interiorVis, candVisTotal: candVis
+        ufsCobertas: ufsCob.size, interiorVis, candVisTotal: candVis, nMiss: missions.length
       }
     };
   }
@@ -477,7 +483,7 @@
     c.innerHTML = `
       <div class="rc-group rc-ufr">
         <label class="rc-switch"><input type="checkbox" id="r-ufrestrict"> <b>Ativar restrição por UF</b></label>
-        <div class="rc-note">Garante <b>2 rotas de carro</b> fixas: <b>Rota 1 — Piauí + Ceará</b> (base Fortaleza) e <b>Rota 2 — RN + Paraíba</b> (base Natal). As demais incursões cobrem os outros estados livremente (carro ou avião). Use o nº de incursões para definir quantas rotas livres adicionais.</div>
+        <div class="rc-note">Garante <b>2 rotas de carro</b> fixas: <b>Rota 1 — só Piauí + Ceará</b> (base Fortaleza) e <b>Rota 2 — só RN + Paraíba</b> (base Natal). O <b>Nº de incursões é o total</b>: com <b>2</b>, saem apenas essas duas rotas; aumente para criar rotas livres (carro/avião) que cobrem os <b>demais estados</b>. As visitas de outros estados sem rota livre aparecem em “fora destas incursões”.</div>
       </div>
       <div class="rc-group">
         <span class="rc-title">Parâmetros da rota</span>
@@ -794,15 +800,17 @@
       <div class="opt-help">Cada incursão é uma <b>rota aberta</b>: chega pelo aeroporto mais próximo da 1ª parada e sai pelo mais próximo da última (entre os 17 aeroportos do NE) — <b>chegada e saída podem ser em cidades diferentes</b>, minimizando o deslocamento por estrada. O roteiro prioriza <b>diversidade regional</b> (cobrir mais estados), <b>interiorização</b> (iniciativas longe das capitais) e o <b>maior nº de iniciativas</b>. As <b>âncoras</b> são sempre incluídas; a nota entra como ajuste fino.</div>
     </div>`;
     // ---- comparador de cenários (nº de incursões) ----
-    const cmp = [];
-    for (let kk = 1; kk <= 6; kk++) {
+    const cmp = []; const seenN = new Set();
+    for (let kk = 1; kk <= 7; kk++) {
       const c = planMissions(candidates, HUBS, { ...params, numMissoes: kk }).cobertura;
-      cmp.push({ k: kk, pre: c.preTotal ? `${c.preVis}/${c.preTotal}` : "—", opt: c.optVis, score: c.totalScore, km: c.totalKm, dias: c.totalDays });
+      if (seenN.has(c.nMiss)) continue; // dedup (com restrição, vários kk dão o mesmo total)
+      seenN.add(c.nMiss);
+      cmp.push({ k: c.nMiss, pre: c.preTotal ? `${c.preVis}/${c.preTotal}` : "—", opt: c.optVis, score: c.totalScore, km: c.totalKm, dias: c.totalDays });
     }
-    html += `<div class="cmp-scen"><div class="cs-h">Comparar cenários — incursões de ${params.dias} dias</div>
+    html += `<div class="cmp-scen"><div class="cs-h">Comparar cenários — incursões de ${params.dias} dias${params.ufRestrict ? " · com restrição por UF" : ""}</div>
       <table><thead><tr><th>Incursões</th><th>Visitas</th><th>No caminho</th><th>Valor</th><th>Km</th><th>Dias</th></tr></thead><tbody>
       ${cmp.map(r => `<tr class="${r.k === k ? "cur" : ""}"><td>${r.k}</td><td>${r.pre}</td><td>+${r.opt}</td><td>${r.score}</td><td>${r.km}</td><td>${r.dias}</td></tr>`).join("")}
-      </tbody></table><div class="cs-note">Linha destacada = cenário atual (ajuste pelo controle “Nº de incursões”). Mais incursões cobrem mais visitas técnicas, com mais esforço.</div></div>`;
+      </tbody></table><div class="cs-note">Linha destacada = cenário atual. ${params.ufRestrict ? "Com restrição: as 2 primeiras são as rotas de carro (PI+CE e RN+PB); as demais cobrem outros estados." : "Mais incursões cobrem mais visitas técnicas, com mais esforço."}</div></div>`;
     // ---- cada incursão ----
     plan.missions.forEach((m, mi) => {
       const color = MCOLOR[mi % MCOLOR.length];
