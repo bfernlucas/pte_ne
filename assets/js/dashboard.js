@@ -449,13 +449,13 @@
     $("#sel-clear-visita").addEventListener("click", () => { SEL.visita.clear(); saveSel(); renderSelecao(); });
     $("#sel-clear-entrevista").addEventListener("click", () => { SEL.entrevista.clear(); saveSel(); renderSelecao(); });
     $("#sel-go-analises").addEventListener("click", () => setView("analises"));
-    $("#sel-go-rotas").addEventListener("click", () => setView("rotas"));
+    $("#sel-go-rotas").addEventListener("click", () => setView("rota-manual"));
   }
   function updateTabLinks() {
     const n = selUnion().size;
     $$("#tabs button").forEach(b => {
       const v = b.dataset.view;
-      if (v === "selecao" || v === "analises" || v === "rotas") {
+      if (v === "selecao" || v === "analises" || v === "rota-manual") {
         let badge = b.querySelector(".tbadge");
         if (n > 0) {
           if (!badge) { badge = document.createElement("span"); badge.className = "tbadge"; b.appendChild(badge); }
@@ -693,7 +693,7 @@
     $$("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
     $$(".view").forEach(el => el.classList.add("hidden"));
     $("#view-" + v).classList.remove("hidden");
-    $("#filters").style.display = (v === "rotas" || v === "rota-manual" || v === "comparar" || v === "selecao") ? "none" : "";
+    $("#filters").style.display = (v === "rota-manual" || v === "comparar" || v === "selecao") ? "none" : "";
     refresh();
   }
   $$("#tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
@@ -707,7 +707,6 @@
     else if (state.view === "mapa") renderMapGeral(list);
     else if (state.view === "selecao") renderSelecao();
     else if (state.view === "analises") { const b = analiseBase(); renderAnBanner(b); renderAnalises(b.list); }
-    else if (state.view === "rotas" && window.PTE_ROTAS) window.PTE_ROTAS.render(helpers());
     else if (state.view === "rota-manual" && window.PTE_ROTAS && window.PTE_ROTAS.renderManual) window.PTE_ROTAS.renderManual(helpers());
     else if (state.view === "comparar") renderCompare();
   }

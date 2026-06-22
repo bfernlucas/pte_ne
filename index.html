@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/dashboard.css?v=59" />
+<link rel="stylesheet" href="assets/css/dashboard.css?v=60" />
 </head>
 <body>
 <header class="topbar">
@@ -46,8 +46,7 @@
   <button data-view="mapa">Mapa geral</button>
   <button data-view="selecao">Seleção</button>
   <button data-view="analises">Análises</button>
-  <button data-view="rotas">Rotas de campo</button>
-  <button data-view="rota-manual">Elaboração manual</button>
+  <button data-view="rota-manual">Rotas Manuais de Campo</button>
   <button data-view="comparar">Comparar</button>
 </nav>
 
@@ -114,7 +113,7 @@
     <div class="sel-flowbar">
       <span class="flowstep on">1 · Seleção</span><span class="flowarrow">→</span>
       <span class="flowstep">2 · Análises</span><span class="flowarrow">→</span>
-      <span class="flowstep">3 · Rotas de campo</span>
+      <span class="flowstep">3 · Rotas Manuais de Campo</span>
       <span class="sel-summary" id="sel-summary"></span>
     </div>
     <div class="sel-block">
@@ -172,7 +171,7 @@
 
     <div class="sel-actions">
       <button class="btn" id="sel-go-analises">Ver Análises das selecionadas →</button>
-      <button class="btn secondary" id="sel-go-rotas">Planejar Rotas de campo →</button>
+      <button class="btn secondary" id="sel-go-rotas">Planejar Rotas Manuais de Campo →</button>
     </div>
   </div>
 
@@ -206,26 +205,9 @@
     </div>
   </div>
 
-  <!-- ROTAS DE CAMPO -->
-  <div class="view hidden" id="view-rotas">
-    <h2 class="view-head">Planejamento de incursões de campo <small>ajuste os filtros à direita e gere a rota otimizada</small></h2>
-    <div class="exp-bar">
-      <span class="exp-lab">Exportar:</span>
-      <button class="exp-btn" data-exp="png" data-target="#map-rotas" data-name="mapa-rotas">Imagem do mapa (PNG)</button>
-      <button class="exp-btn" data-exp="pdf-el" data-target="#rotas-itinerary" data-name="roteiro" data-title="Roteiro de incursões de campo">Roteiro (PDF)</button>
-    </div>
-    <div class="rotas-wrap">
-      <div class="rotas-controls" id="rotas-controls"></div>
-      <div class="rotas-results">
-        <div id="map-rotas" class="map"></div>
-        <aside class="rotas-side" id="rotas-itinerary"></aside>
-      </div>
-    </div>
-  </div>
-
-  <!-- ELABORAÇÃO MANUAL DA ROTA -->
+  <!-- ROTAS MANUAIS DE CAMPO -->
   <div class="view hidden" id="view-rota-manual">
-    <h2 class="view-head">Elaboração manual da rota <small>clique nos pontos do mapa para montar as rotas na ordem desejada</small></h2>
+    <h2 class="view-head">Rotas Manuais de Campo <small>clique nos pontos do mapa para montar as rotas na ordem desejada</small></h2>
     <div class="exp-bar">
       <span class="exp-lab">Exportar:</span>
       <button class="exp-btn" data-exp="png" data-target="#map-rota-manual" data-name="mapa-rota-manual">Imagem do mapa (PNG)</button>
@@ -283,11 +265,11 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=59"></script>
-<script src="assets/data/uf_ne.js?v=59"></script>
-<script src="assets/js/maplayers.js?v=59"></script>
-<script src="assets/js/rota.js?v=59"></script>
-<script src="assets/js/dashboard.js?v=59"></script>
-<script src="assets/js/export.js?v=59"></script>
+<script src="assets/data/iniciativas.js?v=60"></script>
+<script src="assets/data/uf_ne.js?v=60"></script>
+<script src="assets/js/maplayers.js?v=60"></script>
+<script src="assets/js/rota.js?v=60"></script>
+<script src="assets/js/dashboard.js?v=60"></script>
+<script src="assets/js/export.js?v=60"></script>
 </body>
 </html>
