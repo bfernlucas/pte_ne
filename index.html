@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/dashboard.css?v=42" />
+<link rel="stylesheet" href="assets/css/dashboard.css?v=43" />
 </head>
 <body>
 <header class="topbar">
@@ -64,6 +64,11 @@
   <!-- RANKING -->
   <div class="view" id="view-ranking">
     <h2 class="view-head">Ranking das iniciativas <small>ordenado por nota de avaliação</small></h2>
+    <div class="exp-bar">
+      <span class="exp-lab">Exportar:</span>
+      <button class="exp-btn" data-exp="xlsx" data-target="#tbl-ranking" data-name="ranking" data-title="Ranking das iniciativas" data-sheet="Ranking">XLS</button>
+      <button class="exp-btn" data-exp="pdf" data-target="#tbl-ranking" data-name="ranking" data-title="Ranking das iniciativas">PDF</button>
+    </div>
     <div class="table-wrap"><div class="tbl-scroll">
       <table id="tbl-ranking">
         <thead>
@@ -92,6 +97,10 @@
   <!-- MAPA GERAL -->
   <div class="view hidden" id="view-mapa">
     <h2 class="view-head">Distribuição geográfica <small>tamanho do círculo = nota · cor = eixo</small></h2>
+    <div class="exp-bar">
+      <span class="exp-lab">Exportar:</span>
+      <button class="exp-btn" data-exp="png" data-target="#map-geral" data-name="mapa-geral">Imagem do mapa (PNG)</button>
+    </div>
     <div class="map-layout">
       <div id="map-geral" class="map"></div>
       <div class="map-side" id="map-side"></div>
@@ -109,7 +118,8 @@
     </div>
     <div class="sel-block">
       <div class="sel-head"><h3>1 · Visitas técnicas <span class="sel-badge" id="sel-count-visita">0</span></h3>
-        <button class="ghost sm" id="sel-clear-visita">Limpar visitas</button></div>
+        <span class="exp-bar"><button class="exp-btn" data-exp="png" data-target="#map-sel-visita" data-name="mapa-visitas">Mapa (PNG)</button>
+        <button class="ghost sm" id="sel-clear-visita">Limpar visitas</button></span></div>
       <div class="ph-sub">Aplique os filtros e clique nos pontos para marcar as iniciativas que receberão visita técnica de campo.</div>
       <div class="sel-filters">
         <input type="search" id="sfv-busca" placeholder="Buscar iniciativa, organização ou município..." />
@@ -125,7 +135,8 @@
 
     <div class="sel-block">
       <div class="sel-head"><h3>2 · Entrevistas em profundidade <span class="sel-badge" id="sel-count-entrevista">0</span></h3>
-        <button class="ghost sm" id="sel-clear-entrevista">Limpar entrevistas</button></div>
+        <span class="exp-bar"><button class="exp-btn" data-exp="png" data-target="#map-sel-entrevista" data-name="mapa-entrevistas">Mapa (PNG)</button>
+        <button class="ghost sm" id="sel-clear-entrevista">Limpar entrevistas</button></span></div>
       <div class="ph-sub">Aplique os filtros e clique nos pontos para marcar as iniciativas que terão entrevista em profundidade.</div>
       <div class="sel-filters">
         <input type="search" id="sfe-busca" placeholder="Buscar iniciativa, organização ou município..." />
@@ -141,11 +152,19 @@
 
     <div class="sel-tables">
       <div class="sel-tbl-block">
-        <div class="sel-head"><h3>Pré-selecionadas para visita técnica <span class="sel-badge" id="seltbl-cv">0</span></h3></div>
+        <div class="sel-head"><h3>Pré-selecionadas para visita técnica <span class="sel-badge" id="seltbl-cv">0</span></h3>
+          <span class="exp-bar">
+            <button class="exp-btn" data-exp="xlsx" data-target="#tbl-sel-visita" data-name="pre-visitas" data-title="Pré-selecionadas para visita técnica" data-sheet="Visitas">XLS</button>
+            <button class="exp-btn" data-exp="pdf" data-target="#tbl-sel-visita" data-name="pre-visitas" data-title="Pré-selecionadas para visita técnica">PDF</button>
+          </span></div>
         <div class="tbl-scroll" id="tbl-sel-visita"></div>
       </div>
       <div class="sel-tbl-block">
-        <div class="sel-head"><h3>Pré-selecionadas para entrevista em profundidade <span class="sel-badge" id="seltbl-ce">0</span></h3></div>
+        <div class="sel-head"><h3>Pré-selecionadas para entrevista em profundidade <span class="sel-badge" id="seltbl-ce">0</span></h3>
+          <span class="exp-bar">
+            <button class="exp-btn" data-exp="xlsx" data-target="#tbl-sel-entrevista" data-name="pre-entrevistas" data-title="Pré-selecionadas para entrevista em profundidade" data-sheet="Entrevistas">XLS</button>
+            <button class="exp-btn" data-exp="pdf" data-target="#tbl-sel-entrevista" data-name="pre-entrevistas" data-title="Pré-selecionadas para entrevista em profundidade">PDF</button>
+          </span></div>
         <div class="tbl-scroll" id="tbl-sel-entrevista"></div>
       </div>
     </div>
@@ -164,16 +183,23 @@
       <div class="panel full">
         <h3>Cobertura por estado e eixo</h3>
         <div class="ph-sub">Número de iniciativas em cada cruzamento (e quantas estão selecionadas na aba Seleção). Cada iniciativa é contada uma vez, na sua UF principal; as de alcance nacional/multi-UF aparecem em “Nac./Multi”.</div>
+        <div class="exp-bar">
+          <span class="exp-lab">Exportar:</span>
+          <button class="exp-btn" data-exp="xlsx" data-target="#heatmap" data-name="cobertura-eixo-estado" data-title="Cobertura por estado e eixo" data-sheet="Cobertura">XLS</button>
+          <button class="exp-btn" data-exp="pdf" data-target="#heatmap" data-name="cobertura-eixo-estado" data-title="Cobertura por estado e eixo">PDF</button>
+        </div>
         <div id="heatmap" class="heatmap"></div>
       </div>
       <div class="panel">
         <h3>Distribuição das notas</h3>
         <div class="ph-sub">Quantidade de iniciativas por faixa de nota.</div>
+        <div class="exp-bar"><button class="exp-btn" data-exp="png" data-target="#hist-nota" data-name="distribuicao-notas">PNG</button></div>
         <div class="chart-box"><canvas id="hist-nota"></canvas></div>
       </div>
       <div class="panel">
         <h3>Nota média por eixo</h3>
         <div class="ph-sub">Média da nota de avaliação das iniciativas de cada eixo.</div>
+        <div class="exp-bar"><button class="exp-btn" data-exp="png" data-target="#bar-eixo" data-name="nota-media-eixo">PNG</button></div>
         <div class="chart-box"><canvas id="bar-eixo"></canvas></div>
       </div>
     </div>
@@ -182,6 +208,11 @@
   <!-- ROTAS DE CAMPO -->
   <div class="view hidden" id="view-rotas">
     <h2 class="view-head">Planejamento de incursões de campo <small>ajuste os filtros à direita e gere a rota otimizada</small></h2>
+    <div class="exp-bar">
+      <span class="exp-lab">Exportar:</span>
+      <button class="exp-btn" data-exp="png" data-target="#map-rotas" data-name="mapa-rotas">Imagem do mapa (PNG)</button>
+      <button class="exp-btn" data-exp="pdf-el" data-target="#rotas-itinerary" data-name="roteiro" data-title="Roteiro de incursões de campo">Roteiro (PDF)</button>
+    </div>
     <div class="rotas-wrap">
       <div class="rotas-controls" id="rotas-controls"></div>
       <div class="rotas-results">
@@ -211,6 +242,12 @@
       <div class="radar-wrap"><canvas id="radar"></canvas></div>
       <div class="cmp-insights" id="cmp-insights"></div>
     </div>
+    <div class="exp-bar">
+      <span class="exp-lab">Exportar:</span>
+      <button class="exp-btn" data-exp="png" data-target="#radar" data-name="comparar-radar">Radar (PNG)</button>
+      <button class="exp-btn" data-exp="xlsx" data-target="#cmp-matrix" data-name="comparar-matriz" data-title="Comparação de iniciativas" data-sheet="Comparacao">Matriz XLS</button>
+      <button class="exp-btn" data-exp="pdf" data-target="#cmp-matrix" data-name="comparar-matriz" data-title="Comparação de iniciativas">Matriz PDF</button>
+    </div>
     <div class="cmp-matrix" id="cmp-matrix"></div>
     <div class="cmp-cards" id="cmp-cards"></div>
   </div>
@@ -228,10 +265,11 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=42"></script>
-<script src="assets/data/uf_ne.js?v=42"></script>
-<script src="assets/js/maplayers.js?v=42"></script>
-<script src="assets/js/rota.js?v=42"></script>
-<script src="assets/js/dashboard.js?v=42"></script>
+<script src="assets/data/iniciativas.js?v=43"></script>
+<script src="assets/data/uf_ne.js?v=43"></script>
+<script src="assets/js/maplayers.js?v=43"></script>
+<script src="assets/js/rota.js?v=43"></script>
+<script src="assets/js/dashboard.js?v=43"></script>
+<script src="assets/js/export.js?v=43"></script>
 </body>
 </html>

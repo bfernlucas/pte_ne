@@ -6,15 +6,15 @@ window.PTE_MAP = (function () {
   // ---------- camadas de base ----------
   function bases() {
     const ruas = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20 });
+      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20, crossOrigin: true });
     const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      { attribution: "&copy; OpenStreetMap", maxZoom: 19 });
+      { attribution: "&copy; OpenStreetMap", maxZoom: 19, crossOrigin: true });
     const claro = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20 });
+      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20, crossOrigin: true });
     const relevo = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-      { attribution: "&copy; OpenTopoMap (CC-BY-SA)", maxZoom: 17 });
+      { attribution: "&copy; OpenTopoMap (CC-BY-SA)", maxZoom: 17, crossOrigin: true });
     const satelite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      { attribution: "&copy; Esri, Maxar, Earthstar Geographics", maxZoom: 19 });
+      { attribution: "&copy; Esri, Maxar, Earthstar Geographics", maxZoom: 19, crossOrigin: true });
     return {
       "Ruas e estradas": ruas,
       "Mapa OSM (detalhado)": osm,
