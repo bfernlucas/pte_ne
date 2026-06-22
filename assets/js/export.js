@@ -120,7 +120,12 @@ window.PTE_EXPORT = (function () {
   async function snap(el) {
     if (el.tagName === "CANVAS") return canvasToWhitePNG(el);
     const h2c = await ensureH2C();
-    const canvas = await h2c(el, { useCORS: true, allowTaint: false, backgroundColor: "#ffffff", scale: 2, logging: false });
+    const isMap = el.classList && el.classList.contains("map");
+    const canvas = await h2c(el, {
+      useCORS: true, allowTaint: false, backgroundColor: "#ffffff", logging: false,
+      scale: isMap ? Math.max(2.5, (window.devicePixelRatio || 1) * 1.5) : 2,
+      width: el.offsetWidth, height: el.offsetHeight, scrollX: 0, scrollY: 0, imageTimeout: 20000
+    });
     return canvas.toDataURL("image/png");
   }
   async function toPNG(t) {

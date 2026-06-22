@@ -249,7 +249,7 @@
   }
   function ensureMapGeral() {
     if (mapGeral) return;
-    mapGeral = L.map("map-geral", { zoomControl: true }).setView([-8.6, -39.5], 5);
+    mapGeral = L.map("map-geral", { zoomControl: true, preferCanvas: true }).setView([-8.6, -39.5], 5);
     if (window.PTE_MAP) { const r = PTE_MAP.setup(mapGeral, { base: "Ruas e estradas", boundaries: true, noAirports: true }); mapGeralCtrl = r && r.control; }
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
       { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20 }).addTo(mapGeral);
@@ -345,7 +345,7 @@
   function ensureSelMap(group) {
     if (selMap[group]) return;
     const id = group === "visita" ? "map-sel-visita" : "map-sel-entrevista";
-    const m = L.map(id, { zoomControl: true }).setView([-8.6, -39.5], 5);
+    const m = L.map(id, { zoomControl: true, preferCanvas: true }).setView([-8.6, -39.5], 5);
     if (window.PTE_MAP) window.PTE_MAP.setup(m, { base: "Ruas e estradas", boundaries: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 20 }).addTo(m);
     selLayer[group] = makeMarkerLayer().addTo(m);

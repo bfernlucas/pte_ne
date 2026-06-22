@@ -1005,7 +1005,7 @@
   }
   function mEnsureMap() {
     if (mMap) return;
-    mMap = L.map("map-rota-manual").setView([-8.6, -39.5], 5);
+    mMap = L.map("map-rota-manual", { preferCanvas: true }).setView([-8.6, -39.5], 5);
     if (window.PTE_MAP) PTE_MAP.setup(mMap, { base: "Ruas e estradas", boundaries: true, airports: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 20, crossOrigin: true }).addTo(mMap);
     // agrupa pontos coincidentes (mesmo template do Mapa geral / Seleção)
