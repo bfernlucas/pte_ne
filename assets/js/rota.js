@@ -133,11 +133,12 @@
     return best;
   }
 
-  // ---------- empacotamento em dias ----------
-  function packDays(hub, order, prov, params) {
+  // ---------- empacotamento em dias (chegada por startHub, saída por endHub) ----------
+  function packDays(startHub, order, prov, params, endHub) {
+    endHub = endHub || startHub;
     const { dias, jornadaH, dirMaxH, visitaH } = params;
     const days = [{ stops: [], driveH: 0, visitH: 0, km: 0 }];
-    let prev = hub, di = 0, visited = [], overflow = [];
+    let prev = startHub, di = 0, visited = [], overflow = [];
     const newDay = () => { di++; days.push({ stops: [], driveH: 0, visitH: 0, km: 0 }); };
     for (let idx = 0; idx < order.length; idx++) {
       const n = order[idx];
@@ -162,8 +163,73 @@
       d.stops.push({ node: n, legH, legKm }); d.visitH += visitaH;
       visited.push(n); prev = n;
     }
-    const back = { legH: prov.h(prev, hub), legKm: prov.km(prev, hub) };
+    const back = { legH: prov.h(prev, endHub), legKm: prov.km(prev, endHub) };
     return { days, visited, overflow, back };
+  }
+
+  // ---------- aeroportos do NE (candidatos a chegada/saída — capitais + regionais) ----------
+  const AIRPORTS_HUB = [
+    { nome: "São Luís", iata: "SLZ", uf: "MA", lat: -2.5853, lon: -44.2341 },
+    { nome: "Imperatriz", iata: "IMP", uf: "MA", lat: -5.5313, lon: -47.4598 },
+    { nome: "Teresina", iata: "THE", uf: "PI", lat: -5.0599, lon: -42.8235 },
+    { nome: "Fortaleza", iata: "FOR", uf: "CE", lat: -3.7763, lon: -38.5326 },
+    { nome: "Juazeiro do Norte", iata: "JDO", uf: "CE", lat: -7.2188, lon: -39.2701 },
+    { nome: "Natal", iata: "NAT", uf: "RN", lat: -5.7681, lon: -35.3766 },
+    { nome: "Mossoró", iata: "MVF", uf: "RN", lat: -5.2019, lon: -37.3643 },
+    { nome: "João Pessoa", iata: "JPA", uf: "PB", lat: -7.1485, lon: -34.9506 },
+    { nome: "Campina Grande", iata: "CPV", uf: "PB", lat: -7.2699, lon: -35.8964 },
+    { nome: "Recife", iata: "REC", uf: "PE", lat: -8.1265, lon: -34.9236 },
+    { nome: "Petrolina", iata: "PNZ", uf: "PE", lat: -9.3624, lon: -40.5690 },
+    { nome: "Maceió", iata: "MCZ", uf: "AL", lat: -9.5108, lon: -35.7917 },
+    { nome: "Aracaju", iata: "AJU", uf: "SE", lat: -10.9840, lon: -37.0703 },
+    { nome: "Salvador", iata: "SSA", uf: "BA", lat: -12.9086, lon: -38.3225 },
+    { nome: "Vitória da Conquista", iata: "VDC", uf: "BA", lat: -14.8628, lon: -40.8631 },
+    { nome: "Ilhéus", iata: "IOS", uf: "BA", lat: -14.8160, lon: -39.0335 },
+    { nome: "Porto Seguro", iata: "BPS", uf: "BA", lat: -16.4386, lon: -39.0808 },
+  ];
+  function nearestHub(pt, hubs) {
+    let best = hubs[0], bd = Infinity;
+    hubs.forEach(h => { const d = haversineKm(h, pt); if (d < bd) { bd = d; best = h; } });
+    return best;
+  }
+
+  // ---------- TSP de caminho ABERTO (chegada e saída em aeroportos diferentes) ----------
+  // Custo = acesso rodoviário ao aeroporto de chegada + trechos internos + acesso ao de saída.
+  function openPathCost(order, prov, hubs) {
+    if (!order.length) return 0;
+    let c = prov.h(nearestHub(order[0], hubs), order[0]);
+    for (let i = 0; i < order.length - 1; i++) c += prov.h(order[i], order[i + 1]);
+    c += prov.h(order[order.length - 1], nearestHub(order[order.length - 1], hubs));
+    return c;
+  }
+  function twoOptOpen(order, prov, hubs) {
+    let best = order.slice(), improved = true, bc = openPathCost(best, prov, hubs);
+    while (improved) {
+      improved = false;
+      for (let i = 0; i < best.length - 1; i++)
+        for (let k = i + 1; k < best.length; k++) {
+          const cand = best.slice(0, i).concat(best.slice(i, k + 1).reverse(), best.slice(k + 1));
+          const cc = openPathCost(cand, prov, hubs);
+          if (cc + 1e-9 < bc) { best = cand; bc = cc; improved = true; }
+        }
+    }
+    return best;
+  }
+  // ordena o caminho aberto minimizando o custo total (acesso aeroportos + estrada); orienta norte→sul
+  function openPathOptimize(nodes, prov, hubs) {
+    if (nodes.length <= 1) return nodes.slice();
+    let seeds = nodes;
+    if (nodes.length > 8) { seeds = []; const step = nodes.length / 8; for (let i = 0; i < 8; i++) seeds.push(nodes[Math.floor(i * step)]); }
+    let best = null, bc = Infinity;
+    seeds.forEach(seed => {
+      const rem = nodes.filter(n => n !== seed); let cur = seed, order = [seed];
+      while (rem.length) { let bi = 0, bd = Infinity; rem.forEach((n, i) => { const d = prov.h(cur, n); if (d < bd) { bd = d; bi = i; } }); cur = rem.splice(bi, 1)[0]; order.push(cur); }
+      order = twoOptOpen(order, prov, hubs);
+      const c = openPathCost(order, prov, hubs);
+      if (c < bc) { bc = c; best = order; }
+    });
+    if (best.length >= 2 && best[0].lat < best[best.length - 1].lat) best = best.slice().reverse();
+    return best;
   }
 
   // ---------- prioridade composta: diversidade regional + interiorização + nº de iniciativas ----------
@@ -188,21 +254,26 @@
     return 1 + 1.2 * div + 0.8 * interiorScore(n) + 0.4 * ((n.pontuacao || 0) / 30);
   }
 
-  // ---------- monta uma missão (cluster + opcionais) ----------
+  // ---------- monta uma missão (rota aberta: chegada e saída em aeroportos distintos) ----------
   function buildMission(core, optionalPool, hubs, params) {
-    // hub = capital mais próxima do centroide do cluster
-    const cen = core.length ? { lat: core.reduce((s, n) => s + n.lat, 0) / core.length, lon: core.reduce((s, n) => s + n.lon, 0) / core.length } : hubs[0];
-    let hub = hubs[0], hd = Infinity;
-    hubs.forEach(h => { const d = haversineKm(h, cen); if (d < hd) { hd = d; hub = h; } });
-    // refina os multi-locais para o local mais próximo do hub desta incursão
-    [...core, ...optionalPool].forEach(n => { if (n.locais && n.locais.length) applyLoc(n, hub); });
+    const prov = params.prov;
+    const airports = params.airports || hubs; // candidatos a aeroporto de chegada/saída
+    // refina os multi-locais para o local mais próximo do aeroporto central do cluster
+    const cen = core.length ? { lat: core.reduce((s, n) => s + n.lat, 0) / core.length, lon: core.reduce((s, n) => s + n.lon, 0) / core.length } : airports[0];
+    const ref = nearestHub(cen, airports);
+    [...core, ...optionalPool].forEach(n => { if (n.locais && n.locais.length) applyLoc(n, ref); });
+    const ends = order => ({
+      entry: order.length ? nearestHub(order[0], airports) : ref,
+      exit: order.length ? nearestHub(order[order.length - 1], airports) : ref
+    });
 
-    // ordena o núcleo (NN + 2-opt) e ajusta para caber nos dias.
-    // Critério de corte = menor PRIORIDADE por tempo marginal (prioriza diversidade
+    // ordena o núcleo como caminho aberto (otimiza acesso aos aeroportos + estrada) e
+    // ajusta para caber nos dias. Corte = menor PRIORIDADE por tempo marginal (diversidade
     // regional, interiorização e nº de iniciativas; nota é ajuste fino).
     let nodes = core.slice();
-    let order = twoOpt(hub, nearestNeighbor(hub, nodes, params.prov), params.prov, true);
-    let packed = packDays(hub, order, params.prov, params);
+    let order = openPathOptimize(nodes, prov, airports);
+    let { entry, exit } = ends(order);
+    let packed = packDays(entry, order, prov, params, exit);
     const anchorSet = params.anchorSet || new Set();
     const dropped = [];
     while (packed.overflow.length && nodes.length > 1) {
@@ -211,9 +282,9 @@
       for (let idx = 0; idx < order.length; idx++) {
         const n = order[idx];
         if (anchorSet.has(n.id)) continue; // âncora nunca é descartada
-        const a = idx === 0 ? hub : order[idx - 1];
-        const b = idx === order.length - 1 ? hub : order[idx + 1];
-        const marg = params.prov.h(a, n) + params.prov.h(n, b) - params.prov.h(a, b) + params.visitaH;
+        const a = idx === 0 ? entry : order[idx - 1];
+        const b = idx === order.length - 1 ? exit : order[idx + 1];
+        const marg = prov.h(a, n) + prov.h(n, b) - prov.h(a, b) + params.visitaH;
         const uu = ufOf(n);
         const uniqueUF = (NE_UF.has(uu) && stCount[uu] === 1) ? 1 : 0; // protege o único representante de um estado do NE
         const v = 1 + 1.2 * uniqueUF + 0.8 * interiorScore(n) + 0.4 * ((n.pontuacao || 0) / 30);
@@ -223,8 +294,9 @@
       if (!worst) break; // só restam âncoras: não dá para encurtar mais
       dropped.push(worst);
       nodes = nodes.filter(n => n.id !== worst.id);
-      order = twoOpt(hub, nearestNeighbor(hub, nodes, params.prov), params.prov, true);
-      packed = packDays(hub, order, params.prov, params);
+      order = openPathOptimize(nodes, prov, airports);
+      ({ entry, exit } = ends(order));
+      packed = packDays(entry, order, prov, params, exit);
     }
 
     // inserção gulosa de opcionais: prioriza novos estados (diversidade), interior e
@@ -235,42 +307,46 @@
       let pool = optionalPool.filter(n => !used.has(n.id));
       let guard = 0;
       while (guard++ < 80) {
+        const en = ends(curOrder);
         const covered = new Set(); curOrder.forEach(n => { const u = ufOf(n); if (u) covered.add(u); });
         let bestGain = -Infinity, bestNode = null, bestOrder = null;
         for (const cand of pool) {
-          // melhor posição de inserção
+          // melhor posição de inserção (extremidades usam os aeroportos de chegada/saída)
           let bpos = -1, bdelta = Infinity;
           for (let p = 0; p <= curOrder.length; p++) {
-            const a = p === 0 ? hub : curOrder[p - 1];
-            const b = p === curOrder.length ? hub : curOrder[p];
-            const delta = params.prov.h(a, cand) + params.prov.h(cand, b) - params.prov.h(a, b) + params.visitaH;
+            const a = p === 0 ? en.entry : curOrder[p - 1];
+            const b = p === curOrder.length ? en.exit : curOrder[p];
+            const delta = prov.h(a, cand) + prov.h(cand, b) - prov.h(a, b) + params.visitaH;
             if (delta < bdelta) { bdelta = delta; bpos = p; }
           }
           const trial = curOrder.slice(0, bpos).concat([cand], curOrder.slice(bpos));
-          const tp = packDays(hub, trial, params.prov, params);
+          const te = ends(trial);
+          const tp = packDays(te.entry, trial, prov, params, te.exit);
           if (tp.overflow.length) continue; // não cabe
           const gain = nodeValue(cand, covered) / Math.max(0.25, bdelta); // prioridade por hora extra
           if (gain > bestGain) { bestGain = gain; bestNode = cand; bestOrder = trial; }
         }
         if (!bestNode) break;
-        curOrder = twoOpt(hub, bestOrder, params.prov, true);
+        curOrder = openPathOptimize(bestOrder, prov, airports);
         used.add(bestNode.id);
         pool = pool.filter(n => n.id !== bestNode.id);
       }
       order = curOrder;
-      packed = packDays(hub, order, params.prov, params);
+      ({ entry, exit } = ends(order));
+      packed = packDays(entry, order, prov, params, exit);
     }
 
     const totalKm = packed.days.reduce((s, d) => s + d.km, 0) + packed.back.legKm;
     const totalH = packed.days.reduce((s, d) => s + d.driveH + d.visitH, 0) + packed.back.legH;
     const score = packed.visited.reduce((s, n) => s + (n.pontuacao || 0), 0);
     const preCount = packed.visited.filter(n => n.preselecionada).length;
-    return { hub, days: packed.days, back: packed.back, visited: packed.visited, dropped, totalKm, totalH, score, preCount, optCount: packed.visited.length - preCount };
+    return { entryHub: entry, exitHub: exit, hub: entry, days: packed.days, back: packed.back, visited: packed.visited, dropped, totalKm, totalH, score, preCount, optCount: packed.visited.length - preCount };
   }
 
   // ---------- planeja as 2 missões ----------
   function planMissions(candidates, hubs, params) {
     params.prov = params.prov || makeProvider(params);
+    params.airports = params.airports || AIRPORTS_HUB; // chegada/saída entre os aeroportos do NE
     // clona iniciativas com locais alternativos (a rota escolherá a coordenada ótima)
     const valid = candidates.filter(n => n.lat != null && n.lon != null && !n.fora_ne)
       .map(n => (n.locais && n.locais.length) ? Object.assign({}, n) : n);
@@ -334,7 +410,7 @@
     { nome: "Salvador", uf: "BA", lat: -12.9714, lon: -38.5014 }
   ];
 
-  const API = { haversineKm, chooseLoc, makeProvider, makeMatrixProvider, kmeans2, kmeansK, nearestNeighbor, twoOpt, packDays, buildMission, planMissions, HUBS };
+  const API = { haversineKm, chooseLoc, makeProvider, makeMatrixProvider, kmeans2, kmeansK, nearestNeighbor, twoOpt, twoOptOpen, openPathOptimize, openPathCost, nearestHub, packDays, buildMission, planMissions, HUBS, AIRPORTS_HUB };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 
   // ---------- navegador ----------
@@ -570,7 +646,7 @@
     H.ITEMS.forEach(i => { if (anchorIds.has(i.id) && i.lat != null && !i.fora_ne && !cidset.has(i.id)) candidates.push(Object.assign({}, i, { preselecionada: true, __tipo: "visita" })); });
     const prov = makeProvider(params);
     const nEnt = curSel.entrevista.size;
-    statusEl.textContent = `Roteiro a partir de ${nVis} visita(s) técnica(s).${nEnt ? ` ${nEnt} entrevista(s) remota(s) fora do roteiro.` : ""} Distâncias estimadas (linha reta × 1,3).`;
+    statusEl.textContent = `Roteiro a partir de ${nVis} visita(s) técnica(s).${nEnt ? ` ${nEnt} entrevista(s) remota(s) fora do roteiro.` : ""} Rota aberta: chegada e saída pelos aeroportos mais próximos (podem ser cidades diferentes). Deslocamento rodoviário estimado (≈ linha reta × 1,3 a 65 km/h).`;
     params.prov = prov;
     const plan = planMissions(candidates, HUBS, params);
     routeLayer.clearLayers(); allLayer.clearLayers();
@@ -606,7 +682,7 @@
         <div class="opt-m"><b>${cob.totalDays}</b><span>dias (total)</span></div>
       </div>
       ${ancWarn}
-      <div class="opt-help">O roteiro prioriza <b>diversidade regional</b> (cobrir mais estados), <b>interiorização</b> (iniciativas longe das capitais) e o <b>maior nº de iniciativas</b>. As <b>âncoras</b> são sempre incluídas; a nota entra como ajuste fino.</div>
+      <div class="opt-help">Cada incursão é uma <b>rota aberta</b>: chega pelo aeroporto mais próximo da 1ª parada e sai pelo mais próximo da última (entre os 17 aeroportos do NE) — <b>chegada e saída podem ser em cidades diferentes</b>, minimizando o deslocamento por estrada. O roteiro prioriza <b>diversidade regional</b> (cobrir mais estados), <b>interiorização</b> (iniciativas longe das capitais) e o <b>maior nº de iniciativas</b>. As <b>âncoras</b> são sempre incluídas; a nota entra como ajuste fino.</div>
     </div>`;
     // ---- comparador de cenários (nº de incursões) ----
     const cmp = [];
@@ -621,11 +697,16 @@
     // ---- cada incursão ----
     plan.missions.forEach((m, mi) => {
       const color = MCOLOR[mi % MCOLOR.length];
-      const pts = [[m.hub.lat, m.hub.lon], ...m.visited.map(n => [n.lat, n.lon]), [m.hub.lat, m.hub.lon]];
+      const entry = m.entryHub || m.hub, exit = m.exitHub || m.hub;
+      const sameAir = entry && exit && entry.iata === exit.iata;
+      const airLbl = a => `${a.nome} (${a.iata || a.uf})`;
+      const pts = [[entry.lat, entry.lon], ...m.visited.map(n => [n.lat, n.lon]), [exit.lat, exit.lon]];
       pts.forEach(p => bounds.push(p));
       L.polyline(pts, { color, weight: 3, opacity: .8 }).addTo(routeLayer);
-      L.marker([m.hub.lat, m.hub.lon], { icon: hubIcon(color) })
-        .bindPopup(`<span class="pp-h">Base da Incursão ${mi + 1}</span>${m.hub.nome} (${m.hub.uf}) — partida e retorno`).addTo(routeLayer);
+      L.marker([entry.lat, entry.lon], { icon: hubIcon(color) })
+        .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · ${sameAir ? "base (chegada e saída)" : "chegada"}</span>✈ ${airLbl(entry)}`).addTo(routeLayer);
+      if (!sameAir) L.marker([exit.lat, exit.lon], { icon: hubIcon(color) })
+        .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · saída</span>✈ ${airLbl(exit)}`).addTo(routeLayer);
       let n = 0;
       m.visited.forEach(node => {
         n++;
@@ -635,9 +716,13 @@
           .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b> · ${anc ? "âncora" : node.__tipo === "opcional" ? "in loco no caminho" : "visita técnica"}`)
           .addTo(routeLayer);
       });
+      const airInfo = sameAir
+        ? `chegada e saída: ${airLbl(entry)}`
+        : `chegada: ${airLbl(entry)} · saída: ${airLbl(exit)}`;
       html += `<div class="incursao">
-        <div class="ih" style="background:${color}"><span class="in">Incursão ${mi + 1}</span><span class="imoment">momento ${mi + 1}</span><span class="ihub">base: ${m.hub.nome} (${m.hub.uf})</span></div>
-        <div class="isum"><span><b>${m.visited.length}</b> paradas · <b>${m.preCount}</b> visitas · ${m.optCount} no caminho</span><span><b>${m.days.length}</b> dias</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.score}</b> pts</span></div>`;
+        <div class="ih" style="background:${color}"><span class="in">Incursão ${mi + 1}</span><span class="imoment">momento ${mi + 1}</span><span class="ihub">✈ ${airInfo}</span></div>
+        <div class="isum"><span><b>${m.visited.length}</b> paradas · <b>${m.preCount}</b> visitas · ${m.optCount} no caminho</span><span><b>${m.days.length}</b> dias</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.score}</b> pts</span></div>
+        <div class="leg-line air-line">✈ chegada por ${airLbl(entry)}</div>`;
       let counter = 0;
       m.days.forEach((d, di) => {
         const jh = d.driveH + d.visitH, fill = Math.min(100, jh / params.jornadaH * 100);
@@ -654,7 +739,7 @@
         });
         html += `</div>`;
       });
-      html += `<div class="leg-line">retorno à base: ${Math.round(m.back.legKm)} km</div></div>`;
+      html += `<div class="leg-line air-line">deslocamento até a saída: ${Math.round(m.back.legKm)} km · ✈ ${airLbl(exit)}</div></div>`;
     });
     // ---- não cobertas (trade-off do ótimo) ----
     if (cob.droppedPre && cob.droppedPre.length) {
