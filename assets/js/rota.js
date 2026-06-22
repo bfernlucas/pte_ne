@@ -187,6 +187,8 @@
     { nome: "Ilhéus", iata: "IOS", uf: "BA", lat: -14.8160, lon: -39.0335 },
     { nome: "Porto Seguro", iata: "BPS", uf: "BA", lat: -16.4386, lon: -39.0808 },
   ];
+  // bases das rotas de carro (restrição por UF) — não são aeroportos
+  const CAR_BASE_G1 = { nome: "Tianguá", uf: "CE", lat: -3.7322, lon: -40.9919 }; // Serra da Ibiapaba (PI+CE)
   function nearestHub(pt, hubs) {
     let best = hubs[0], bd = Infinity;
     hubs.forEach(h => { const d = haversineKm(h, pt); if (d < bd) { bd = d; best = h; } });
@@ -414,7 +416,7 @@
     if (params.ufRestrict) {
       // duas incursões obrigatórias de CARRO: Rota 1 = PI+CE (base Fortaleza); Rota 2 = RN+PB (base Natal)
       const G1 = new Set(["PI", "CE"]), G2 = new Set(["RN", "PB"]);
-      const homeG1 = AIRPORTS_HUB.find(a => a.iata === "FOR") || hubs[2];
+      const homeG1 = CAR_BASE_G1; // Rota 1 (PI+CE): sai e chega por Tianguá (CE)
       const homeG2 = AIRPORTS_HUB.find(a => a.iata === "NAT") || hubs[3];
       const locInUFs = (n, set) => {
         if (n.locais && n.locais.length) { const l = n.locais.find(x => set.has(x.uf)); return l || null; }
@@ -528,7 +530,7 @@
     c.innerHTML = `
       <div class="rc-group rc-ufr">
         <label class="rc-switch"><input type="checkbox" id="r-ufrestrict"> <b>Ativar restrição por UF</b></label>
-        <div class="rc-note">Garante <b>2 rotas de carro</b> fixas: <b>Rota 1 — só Piauí + Ceará</b> (base Fortaleza) e <b>Rota 2 — só RN + Paraíba</b> (base Natal). O <b>Nº de incursões é o total</b>: com <b>2</b>, saem apenas essas duas rotas; aumente para criar rotas livres (carro/avião) que cobrem os <b>demais estados</b>. As visitas de outros estados sem rota livre aparecem em “fora destas incursões”.</div>
+        <div class="rc-note">Garante <b>2 rotas de carro</b> fixas: <b>Rota 1 — só Piauí + Ceará</b> (base Tianguá/CE) e <b>Rota 2 — só RN + Paraíba</b> (base Natal). O <b>Nº de incursões é o total</b>: com <b>2</b>, saem apenas essas duas rotas; aumente para criar rotas livres (carro/avião) que cobrem os <b>demais estados</b>. As visitas de outros estados sem rota livre aparecem em “fora destas incursões”.</div>
       </div>
       <div class="rc-group">
         <span class="rc-title">Parâmetros da rota</span>
@@ -749,6 +751,7 @@
     const add = (lat, lon) => { if (lat == null || lon == null) return; const k = lat.toFixed(4) + "," + lon.toFixed(4); if (!seen.has(k)) { seen.add(k); pts.push({ lat, lon }); } };
     cands.forEach(c => { if (c.locais && c.locais.length) c.locais.forEach(l => add(l.lat, l.lon)); else add(c.lat, c.lon); });
     AIRPORTS_HUB.forEach(a => add(a.lat, a.lon));
+    add(CAR_BASE_G1.lat, CAR_BASE_G1.lon); // base de carro da Rota 1 (Tianguá) na malha viária
     return pts;
   }
   const roadCache = new Map();
@@ -816,7 +819,7 @@
     const remoteNote = curSel.entrevista.size
       ? `<div class="cover ok" style="background:#eef2fb;color:var(--brand);border-color:#cdd7f0">${curSel.entrevista.size} entrevista(s) em profundidade serão <b>remotas</b> — conduzidas à distância, fora do roteiro de campo.</div>` : "";
     const ufrNote = params.ufRestrict
-      ? `<div class="cover ok" style="background:#fff6e9;color:#9a5a00;border-color:#f0d6ad">🚗 <b>Restrição por UF ativa.</b> Rota 1 cobre <b>Piauí + Ceará</b> e Rota 2 cobre <b>RN + Paraíba</b>, ambas <b>de carro</b> (ida e volta de Fortaleza e Natal). As demais incursões cobrem os outros estados livremente.</div>` : "";
+      ? `<div class="cover ok" style="background:#fff6e9;color:#9a5a00;border-color:#f0d6ad">🚗 <b>Restrição por UF ativa.</b> Rota 1 cobre <b>Piauí + Ceará</b> e Rota 2 cobre <b>RN + Paraíba</b>, ambas <b>de carro</b> (ida e volta de Tianguá/CE e Natal). As demais incursões cobrem os outros estados livremente.</div>` : "";
     const bounds = [];
     const k = plan.missions.length;
     const effKm = cob.totalKm ? (cob.totalScore / cob.totalKm * 100) : 0;
