@@ -1014,7 +1014,7 @@
   }
   function mReadParams() {
     const v = id => { const el = document.getElementById(id); return el ? +el.value : null; };
-    return { dias: 60, jornadaH: 10, dirMaxH: v("rm-dir") || 8, visitaH: v("rm-visita") || 2, detour: 1.3, speedKmh: 65 };
+    return { dias: 60, jornadaH: 10, dirMaxH: v("rm-dir") || 8, visitaH: v("rm-visita") || 4, detour: 1.3, speedKmh: 65 };
   }
   function mSyncParams() {
     const set = (id, suf) => { const a = document.getElementById(id), b = document.getElementById(id + "-v"); if (a && b) b.textContent = a.value + suf; };
@@ -1027,7 +1027,7 @@
     c.innerHTML = `
       <div class="rc-group">
         <span class="rc-title">Parâmetros</span>
-        <div class="rc-field"><label>Horas por visita</label><input id="rm-visita" type="range" min="1" max="4" step="0.5" value="2"><span class="val" id="rm-visita-v">2 h</span></div>
+        <div class="rc-field"><label>Horas por visita</label><input id="rm-visita" type="range" min="1" max="4" step="0.5" value="4"><span class="val" id="rm-visita-v">4 h</span></div>
         <div class="rc-field"><label>Direção máx. por dia</label><input id="rm-dir" type="range" min="6" max="10" step="1" value="8"><span class="val" id="rm-dir-v">8 h</span></div>
         <label class="rc-chk"><input type="checkbox" id="rm-road" checked> Usar distâncias reais por estrada</label>
       </div>
