@@ -126,10 +126,6 @@ window.PTE_DATA = {
     "carOnly": true,
     "stops": [
      {
-      "id": 6,
-      "li": 0
-     },
-     {
       "id": 40,
       "li": 0
      },
@@ -146,10 +142,6 @@ window.PTE_DATA = {
       "li": 0
      },
      {
-      "id": 46,
-      "li": 0
-     },
-     {
       "id": 73,
       "li": 0
      },
@@ -159,6 +151,10 @@ window.PTE_DATA = {
      },
      {
       "id": 19,
+      "li": 0
+     },
+     {
+      "id": 6,
       "li": 0
      }
     ]
@@ -232,6 +228,10 @@ window.PTE_DATA = {
       "li": 0
      },
      {
+      "id": 8,
+      "li": 0
+     },
+     {
       "id": 15,
       "li": 0
      },
@@ -251,7 +251,11 @@ window.PTE_DATA = {
     "carOnly": true,
     "stops": [
      {
-      "id": 72,
+      "id": 11,
+      "li": 0
+     },
+     {
+      "id": 51,
       "li": 0
      },
      {
@@ -259,7 +263,7 @@ window.PTE_DATA = {
       "li": 0
      },
      {
-      "id": 51,
+      "id": 47,
       "li": 0
      },
      {
@@ -279,15 +283,7 @@ window.PTE_DATA = {
       "li": 0
      },
      {
-      "id": 16,
-      "li": 0
-     },
-     {
-      "id": 14,
-      "li": 1
-     },
-     {
-      "id": 28,
+      "id": 32,
       "li": 0
      },
      {
@@ -295,19 +291,15 @@ window.PTE_DATA = {
       "li": 0
      },
      {
-      "id": 13,
-      "li": 0
+      "id": 14,
+      "li": 1
      },
      {
-      "id": 32,
+      "id": 16,
       "li": 0
      },
      {
       "id": 69,
-      "li": 0
-     },
-     {
-      "id": 75,
       "li": 0
      }
     ]

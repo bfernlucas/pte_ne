@@ -107,10 +107,10 @@ def _norm(s):
 # Cada parada é um nome; para iniciativas multi-locais use (nome, UF) para fixar o local.
 ROTA_MANUAL_DEFAULT = [
     {"nome": "Rota 1", "carOnly": True, "stops": [
-        "Rede Xique Xique de Comercialização Solidária", "Projeto Vale Sustentável",
-        "Modelo de Gestão Municipal de Resíduos Sólidos de Arez", "Instituto Casaca de Couro",
-        ("Programa 1 Milhão de Tetos Solares (P1MTS)", "PB"), "Renova-Semiárido",
-        "Cooperativa de Energia Solar Bem Viver / CERSA", "Fazenda Tamanduá", "Programa Redeser"]},
+        "Projeto Vale Sustentável", "Modelo de Gestão Municipal de Resíduos Sólidos de Arez",
+        "Instituto Casaca de Couro", ("Programa 1 Milhão de Tetos Solares (P1MTS)", "PB"),
+        "Cooperativa de Energia Solar Bem Viver / CERSA", "Fazenda Tamanduá", "Programa Redeser",
+        "Rede Xique Xique de Comercialização Solidária"]},
     {"nome": "Rota 2", "carOnly": True, "stops": [
         "BlueC", "Sistema Metroviário do Ceará", "Projeto Pecém – Fortescue",
         "Hub de Hidrogênio Verde do Complexo do Pecém",
@@ -119,19 +119,17 @@ ROTA_MANUAL_DEFAULT = [
     {"nome": "Rota 3", "carOnly": True, "stops": [
         "Parque Tecnológico Porto Digital", "Banco Comunitário de Araçoiaba", "Acreditar Microcrédito",
         "Logística Verde e Operações Sustentáveis no Porto de Suape",
-        "Grupo EQM / ZEG Biogás – Biometano da Vinhaça", "SIMACaatinga", "Paisagens Alimentares",
-        "Cooperativa Pindorama – Bioenergias da Vinhaça",
+        "Grupo EQM / ZEG Biogás – Biometano da Vinhaça", "SIMACaatinga", "OxeTech",
+        "Paisagens Alimentares", "Cooperativa Pindorama – Bioenergias da Vinhaça",
         "EXYGEN / GranBio – Biorrefinaria Integrada de Biocombustíveis"]},
     {"nome": "Rota 4", "carOnly": True, "stops": [
-        "Hub de Hidrogênio Verde de Sergipe – Green Energy Park / SergipeTec",
-        "Projetos de Conservação e Sustentabilidade do Bioma Caatinga",
-        ("Programa Reecatingar", "BA"), "Conselho Gestor do Fundo Rotativo",
-        "Plataforma Mulheres de Base Praticantes de Resiliência",
+        "Projeto Etnocaatinga", ("Programa Reecatingar", "BA"),
+        "Projetos de Conservação e Sustentabilidade do Bioma Caatinga", "BIOINSULAB",
+        "Conselho Gestor do Fundo Rotativo", "Plataforma Mulheres de Base Praticantes de Resiliência",
         "Acelen Renováveis – Biorrefinaria de SAF e Diesel Verde",
         "Unigel / Ecohydrogen – Planta de Hidrogênio e Amônia Verde de Camaçari",
-        "Rede BATUC de Turismo Comunitário", ("Programa Sertão Vivo", "BA"),
-        "Programa Bahia Solidária", ("Solos", "BA"), "Vale do Dendê", "Rede Recicla Bahia",
-        "Programa Indústria Verde – FIEB", "SENAI e Hubs de Inovação em Hidrogênio Verde / Powershoring"]},
+        "Rede Recicla Bahia", ("Solos", "BA"), ("Programa Sertão Vivo", "BA"),
+        "Rede BATUC de Turismo Comunitário", "Programa Indústria Verde – FIEB"]},
 ]
 ROTA_COLORS = ["#1f4da1", "#f37520", "#43a047", "#7a3fb8", "#e0392b", "#0d9488"]
 

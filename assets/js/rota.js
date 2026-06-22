@@ -982,7 +982,7 @@
   let mSel = { visita: new Set(), entrevista: new Set() }; // seleção da aba "Seleção"
   function mNewRoute() { const i = mRoutes.length; mRoutes.push({ nome: "Rota " + (i + 1), color: MCOLOR[i % MCOLOR.length], stops: [], carOnly: false }); mActive = mRoutes.length - 1; }
   function mLoad() {
-    try { const s = JSON.parse(localStorage.getItem("pte_rota_manual2") || "null"); if (s && Array.isArray(s.routes) && s.routes.length) { mRoutes = s.routes; mActive = Math.min(s.active || 0, s.routes.length - 1); return; } } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem("pte_rota_manual3") || "null"); if (s && Array.isArray(s.routes) && s.routes.length) { mRoutes = s.routes; mActive = Math.min(s.active || 0, s.routes.length - 1); return; } } catch (e) {}
     // rota manual padrão embutida nos dados (independente do cache)
     const d = (mLastH && mLastH.META && mLastH.META.rota_manual_default) || [];
     if (d.length) {
@@ -991,7 +991,7 @@
     }
     mRoutes = []; mActive = 0; mNewRoute();
   }
-  function mSave() { try { localStorage.setItem("pte_rota_manual2", JSON.stringify({ routes: mRoutes, active: mActive })); } catch (e) {} }
+  function mSave() { try { localStorage.setItem("pte_rota_manual3", JSON.stringify({ routes: mRoutes, active: mActive })); } catch (e) {} }
   function mFindStop(id, li) {
     for (let ri = 0; ri < mRoutes.length; ri++) { const j = mRoutes[ri].stops.findIndex(s => s.id === id && (s.li || 0) === li); if (j >= 0) return { ri, order: j + 1, color: mRoutes[ri].color }; }
     return null;
