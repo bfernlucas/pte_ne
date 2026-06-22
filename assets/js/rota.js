@@ -258,6 +258,12 @@
   function buildMission(core, optionalPool, hubs, params) {
     const prov = params.prov;
     const airports = params.airports || hubs; // candidatos a aeroporto de chegada/saída
+    // RESTRIÇÃO: o aeroporto só pode ser usado na CHEGADA e na SAÍDA da incursão.
+    // As paradas (core/optionalPool) são exclusivamente iniciativas; nenhum aeroporto
+    // entra como parada intermediária, e entre as paradas o trajeto é sempre por estrada.
+    const isAirportPt = n => airports.some(a => Math.abs(a.lat - n.lat) < 1e-6 && Math.abs(a.lon - n.lon) < 1e-6);
+    core = core.filter(n => !isAirportPt(n));
+    optionalPool = optionalPool.filter(n => !isAirportPt(n));
     // refina os multi-locais para o local mais próximo do aeroporto central do cluster
     const cen = core.length ? { lat: core.reduce((s, n) => s + n.lat, 0) / core.length, lon: core.reduce((s, n) => s + n.lon, 0) / core.length } : airports[0];
     const ref = nearestHub(cen, airports);
@@ -758,7 +764,7 @@
       }
     }
     params.prov = prov;
-    statusEl.textContent = `Roteiro a partir de ${nVis} visita(s) técnica(s).${nEnt ? ` ${nEnt} entrevista(s) remota(s) fora do roteiro.` : ""} ${params.ufRestrict ? "Restrição por UF ativa: Rota 1 (PI+CE) e Rota 2 (RN+PB) de carro; demais livres." : "Rota aberta: chegada e saída por aeroportos (podem ser cidades diferentes)."} Distâncias: ${distSource}.`;
+    statusEl.textContent = `Roteiro a partir de ${nVis} visita(s) técnica(s).${nEnt ? ` ${nEnt} entrevista(s) remota(s) fora do roteiro.` : ""} ${params.ufRestrict ? "Restrição por UF ativa: Rota 1 (PI+CE) e Rota 2 (RN+PB) de carro; demais livres." : "Rota aberta: chegada e saída por aeroportos (podem diferir)."} Avião só na chegada/saída — entre as paradas, sempre de carro. Distâncias: ${distSource}.`;
     const plan = planMissions(candidates, HUBS, params);
     routeLayer.clearLayers(); allLayer.clearLayers();
     const panel = document.getElementById("rotas-itinerary");
@@ -797,7 +803,7 @@
       </div>
       ${ancWarn}
       <div class="opt-src ${realDist ? "real" : "est"}">${realDist ? "Distâncias reais por estrada" : "Distâncias estimadas"} — ${H.esc(distSource)}</div>
-      <div class="opt-help">Cada incursão é uma <b>rota aberta</b>: chega pelo aeroporto mais próximo da 1ª parada e sai pelo mais próximo da última (entre os 17 aeroportos do NE) — <b>chegada e saída podem ser em cidades diferentes</b>, minimizando o deslocamento por estrada. O roteiro prioriza <b>diversidade regional</b> (cobrir mais estados), <b>interiorização</b> (iniciativas longe das capitais) e o <b>maior nº de iniciativas</b>. As <b>âncoras</b> são sempre incluídas; a nota entra como ajuste fino.</div>
+      <div class="opt-help">Cada incursão é uma <b>rota aberta</b>: chega pelo aeroporto mais próximo da 1ª parada e sai pelo mais próximo da última (entre os 17 aeroportos do NE) — <b>chegada e saída podem ser em cidades diferentes</b>. <b>Restrição:</b> o avião é usado <b>apenas na chegada e na saída</b>; entre as paradas o trajeto é <b>100% de carro</b> — nenhum aeroporto é usado no meio da rota. O roteiro prioriza <b>diversidade regional</b> (cobrir mais estados), <b>interiorização</b> (iniciativas longe das capitais) e o <b>maior nº de iniciativas</b>. As <b>âncoras</b> são sempre incluídas; a nota entra como ajuste fino.</div>
     </div>`;
     // ---- comparador de cenários (nº de incursões) ----
     const cmp = []; const seenN = new Set();
@@ -843,7 +849,7 @@
       html += `<div class="incursao">
         <div class="ih" style="background:${color}"><span class="in">Incursão ${mi + 1}${car ? " 🚗" : ""}</span><span class="imoment">momento ${mi + 1}</span><span class="ihub">${ico} ${airInfo}</span></div>
         <div class="isum"><span><b>${m.visited.length}</b> paradas · <b>${m.preCount}</b> visitas · ${m.optCount} no caminho</span><span><b>${m.days.length}</b> dias</span><span><b>${Math.round(m.totalKm)}</b> km</span><span><b>${m.score}</b> pts</span></div>
-        <div class="leg-line air-line">${ico} ${car ? "saída de carro de" : "chegada por"} ${airLbl(entry)}</div>`;
+        <div class="leg-line air-line">${ico} ${car ? "saída de carro de" : "chegada de avião por"} ${airLbl(entry)}${car ? "" : " — daqui em diante, todo o trajeto é de carro"}</div>`;
       let counter = 0;
       m.days.forEach((d, di) => {
         const jh = d.driveH + d.visitH, fill = Math.min(100, jh / params.jornadaH * 100);
@@ -851,7 +857,7 @@
           <div class="dbar" title="${jh.toFixed(1)} h de ${params.jornadaH} h"><i style="width:${fill}%"></i></div>`;
         d.stops.forEach(s => {
           counter++;
-          if (s.legKm > 1) html += `<div class="leg-line">deslocamento: ${Math.round(s.legKm)} km (${s.legH.toFixed(1)} h)</div>`;
+          if (s.legKm > 1) html += `<div class="leg-line">🚗 de carro: ${Math.round(s.legKm)} km (${s.legH.toFixed(1)} h)</div>`;
           const anc = anchorIds.has(s.node.id), pre = s.node.preselecionada, opt = s.node.__tipo === "opcional";
           const tagCls = anc ? "tanc" : opt ? "topt" : "tpre";
           const tagTxt = anc ? "âncora" : opt ? "in loco no caminho" : "visita técnica";
@@ -860,7 +866,7 @@
         });
         html += `</div>`;
       });
-      html += `<div class="leg-line air-line">${car ? "retorno de carro à base" : "deslocamento até a saída"}: ${Math.round(m.back.legKm)} km · ${ico} ${airLbl(exit)}</div></div>`;
+      html += `<div class="leg-line air-line">🚗 ${car ? "retorno de carro à base" : "de carro até a saída"}: ${Math.round(m.back.legKm)} km · ${ico} ${car ? "" : "saída de avião por "}${airLbl(exit)}</div></div>`;
     });
     // ---- não cobertas (trade-off do ótimo) ----
     if (cob.droppedPre && cob.droppedPre.length) {
