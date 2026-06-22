@@ -13,6 +13,8 @@
   const PMAX = Math.max(...ITEMS.map(i => i.pontuacao || 0));
   const PMIN = Math.min(...ITEMS.map(i => i.pontuacao || 0));
   const ufTokens = s => (s ? String(s).match(/\b[A-Z]{2}\b/g) || [] : []);
+  // rótulo de UF: vários estados → "Nac./Multi"; um único → a sigla
+  const ufLabel = i => { const t = ufTokens(i.estado); return t.length > 1 ? "Nac./Multi" : (t[0] || "—"); };
   const UF_ORDER = ["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"];
   const UF_NOME = { MA: "Maranhão", PI: "Piauí", CE: "Ceará", RN: "Rio Grande do Norte", PB: "Paraíba", PE: "Pernambuco", AL: "Alagoas", SE: "Sergipe", BA: "Bahia" };
 
@@ -36,8 +38,8 @@
   // rótulo de local: lista os dois pontos quando a iniciativa atua em mais de um lugar
   function locLabel(i) {
     if (i.locais && i.locais.length > 1) return i.locais.map(l => `${l.municipio}/${l.uf}`).join(" · ");
-    const uf = ufTokens(i.estado).join(", ");
-    return [i.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual";
+    const uf = ufLabel(i);
+    return [i.municipio, uf === "—" ? "" : uf].filter(Boolean).join(" / ") || "Multiestadual";
   }
   const selFilters = { visita: { busca: "", eixo: "", estado: "", bioma: "", natureza: "" }, entrevista: { busca: "", eixo: "", estado: "", bioma: "", natureza: "" } };
   function selFiltered(group) {
@@ -116,7 +118,7 @@
     if (!sorted.length) { $("#tbl-ranking tbody").innerHTML = `<tr><td colspan="8" class="empty-row">Nenhuma iniciativa corresponde aos filtros selecionados.</td></tr>`; return; }
     $("#tbl-ranking tbody").innerHTML = sorted.map(i => {
       const w = Math.round(100 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN)));
-      const uf = ufTokens(i.estado).join(", ") || "—";
+      const uf = ufLabel(i);
       const anc = window.PTE_ROTAS ? window.PTE_ROTAS.isAnchor(i.id) : false;
       const sub = orgSub(i);
       return `<tr data-id="${i.id}" class="${state.selected.has(i.id) ? "sel" : ""}">
@@ -150,7 +152,6 @@
     $("#cards-grid").innerHTML = list.map(i => {
       const w = Math.round(100 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN)));
       const cor = eixoColor(i.eixo_cod);
-      const uf = ufTokens(i.estado).join(", ");
       const local = locLabel(i);
       const anc = window.PTE_ROTAS ? window.PTE_ROTAS.isAnchor(i.id) : false;
       const fact = (k, v) => v ? `<div class="f"><span class="k">${k}</span><span>${esc(v)}</span></div>` : "";
@@ -391,7 +392,7 @@
     if (!ids.length) { box.innerHTML = `<div class="sel-tbl-empty">Nenhuma iniciativa pré-selecionada para ${group === "visita" ? "visita técnica" : "entrevista em profundidade"}. Marque-as no mapa acima.</div>`; return; }
     const rows = ids.map(id => byId(id)).filter(Boolean).sort((a, b) => (b.pontuacao || 0) - (a.pontuacao || 0));
     const body = rows.map(i => {
-      const uf = ufTokens(i.estado).join(", ") || "—", sub = orgSub(i);
+      const uf = ufLabel(i), sub = orgSub(i);
       return `<tr>
         <td class="num">${i.id}</td>
         <td class="t-nome"><span class="nm">${esc(i.nome)}</span>${sub ? `<span class="sub">${esc(sub)}</span>` : ""}</td>
@@ -479,7 +480,7 @@
     let maxc = 1;
     list.forEach(i => {
       if (!i.eixo_cod) return;
-      const u0 = ufTokens(i.estado)[0], col = (u0 && UF_NOME[u0]) ? u0 : "NAC";
+      const toks = ufTokens(i.estado), col = (toks.length === 1 && UF_NOME[toks[0]]) ? toks[0] : "NAC";
       grid[i.eixo_cod][col]++; if (isPre(i.id)) pre[i.eixo_cod][col]++;
       maxc = Math.max(maxc, grid[i.eixo_cod][col]);
     });
@@ -659,7 +660,7 @@
   }
   function buildCmpCards(sel, crits) {
     return sel.map(s => {
-      const i = s.i, uf = ufTokens(i.estado).join(", "), sub = orgSub(i);
+      const i = s.i, uf = ufLabel(i), sub = orgSub(i);
       const strong = crits.filter(c => (i.criterios[c.key] || 0) >= 3).map(c => c.label).slice(0, 4);
       const weak = crits.filter(c => (i.criterios[c.key] || 0) <= 1).map(c => c.label).slice(0, 3);
       return `<div class="cmp-card" style="border-top-color:${s.col}">
@@ -703,7 +704,7 @@
     else if (state.view === "rotas" && window.PTE_ROTAS) window.PTE_ROTAS.render(helpers());
     else if (state.view === "comparar") renderCompare();
   }
-  function helpers() { return { ITEMS, META, byId, eixoColor, nameByCod, popupHtml, ufTokens, esc, trunc, orgSub, UF_NOME, selItems, fieldSel: () => ({ visita: new Set(SEL.visita), entrevista: new Set(SEL.entrevista) }) }; }
+  function helpers() { return { ITEMS, META, byId, eixoColor, nameByCod, popupHtml, ufTokens, ufLabel, esc, trunc, orgSub, UF_NOME, selItems, fieldSel: () => ({ visita: new Set(SEL.visita), entrevista: new Set(SEL.entrevista) }) }; }
 
   function esc(s) { return (s == null ? "" : String(s)).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function trunc(s, n) { s = s == null ? "" : String(s); return s.length > n ? s.slice(0, n - 1) + "…" : s; }

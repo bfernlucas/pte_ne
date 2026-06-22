@@ -524,7 +524,7 @@
     c.dataset.init = "1";
     const UFS = ["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"];
     const anchorCands = [...H.ITEMS].filter(i => i.lat != null && !i.fora_ne).sort((a, b) => a.nome.localeCompare(b.nome, "pt"));
-    const anchorOpts = anchorCands.map(i => `<option value="${i.nome.replace(/"/g, "&quot;")}">${H.esc(i.municipio || "")}${i.estado ? " · " + H.esc(i.estado) : ""}</option>`).join("");
+    const anchorOpts = anchorCands.map(i => { const l = H.ufLabel ? H.ufLabel(i) : (i.estado || ""); return `<option value="${i.nome.replace(/"/g, "&quot;")}">${H.esc(i.municipio || "")}${l && l !== "—" ? " · " + H.esc(l) : ""}</option>`; }).join("");
     c.innerHTML = `
       <div class="rc-group rc-ufr">
         <label class="rc-switch"><input type="checkbox" id="r-ufrestrict"> <b>Ativar restrição por UF</b></label>
@@ -664,7 +664,8 @@
   function locsOf(i, H) {
     if (i.locais && i.locais.length) return i.locais;
     if (i.lat == null || i.lon == null) return [];
-    return [{ lat: i.lat, lon: i.lon, municipio: i.municipio, uf: H.ufTokens(i.estado).join(", ") }];
+    const ufl = H.ufLabel ? H.ufLabel(i) : H.ufTokens(i.estado).join(", ");
+    return [{ lat: i.lat, lon: i.lon, municipio: i.municipio, uf: ufl === "—" ? "" : ufl }];
   }
   function overviewPopup(i, H, locs, li) {
     const anc = anchorIds.has(i.id), multi = locs.length > 1, cur = locs[li] || {};
@@ -874,7 +875,8 @@
       let n = 0;
       m.visited.forEach(node => {
         n++;
-        const uf = H.ufTokens(node.estado).join(", ");
+        const ufl = H.ufLabel ? H.ufLabel(node) : H.ufTokens(node.estado).join(", ");
+        const uf = ufl === "—" ? "" : ufl;
         const anc = anchorIds.has(node.id);
         L.marker([node.lat, node.lon], { icon: numIcon(n, color, !node.preselecionada, anc) })
           .bindPopup(`<span class="pp-h">Incursão ${mi + 1} · parada ${n}</span>${H.esc(node.nome)}<br><span class="pp-k">Local:</span> ${H.esc([node.municipio, uf].filter(Boolean).join(" / ") || "Multiestadual")}<br><span class="pp-k">Nota:</span> <b>${node.pontuacao}</b> · ${anc ? "âncora" : node.__tipo === "opcional" ? "in loco no caminho" : "visita técnica"}`)
@@ -912,7 +914,7 @@
       const wp = cob.droppedPre.reduce((s, n) => s + (n.pontuacao || 0), 0);
       const lis = cob.droppedPre.slice().sort((a, b) => b.pontuacao - a.pontuacao).map(n => {
         const ufs = H.ufTokens(n.estado);
-        const chips = ufs.length ? ufs.map(u => `<i>${u}</i>`).join("") : `<i class="na">—</i>`;
+        const chips = ufs.length > 1 ? `<i>Nac./Multi</i>` : ufs.length ? `<i>${ufs[0]}</i>` : `<i class="na">—</i>`;
         return `<li title="${H.esc(n.eixo || "")}">
           <span class="u-dot" style="background:${H.eixoColor(n.eixo_cod)}"></span>
           <span class="u-name">${H.esc(n.nome)}</span>
