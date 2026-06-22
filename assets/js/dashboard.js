@@ -231,11 +231,12 @@
   }
 
   // ---------- MAPA GERAL ----------
-  let mapGeral, layerGeral;
+  let mapGeral, layerGeral, mapGeralFitted = false;
+  const NE_BOUNDS = [[-18.4, -48.9], [-1.0, -34.2]]; // enquadra o Nordeste (foco do plano)
   function ensureMapGeral() {
     if (mapGeral) return;
     mapGeral = L.map("map-geral", { zoomControl: true }).setView([-8.6, -39.5], 5);
-    if (window.PTE_MAP) PTE_MAP.setup(mapGeral, { base: "Ruas e estradas", boundaries: true });
+    if (window.PTE_MAP) PTE_MAP.setup(mapGeral, { base: "Ruas e estradas", boundaries: true, noAirports: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
       { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20 }).addTo(mapGeral);
     layerGeral = makeMarkerLayer().addTo(mapGeral);
@@ -253,9 +254,8 @@
       <div class="legend"><h4>Nota (tamanho do círculo)</h4><div class="sizes">${szs}</div>
         <div class="li" style="margin-top:8px"><span class="dot ring-pre"></span>Visita técnica (Seleção)</div>
         <div class="li"><span class="dot ring-ent"></span>Entrevista (Seleção)</div>
-        <div class="li"><span class="apt-ico apt-leg">✈</span>Aeroporto</div>
         <div class="li"><span class="uf-leg"></span>Limite estadual</div>
-        <div class="note">Os contornos destacam as iniciativas escolhidas na aba <b>Seleção</b>. Use o controle de camadas (↗) para alternar base e ligar/desligar limites e aeroportos.</div></div>`;
+        <div class="note">Os contornos destacam as iniciativas escolhidas na aba <b>Seleção</b>. Use o controle de camadas (↗) para alternar a base do mapa e ligar/desligar os limites estaduais.</div></div>`;
   }
   function renderMapGeral(list) {
     ensureMapGeral();
@@ -275,7 +275,10 @@
       });
     });
     addMarkers(layerGeral, markers);
-    setTimeout(() => mapGeral.invalidateSize(), 50);
+    setTimeout(() => {
+      mapGeral.invalidateSize();
+      if (!mapGeralFitted) { mapGeral.fitBounds(NE_BOUNDS, { padding: [16, 16] }); mapGeralFitted = true; }
+    }, 60);
   }
   function popupHtml(i) {
     const uf = ufTokens(i.estado).join(", ");

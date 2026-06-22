@@ -88,9 +88,10 @@ window.PTE_MAP = (function () {
     const b = bases();
     const def = b[opts.base] ? opts.base : "Ruas e estradas";
     b[def].addTo(map);
-    const overlays = { "Limites estaduais": ufLayer(), "Aeroportos": airportLayer() };
+    const overlays = { "Limites estaduais": ufLayer() };
+    if (!opts.noAirports) overlays["Aeroportos"] = airportLayer();
     if (opts.boundaries !== false) overlays["Limites estaduais"].addTo(map);
-    if (opts.airports) overlays["Aeroportos"].addTo(map);
+    if (opts.airports && overlays["Aeroportos"]) overlays["Aeroportos"].addTo(map);
     L.control.layers(b, overlays, { position: "topright", collapsed: true }).addTo(map);
     return overlays;
   }
