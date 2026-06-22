@@ -24,8 +24,7 @@ ALT_LOCAIS = {
         {"municipio": "Salvador", "uf": "BA", "lat": -12.9777, "lon": -38.5016},
         {"municipio": "Fortaleza", "uf": "CE", "lat": -3.7319, "lon": -38.5267},
     ],
-    52: [  # Trilha Caminhos da Ibiapaba — Viçosa do Ceará (CE) e Piracuruca (PI)
-        {"municipio": "Viçosa do Ceará", "uf": "CE", "lat": -3.5619, "lon": -41.0922},
+    52: [  # Trilha Caminhos da Ibiapaba — somente Piracuruca (PI)
         {"municipio": "Piracuruca", "uf": "PI", "lat": -3.9285, "lon": -41.7090},
     ],
     15: [  # Programa Sertão Vivo — sede no Rio de Janeiro + Salvador (BA) como local secundário
@@ -51,6 +50,8 @@ ALT_LOCAIS = {
 # Ajuste de classificação de eixo (id antigo -> eixo principal / código do secundário)
 EIXO_OVERRIDES = {15: "Nova Infraestrutura Verde-Azul e Adaptação Climática"}
 EIXO_SEC_OVERRIDES = {15: "BIO"}
+# correção de endereço (alinhado ao local de mapeamento)
+ENDERECO_OVERRIDES = {52: "Parque Nacional de Sete Cidades, Piracuruca, PI, 64240-000"}
 
 # Revisão editorial dos nomes: nome principal padronizado, sem siglas de UF,
 # sem subtítulos/descrições e sem acrônimo da organização (que vira subtítulo).
@@ -233,7 +234,7 @@ def main():
         eixo = EIXO_OVERRIDES.get(idn, val(r, 16))
         items.append({
             "id": idn, "nome": nm, "objetivo": val(r, 3), "resumo": RESUMO.get(idn), "tematica": val(r, 4), "org": ORG_OVERRIDES.get(idn, val(r, 5)),
-            "cnpj": val(r, 6), "fundacao": val(r, 7), "cnae": val(r, 8), "endereco": val(r, 9),
+            "cnpj": val(r, 6), "fundacao": val(r, 7), "cnae": val(r, 8), "endereco": ENDERECO_OVERRIDES.get(idn, val(r, 9)),
             "lat": val(r, 10), "lon": val(r, 11), "avaliador": val(r, 12),
             "municipio": val(r, 13), "estado": val(r, 14), "biomas": val(r, 15),
             "eixo": eixo, "eixo_cod": EIXO_COD.get(eixo), "eixo_sec": EIXO_SEC_OVERRIDES.get(idn, val(r, 17)),
@@ -245,10 +246,14 @@ def main():
     # coordenadas alternativas (rota escolhe a ótima; mapa mostra todas)
     for it in items:
         if it["id"] in ALT_LOCAIS:
-            it["locais"] = ALT_LOCAIS[it["id"]]
-            it["lat"] = it["locais"][0]["lat"]
-            it["lon"] = it["locais"][0]["lon"]
-            it["municipio"] = it["locais"][0]["municipio"]  # município primário = 1º local
+            locs = ALT_LOCAIS[it["id"]]
+            it["lat"] = locs[0]["lat"]
+            it["lon"] = locs[0]["lon"]
+            it["municipio"] = locs[0]["municipio"]  # município primário = 1º local
+            if len(locs) > 1:
+                it["locais"] = locs                 # múltiplos locais (rota escolhe; mapa mostra todos)
+            else:
+                it["estado"] = locs[0]["uf"]        # ponto único: ajusta também a UF
 
     # renumera os IDs sequencialmente (1..N), sem lacunas, após aplicar
     # exclusões e tudo que dependia dos IDs originais (PRE, FORA_NE, overrides, ALT_LOCAIS)
