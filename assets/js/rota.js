@@ -234,7 +234,46 @@
 
   // ---------- prioridade composta: diversidade regional + interiorização + nº de iniciativas ----------
   const NE_UF = new Set(["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"]);
+  // ---- UF a partir da COORDENADA geográfica (point-in-polygon nos contornos estaduais) ----
+  // Corrige iniciativas multi-estado cujo campo "estado" lista vários UFs (ex.: Maceió
+  // com estado "PI, PE, CE, ...": a rota deve usar a UF real do ponto = AL).
+  function pointInRing(x, y, ring) { // x=lon, y=lat
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+    }
+    return inside;
+  }
+  function pointInPoly(x, y, poly) {
+    if (!pointInRing(x, y, poly[0])) return false;
+    for (let k = 1; k < poly.length; k++) if (pointInRing(x, y, poly[k])) return false; // buraco
+    return true;
+  }
+  function ufData() {
+    if (typeof window !== "undefined" && window.PTE_UF_NE) return window.PTE_UF_NE;
+    if (typeof global !== "undefined" && global.PTE_UF_NE) return global.PTE_UF_NE;
+    return null;
+  }
+  const _ufCache = new Map();
+  function ufByCoord(lat, lon) {
+    const data = ufData();
+    if (!data || lat == null || lon == null) return null;
+    const key = lat.toFixed(4) + "," + lon.toFixed(4);
+    if (_ufCache.has(key)) return _ufCache.get(key);
+    let res = null;
+    for (const f of data.features) {
+      const g = f.geometry; if (!g) continue;
+      const polys = g.type === "MultiPolygon" ? g.coordinates : g.type === "Polygon" ? [g.coordinates] : [];
+      if (polys.some(p => pointInPoly(lon, lat, p))) { res = f.properties.sigla; break; }
+    }
+    _ufCache.set(key, res);
+    return res;
+  }
   function ufOf(n) {
+    // 1º: UF real da coordenada no mapa; 2º (fallback): 1º token do campo "estado"
+    const g = ufByCoord(n.lat, n.lon);
+    if (g) return g;
     const s = n.estado != null ? String(n.estado) : (n.uf || "");
     const m = s.match(/\b[A-Z]{2}\b/); return m ? m[0] : "";
   }
