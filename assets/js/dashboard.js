@@ -10,6 +10,7 @@
   const colorByCod = {}, nameByCod = {};
   META.eixos.forEach(e => { colorByCod[e.cod] = e.cor; nameByCod[e.cod] = e.nome; });
   const eixoColor = c => colorByCod[c] || "#9aa0b0";
+  const COR_VISITA = "#d4af37"; // arco dourado: pré-selecionada para visita
   const PMAX = Math.max(...ITEMS.map(i => i.pontuacao || 0));
   const PMIN = Math.min(...ITEMS.map(i => i.pontuacao || 0));
   const ufTokens = s => (s ? String(s).match(/\b[A-Z]{2}\b/g) || [] : []);
@@ -160,7 +161,7 @@
         <div class="pad">
           <div class="row1">
             <span class="eixo-chip" style="background:${cor}">${esc(i.eixo || "—")}</span>
-            <span class="idtag">#${i.id}${selType(i.id) === "visita" ? ' · <span style="color:var(--orange)">visita técnica</span>' : selType(i.id) === "entrevista" ? ' · <span style="color:var(--green)">entrevista</span>' : ""}</span>
+            <span class="idtag">#${i.id}${selType(i.id) === "visita" ? ' · <span style="color:var(--gold-ink)">visita técnica</span>' : selType(i.id) === "entrevista" ? ' · <span style="color:var(--green)">entrevista</span>' : ""}</span>
           </div>
           <h3>${esc(i.nome)}</h3>
           ${orgSub(i) ? `<div class="org">${esc(orgSub(i))}</div>` : ""}
@@ -291,7 +292,7 @@
         const extra = locs.length > 1 ? `<br><span class="pp-k">Local ${li + 1} de ${locs.length}:</span> ${esc(loc.municipio || "")}${loc.uf ? "/" + esc(loc.uf) : ""}` : "";
         const t = selType(i.id), ne = isNEpoint(i, loc);
         const base = ne
-          ? { radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: .85, color: t === "visita" ? "#f37520" : t === "entrevista" ? "#16a34a" : "#fff", weight: t ? 3.4 : 1.4 }
+          ? { radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: .85, color: t === "visita" ? COR_VISITA : t === "entrevista" ? "#16a34a" : "#fff", weight: t ? 3.4 : 1.4 }
           : { radius: Math.max(6, r * 0.8), fillColor: eixoColor(i.eixo_cod), fillOpacity: .4, color: "#8a90a0", weight: 1.5, dashArray: "3 3" };
         const ext = ne ? "" : `<br><span class="pp-k">Sede fora do NE</span> (${esc(loc.municipio || "")})`;
         const mk = L.circleMarker([loc.lat, loc.lon], base).bindPopup(popupHtml(i) + extra + ext);
@@ -348,7 +349,7 @@
   function selStyle(i, group) {
     const on = SEL[group].has(i.id);
     const r = 5 + 12 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN));
-    return { radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: on ? .9 : .28, color: on ? "#16a34a" : "#fff", weight: on ? 3.5 : 1 };
+    return { radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: on ? .9 : .28, color: on ? (group === "visita" ? COR_VISITA : "#16a34a") : "#fff", weight: on ? 3.5 : 1 };
   }
   function renderSelMap(group) {
     ensureSelMap(group);

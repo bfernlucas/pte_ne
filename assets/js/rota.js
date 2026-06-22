@@ -497,6 +497,7 @@
   // seleção da aba "Seleção": visitas (presenciais → roteiro) e entrevistas (remotas → fora do roteiro)
   let curSel = { visita: new Set(), entrevista: new Set() };
   const isVis = id => curSel.visita.has(id), isEnt = id => curSel.entrevista.has(id);
+  const COR_VISITA = "#d4af37"; // arco dourado: pré-selecionada para visita
   const MCOLOR = ["#1f4da1", "#f37520", "#43a047", "#7a3fb8", "#e0392b", "#0d9488"];
   function ensureMap() {
     if (map) return;
@@ -659,7 +660,7 @@
     return {
       radius: 3 + 6 * ((i.pontuacao - ovPmin) / Math.max(1, ovPmax - ovPmin)),
       fillColor: lastH.eixoColor(i.eixo_cod), fillOpacity: (vis || ent) ? .9 : (i.fora_ne ? .35 : .55),
-      color: anc ? "#f6a609" : vis ? "#f37520" : ent ? "#16a34a" : "#fff",
+      color: anc ? "#f6a609" : vis ? COR_VISITA : ent ? "#16a34a" : "#fff",
       weight: anc ? 3 : vis ? 2.6 : ent ? 2 : 1
     };
   }
@@ -697,7 +698,7 @@
     });
     if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
     const s = document.getElementById("r-status");
-    if (s) s.textContent = `Mostrando todas as ${mapped} iniciativas. Destacadas: visitas técnicas (laranja) e entrevistas remotas (verde) da aba Seleção. Clique num ponto para fixá-lo como âncora; depois clique em “Otimizar rotas”.`;
+    if (s) s.textContent = `Mostrando todas as ${mapped} iniciativas. Destacadas: visitas técnicas (dourado) e entrevistas remotas (verde) da aba Seleção. Clique num ponto para fixá-lo como âncora; depois clique em “Otimizar rotas”.`;
     document.getElementById("rotas-itinerary").innerHTML =
       `<div class="cover empty">O roteiro é montado a partir das <b>visitas técnicas</b> escolhidas na aba <b>Seleção</b> (mapa 1). Defina os parâmetros e clique em <b>Otimizar rotas</b>. As entrevistas (mapa 2) são remotas e não entram no roteiro.</div>`;
   }
@@ -1098,7 +1099,7 @@
             radius: vis ? 8 : ent ? 7 : 6,
             fillColor: H.eixoColor(it.eixo_cod),
             fillOpacity: it.fora_ne ? .35 : (vis || ent ? .92 : .7),
-            color: vis ? "#f37520" : ent ? "#16a34a" : "#fff",
+            color: vis ? COR_VISITA : ent ? "#16a34a" : "#fff",
             weight: vis ? 3.4 : ent ? 2.6 : 1.5
           });
         }
