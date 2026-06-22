@@ -1171,6 +1171,21 @@
       <div class="opt-src ${real ? "real" : "est"}">${real ? "Distâncias reais por estrada" : "Distâncias estimadas"} — ${H.esc(distSource)}</div>
       <div class="opt-help">Cada rota foi montada por você. O avião é usado só na <b>chegada/saída</b> (rotas com avião); entre as paradas o trajeto é <b>de carro</b>. Marque “Só de carro” para uma rota circular sem avião.</div>
     </div>` + blocks;
+    // ---- visitas técnicas pré-selecionadas que ficaram fora de todas as rotas ----
+    const routed = new Set(); mRoutes.forEach(r => r.stops.forEach(s => routed.add(s.id)));
+    const fora = H.ITEMS.filter(it => mSel.visita.has(it.id) && !routed.has(it.id));
+    if (fora.length) {
+      const wp = fora.reduce((s, n) => s + (n.pontuacao || 0), 0);
+      const lis = fora.slice().sort((a, b) => (b.pontuacao || 0) - (a.pontuacao || 0)).map(n => {
+        const ufs = H.ufTokens(n.estado);
+        const chips = ufs.length > 1 ? `<i>Nac./Multi</i>` : ufs.length ? `<i>${ufs[0]}</i>` : `<i class="na">—</i>`;
+        return `<li title="${H.esc(n.eixo || "")}"><span class="u-dot" style="background:${H.eixoColor(n.eixo_cod)}"></span><span class="u-name">${H.esc(n.nome)}</span><span class="u-ufs">${chips}</span><span class="u-score">${n.pontuacao}<small>pts</small></span></li>`;
+      }).join("");
+      html += `<div class="uncovered">
+        <div class="uh"><span>Visitas técnicas fora destas ${routes.length} rota(s)</span><span class="ucount">${fora.length}</span></div>
+        <div class="usub">Somam <b>${wp} pts</b>. Para incluí-las, selecione a rota desejada e clique nos pontos <b>dourados</b> no mapa — ou crie uma nova rota.</div>
+        <ul class="ulist">${lis}</ul></div>`;
+    }
     if (panel) panel.innerHTML = html;
     if (statusEl) statusEl.textContent = `${routes.length} rota(s) · ${totStops} paradas · ${Math.round(totKm)} km · ${totDays} dias.`;
     if (bounds.length) mMap.fitBounds(bounds, { padding: [30, 30] });
