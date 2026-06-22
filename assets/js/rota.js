@@ -980,6 +980,7 @@
   let mMap, mAllLayer, mRouteLayer, mLastH, mLoaded = false;
   let mRoutes = [], mActive = 0;
   let mSel = { visita: new Set(), entrevista: new Set() }; // seleção da aba "Seleção"
+  let mAutoGen = false; // evita gerar o roteiro automático em duplicidade
   function mNewRoute() { const i = mRoutes.length; mRoutes.push({ nome: "Rota " + (i + 1), color: MCOLOR[i % MCOLOR.length], stops: [], carOnly: false }); mActive = mRoutes.length - 1; }
   function mLoad() {
     try { const s = JSON.parse(localStorage.getItem("pte_rota_manual4") || "null"); if (s && Array.isArray(s.routes) && s.routes.length) { mRoutes = s.routes; mActive = Math.min(s.active || 0, s.routes.length - 1); return; } } catch (e) {}
@@ -1249,6 +1250,12 @@
     mSyncParams();
     mRenderMarkers(H);
     mRenderPanel(H);
+    // gera o roteiro automaticamente ao acessar a aba (relatório predefinido)
+    const panel = document.getElementById("rota-manual-itinerary");
+    if (panel && !panel.innerHTML.trim() && !mAutoGen && mRoutes.some(r => r.stops && r.stops.length)) {
+      mAutoGen = true;
+      Promise.resolve(mGerar(H)).catch(() => {}).then(() => { mAutoGen = false; });
+    }
   }
 
   window.PTE_ROTAS = { render, toggleAnchor, isAnchor, renderManual };
