@@ -2,7 +2,7 @@
 """Gera assets/data/iniciativas.js a partir de PTE2026_matriz_dashboard.xlsx.
 Uso: python3 scripts/gen_data.py
 """
-import openpyxl, json, os
+import openpyxl, json, os, re, unicodedata
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 XLSX = os.path.join(ROOT, "PTE2026_matriz_dashboard.xlsx")
@@ -52,6 +52,55 @@ EIXO_OVERRIDES = {15: "Nova Infraestrutura Verde-Azul e Adaptação Climática"}
 EIXO_SEC_OVERRIDES = {15: "BIO"}
 # correção de endereço (alinhado ao local de mapeamento)
 ENDERECO_OVERRIDES = {52: "Parque Nacional de Sete Cidades, Piracuruca, PI, 64240-000"}
+
+# seleção padrão (pré-marcadas na aba Seleção), resolvida por NOME no build —
+# fica embutida no iniciativas.js, independente do cache do navegador.
+SELECAO_DEFAULT_VISITA = [
+    "Acreditar Microcrédito",
+    "Conselho Gestor do Fundo Rotativo",
+    "Acelen Renováveis – Biorrefinaria de SAF e Diesel Verde",
+    "Cooperativa Pindorama – Bioenergias da Vinhaça",
+    "Programa 1 Milhão de Tetos Solares (P1MTS)",
+    "Raízes Solares",
+    "Solos",
+    "Modelo de Gestão Municipal de Resíduos Sólidos de Arez",
+    "Programas Complementares de Captação de Água da ASA",
+    "Fazenda Tamanduá",
+    "Fazenda Nutrilite Brasil",
+    "BlueC",
+    "Trilha Caminhos da Ibiapaba",
+    "SIMACaatinga",
+    "Programa Sertão Vivo",
+    "Programa Reecatingar",
+    "Programa Redeser",
+    "Rede BATUC de Turismo Comunitário",
+    "Paisagens Alimentares",
+    "Rede Xique Xique de Comercialização Solidária",
+    "Projeto Etnocaatinga",
+    "Rede MCTI/EMBRAPII de Inovação em Inteligência Artificial",
+    "Parque Tecnológico Porto Digital",
+    "OxeTech",
+    "BIOINSULAB",
+    "Projetos de Conservação e Sustentabilidade do Bioma Caatinga",
+]
+SELECAO_DEFAULT_ENTREVISTA = [
+    "Instituto Clima e Sociedade",
+    "SITAWI Finanças do Bem",
+    "Programa Eco Invest Brasil",
+    "Observatório da Transição Energética",
+    "Fórum Interinstitucional de Powershoring – Consórcio Nordeste",
+    "Grupo EQM / ZEG Biogás – Biometano da Vinhaça",
+    "Green Energy Park",
+    "Renova-Semiárido",
+    "Hub de Hidrogênio Verde do Complexo do Pecém",
+    "Comitê da Bacia Hidrográfica do Rio São Francisco (CBHSF)",
+    "Programa Bahia Solidária",
+]
+
+
+def _norm(s):
+    s = unicodedata.normalize("NFD", str(s or "")).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]+", " ", s.lower()).strip()
 
 # Revisão editorial dos nomes: nome principal padronizado, sem siglas de UF,
 # sem subtítulos/descrições e sem acrônimo da organização (que vira subtítulo).
@@ -260,9 +309,25 @@ def main():
     for n, it in enumerate(items, 1):
         it["id"] = n
 
+    # seleção padrão resolvida por nome (após a renumeração final dos IDs)
+    name_to_id = {_norm(it["nome"]): it["id"] for it in items}
+
+    def _resolve(names):
+        out = []
+        for nm in names:
+            i = name_to_id.get(_norm(nm))
+            if i:
+                out.append(i)
+            else:
+                print("AVISO: seleção padrão não encontrada:", nm)
+        return out
+    selecao_default = {"visita": _resolve(SELECAO_DEFAULT_VISITA),
+                       "entrevista": _resolve(SELECAO_DEFAULT_ENTREVISTA)}
+
     meta = {"fonte": "PTE2026_matriz_dashboard.xlsx", "total": len(items),
             "eixos": [{"nome": n, "cod": c, "cor": cor} for n, c, cor in EIXO_CORES],
-            "criterios": [{"key": k, "label": l} for k, l in CRIT]}
+            "criterios": [{"key": k, "label": l} for k, l in CRIT],
+            "selecao_default": selecao_default}
     out = {"meta": meta, "iniciativas": items}
     js = "window.PTE_DATA = " + json.dumps(out, ensure_ascii=False, indent=1) + ";\n"
     with open(OUT, "w", encoding="utf-8") as f:

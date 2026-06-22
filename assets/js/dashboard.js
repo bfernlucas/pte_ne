@@ -24,12 +24,17 @@
 
   // ----- seleção de campo (base para Análises e Rotas): visitas e entrevistas -----
   const SEL = { visita: new Set(), entrevista: new Set() };
+  const SEL_KEY = "pte_sel3"; // versão atual da seleção persistida (bump aplica a nova pré-seleção)
   try {
-    const sv = JSON.parse((window.localStorage && localStorage.getItem("pte_sel2")) || "{}");
+    let sv = null;
+    const raw = window.localStorage && localStorage.getItem(SEL_KEY);
+    if (raw) sv = JSON.parse(raw);
+    // sem seleção salva (1ª visita ou cache limpo) → usa a pré-seleção padrão embutida nos dados
+    if (!sv) { const d = (META && META.selecao_default) || {}; sv = { visita: d.visita || [], entrevista: d.entrevista || [] }; }
     (sv.visita || []).forEach(id => SEL.visita.add(id));
     (sv.entrevista || []).forEach(id => SEL.entrevista.add(id));
   } catch (e) { /* ignore */ }
-  function saveSel() { try { if (window.localStorage) localStorage.setItem("pte_sel2", JSON.stringify({ visita: [...SEL.visita], entrevista: [...SEL.entrevista] })); } catch (e) {} }
+  function saveSel() { try { if (window.localStorage) localStorage.setItem(SEL_KEY, JSON.stringify({ visita: [...SEL.visita], entrevista: [...SEL.entrevista] })); } catch (e) {} }
   const selUnion = () => new Set([...SEL.visita, ...SEL.entrevista]);
   const selItems = () => [...selUnion()].map(id => byId(id)).filter(Boolean);
   function toggleSel(group, id) { const s = SEL[group]; if (s.has(id)) s.delete(id); else s.add(id); saveSel(); }
