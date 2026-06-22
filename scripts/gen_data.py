@@ -112,8 +112,8 @@ ROTA_MANUAL_DEFAULT = [
         "Cooperativa de Energia Solar Bem Viver / CERSA", "Fazenda Tamanduá", "Programa Redeser",
         "Rede Xique Xique de Comercialização Solidária"]},
     {"nome": "Rota 2", "carOnly": True, "stops": [
-        "BlueC", "Sistema Metroviário do Ceará", "Projeto Pecém – Fortescue",
-        "Hub de Hidrogênio Verde do Complexo do Pecém",
+        "BlueC", "Sistema Metroviário do Ceará",
+        "Rede MCTI/EMBRAPII de Inovação em Inteligência Artificial", "Projeto Pecém – Fortescue",
         "Consórcio Público de Manejo de Resíduos Sólidos da Ibiapaba", "Fazenda Nutrilite Brasil",
         "Trilha Caminhos da Ibiapaba", "No Clima da Caatinga"]},
     {"nome": "Rota 3", "carOnly": True, "stops": [
