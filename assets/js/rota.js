@@ -1108,7 +1108,9 @@
     if (!r) { ed.innerHTML = ""; return; }
     const stops = r.stops.map((s, si) => {
       const it = H.byId(s.id); const locs = it ? locsOf(it, H) : []; const loc = locs[s.li] || locs[0] || {};
-      return `<li><span class="rm-n" style="background:${r.color}">${si + 1}</span><span class="rm-nm">${H.esc(it ? it.nome : "?")}<small>${H.esc(loc.municipio || "")}</small></span><span class="rm-ops"><button data-op="up" data-si="${si}" title="subir">↑</button><button data-op="down" data-si="${si}" title="descer">↓</button><button data-op="rm" data-si="${si}" title="remover">×</button></span></li>`;
+      const vis = mSel.visita.has(s.id), ent = mSel.entrevista.has(s.id);
+      const star = vis ? `<span class="rm-star vis" title="pré-selecionada para visita">★</span>` : ent ? `<span class="rm-star ent" title="pré-selecionada para entrevista">★</span>` : "";
+      return `<li${vis ? ' class="pre-vis"' : ent ? ' class="pre-ent"' : ""}><span class="rm-n" style="background:${r.color}">${si + 1}</span><span class="rm-nm">${star}${H.esc(it ? it.nome : "?")}<small>${H.esc(loc.municipio || "")}</small></span><span class="rm-ops"><button data-op="up" data-si="${si}" title="subir">↑</button><button data-op="down" data-si="${si}" title="descer">↓</button><button data-op="rm" data-si="${si}" title="remover">×</button></span></li>`;
     }).join("") || `<li class="rm-empty">Clique nos pontos do mapa para adicionar paradas a esta rota.</li>`;
     ed.innerHTML = `<span class="rc-title">Rota ativa: ${H.esc(r.nome)}</span>
       <input class="rm-name" id="rm-name" value="${H.esc(r.nome)}" aria-label="nome da rota" />

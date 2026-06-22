@@ -329,6 +329,11 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .rm-n{flex:none;width:20px;height:20px;border-radius:50%;color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
 .rm-nm{flex:1;min-width:0;font-size:.78rem;line-height:1.2;overflow:hidden}
 .rm-nm small{display:block;color:var(--muted);font-size:.68rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rm-star{font-size:.85rem;margin-right:4px;line-height:1}
+.rm-star.vis{color:var(--gold)}
+.rm-star.ent{color:#16a34a}
+.rm-stops li.pre-vis{box-shadow:inset 3px 0 0 var(--gold)}
+.rm-stops li.pre-ent{box-shadow:inset 3px 0 0 #16a34a}
 .rm-ops{display:flex;gap:2px;flex:none}
 .rm-ops button{width:22px;height:22px;border:1px solid var(--border);background:var(--surface);border-radius:6px;cursor:pointer;font-size:.8rem;line-height:1;color:var(--ink)}
 .rm-ops button:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
