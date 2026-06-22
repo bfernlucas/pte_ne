@@ -214,7 +214,7 @@ tbody tr.sel{box-shadow:inset 3px 0 0 var(--orange)}
 .sel-badge{background:var(--green);color:#fff;border-radius:20px;font-family:var(--font);font-size:.78rem;font-weight:700;
   min-width:24px;text-align:center;padding:1px 9px}
 .sel-block .ph-sub{margin-bottom:10px}
-.sel-map-wrap{display:grid;grid-template-columns:1fr 290px;gap:16px;align-items:start}
+.sel-map-wrap{display:grid;grid-template-columns:1fr 440px;gap:16px;align-items:start}
 .sel-map-wrap .map{height:clamp(360px,52vh,520px)}
 .sel-side{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;max-height:520px;overflow:auto}
 .sel-add-sel{width:100%;border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:.82rem;font-family:var(--font);background:#fff;color:var(--ink);margin-bottom:10px}

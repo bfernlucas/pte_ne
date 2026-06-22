@@ -326,7 +326,7 @@
     const opts = [...ITEMS].filter(i => i.lat != null).sort((a, b) => a.nome.localeCompare(b.nome, "pt"))
       .map(i => `<option value="${i.id}">${esc(i.nome)}</option>`).join("");
     const chips = ids.length
-      ? ids.map(id => { const i = byId(id); return `<span class="selchip"><span class="d" style="background:${eixoColor(i.eixo_cod)}"></span>${esc(trunc(i.nome, 30))}<button data-id="${id}" data-g="${group}" title="remover">×</button></span>`; }).join("")
+      ? ids.map(id => { const i = byId(id); return `<span class="selchip"><span class="d" style="background:${eixoColor(i.eixo_cod)}"></span>${esc(trunc(i.nome, 46))}<button data-id="${id}" data-g="${group}" title="remover">×</button></span>`; }).join("")
       : `<span class="sel-empty">Nenhuma selecionada. Clique nos pontos do mapa ou use o seletor abaixo.</span>`;
     box.innerHTML = `<select class="sel-add-sel" data-g="${group}"><option value="">Adicionar pela lista…</option>${opts}</select><div class="selchips">${chips}</div>`;
     box.querySelector(".sel-add-sel").addEventListener("change", e => { if (e.target.value) { SEL[group].add(+e.target.value); saveSel(); renderSelecao(); } });
