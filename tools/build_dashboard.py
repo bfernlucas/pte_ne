@@ -29,6 +29,7 @@ FILLS = {
     19: {"lat": -15.7942, "lon": -47.8822},                    # Territórios da Cidadania — Brasília
     20: {"lat": -7.2342,  "lon": -39.4094},                    # Programa Redeser — Crato/CE
     27: {"natureza_juridica": "Órgão Público do Poder Executivo Federal"},
+    47: {"municipio": "Assú", "lat": -5.5772, "lon": -36.9089},  # Vale Sustentável — realocado de Natal p/ Assú (RN)
     49: {"lat": -23.0032},                                     # corrige -230032 -> -23.0032
 }
 
