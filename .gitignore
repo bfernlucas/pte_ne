@@ -11,3 +11,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# camada de evidencia de campo em claro: nao publicar
+dados_campo.json

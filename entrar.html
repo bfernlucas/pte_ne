@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Área restrita — Plano Brasil Nordeste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#f5f6f9; --surface:#ffffff; --ink:#23262f; --muted:#6b7080; --faint:#9aa0b0;
+  --border:#e7e9f1; --brand:#292d76; --brand-2:#1f4da1; --green:#55b847; --red:#e0392b;
+  --radius:10px;
+  --font:"Roboto",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Oswald","Roboto Condensed",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--font);
+  display:flex;flex-direction:column}
+.topo{background:var(--brand);color:#fff;padding:22px 20px 18px}
+.topo .inner{max-width:1100px;margin:0 auto}
+.topo h1{font-family:var(--display);font-size:1.25rem;font-weight:600;margin:0;letter-spacing:.01em}
+.topo p{margin:4px 0 0;font-size:.82rem;opacity:.82;font-weight:300}
+.hills{line-height:0;background:var(--brand)}
+.hills svg{display:block;width:100%;height:30px}
+main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:44px 20px 60px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  width:100%;max-width:430px;padding:30px 30px 26px}
+.card h2{font-family:var(--display);font-size:1.16rem;font-weight:600;margin:0 0 6px}
+.card .lede{font-size:.88rem;color:var(--muted);margin:0 0 22px;line-height:1.55}
+label{display:block;font-size:.76rem;font-weight:500;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.05em;margin-bottom:6px}
+input{width:100%;font-family:var(--font);font-size:.95rem;padding:11px 12px;border:1px solid var(--border);
+  border-radius:8px;background:#fff;color:var(--ink);margin-bottom:16px}
+input:focus{outline:2px solid var(--brand-2);outline-offset:1px;border-color:var(--brand-2)}
+input[name="senha"]{font-family:ui-monospace,"SFMono-Regular",Menlo,monospace;letter-spacing:.04em}
+button{width:100%;font-family:var(--font);font-size:.95rem;font-weight:500;padding:12px;border:none;
+  border-radius:8px;background:var(--brand);color:#fff;cursor:pointer}
+button:hover:not(:disabled){background:var(--brand-2)}
+button:disabled{opacity:.6;cursor:progress}
+button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
+.aviso{display:none;font-size:.85rem;padding:11px 13px;border-radius:8px;margin-bottom:16px;line-height:1.5}
+.aviso.on{display:block}
+.aviso.erro{background:#fdecea;border:1px solid #f5c6c2;color:#a5241a}
+.aviso.info{background:#eef2fb;border:1px solid #d5deF3;color:#1f3f80}
+.nota{font-size:.76rem;color:var(--faint);line-height:1.6;margin:20px 0 0;padding-top:16px;
+  border-top:1px solid var(--border)}
+.nota a{color:var(--brand-2)}
+.volta{text-align:center;margin-top:18px;font-size:.84rem}
+.volta a{color:var(--muted)}
+@media(max-width:520px){.card{padding:24px 20px}main{padding:28px 16px 44px}}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="inner">
+    <h1>Plano Brasil Nordeste — Incursões</h1>
+    <p>Área restrita · evidência das incursões de campo</p>
+  </div>
+</header>
+<div class="hills" aria-hidden="true">
+  <svg viewBox="0 0 1440 44" preserveAspectRatio="none">
+    <path d="M0,24 C160,8 320,32 480,22 C640,12 800,34 960,22 C1120,10 1280,30 1440,18 L1440,44 L0,44 Z" fill="#3f9e3f"/>
+    <path d="M0,32 C180,18 300,40 520,30 C700,22 860,40 1040,30 C1220,20 1320,38 1440,30 L1440,44 L0,44 Z" fill="#55b847"/>
+  </svg>
+</div>
+
+<main>
+  <form class="card" id="form" autocomplete="on">
+    <h2>Acesso da equipe</h2>
+    <p class="lede">Esta área reúne a sistematização das três incursões: notas por dimensão, classificação e estimativas de recurso por experiência.</p>
+
+    <div class="aviso erro" id="erro" role="alert"></div>
+    <div class="aviso info" id="info" role="status"></div>
+
+    <label for="usuario">Usuário</label>
+    <input type="text" id="usuario" name="usuario" value="equipe" autocomplete="username" required />
+
+    <label for="senha">Senha</label>
+    <input type="password" id="senha" name="senha" autocomplete="current-password" required
+           placeholder="XXXXX-XXXXX-XXXXX-XXXXX" />
+
+    <button type="submit" id="btn">Entrar</button>
+
+    <p class="nota">Os dados desta área são publicados apenas cifrados (AES-256-GCM). A senha não é conferida por um servidor: ela é o que decifra o conteúdo. Por isso não há recuperação — se for perdida, a equipe gera outra e republica.</p>
+  </form>
+</main>
+
+<p class="volta"><a href="./">← Voltar ao painel público</a></p>
+
+<script src="assets/data/campo.enc.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+(function () {
+  var form = document.getElementById("form");
+  var btn = document.getElementById("btn");
+  var erro = document.getElementById("erro");
+  var info = document.getElementById("info");
+
+  var params = new URLSearchParams(location.search);
+  var destino = params.get("destino") || "restrito.html";
+  if (!/^[a-z0-9._-]+\.html$/i.test(destino)) destino = "restrito.html";
+
+  if (PTEAuth.dados()) location.replace(destino);
+
+  function mostra(el, texto) { el.textContent = texto; el.classList.add("on"); }
+  function limpa() { erro.classList.remove("on"); info.classList.remove("on"); }
+
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    limpa();
+    btn.disabled = true;
+    btn.textContent = "Abrindo…";
+    mostra(info, "Derivando a chave — leva alguns segundos por segurança.");
+
+    var usuario = document.getElementById("usuario").value;
+    var senha = document.getElementById("senha").value;
+
+    PTEAuth.abrir(usuario, senha).then(function () {
+      location.replace(destino);
+    }).catch(function (e) {
+      limpa();
+      btn.disabled = false;
+      btn.textContent = "Entrar";
+      document.getElementById("senha").value = "";
+      if (e.message === "contexto-inseguro") {
+        mostra(erro, "Abra a página por https ou localhost — o navegador bloqueia criptografia em file://.");
+      } else if (e.message === "arquivo-ausente") {
+        mostra(erro, "Não encontrei os dados cifrados. Rode scripts/cifrar_campo.py e publique o resultado.");
+      } else {
+        mostra(erro, "Usuário ou senha incorretos.");
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

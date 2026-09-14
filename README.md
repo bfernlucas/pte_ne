@@ -125,3 +125,36 @@ assets/js/app.js           lógica (busca, gráficos, mapa, tabela)
 - [Chart.js](https://www.chartjs.org/) — gráficos
 - [Leaflet](https://leafletjs.com/) + OpenStreetMap — mapa
 - [PapaParse](https://www.papaparse.com/) — leitura do CSV do Google Sheets
+
+## Área restrita — evidência das incursões de campo
+
+A sistematização dos Produtos 3, 4 e 5 (24 experiências avaliadas, notas por
+dimensão, classificação e estimativa de recursos) fica em `restrito.html`,
+atrás de um login da equipe em `entrar.html`.
+
+**Como a proteção funciona.** O GitHub Pages não tem autenticação — por isso a
+proteção não está numa tela de senha, e sim no dado: `assets/data/campo.enc.js`
+é publicado cifrado com **AES-256-GCM**, e a senha da equipe é o que deriva a
+chave que o abre (PBKDF2-HMAC-SHA256, 600.000 iterações). Sem a senha o arquivo
+é ruído, mesmo baixado direto do repositório público.
+
+O arquivo em claro (`dados_campo.json`) **nunca entra no Git** — está no
+`.gitignore`. Só o cifrado é versionado.
+
+### Regenerar os dados
+
+```bash
+pip install cryptography openpyxl
+
+python3 scripts/montar_campo.py      # monta dados_campo.json (fica fora do Git)
+python3 scripts/cifrar_campo.py      # pede a senha e gera campo.enc.js
+```
+
+### Trocar a senha
+
+Rode `scripts/cifrar_campo.py` de novo com a senha nova e publique o
+`campo.enc.js` resultante. Não há recuperação: a senha não é conferida por
+nenhum servidor, ela É a chave. Se for perdida, gera-se outra e republica.
+
+> A área restrita exige contexto seguro (https ou localhost). Abrir por
+> `file://` não funciona — o navegador bloqueia a API de criptografia.
