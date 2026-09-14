@@ -50,34 +50,59 @@
     return "R$ " + v.toLocaleString("pt-BR");
   }
 
-  /* ------------------------------------------------------------------ casca */
+  /* ------------------------------------------------------------------ casca
+     Quatro seções, cada uma respondendo a uma pergunta de decisão. Cada uma
+     abre pela leitura — o que o dado quer dizer — e não pela descrição do dado. */
+  var totMin = exp.reduce(function (s, x) { return s + x.envelope.min; }, 0);
+  var totMax = exp.reduce(function (s, x) { return s + x.envelope.max; }, 0);
+  var nAlta = exp.filter(function (x) { return x.classificacao === "alta"; }).length;
+  var comAloc = exp.filter(function (x) { return x.envelope.max > 0; }).length;
+  var metro = exp.filter(function (x) { return x.nome.indexOf("Metroviário") !== -1; })[0];
+
+  var SECOES = [
+    { id: "carteira", rot: "Carteira", subs: ["carteira", "captacao"],
+      perg: "O que apoiar, com quanto, e por qual porta captar",
+      leitura: "<strong>R$ " + fmt(totMin) + " a " + fmt(totMax) + " milhões</strong> em 36 meses para " +
+        comAloc + " experiências. Dois terços vão para Infraestrutura Verde-Azul" +
+        (metro ? ", e o METROFOR sozinho responde por R$ " + fmt(metro.envelope.min) + "–" +
+          fmt(metro.envelope.max) + " mi — um terço do total" : "") + "." },
+    { id: "experiencias", rot: "Experiências", subs: ["lista"],
+      perg: "Quem são as 24 avaliadas, uma a uma",
+      leitura: "<strong>" + nAlta + " das " + exp.length + "</strong> alcançam a faixa de apoio imediato. " +
+        "O perfil nas quatro dimensões importa mais que a nota final: duas experiências com 80 pontos " +
+        "podem pedir apoios opostos." },
+    { id: "evidencia", rot: "Evidência", subs: ["prospeccao", "gargalos"],
+      perg: "O que sustenta as notas, e o que as ameaça",
+      leitura: "A prospecção de gabinete prevê pouco. E o gargalo que atravessa a carteira " +
+        "<strong>não é dinheiro</strong>: é a informação que falta para converter mérito em pedido financiável." },
+    { id: "campo", rot: "Campo", subs: ["cobertura", "incursoes"],
+      perg: "De onde vieram os dados, e o que ficou de fora",
+      leitura: "<strong>56 das 79</strong> iniciativas mapeadas nunca receberam visita. " +
+        "Bahia, Maranhão e Sergipe não tiveram incursão." }
+  ];
+
   raiz.innerHTML =
-    '<p class="ec-intro">Sistematização das três incursões — <strong>Produtos 3, 4 e 5</strong>. ' +
-    '24 experiências avaliadas em quatro dimensões, convertidas em pontuação ponderada de 0 a 100 ' +
-    '(Impacto 30 · Inovação 30 · Operação 25 · Investimento 15).</p>' +
     '<div class="ec-nav" id="ec-nav">' +
-      '<button data-sub="lista" class="on">Experiências</button>' +
-      '<button data-sub="carteira">Carteira</button>' +
-      '<button data-sub="prospeccao">Prospecção × campo</button>' +
-      '<button data-sub="gargalos">Gargalos e potencialidades</button>' +
-      '<button data-sub="captacao">Captação</button>' +
-      '<button data-sub="cobertura">Cobertura e lacunas</button>' +
-      '<button data-sub="incursoes">Incursões</button>' +
+      SECOES.map(function (sec, i) {
+        return '<button data-sec="' + sec.id + '"' + (i === 0 ? ' class="on"' : '') + '>' +
+               esc(sec.rot) + '</button>';
+      }).join("") +
     '</div>' +
-    '<div class="ec-sub on" id="sub-lista"></div>' +
-    '<div class="ec-sub" id="sub-carteira"></div>' +
-    '<div class="ec-sub" id="sub-prospeccao"></div>' +
-    '<div class="ec-sub" id="sub-gargalos"></div>' +
-    '<div class="ec-sub" id="sub-captacao"></div>' +
-    '<div class="ec-sub" id="sub-cobertura"></div>' +
-    '<div class="ec-sub" id="sub-incursoes"></div>';
+    SECOES.map(function (sec, i) {
+      return '<section class="ec-secao' + (i === 0 ? " on" : "") + '" id="sec-' + sec.id + '">' +
+        '<p class="ec-perg">' + esc(sec.perg) + '</p>' +
+        '<p class="ec-leitura">' + sec.leitura + '</p>' +
+        sec.subs.map(function (u) { return '<div class="ec-bloco" id="sub-' + u + '"></div>'; }).join("") +
+      '</section>';
+    }).join("");
 
   Array.prototype.forEach.call(document.querySelectorAll("#ec-nav button"), function (b) {
     b.addEventListener("click", function () {
       Array.prototype.forEach.call(document.querySelectorAll("#ec-nav button"),
         function (o) { o.classList.toggle("on", o === b); });
-      Array.prototype.forEach.call(document.querySelectorAll(".ec-sub"),
-        function (s) { s.classList.toggle("on", s.id === "sub-" + b.dataset.sub); });
+      Array.prototype.forEach.call(document.querySelectorAll(".ec-secao"),
+        function (s) { s.classList.toggle("on", s.id === "sec-" + b.dataset.sec); });
+      window.scrollTo({ top: raiz.offsetTop - 80, behavior: "smooth" });
     });
   });
 
@@ -100,7 +125,20 @@
       '<button id="ec-reset">Limpar</button>' +
       '<span class="cnt" id="ec-cnt"></span>' +
     '</div>' +
-    '<div class="ec-tw"><table><thead><tr>' +
+    '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
+      '<button class="exp-btn" data-exp="xlsx" data-target="#ec-tabela" data-name="evidencia-campo" ' +
+        'data-title="Evidência das incursões de campo" data-sheet="Campo">XLS</button>' +
+      '<button class="exp-btn" data-exp="pdf" data-target="#ec-tabela" data-name="evidencia-campo" ' +
+        'data-title="Evidência das incursões de campo">PDF</button></div>' +
+    '<div class="ec-legenda">' +
+      '<span class="lg"><b>Dimensões</b> na ordem das barras: ' +
+        DIMS.map(function (d) { return d[1] + ' <i>p' + d[2] + '</i>'; }).join(" · ") + '</span>' +
+      '<span class="lg"><b>Base informacional</b>: ' +
+        '<i class="ec-ev completa"></i> completa · ' +
+        '<i class="ec-ev parcial"></i> parcial · ' +
+        '<i class="ec-ev ausente"></i> ausente</span>' +
+    '</div>' +
+    '<div class="ec-tw"><table id="ec-tabela"><thead><tr>' +
       '<th>Experiência</th><th>Eixo</th><th>Dimensões</th>' +
       '<th style="text-align:right">Total</th><th>Classificação</th>' +
       '<th style="text-align:right">Envelope (R$ mi)</th><th>Base</th>' +
@@ -290,8 +328,12 @@
   }
 
   document.getElementById("sub-carteira").innerHTML =
-    '<label class="ec-toggle"><input type="checkbox" id="ec-semmetro" /> ' +
-    'Excluir o Sistema Metroviário do Ceará (R$ 40–80 mi distorcem a leitura)</label>' +
+    '<div class="ec-controles">' +
+      '<label class="ec-toggle"><input type="checkbox" id="ec-semmetro" /> ' +
+      'Excluir o Sistema Metroviário do Ceará, que sozinho distorce a leitura</label>' +
+      '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
+      '<button class="exp-btn" data-exp="png" data-target="#ec-carteira-corpo" data-name="carteira">Imagem (PNG)</button></div>' +
+    '</div>' +
     '<div id="ec-carteira-corpo"></div>';
   document.getElementById("ec-semmetro").addEventListener("change", function (e) {
     carteira(e.target.checked); });
@@ -338,22 +380,28 @@
       .slice(0, 7)
       .sort(function (a, b) { return py(a.c) - py(b.c); });
     var usados = [], rotulos = "";
+    var meio = L + (W - L - R) * 0.55;
     marcados.forEach(function (p) {
       var cx = px(p.g), cy = py(p.c), ly = cy;
       while (usados.some(function (u) { return Math.abs(u - ly) < 17; })) ly += 17;
       usados.push(ly);
-      var lx = cx + 13;
+      // ponto à direita: rótulo à esquerda, para não passar por cima de outros pontos
+      var esquerda = cx > meio;
+      var lx = esquerda ? cx - 13 : cx + 13;
       var d = p.c - p.g;
-      rotulos += '<line x1="' + (cx + 7).toFixed(1) + '" y1="' + cy.toFixed(1) + '" x2="' +
-        (lx - 3).toFixed(1) + '" y2="' + (ly - 4).toFixed(1) + '" stroke="var(--border)"/>' +
-        '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) +
-        '" font-size="12.5" fill="var(--ink)">' + esc(p.nome) +
+      rotulos += '<line x1="' + (esquerda ? cx - 7 : cx + 7).toFixed(1) + '" y1="' + cy.toFixed(1) +
+        '" x2="' + (esquerda ? lx + 3 : lx - 3).toFixed(1) + '" y2="' + (ly - 4).toFixed(1) +
+        '" stroke="var(--border)"/>' +
+        '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' +
+        (esquerda ? "end" : "start") + '" font-size="12.5" fill="var(--ink)">' + esc(p.nome) +
         ' <tspan fill="' + (d > 0 ? "#2c6b23" : "#a5241a") + '">' +
         (d > 0 ? "+" : "") + Math.round(d) + '</tspan></text>';
     });
 
     document.getElementById("sub-prospeccao").innerHTML =
-      '<div class="ec-card"><h3>A prospecção de gabinete prevê pouco</h3>' +
+      '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
+      '<button class="exp-btn" data-exp="png" data-target="#ec-disp" data-name="prospeccao-x-campo">Gráfico (PNG)</button></div>' +
+      '<div class="ec-card" id="ec-disp"><h3>Nota de gabinete × nota de campo</h3>' +
       '<p class="sub">' + n + ' experiências avaliadas nos dois momentos · correlação r = ' +
         r.toFixed(2).replace(".", ",") + '</p>' +
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Dispersão entre nota de gabinete e nota de campo. Correlação fraca.">' +
@@ -418,7 +466,10 @@
       '<p class="sub">Frequência sobre as 24 experiências avaliadas</p>' + fp.html + '</div>' +
       '<div class="ec-card"><h3>Matriz experiência × gargalo</h3>' +
       '<p class="sub">Ordenada por número de gargalos registrados</p>' +
-      '<div class="ec-mx"><table><thead><tr><th class="rot"></th>' + cab +
+      '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
+      '<button class="exp-btn" data-exp="xlsx" data-target="#ec-matriz" data-name="matriz-gargalos" ' +
+        'data-title="Matriz experiência x gargalo" data-sheet="Gargalos">XLS</button></div>' +
+      '<div class="ec-mx"><table id="ec-matriz"><thead><tr><th class="rot"></th>' + cab +
       '<th class="vert"><div>total</div></th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
       '<p class="ec-nota">Ausência de marca significa <strong>não afirmado no relatório</strong>, ' +
       'não “não existe”. As cinco experiências visitadas fora dos roteiros têm ficha menos detalhada ' +
@@ -466,7 +517,8 @@
       '</div>' +
       '<div class="ec-card"><h3>O funil, do gabinete à carteira</h3>' +
       '<p class="sub">Das ' + TOTAL_BASE + ' prospectadas, ' + cruzadas + ' foram a campo · ' +
-        novas.length + ' experiências foram descobertas na visita</p>' +
+        novas.length + (novas.length === 1 ? ' experiência foi descoberta' : ' experiências foram descobertas') +
+        ' na visita</p>' +
       '<div class="ec-freq">' +
         '<div class="r"><span class="t">Prospectadas em gabinete</span><span class="b">' +
           '<span style="width:100%;background:#1f4da1;opacity:.65"></span></span><span class="v">' + TOTAL_BASE + '</span></div>' +
@@ -479,7 +531,8 @@
       '</div>' +
       '<p class="ec-nota">' + nuncaVisitadas + ' das ' + TOTAL_BASE + ' iniciativas mapeadas <strong>nunca receberam ' +
       'visita</strong> — permanecem no painel como hipótese de gabinete. E o campo trouxe ' + novas.length +
-      ' experiências que o levantamento prévio não continha' +
+      (novas.length === 1 ? ' experiência que o levantamento prévio não continha'
+                          : ' experiências que o levantamento prévio não continha') +
       (novas.length ? ': ' + novas.map(function (x) { return esc(x.nome); }).join(" e ") : "") + '.</p></div>' +
       '<div class="ec-card"><h3>Cobertura por estado</h3>' +
       '<p class="sub">Quais dos nove estados do Nordeste receberam incursão</p>' +

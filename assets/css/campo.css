@@ -63,20 +63,31 @@
 
 @media(max-width:640px){.ec-filtros .cnt{margin-left:0;flex-basis:100%}}
 
-/* ---- sub-navegação do módulo ---- */
-.ec-nav{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--border)}
-.ec-nav button{font-family:var(--display);font-size:.88rem;font-weight:500;letter-spacing:.01em;
-  padding:9px 15px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+/* ---- navegação por seção de decisão ---- */
+.ec-nav{display:flex;flex-wrap:wrap;gap:2px;margin:0 0 22px;border-bottom:1px solid var(--border)}
+.ec-nav button{font-family:var(--display);font-size:.95rem;font-weight:600;letter-spacing:.015em;
+  text-transform:uppercase;padding:10px 18px;border:none;background:none;color:var(--muted);
+  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
 .ec-nav button:hover{color:var(--ink)}
 .ec-nav button.on{color:var(--brand);border-bottom-color:var(--orange)}
-.ec-sub{display:none}
-.ec-sub.on{display:block}
+.ec-nav button:focus-visible{outline:2px solid var(--brand-2);outline-offset:-2px}
+
+/* ---- abertura da seção: a pergunta e a leitura ---- */
+.ec-secao{display:none}
+.ec-secao.on{display:block}
+.ec-perg{font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+  font-weight:600;margin:0 0 8px}
+.ec-leitura{font-size:1.06rem;line-height:1.6;color:var(--ink);max-width:76ch;margin:0 0 26px;
+  padding-left:16px;border-left:3px solid var(--orange)}
+.ec-leitura strong{font-weight:700}
+.ec-bloco{margin-bottom:8px}
+.ec-bloco:not(:first-of-type){margin-top:34px;padding-top:30px;border-top:1px solid var(--border)}
 
 /* ---- gráficos ---- */
 .ec-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:16px 18px;margin-bottom:14px}
-.ec-card h3{font-family:var(--display);font-size:1rem;font-weight:600;margin:0 0 3px}
-.ec-card .sub{font-size:.8rem;color:var(--muted);margin:0 0 14px}
+  padding:18px 20px;margin-bottom:16px}
+.ec-card h3{font-family:var(--display);font-size:1rem;font-weight:600;margin:0 0 4px}
+.ec-card .sub{font-size:.82rem;color:var(--muted);margin:0 0 16px;line-height:1.5}
 .ec-card svg{display:block;max-width:100%;height:auto}
 .ec-nota{font-size:.76rem;color:var(--muted);line-height:1.6;margin:12px 0 0;padding-top:10px;
   border-top:1px solid var(--border-2)}
@@ -170,3 +181,15 @@
 .ec-cc .dims{display:flex;gap:4px;align-items:flex-end;height:26px;margin-bottom:8px}
 .ec-cc .dims i{width:9px;border-radius:1px;display:block;background:var(--brand-2);opacity:.8}
 .ec-cmp-nota{font-size:.76rem;color:var(--muted);line-height:1.6;margin-top:12px}
+
+/* ---- linha de controles: filtro à esquerda, exportação à direita ---- */
+.ec-controles{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-bottom:18px}
+.ec-controles .exp-bar{margin:0 0 0 auto}
+.ec-toggle{margin-bottom:0}
+
+/* ---- legenda da tabela: o que as barras e as cores querem dizer ---- */
+.ec-legenda{display:flex;flex-wrap:wrap;gap:8px 28px;margin:0 0 10px;font-size:.78rem;color:var(--muted)}
+.ec-legenda .lg{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ec-legenda b{font-weight:600;color:var(--ink)}
+.ec-legenda i{font-style:normal;color:var(--faint);font-size:.72rem}
+.ec-legenda i.ec-ev{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px}
