@@ -87,6 +87,20 @@ GARGALOS = {
     "hidrica":          "Insegurança hídrica e climática",
     "credito":          "Dificuldade de acesso a crédito e financiamento verde",
 }
+# Rotulo curto para cabecalho de matriz; o nome completo fica no titulo e na legenda.
+GARGALOS_CURTO = {
+    "fonte_unica":     "Fonte única",
+    "sem_indicadores": "Indicadores",
+    "equipe_reduzida": "Equipe",
+    "governanca":      "Governança",
+    "metodologia":     "Metodologia",
+    "regulatorio":     "Regulatório",
+    "sem_cnpj":        "Pers. jurídica",
+    "descontinuidade": "Descontinuidade",
+    "hidrica":         "Hídrica",
+    "credito":         "Crédito",
+}
+
 POTENCIAIS = {
     "replicabilidade":  "Replicabilidade comprovada, não apenas potencial",
     "participativa":    "Governança participativa e base social organizada",
@@ -305,6 +319,7 @@ def main():
             "moeda": "R$ milhoes correntes de agosto de 2026, horizonte de 36 meses",
             "total": len(saida),
         "gargalos": GARGALOS,
+        "gargalos_curto": GARGALOS_CURTO,
         "potenciais": POTENCIAIS,
         "captacao": CAPTACAO,
         "postura_mecanismo": POSTURA_MECANISMO,

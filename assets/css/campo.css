@@ -94,19 +94,28 @@
 .ec-toggle{display:inline-flex;align-items:center;gap:7px;font-size:.82rem;color:var(--ink);
   cursor:pointer;margin-bottom:12px}
 
-/* ---- matriz de gargalos ---- */
+/* ---- matriz de gargalos ----
+   Texto vertical de verdade (writing-mode) em vez de rotação: alinha sozinho
+   na coluna, não estoura a largura e dispensa rolagem lateral. */
 .ec-mx{overflow-x:auto}
-.ec-mx table{border-collapse:collapse;font-size:.8rem;width:100%}
-.ec-mx th.rot{text-align:left;font-weight:400;color:var(--ink);white-space:nowrap;padding:5px 10px 5px 0;
-  font-size:.82rem;position:sticky;left:0;background:var(--surface)}
-.ec-mx th.vert{height:126px;white-space:nowrap;vertical-align:bottom;padding:0 0 6px;font-weight:500;
-  color:var(--muted);font-size:.74rem}
-.ec-mx th.vert>div{transform:rotate(-60deg);transform-origin:left bottom;width:18px}
+.ec-mx table{border-collapse:collapse;font-size:.8rem;width:100%;table-layout:fixed}
+.ec-mx col.nome{width:34%}
+.ec-mx col.g{width:30px}
+.ec-mx col.tot{width:44px}
+.ec-mx th.rot{text-align:left;font-weight:600;color:var(--muted);padding:0 10px 8px 0;
+  font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;vertical-align:bottom}
+.ec-mx tbody th.rot{font-weight:400;color:var(--ink);font-size:.82rem;text-transform:none;
+  letter-spacing:0;padding:5px 10px 5px 0;line-height:1.3;vertical-align:middle}
+.ec-mx th.vert{vertical-align:bottom;padding:0 0 8px;font-weight:500;color:var(--muted);font-size:.72rem}
+.ec-mx th.vert>div{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;margin:0 auto}
+.ec-mx th.vert.tot-h>div{color:var(--ink);font-weight:600}
 .ec-mx td{text-align:center;padding:3px;border-top:1px solid var(--border-2)}
 .ec-mx td i{display:inline-block;width:15px;height:15px;border-radius:3px;background:var(--border-2)}
 .ec-mx td.on i{background:var(--red);opacity:.78}
-.ec-mx td.pot.on i{background:var(--green);opacity:.8}
-.ec-mx td.tot{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.76rem;text-align:right;padding-right:8px}
+.ec-mx tbody tr:hover td i{outline:1px solid var(--border)}
+.ec-mx tbody tr:hover th.rot{color:var(--brand)}
+.ec-mx td.tot{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.78rem;text-align:center}
+.ec-mx tbody tr td.tot{font-weight:600;color:var(--ink)}
 
 /* ---- barras de frequência ---- */
 .ec-freq{display:flex;flex-direction:column;gap:7px}
@@ -193,3 +202,52 @@
 .ec-legenda b{font-weight:600;color:var(--ink)}
 .ec-legenda i{font-style:normal;color:var(--faint);font-size:.72rem}
 .ec-legenda i.ec-ev{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px}
+
+/* ---- controles de gráfico e painel de ajuda ---- */
+.ec-campo-ctrl{display:flex;align-items:center;gap:7px;font-size:.82rem;color:var(--muted)}
+.ec-campo-ctrl select{font-family:var(--font);font-size:.84rem;padding:6px 9px;border:1px solid var(--border);
+  border-radius:8px;background:#fff;color:var(--ink)}
+.ec-ajuda{width:24px;height:24px;border-radius:50%;border:1px solid var(--border);background:var(--surface);
+  color:var(--muted);font-family:var(--display);font-size:.84rem;font-weight:700;cursor:pointer;line-height:1;
+  display:inline-flex;align-items:center;justify-content:center}
+.ec-ajuda:hover{border-color:var(--brand-2);color:var(--brand-2)}
+.ec-ajuda.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.ec-ajuda:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
+.ec-expl{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--brand-2);
+  border-radius:var(--radius);padding:16px 20px;margin-bottom:16px}
+.ec-expl h4{font-family:var(--display);font-size:.92rem;font-weight:600;margin:0 0 8px}
+.ec-expl ul{margin:0;padding-left:18px}
+.ec-expl li{font-size:.86rem;line-height:1.6;color:var(--ink);margin-bottom:6px}
+.ec-expl li:last-child{margin-bottom:0}
+[hidden]{display:none!important}
+
+/* ---- comparar ---- */
+.ec-btn-lim{font-family:var(--font);font-size:.82rem;padding:7px 12px;border:1px solid var(--border);
+  border-radius:8px;background:var(--surface-2);color:var(--ink);cursor:pointer}
+.ec-btn-lim:hover{border-color:var(--brand-2);color:var(--brand-2)}
+.ec-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;min-height:30px;align-items:center}
+.ec-chip{display:inline-flex;align-items:center;gap:7px;font-size:.82rem;background:var(--surface);
+  border:1px solid var(--border);border-radius:999px;padding:5px 8px 5px 13px;color:var(--ink)}
+.ec-chip button{border:none;background:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;
+  padding:0 3px}
+.ec-chip button:hover{color:var(--red)}
+.ec-vazio{font-size:.84rem;color:var(--faint)}
+.ec-placeholder p{font-size:.9rem;line-height:1.6;color:var(--muted);margin:0}
+.ec-cmp-leg{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;font-size:.8rem;color:var(--ink)}
+.ec-cmp-leg .lg{display:inline-flex;align-items:center;gap:7px}
+.ec-cmp-leg i{width:11px;height:11px;border-radius:2px;display:inline-block}
+#ec-cmp-tab th.lbl{text-align:left;font-weight:400;color:var(--muted);font-size:.8rem;
+  text-transform:none;letter-spacing:0;background:var(--surface);white-space:nowrap}
+#ec-cmp-tab td{text-align:left;font-size:.84rem;vertical-align:middle}
+#ec-cmp-tab thead th{vertical-align:bottom;white-space:normal;min-width:150px}
+.ec-estrat{font-size:.95rem;line-height:1.6;color:var(--ink);margin:0 0 16px;
+  padding-left:14px;border-left:3px solid var(--orange)}
+.ec-dois{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.ec-dois h4{font-family:var(--display);font-size:.86rem;font-weight:600;margin:0 0 8px;
+  display:flex;align-items:center;gap:8px}
+.ec-cnt{font-family:var(--font);font-size:.72rem;font-weight:600;background:var(--surface-2);
+  border:1px solid var(--border);border-radius:999px;padding:1px 8px;color:var(--muted)}
+.ec-dois ul{margin:0 0 8px;padding-left:17px;font-size:.84rem;line-height:1.55}
+.ec-mini{font-size:.79rem;color:var(--muted);line-height:1.5;margin:0}
+.ec-excl{font-size:.82rem;line-height:1.5;margin:0 0 8px;color:var(--ink)}
+.ec-excl b{font-weight:600}

@@ -34,6 +34,8 @@
     ["impacto", "Impacto", 30], ["inovacao", "Inovação", 30]
   ];
   var GARGALOS = dados.meta.gargalos || {};
+  var GARG_CURTO = dados.meta.gargalos_curto || {};
+  function gargCurto(k) { return GARG_CURTO[k] || GARGALOS[k] || k; }
   var POTENCIAIS = dados.meta.potenciais || {};
 
   var exp = dados.experiencias.slice().sort(function (a, b) { return b.total - a.total; });
@@ -75,6 +77,11 @@
       perg: "O que sustenta as notas, e o que as ameaça",
       leitura: "A prospecção de gabinete prevê pouco. E o gargalo que atravessa a carteira " +
         "<strong>não é dinheiro</strong>: é a informação que falta para converter mérito em pedido financiável." },
+    { id: "comparar", rot: "Comparar", subs: ["comparar"],
+      perg: "Entre estas, qual apoiar primeiro",
+      leitura: "Compare até quatro experiências pelo <strong>perfil nas quatro dimensões</strong>, " +
+        "não pela nota final. O que elas compartilham pode ser apoiado de uma vez; o que é exclusivo " +
+        "exige tratamento próprio." },
     { id: "campo", rot: "Campo", subs: ["cobertura", "incursoes"],
       perg: "De onde vieram os dados, e o que ficou de fora",
       leitura: "<strong>56 das 79</strong> iniciativas mapeadas nunca receberam visita. " +
@@ -341,90 +348,175 @@
 
   /* -------------------------------------------------- 3. Prospecção × campo */
   (function () {
-    var pares = exp.filter(function (x) { return x.gabinete != null; })
-      .map(function (x) { return { nome: x.nome, g: x.gabinete / 30 * 100, c: x.total }; });
-    var n = pares.length;
-    var mx = pares.reduce(function (s, p) { return s + p.g; }, 0) / n;
-    var my = pares.reduce(function (s, p) { return s + p.c; }, 0) / n;
-    var sx = Math.sqrt(pares.reduce(function (s, p) { return s + Math.pow(p.g - mx, 2); }, 0) / n);
-    var sy = Math.sqrt(pares.reduce(function (s, p) { return s + Math.pow(p.c - my, 2); }, 0) / n);
-    var r = pares.reduce(function (s, p) { return s + (p.g - mx) * (p.c - my); }, 0) / n / (sx * sy);
+    var TODOS = exp.filter(function (x) { return x.gabinete != null; })
+      .map(function (x) {
+        return { nome: x.nome, g: x.gabinete / 30 * 100, c: x.total,
+                 cls: x.classificacao, eixo: x.eixo_cod };
+      });
 
-    // viewBox largo: o SVG ocupa ~900px na tela, então 12px de fonte fica 12px
-    var W = 900, H = 520, L = 58, R = 200, T = 20, B = 52;
-    var x0 = 40, x1 = 105, y0 = 30, y1 = 108;
-    var px = function (v) { return L + (v - x0) / (x1 - x0) * (W - L - R); };
-    var py = function (v) { return H - B - (v - y0) / (y1 - y0) * (H - T - B); };
+    var ctrl = { rotulos: "desvios", cls: "" };
 
-    var eixos = "";
-    [40, 55, 70, 85, 100].forEach(function (v) {
-      eixos += '<text x="' + px(v).toFixed(1) + '" y="' + (H - B + 18) +
-               '" text-anchor="middle" font-size="12" fill="var(--muted)">' + v + '</text>' +
-               '<text x="' + (L - 9) + '" y="' + (py(v) + 4).toFixed(1) +
-               '" text-anchor="end" font-size="12" fill="var(--muted)">' + v + '</text>' +
-               '<line x1="' + L + '" y1="' + py(v).toFixed(1) + '" x2="' + (W - R) +
-               '" y2="' + py(v).toFixed(1) + '" stroke="var(--border-2)"/>';
-    });
+    function correl(ps) {
+      var n = ps.length;
+      if (n < 3) return null;
+      var mx = ps.reduce(function (a, p) { return a + p.g; }, 0) / n;
+      var my = ps.reduce(function (a, p) { return a + p.c; }, 0) / n;
+      var sx = Math.sqrt(ps.reduce(function (a, p) { return a + Math.pow(p.g - mx, 2); }, 0) / n);
+      var sy = Math.sqrt(ps.reduce(function (a, p) { return a + Math.pow(p.c - my, 2); }, 0) / n);
+      if (!sx || !sy) return null;
+      return { r: ps.reduce(function (a, p) { return a + (p.g - mx) * (p.c - my); }, 0) / n / (sx * sy),
+               mx: mx, my: my };
+    }
 
-    var pontos = pares.map(function (p) {
-      var d = p.c - p.g;
-      var cor = d > 12 ? "#43a047" : (d < -12 ? "#e0392b" : "#1f4da1");
-      return '<circle cx="' + px(p.g).toFixed(1) + '" cy="' + py(p.c).toFixed(1) +
-             '" r="6" fill="' + cor + '" opacity=".88"><title>' + esc(p.nome) + ' — gabinete ' +
-             Math.round(p.g) + ', campo ' + p.c + ' (' + (d > 0 ? "+" : "") + Math.round(d) + ')</title></circle>';
-    }).join("");
+    function svg(ps) {
+      var todos = ctrl.rotulos === "todos";
+      var W = todos ? 1240 : 900, H = 520,
+          L = todos ? 250 : 58, R = todos ? 250 : 215, T = 20, B = 52;
+      var x0 = 50, x1 = 100, y0 = 35, y1 = 105;
+      var px = function (v) { return L + (v - x0) / (x1 - x0) * (W - L - R); };
+      var py = function (v) { return H - B - (v - y0) / (y1 - y0) * (H - T - B); };
+      var PL = W - R, PB = H - B;
 
-    // rotula os maiores desvios, desviando verticalmente para não colidir
-    var marcados = pares.filter(function (p) { return Math.abs(p.c - p.g) >= 15; })
-      .sort(function (a, b) { return Math.abs(b.c - b.g) - Math.abs(a.c - a.g); })
-      .slice(0, 7)
-      .sort(function (a, b) { return py(a.c) - py(b.c); });
-    var usados = [], rotulos = "";
-    var meio = L + (W - L - R) * 0.55;
-    marcados.forEach(function (p) {
-      var cx = px(p.g), cy = py(p.c), ly = cy;
-      while (usados.some(function (u) { return Math.abs(u - ly) < 17; })) ly += 17;
-      usados.push(ly);
-      // ponto à direita: rótulo à esquerda, para não passar por cima de outros pontos
-      var esquerda = cx > meio;
-      var lx = esquerda ? cx - 13 : cx + 13;
-      var d = p.c - p.g;
-      rotulos += '<line x1="' + (esquerda ? cx - 7 : cx + 7).toFixed(1) + '" y1="' + cy.toFixed(1) +
-        '" x2="' + (esquerda ? lx + 3 : lx - 3).toFixed(1) + '" y2="' + (ly - 4).toFixed(1) +
-        '" stroke="var(--border)"/>' +
-        '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' +
-        (esquerda ? "end" : "start") + '" font-size="12.5" fill="var(--ink)">' + esc(p.nome) +
-        ' <tspan fill="' + (d > 0 ? "#2c6b23" : "#a5241a") + '">' +
-        (d > 0 ? "+" : "") + Math.round(d) + '</tspan></text>';
-    });
+      // zonas de leitura: acima da diagonal o campo superou o gabinete
+      var zonas =
+        '<polygon points="' + L + ',' + PB + ' ' + PL + ',' + py(100) + ' ' + L + ',' + T +
+          '" fill="#43a047" opacity=".05"/>' +
+        '<polygon points="' + L + ',' + PB + ' ' + PL + ',' + py(100) + ' ' + PL + ',' + PB +
+          '" fill="#e0392b" opacity=".05"/>' +
+        '<text x="' + (L + 16) + '" y="' + (T + 26) + '" font-size="11.5" fill="#2c6b23" opacity=".85">' +
+          'o campo encontrou mais do que o gabinete previa</text>' +
+        '<text x="' + (PL - 10) + '" y="' + (PB - 14) + '" text-anchor="end" font-size="11.5" ' +
+          'fill="#a5241a" opacity=".85">o campo encontrou menos</text>';
+
+      var eixos = "";
+      [50, 60, 70, 80, 90, 100].forEach(function (v) {
+        eixos += '<line x1="' + L + '" y1="' + py(v).toFixed(1) + '" x2="' + PL + '" y2="' + py(v).toFixed(1) +
+                 '" stroke="var(--border-2)"/>' +
+                 '<text x="' + px(v).toFixed(1) + '" y="' + (PB + 18) + '" text-anchor="middle" font-size="12" fill="var(--muted)">' + v + '</text>' +
+                 '<text x="' + (todos ? L + 8 : L - 9) + '" y="' + (py(v) + 4).toFixed(1) +
+                 '" text-anchor="' + (todos ? "start" : "end") +
+                 '" font-size="12" fill="var(--muted)">' + v + '</text>';
+      });
+
+      var pontos = ps.map(function (p) {
+        var d = p.c - p.g;
+        var cor = d > 12 ? "#43a047" : (d < -12 ? "#e0392b" : "#1f4da1");
+        return '<circle cx="' + px(p.g).toFixed(1) + '" cy="' + py(p.c).toFixed(1) +
+          '" r="6" fill="' + cor + '" opacity=".88"><title>' + esc(p.nome) + ' — gabinete ' +
+          Math.round(p.g) + ', campo ' + p.c + ' (' + (d > 0 ? "+" : "") + Math.round(d) + ')</title></circle>';
+      }).join("");
+
+      var marc = ctrl.rotulos === "nenhum" ? []
+        : ctrl.rotulos === "todos" ? ps.slice()
+        : ps.filter(function (p) { return Math.abs(p.c - p.g) >= 15; });
+      marc = marc.sort(function (a, b) { return Math.abs(b.c - b.g) - Math.abs(a.c - a.g); })
+                 .slice(0, ctrl.rotulos === "todos" ? 24 : 7)
+                 .sort(function (a, b) { return py(a.c) - py(b.c); });
+
+      var usados = { e: [], d: [] }, rotulos = "", meio = L + (PL - L) * 0.5;
+      marc.forEach(function (p) {
+        var cx = px(p.g), cy = py(p.c);
+        var esq = cx > meio;                       // ponto à direita -> rótulo à esquerda
+        var lado = esq ? usados.e : usados.d, ly = cy;
+        while (lado.some(function (u) { return Math.abs(u - ly) < 16; })) ly += 16;
+        // se transbordou embaixo, recomeça acima do gráfico
+        if (ly > PB - 6) { ly = T + 12; while (lado.some(function (u) { return Math.abs(u - ly) < 16; })) ly += 16; }
+        lado.push(ly);
+        var lx = esq ? cx - 13 : cx + 13, d = p.c - p.g;
+        if (todos) lx = esq ? L - 12 : PL + 12;   // alinha na margem, em coluna
+        rotulos += '<line x1="' + (esq ? cx - 7 : cx + 7).toFixed(1) + '" y1="' + cy.toFixed(1) +
+          '" x2="' + (esq ? lx + 3 : lx - 3).toFixed(1) + '" y2="' + (ly - 4).toFixed(1) +
+          '" stroke="var(--border)" opacity=".7"/>' +
+          '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' + (esq ? "end" : "start") +
+          '" font-size="' + (todos ? 11 : 12) + '" fill="var(--ink)">' + esc(p.nome) +
+          ' <tspan fill="' + (d > 0 ? "#2c6b23" : "#a5241a") + '">' + (d > 0 ? "+" : "") + Math.round(d) + '</tspan></text>';
+      });
+
+      return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Dispersão entre a nota de gabinete e a nota de campo.">' +
+        zonas + eixos +
+        '<line x1="' + px(50).toFixed(1) + '" y1="' + py(50).toFixed(1) + '" x2="' + px(100).toFixed(1) +
+          '" y2="' + py(100).toFixed(1) + '" stroke="var(--muted)" stroke-dasharray="5 5" opacity=".6"/>' +
+        '<text x="' + px(98).toFixed(1) + '" y="' + (py(100) - 8).toFixed(1) + '" text-anchor="end" ' +
+          'font-size="11.5" fill="var(--muted)">as duas notas coincidem</text>' +
+        pontos + rotulos +
+        '<line x1="' + L + '" y1="' + PB + '" x2="' + PL + '" y2="' + PB + '" stroke="var(--border)"/>' +
+        '<line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + PB + '" stroke="var(--border)"/>' +
+        '<text x="' + ((PL + L) / 2).toFixed(0) + '" y="' + (H - 10) + '" text-anchor="middle" font-size="12" fill="var(--muted)">nota de gabinete · 0–30 normalizada para 100</text>' +
+        '<text x="16" y="' + (H / 2) + '" text-anchor="middle" font-size="12" fill="var(--muted)" transform="rotate(-90 16 ' + (H / 2) + ')">nota de campo · 0–100</text>' +
+      '</svg>';
+    }
+
+    function pinta() {
+      var ps = TODOS.filter(function (p) { return !ctrl.cls || p.cls === ctrl.cls; });
+      var co = correl(ps);
+      document.getElementById("ec-disp-sub").innerHTML =
+        ps.length + ' de ' + TODOS.length + ' avaliadas nos dois momentos' +
+        (co ? ' · correlação r = ' + co.r.toFixed(2).replace(".", ",") : ' · amostra pequena demais para correlação');
+      document.getElementById("ec-disp-svg").innerHTML = svg(ps);
+      document.getElementById("ec-disp-nota").innerHTML = co
+        ? 'As médias quase coincidem — <strong>' + Math.round(co.mx) + '</strong> no gabinete contra ' +
+          '<strong>' + Math.round(co.my) + '</strong> no campo — mas as posições individuais embaralham. ' +
+          'O caso extremo é o <strong>Carbono Social do Bioma Caatinga</strong>: 90 no gabinete, ' +
+          '<strong>40</strong> no campo. A prospecção acerta a média da carteira e erra o caso individual, ' +
+          'que é a unidade de decisão.'
+        : 'Selecione uma faixa com mais experiências para que a correlação faça sentido.';
+    }
 
     document.getElementById("sub-prospeccao").innerHTML =
-      '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
-      '<button class="exp-btn" data-exp="png" data-target="#ec-disp" data-name="prospeccao-x-campo">Gráfico (PNG)</button></div>' +
-      '<div class="ec-card" id="ec-disp"><h3>Nota de gabinete × nota de campo</h3>' +
-      '<p class="sub">' + n + ' experiências avaliadas nos dois momentos · correlação r = ' +
-        r.toFixed(2).replace(".", ",") + '</p>' +
-      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Dispersão entre nota de gabinete e nota de campo. Correlação fraca.">' +
-        eixos +
-        '<line x1="' + px(40).toFixed(1) + '" y1="' + py(40).toFixed(1) + '" x2="' + px(105).toFixed(1) +
-          '" y2="' + py(105).toFixed(1) + '" stroke="var(--faint)" stroke-dasharray="5 5"/>' +
-        '<text x="' + px(103).toFixed(1) + '" y="' + (py(105) + 16).toFixed(1) +
-          '" text-anchor="end" font-size="11.5" fill="var(--faint)">campo = gabinete</text>' +
-        '<line x1="' + L + '" y1="' + (H - B) + '" x2="' + (W - R) + '" y2="' + (H - B) + '" stroke="var(--border)"/>' +
-        '<line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + (H - B) + '" stroke="var(--border)"/>' +
-        pontos + rotulos +
-        '<text x="' + ((W - R + L) / 2).toFixed(1) + '" y="' + (H - 10) +
-          '" text-anchor="middle" font-size="12" fill="var(--muted)">nota de gabinete · 0–30 normalizada para 100</text>' +
-        '<text x="16" y="' + (H / 2) + '" text-anchor="middle" font-size="12" fill="var(--muted)" transform="rotate(-90 16 ' + (H / 2) + ')">nota de campo · 0–100</text>' +
-      '</svg>' +
-      '<p class="ec-nota">As médias quase coincidem — <strong>' + Math.round(mx) + '</strong> no gabinete contra ' +
-      '<strong>' + Math.round(my) + '</strong> no campo — mas as posições individuais embaralham. ' +
-      'Verde subiu mais de 12 pontos depois da visita; vermelho caiu. O caso extremo é o ' +
-      '<strong>Carbono Social do Bioma Caatinga</strong>: 90 no gabinete, <strong>40</strong> no campo — ' +
-      'a visita encontrou uma organização sem créditos gerados, sem receita e sem financiamento, ' +
-      'nada disso visível no levantamento documental. A prospecção acerta a média da carteira e erra ' +
-      'o caso individual, que é a unidade de decisão. É a justificativa quantitativa do trabalho ' +
-      'de campo.</p></div>';
+      '<div class="ec-controles">' +
+        '<label class="ec-campo-ctrl">Rótulos ' +
+          '<select id="ec-disp-rot">' +
+            '<option value="desvios">Maiores desvios</option>' +
+            '<option value="todos">Todos</option>' +
+            '<option value="nenhum">Nenhum</option>' +
+          '</select></label>' +
+        '<label class="ec-campo-ctrl">Faixa ' +
+          '<select id="ec-disp-cls">' +
+            '<option value="">Toda a carteira</option>' +
+            '<option value="alta">Alta prioridade</option>' +
+            '<option value="estrategico">Potencial estratégico</option>' +
+            '<option value="nao">Não recomendada</option>' +
+          '</select></label>' +
+        '<button class="ec-ajuda" id="ec-disp-ajuda" aria-expanded="false" ' +
+          'aria-controls="ec-disp-expl" title="Como ler este gráfico">?</button>' +
+        '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
+        '<button class="exp-btn" data-exp="png" data-target="#ec-disp" data-name="prospeccao-x-campo">Gráfico (PNG)</button></div>' +
+      '</div>' +
+      '<div class="ec-expl" id="ec-disp-expl" hidden>' +
+        '<h4>Como ler este gráfico</h4>' +
+        '<ul>' +
+          '<li>Cada ponto é uma experiência avaliada <strong>duas vezes</strong>: no levantamento ' +
+            'documental (eixo horizontal) e depois da visita de campo (eixo vertical).</li>' +
+          '<li>A <strong>linha tracejada</strong> é onde as duas notas coincidem. Acima dela, a visita ' +
+            'encontrou mais do que o gabinete previa; abaixo, encontrou menos.</li>' +
+          '<li>A <strong>cor</strong> marca desvios acima de 12 pontos: verde subiu, vermelho caiu, ' +
+            'azul ficou perto do previsto.</li>' +
+          '<li>O <strong>r</strong> mede o quanto uma nota prevê a outra. Vai de 0 (nenhuma relação) ' +
+            'a 1 (previsão perfeita). Abaixo de 0,3 a prospecção documental explica muito pouco do ' +
+            'resultado de campo.</li>' +
+          '<li>Passe o mouse sobre um ponto para ver a experiência e as duas notas.</li>' +
+        '</ul>' +
+      '</div>' +
+      '<div class="ec-card" id="ec-disp">' +
+        '<h3>Nota de gabinete × nota de campo</h3>' +
+        '<p class="sub" id="ec-disp-sub"></p>' +
+        '<div id="ec-disp-svg"></div>' +
+        '<p class="ec-nota" id="ec-disp-nota"></p>' +
+      '</div>';
+
+    document.getElementById("ec-disp-rot").addEventListener("change", function (e) {
+      ctrl.rotulos = e.target.value; pinta(); });
+    document.getElementById("ec-disp-cls").addEventListener("change", function (e) {
+      ctrl.cls = e.target.value; pinta(); });
+    var bAjuda = document.getElementById("ec-disp-ajuda");
+    bAjuda.addEventListener("click", function () {
+      var painel = document.getElementById("ec-disp-expl");
+      var abrir = painel.hidden;
+      painel.hidden = !abrir;
+      bAjuda.setAttribute("aria-expanded", String(abrir));
+      bAjuda.classList.toggle("on", abrir);
+    });
+    pinta();
   })();
 
   /* ------------------------------------------------------------ 4. Gargalos */
@@ -446,7 +538,8 @@
     var ordExp = exp.slice().sort(function (a, b) {
       return (b.gargalos || []).length - (a.gargalos || []).length; });
     var cab = fg.ord.map(function (k) {
-      return '<th class="vert"><div>' + esc(GARGALOS[k]) + '</div></th>'; }).join("");
+      return '<th class="vert" title="' + esc(GARGALOS[k]) + '"><div>' +
+             esc(gargCurto(k)) + '</div></th>'; }).join("");
     var linhas = ordExp.map(function (x) {
       return '<tr><th class="rot">' + esc(x.nome) + '</th>' +
         fg.ord.map(function (k) {
@@ -469,8 +562,12 @@
       '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
       '<button class="exp-btn" data-exp="xlsx" data-target="#ec-matriz" data-name="matriz-gargalos" ' +
         'data-title="Matriz experiência x gargalo" data-sheet="Gargalos">XLS</button></div>' +
-      '<div class="ec-mx"><table id="ec-matriz"><thead><tr><th class="rot"></th>' + cab +
-      '<th class="vert"><div>total</div></th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
+      '<div class="ec-mx"><table id="ec-matriz">' +
+      '<colgroup><col class="nome"/>' +
+        fg.ord.map(function () { return '<col class="g"/>'; }).join("") +
+        '<col class="tot"/></colgroup>' +
+      '<thead><tr><th class="rot">Experiência</th>' + cab +
+      '<th class="vert tot-h"><div>total</div></th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
       '<p class="ec-nota">Ausência de marca significa <strong>não afirmado no relatório</strong>, ' +
       'não “não existe”. As cinco experiências visitadas fora dos roteiros têm ficha menos detalhada ' +
       'e por isso aparecem com menos marcas.</p></div>';
@@ -723,6 +820,165 @@
     }
 
     new MutationObserver(render).observe(cards, { childList: true, subtree: true });
+    render();
+  })();
+  /* ----------------------------------------------------------- 9. Comparar
+     Estratégia: o que separa e o que aproxima. O perfil nas quatro dimensões
+     mostra a diferença de natureza; os gargalos em comum dizem o que pode ser
+     apoiado horizontalmente, e os exclusivos, o que exige tratamento próprio. */
+  (function () {
+    var caixa = document.getElementById("sub-comparar");
+    if (!caixa) return;
+    var MAX = 4;
+    var sel = [];
+
+    var ordenadas = exp.slice().sort(function (a, b) { return b.total - a.total; });
+
+    caixa.innerHTML =
+      '<div class="ec-controles">' +
+        '<label class="ec-campo-ctrl">Adicionar ' +
+          '<select id="ec-cmp-add"><option value="">escolha uma experiência…</option>' +
+            ordenadas.map(function (x, i) {
+              return '<option value="' + i + '">' + esc(x.nome) + ' · ' + x.total + '</option>'; }).join("") +
+          '</select></label>' +
+        '<button class="ec-btn-lim" id="ec-cmp-lim">Limpar</button>' +
+        '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
+        '<button class="exp-btn" data-exp="png" data-target="#ec-cmp-corpo" data-name="comparacao">Imagem (PNG)</button></div>' +
+      '</div>' +
+      '<div class="ec-chips" id="ec-cmp-chips"></div>' +
+      '<div id="ec-cmp-corpo"></div>';
+
+    function barras(itens) {
+      var W = 880, H = 230, L = 130, R = 20, T = 30, B = 34;
+      var pw = W - L - R, gw = pw / DIMS.length, bw = Math.min(26, (gw - 18) / itens.length);
+      var COR = ["#1f4da1", "#f37520", "#43a047", "#7a3fb8"];
+      var g = "";
+      [1, 2, 3, 4, 5].forEach(function (v) {
+        var y = H - B - (v / 5) * (H - T - B);
+        g += '<line x1="' + L + '" y1="' + y.toFixed(1) + '" x2="' + (W - R) + '" y2="' + y.toFixed(1) +
+             '" stroke="var(--border-2)"/>' +
+             '<text x="' + (L - 8) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="var(--muted)">' + v + '</text>';
+      });
+      DIMS.forEach(function (d, di) {
+        var x0 = L + di * gw;
+        g += '<text x="' + (x0 + gw / 2).toFixed(1) + '" y="' + (H - B + 18) +
+             '" text-anchor="middle" font-size="11.5" fill="var(--ink)">' + d[1] +
+             ' <tspan fill="var(--muted)">p' + d[2] + '</tspan></text>';
+        itens.forEach(function (x, xi) {
+          var n = x.notas[d[0]];
+          var h = (n / 5) * (H - T - B);
+          var bx = x0 + gw / 2 - (itens.length * bw + (itens.length - 1) * 4) / 2 + xi * (bw + 4);
+          g += '<rect x="' + bx.toFixed(1) + '" y="' + (H - B - h).toFixed(1) + '" width="' + bw.toFixed(1) +
+               '" height="' + h.toFixed(1) + '" fill="' + COR[xi % 4] + '" opacity=".85" rx="2">' +
+               '<title>' + esc(x.nome) + ' — ' + d[1] + ': ' + n + '/5</title></rect>';
+        });
+      });
+      var leg = itens.map(function (x, xi) {
+        return '<span class="lg"><i style="background:' + COR[xi % 4] + '"></i>' + esc(x.nome) + '</span>';
+      }).join("");
+      return '<div class="ec-card"><h3>Perfil nas quatro dimensões</h3>' +
+        '<p class="sub">Nota de 1 a 5 por dimensão, com o peso de cada uma na pontuação final</p>' +
+        '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Barras comparando as quatro dimensões">' +
+        g + '<line x1="' + L + '" y1="' + (H - B) + '" x2="' + (W - R) + '" y2="' + (H - B) + '" stroke="var(--border)"/>' +
+        '</svg><div class="ec-cmp-leg">' + leg + '</div></div>';
+    }
+
+    function quadro(itens) {
+      var linhas = [
+        ["Pontuação de campo", function (x) { return '<b>' + x.total + '</b>/100'; }],
+        ["Classificação", function (x) { return '<span class="ec-cls ' + x.classificacao + '">' + CLS[x.classificacao] + '</span>'; }],
+        ["Eixo", function (x) { return esc((EIXOS[x.eixo_cod] || [x.eixo_cod])[0]); }],
+        ["Envelope", function (x) { return x.envelope.max > 0 ? "R$ " + fmt(x.envelope.min) + "–" + fmt(x.envelope.max) + " mi" : "sem alocação"; }],
+        ["Postura de apoio", function (x) { return POSTURAS[x.postura] || "—"; }],
+        ["Base informacional", function (x) { return x.base_informacional || "—"; }],
+        ["Nota de gabinete", function (x) { return x.gabinete != null ? Math.round(x.gabinete / 30 * 100) + "/100" : "não estava na base"; }],
+        ["Gargalos registrados", function (x) { return (x.gargalos || []).length; }]
+      ];
+      return '<div class="ec-card"><h3>Quadro comparativo</h3>' +
+        '<div class="ec-tw"><table id="ec-cmp-tab"><thead><tr><th></th>' +
+        itens.map(function (x) { return '<th>' + esc(x.nome) + '</th>'; }).join("") +
+        '</tr></thead><tbody>' + linhas.map(function (l) {
+          return '<tr><th class="lbl">' + l[0] + '</th>' +
+            itens.map(function (x) { return '<td>' + l[1](x) + '</td>'; }).join("") + '</tr>';
+        }).join("") + '</tbody></table></div></div>';
+    }
+
+    function estrategia(itens) {
+      // dimensão que mais separa
+      var maior = null;
+      DIMS.forEach(function (d) {
+        var vs = itens.map(function (x) { return x.notas[d[0]]; });
+        var amp = Math.max.apply(null, vs) - Math.min.apply(null, vs);
+        if (!maior || amp > maior.amp) maior = { d: d, amp: amp, vs: vs };
+      });
+      var lider = itens[maior.vs.indexOf(Math.max.apply(null, maior.vs))];
+      var lanterna = itens[maior.vs.indexOf(Math.min.apply(null, maior.vs))];
+
+      // gargalos em comum e exclusivos
+      var conj = itens.map(function (x) { return x.gargalos || []; });
+      var comuns = (conj[0] || []).filter(function (g) {
+        return conj.every(function (c) { return c.indexOf(g) !== -1; }); });
+      var exclusivos = itens.map(function (x, i) {
+        return { nome: x.nome, gs: (x.gargalos || []).filter(function (g) {
+          return conj.every(function (c, j) { return j === i || c.indexOf(g) === -1; }); }) };
+      }).filter(function (e) { return e.gs.length; });
+
+      return '<div class="ec-card"><h3>O que as separa, e o que têm em comum</h3>' +
+        '<p class="sub">A leitura que orienta o tipo de apoio</p>' +
+        (maior.amp > 0
+          ? '<p class="ec-estrat">A dimensão que mais separa é <strong>' + maior.d[1] + '</strong> ' +
+            '(peso ' + maior.d[2] + '), com ' + maior.amp + ' ponto' + (maior.amp > 1 ? "s" : "") +
+            ' de diferença entre <strong>' + esc(lider.nome) + '</strong> e <strong>' + esc(lanterna.nome) +
+            '</strong>. É aí que a escolha se decide.</p>'
+          : '<p class="ec-estrat">As selecionadas têm <strong>perfil idêntico</strong> nas quatro dimensões — ' +
+            'a decisão terá de se apoiar em envelope, postura ou aderência ao eixo.</p>') +
+        '<div class="ec-dois">' +
+          '<div><h4>Gargalos em comum <span class="ec-cnt">' + comuns.length + '</span></h4>' +
+            (comuns.length
+              ? '<ul>' + comuns.map(function (g) { return '<li>' + esc(GARGALOS[g]) + '</li>'; }).join("") + '</ul>' +
+                '<p class="ec-mini">Podem ser tratados por <strong>apoio horizontal</strong>, uma vez só para o conjunto.</p>'
+              : '<p class="ec-mini">Nenhum gargalo compartilhado entre todas.</p>') + '</div>' +
+          '<div><h4>Exclusivos de cada uma <span class="ec-cnt">' +
+            exclusivos.reduce(function (a, e) { return a + e.gs.length; }, 0) + '</span></h4>' +
+            (exclusivos.length
+              ? exclusivos.map(function (e) {
+                  return '<p class="ec-excl"><b>' + esc(e.nome) + '</b><br>' +
+                    e.gs.map(function (g) { return esc(GARGALOS[g]); }).join(" · ") + '</p>'; }).join("")
+              : '<p class="ec-mini">Nenhum gargalo exclusivo.</p>') +
+            '<p class="ec-mini">Exigem <strong>tratamento próprio</strong>, iniciativa a iniciativa.</p></div>' +
+        '</div></div>';
+    }
+
+    function render() {
+      var chips = document.getElementById("ec-cmp-chips");
+      chips.innerHTML = sel.length
+        ? sel.map(function (i, k) {
+            return '<span class="ec-chip" data-k="' + k + '">' + esc(ordenadas[i].nome) +
+                   '<button aria-label="remover">×</button></span>'; }).join("")
+        : '<span class="ec-vazio">Escolha de 2 a ' + MAX + ' experiências para comparar.</span>';
+      Array.prototype.forEach.call(chips.querySelectorAll(".ec-chip button"), function (b) {
+        b.addEventListener("click", function () {
+          sel.splice(Number(b.parentNode.getAttribute("data-k")), 1); render(); });
+      });
+
+      var corpo = document.getElementById("ec-cmp-corpo");
+      if (sel.length < 2) {
+        corpo.innerHTML = '<div class="ec-card ec-placeholder">' +
+          '<p>A comparação mostra o <strong>perfil nas quatro dimensões</strong>, um quadro lado a lado ' +
+          'e a leitura do que separa as experiências — incluindo quais gargalos elas compartilham, ' +
+          'que podem ser resolvidos de uma vez, e quais são exclusivos.</p></div>';
+        return;
+      }
+      var itens = sel.map(function (i) { return ordenadas[i]; });
+      corpo.innerHTML = barras(itens) + quadro(itens) + estrategia(itens);
+    }
+
+    document.getElementById("ec-cmp-add").addEventListener("change", function (e) {
+      var i = Number(e.target.value);
+      if (e.target.value !== "" && sel.indexOf(i) === -1 && sel.length < MAX) sel.push(i);
+      e.target.value = ""; render();
+    });
+    document.getElementById("ec-cmp-lim").addEventListener("click", function () { sel = []; render(); });
     render();
   })();
 })();
