@@ -36,6 +36,10 @@ ALT_LOCAIS = {
         {"municipio": "Pilão Arcado", "uf": "BA", "lat": -9.9975, "lon": -42.4961},
         {"municipio": "Sento Sé", "uf": "BA", "lat": -9.7427, "lon": -41.8806},
     ],
+    43: [  # Projeto Vale Sustentável — sede administrativa em Natal, mas a
+           # atuação e a visita de campo (21/07, P3) são no Vale do Açu
+        {"municipio": "Assú", "uf": "RN", "lat": -5.5772, "lon": -36.9089},
+    ],
     54: [  # Programa Reecatingar — municípios do sertão / Rio São Francisco (BA)
         {"municipio": "Canudos", "uf": "BA", "lat": -9.8989, "lon": -39.1486},
         {"municipio": "Uauá", "uf": "BA", "lat": -9.8420, "lon": -39.4814},
