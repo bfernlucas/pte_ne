@@ -2171,7 +2171,7 @@ window.PTE_DATA = {
   },
   {
    "id": 46,
-   "nome": "Renova-Semiárido",
+   "nome": "CTERSA — Centro de Tecnologias e Energias Renováveis do Semiárido",
    "objetivo": "É uma plataforma digital que mapeia projetos de sucesso com energias renováveis (solar, eólica), biodigestores, bioágua e ecofogão no Semiárido, destinada a produtoras e produtores, agentes públicos e sociedade civil. Inclui protótipos educacionais como dessalinizadores e fornos solares. Oferece um mapa interativo com a localização dos casos de sucesso com informações, fotografias e vídeos com depoimentos reais.",
    "resumo": "Plataforma digital que mapeia casos de sucesso em energias renováveis e tecnologias sociais no Semiárido, com mapa interativo, informações e depoimentos.",
    "tematica": "Promoção do desenvolvimento sustentável no Semiárido por meio de tecnologias sociais e energias renováveis, aliada à educação contextualizada para a convivência com a região.",

@@ -443,7 +443,7 @@
       return '<div class="r"><span class="t">' + u + ' · ' + UF[u] + '</span>' +
         '<span class="b"><span style="width:' + (v ? 100 : 6) + '%;background:' +
         (v ? "#43a047" : "#d9dde6") + ';opacity:' + (v ? ".75" : "1") + '"></span></span>' +
-        '<span class="v" style="flex-basis:92px">' + (v || "sem visita") + '</span></div>';
+        '<span class="v">' + (v || "sem visita") + '</span></div>';
     }).join("");
 
     var naoRealizadas = [

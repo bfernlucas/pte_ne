@@ -50,6 +50,12 @@ A camada de evidência de campo é publicada apenas cifrada
 
 ## Convenções
 
+- **CTERSA**: a planilha o chamava de `Renova-Semiárido` (id 46). A equipe
+  confirmou que são a mesma iniciativa — apresentar **sempre como CTERSA**.
+- Rótulos de seção em versalete (regra global de `h1..h4`); **nomes próprios
+  longos abrem exceção** com `text-transform:none`, para não prejudicar a
+  leitura. Rótulo grita, nome não.
+
 - Interface e documentação em português
 - CSS de módulo novo em arquivo próprio, com prefixo de classe
   (ex.: `cmp-` para a aba Evidência de campo) — não inchar `dashboard.css`
@@ -59,11 +65,8 @@ A camada de evidência de campo é publicada apenas cifrada
 
 ## Pendências conhecidas
 
-- **CTERSA pode ser o mesmo que `Renova-Semiárido` (id 46)**: mesmo INSA,
-  mesma cidade, mesmo tema, nomes diferentes. Não reconciliei por falta de
-  evidência — confirmar com a equipe de campo.
-- 2 experiências não constam da base de prospecção (CTERSA e Instituto
-  Caburé). Decidir se entram na planilha como registros novos.
+- 1 experiência não consta da base de prospecção (Instituto Caburé).
+  Decidir se entra na planilha como registro novo.
 - BA, MA e SE não receberam incursão; a Rota 4 (Bahia) foi postergada.
 
 - Senha atual é previsível (sigla + ano) e o arquivo cifrado é público,

@@ -5,7 +5,8 @@
   padding:14px 16px;margin-bottom:14px;font-size:.86rem;line-height:1.6;color:var(--muted)}
 .cmp-intro strong{color:var(--ink)}
 
-.cmp-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-bottom:16px}
+.cmp-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,260px));
+  justify-content:start;gap:12px;margin-bottom:16px}
 .cmp-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px}
 .cmp-kpi .v{font-family:var(--display);font-size:1.6rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
 .cmp-kpi .l{font-size:.74rem;color:var(--muted);margin-top:2px}
@@ -102,7 +103,8 @@
 .cmp-freq .r .t{flex:0 0 270px;color:var(--ink)}
 .cmp-freq .r .b{flex:1;height:16px;background:var(--surface-2);border-radius:3px;overflow:hidden}
 .cmp-freq .r .b span{display:block;height:100%;border-radius:3px}
-.cmp-freq .r .v{flex:0 0 52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:.78rem}
+.cmp-freq .r .v{flex:0 0 88px;text-align:right;white-space:nowrap;
+  font-variant-numeric:tabular-nums;color:var(--muted);font-size:.78rem}
 @media(max-width:700px){.cmp-freq .r .t{flex-basis:150px;font-size:.78rem}}
 
 /* ---- cartões por eixo (drill-down da carteira) ---- */
@@ -119,7 +121,9 @@
 /* ---- captação ---- */
 .cmp-mec{border-top:1px solid var(--border-2);padding:12px 0}
 .cmp-mec:first-of-type{border-top:none;padding-top:0}
-.cmp-mec h4{font-family:var(--display);font-size:.9rem;font-weight:600;margin:0 0 5px}
+/* nomes longos: o uppercase global de h1..h4 prejudica a leitura aqui */
+.cmp-mec h4{font-family:var(--display);font-size:.95rem;font-weight:600;margin:0 0 5px;
+  text-transform:none;letter-spacing:0;line-height:1.35}
 .cmp-mec p{margin:0 0 4px;font-size:.85rem;line-height:1.55;color:var(--ink-2,var(--ink))}
 .cmp-mec .at{color:var(--muted);font-size:.82rem}
 .cmp-mec .at b{color:var(--red);font-weight:500}

@@ -162,13 +162,14 @@ REF_OVERRIDES = {
     "EMBRAPII IA — IFCE": 9,               # Rede MCTI/EMBRAPII de Inovacao em IA
     "AMAREZ": 31,                          # Modelo de Gestao Municipal de Residuos de Arez
     "Blue C": 55,                          # BlueC (grafia sem espaco na planilha)
-    "Carbono Social do Bioma Caatinga": 53, # Projetos de Conservacao do Bioma Caatinga, Delmiro Gouveia/AL
+    "Carbono Social do Bioma Caatinga": 53,
+    "CTERSA": 46,                          # Renova-Semiarido na planilha; confirmado pela equipe
+ # Projetos de Conservacao do Bioma Caatinga, Delmiro Gouveia/AL
 }
 
 # Descobertas em campo: nao constam da base de prospecao. Coordenadas do local
 # efetivamente visitado, para que aparecam no mapa.
 NOVAS_EM_CAMPO = {
-    "CTERSA":            {"municipio": "Campina Grande", "estado": "PB", "lat": -7.2306, "lon": -35.8811},
     "Instituto Caburé":  {"municipio": "Cajueiro da Praia", "estado": "PI", "lat": -2.9333, "lon": -41.3417},
 }
 
