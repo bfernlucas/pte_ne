@@ -698,7 +698,7 @@
     $$("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
     $$(".view").forEach(el => el.classList.add("hidden"));
     $("#view-" + v).classList.remove("hidden");
-    $("#filters").style.display = (v === "rota-manual" || v === "comparar" || v === "selecao") ? "none" : "";
+    $("#filters").style.display = (v === "rota-manual" || v === "comparar" || v === "selecao" || v === "campo") ? "none" : "";
     refresh();
   }
   $$("#tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));

@@ -126,35 +126,52 @@ assets/js/app.js           lógica (busca, gráficos, mapa, tabela)
 - [Leaflet](https://leafletjs.com/) + OpenStreetMap — mapa
 - [PapaParse](https://www.papaparse.com/) — leitura do CSV do Google Sheets
 
-## Área restrita — evidência das incursões de campo
+## Acesso restrito e evidência das incursões de campo
 
-A sistematização dos Produtos 3, 4 e 5 (24 experiências avaliadas, notas por
-dimensão, classificação e estimativa de recursos) fica em `restrito.html`,
-atrás de um login da equipe em `entrar.html`.
+O painel inteiro fica atrás de um login da equipe: quem abre o site cai em
+`entrar.html` e só vê `index.html` depois de entrar. A sistematização dos
+Produtos 3, 4 e 5 — 24 experiências avaliadas, notas por dimensão,
+classificação e estimativa de recursos — é a aba **Evidência de campo**.
 
-**Como a proteção funciona.** O GitHub Pages não tem autenticação — por isso a
-proteção não está numa tela de senha, e sim no dado: `assets/data/campo.enc.js`
-é publicado cifrado com **AES-256-GCM**, e a senha da equipe é o que deriva a
-chave que o abre (PBKDF2-HMAC-SHA256, 600.000 iterações). Sem a senha o arquivo
-é ruído, mesmo baixado direto do repositório público.
+**Como a proteção funciona.** O GitHub Pages não tem autenticação, então ela
+não está numa tela de senha e sim no dado: `assets/data/campo.enc.js` é
+publicado cifrado com **AES-256-GCM**, e as credenciais da equipe derivam a
+chave que o abre (PBKDF2-HMAC-SHA256, 600.000 iterações). Sem elas o arquivo é
+ruído, mesmo baixado direto do repositório.
 
 O arquivo em claro (`dados_campo.json`) **nunca entra no Git** — está no
-`.gitignore`. Só o cifrado é versionado.
+`.gitignore`. Só o cifrado é versionado. As credenciais não ficam em lugar
+nenhum do repositório: circulam fora dele.
 
-### Regenerar os dados
+> **Limite conhecido.** Como o repositório é público, o arquivo cifrado pode
+> ser baixado e testado offline, sem limite de tentativas. A proteção depende
+> inteiramente de a senha não ser adivinhável. Senha curta ou previsível
+> (sigla + ano, por exemplo) reduz muito a margem. Tornar o repositório
+> privado elimina essa exposição.
+
+### Arquivos
+
+| Arquivo | Papel |
+|---|---|
+| `entrar.html` | página de entrada |
+| `assets/js/auth.js` | derivação de chave e sessão (WebCrypto) |
+| `assets/js/campo.js` | aba Evidência de campo |
+| `assets/css/campo.css` | estilos da aba (classes `cmp-`) |
+| `assets/data/campo.enc.js` | dados cifrados |
+| `scripts/montar_campo.py` | monta `dados_campo.json` a partir dos relatórios |
+| `scripts/cifrar_campo.py` | cifra para publicação |
+
+### Regenerar os dados ou trocar a senha
 
 ```bash
 pip install cryptography openpyxl
 
-python3 scripts/montar_campo.py      # monta dados_campo.json (fica fora do Git)
-python3 scripts/cifrar_campo.py      # pede a senha e gera campo.enc.js
+python3 scripts/montar_campo.py                    # dados_campo.json (fora do Git)
+python3 scripts/cifrar_campo.py --usuario NOME     # pede a senha e gera campo.enc.js
 ```
 
-### Trocar a senha
+Publique o `campo.enc.js` resultante. Não há recuperação: a senha não é
+conferida por servidor, ela **é** a chave. Perdida, gera-se outra e republica.
 
-Rode `scripts/cifrar_campo.py` de novo com a senha nova e publique o
-`campo.enc.js` resultante. Não há recuperação: a senha não é conferida por
-nenhum servidor, ela É a chave. Se for perdida, gera-se outra e republica.
-
-> A área restrita exige contexto seguro (https ou localhost). Abrir por
-> `file://` não funciona — o navegador bloqueia a API de criptografia.
+> A área exige contexto seguro (https ou localhost). Abrir por `file://` não
+> funciona — o navegador bloqueia a API de criptografia.
