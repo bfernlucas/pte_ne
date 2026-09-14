@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Evidência de campo — Plano Brasil Nordeste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#f5f6f9; --surface:#ffffff; --surface-2:#f7f8fb; --ink:#23262f; --muted:#6b7080;
+  --faint:#9aa0b0; --border:#e7e9f1; --border-2:#eef0f5;
+  --brand:#292d76; --brand-2:#1f4da1; --orange:#f37520; --green:#55b847; --red:#e0392b;
+  --amber:#faac33; --radius:10px;
+  --font:"Roboto",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Oswald","Roboto Condensed",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font)}
+.topo{background:var(--brand);color:#fff;padding:18px 20px 16px}
+.topo .inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.topo h1{font-family:var(--display);font-size:1.16rem;font-weight:600;margin:0}
+.topo p{margin:3px 0 0;font-size:.78rem;opacity:.82;font-weight:300}
+.topo .sp{flex:1}
+.selo{font-size:.72rem;background:rgba(255,255,255,.16);padding:5px 11px;border-radius:999px;font-weight:500}
+.topo a.sair{color:#fff;font-size:.8rem;opacity:.85;text-decoration:none;border:1px solid rgba(255,255,255,.3);
+  padding:5px 12px;border-radius:999px}
+.topo a.sair:hover{opacity:1;background:rgba(255,255,255,.1)}
+.hills{line-height:0;background:var(--brand)}.hills svg{display:block;width:100%;height:26px}
+.wrap{max-width:1280px;margin:0 auto;padding:22px 20px 60px}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px}
+.kpi .v{font-family:var(--display);font-size:1.62rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:.74rem;color:var(--muted);margin-top:2px}
+.kpi.a .v{color:var(--brand-2)}.kpi.b .v{color:var(--green)}.kpi.c .v{color:var(--orange)}
+
+.filtros{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px}
+.filtros select,.filtros input{font-family:var(--font);font-size:.86rem;padding:8px 10px;
+  border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--ink)}
+.filtros input{min-width:210px}
+.filtros .cnt{font-size:.8rem;color:var(--muted);margin-left:auto}
+.filtros button{font-family:var(--font);font-size:.84rem;padding:8px 12px;border:1px solid var(--border);
+  border-radius:8px;background:var(--surface-2);color:var(--ink);cursor:pointer}
+
+.tw{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th{text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+  font-weight:500;padding:11px 12px;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--surface-2)}
+td{padding:10px 12px;border-bottom:1px solid var(--border-2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--surface-2)}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+td.nome{font-weight:500;min-width:210px}
+.eixo{display:inline-block;font-size:.68rem;font-weight:500;padding:2px 7px;border-radius:4px;color:#fff;white-space:nowrap}
+.cls{display:inline-block;font-size:.7rem;font-weight:500;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.cls.alta{background:#e6f4e4;color:#2c6b23;border:1px solid #c3e5bd}
+.cls.estrategico{background:#fff2d6;color:#9a5b00;border:1px solid #f3d08a}
+.cls.nao{background:#fdecea;color:#a5241a;border:1px solid #f5c6c2}
+
+.dims{display:flex;gap:3px;align-items:flex-end;height:22px}
+.dims i{width:7px;border-radius:1px;display:block;background:var(--brand-2);opacity:.85}
+
+.ev{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px}
+.ev.completa{background:var(--green)}.ev.parcial{background:var(--amber)}
+.ev.ausente{background:#d9dde6;border:1px solid #c3c9d6}
+
+.det{background:var(--surface-2)}
+.det td{padding:16px 18px}
+.det .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:16px}
+.det h4{font-family:var(--display);font-size:.92rem;font-weight:600;margin:0 0 7px}
+.det dl{margin:0;font-size:.84rem;line-height:1.65}
+.det dt{color:var(--muted);font-size:.73rem;text-transform:uppercase;letter-spacing:.04em}
+.det dd{margin:0 0 9px;font-weight:500}
+.det .apoio{font-size:.88rem;line-height:1.6;color:var(--ink)}
+.barra{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:.8rem}
+.barra .t{flex:0 0 96px;color:var(--muted);font-size:.75rem}
+.barra .b{flex:1;height:7px;background:#e7e9f1;border-radius:4px;overflow:hidden}
+.barra .b span{display:block;height:100%;background:var(--brand-2);border-radius:4px}
+.barra .v{flex:0 0 68px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:.75rem}
+
+.rodape{font-size:.74rem;color:var(--faint);line-height:1.65;margin-top:20px}
+@media(max-width:640px){.wrap{padding:16px 16px 44px}.filtros .cnt{margin-left:0;flex-basis:100%}}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="inner">
+    <div>
+      <h1>Evidência das incursões de campo</h1>
+      <p>Sistematização dos Produtos 3, 4 e 5 · Quanta / OEI</p>
+    </div>
+    <div class="sp"></div>
+    <span class="selo" id="selo">—</span>
+    <a href="#" class="sair" id="sair">Sair</a>
+  </div>
+</header>
+<div class="hills" aria-hidden="true">
+  <svg viewBox="0 0 1440 44" preserveAspectRatio="none">
+    <path d="M0,24 C160,8 320,32 480,22 C640,12 800,34 960,22 C1120,10 1280,30 1440,18 L1440,44 L0,44 Z" fill="#3f9e3f"/>
+    <path d="M0,32 C180,18 300,40 520,30 C700,22 860,40 1040,30 C1220,20 1320,38 1440,30 L1440,44 L0,44 Z" fill="#55b847"/>
+  </svg>
+</div>
+
+<div class="wrap">
+  <div class="kpis" id="kpis"></div>
+
+  <div class="filtros">
+    <input type="search" id="f-busca" placeholder="Buscar experiência…" />
+    <select id="f-eixo"><option value="">Todos os eixos</option></select>
+    <select id="f-cls">
+      <option value="">Toda a carteira</option>
+      <option value="alta">Alta prioridade</option>
+      <option value="estrategico">Potencial estratégico</option>
+      <option value="nao">Não recomendada</option>
+    </select>
+    <select id="f-ev">
+      <option value="">Qualquer base informacional</option>
+      <option value="completa">Base completa</option>
+      <option value="parcial">Base parcial</option>
+      <option value="ausente">Base ausente</option>
+    </select>
+    <button id="f-reset">Limpar</button>
+    <span class="cnt" id="f-cnt"></span>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>Experiência</th><th>Eixo</th><th>Dimensões</th>
+        <th style="text-align:right">Total</th><th>Classificação</th>
+        <th style="text-align:right">Envelope (R$ mi)</th><th>Base</th>
+      </tr></thead>
+      <tbody id="corpo"></tbody>
+    </table>
+  </div>
+
+  <p class="rodape" id="rodape"></p>
+</div>
+
+<script src="assets/data/campo.enc.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+(function () {
+  var dados = PTEAuth.exigir();
+  if (!dados) return;
+
+  var EIXOS = {
+    FSI: ["Finanças Sustentáveis e Inclusivas", "#1f4da1"],
+    ADT: ["Adensamento Tecnológico", "#7a3fb8"],
+    BIO: ["Bioeconomia e Sist. Agroalimentares", "#43a047"],
+    TE:  ["Transição Energética", "#f37520"],
+    EC:  ["Economia Circular e Solidária", "#f6a609"],
+    NIVA:["Nova Infraestrutura Verde-Azul", "#0d9488"]
+  };
+  var CLS = { alta: "Alta prioridade", estrategico: "Potencial estratégico", nao: "Não recomendada" };
+  var DIMS = [["operacao","Operação",25],["investimento","Investimento",15],
+              ["impacto","Impacto",30],["inovacao","Inovação",30]];
+  var POSTURAS = {
+    direto: "Apoio direto",
+    condicionado: "Apoio direto condicionado",
+    quantificacao: "Quantificação prévia",
+    preparacao: "Preparação ampla",
+    preparatorio: "Apoio preparatório"
+  };
+  var BASES = { completa: "completa", parcial: "parcial", ausente: "ausente" };
+
+  var exp = dados.experiencias.slice().sort(function (a, b) { return b.total - a.total; });
+  var estado = { busca: "", eixo: "", cls: "", ev: "" };
+  var aberta = null;
+
+  document.getElementById("selo").textContent = exp.length + " experiências · sessão aberta";
+  document.getElementById("sair").addEventListener("click", function (e) {
+    e.preventDefault(); PTEAuth.sair(); location.replace("entrar.html");
+  });
+
+  var selEixo = document.getElementById("f-eixo");
+  Object.keys(EIXOS).forEach(function (k) {
+    if (!exp.some(function (x) { return x.eixo_cod === k; })) return;
+    var o = document.createElement("option"); o.value = k; o.textContent = EIXOS[k][0];
+    selEixo.appendChild(o);
+  });
+
+  function fmt(v) { return v.toFixed(1).replace(".", ","); }
+
+  function filtrar() {
+    return exp.filter(function (x) {
+      if (estado.eixo && x.eixo_cod !== estado.eixo) return false;
+      if (estado.cls && x.classificacao !== estado.cls) return false;
+      if (estado.ev && x.base_informacional !== estado.ev) return false;
+      if (estado.busca && x.nome.toLowerCase().indexOf(estado.busca) === -1) return false;
+      return true;
+    });
+  }
+
+  function kpis(linhas) {
+    var alta = linhas.filter(function (x) { return x.classificacao === "alta"; }).length;
+    var min = linhas.reduce(function (s, x) { return s + x.envelope.min; }, 0);
+    var max = linhas.reduce(function (s, x) { return s + x.envelope.max; }, 0);
+    var comBase = linhas.filter(function (x) { return x.base_informacional === "completa"; }).length;
+    document.getElementById("kpis").innerHTML =
+      '<div class="kpi a"><div class="v">' + linhas.length + '</div><div class="l">experiências avaliadas</div></div>' +
+      '<div class="kpi b"><div class="v">' + alta + '</div><div class="l">alta prioridade (≥ 80)</div></div>' +
+      '<div class="kpi c"><div class="v">' + fmt(min) + '–' + fmt(max) + '</div><div class="l">envelope R$ mi · 36 meses</div></div>' +
+      '<div class="kpi"><div class="v">' + comBase + '</div><div class="l">com base informacional completa</div></div>';
+  }
+
+  function detalhe(x) {
+    var barras = DIMS.map(function (d) {
+      var n = x.notas[d[0]];
+      return '<div class="barra"><span class="t">' + d[1] + '</span>' +
+             '<span class="b"><span style="width:' + (n / 5 * 100) + '%"></span></span>' +
+             '<span class="v">' + n + '/5 · p' + d[2] + '</span></div>';
+    }).join("");
+    var gab = x.gabinete != null
+      ? x.gabinete + '/30 (' + Math.round(x.gabinete / 30 * 100) + '/100)'
+      : '<span style="color:var(--faint)">não estava na base</span>';
+    var dif = x.gabinete != null
+      ? (function () { var d = x.total - Math.round(x.gabinete / 30 * 100);
+          return (d > 0 ? "+" : "") + d + " pontos"; })()
+      : "—";
+    var env = x.envelope.max > 0 ? "R$ " + fmt(x.envelope.min) + " a " + fmt(x.envelope.max) + " mi" : "sem alocação";
+    return '<tr class="det"><td colspan="7"><div class="grid">' +
+      '<div><h4>Avaliação por dimensão</h4>' + barras + '</div>' +
+      '<div><h4>Prospecção × campo</h4><dl>' +
+        '<dt>Nota de gabinete</dt><dd>' + gab + '</dd>' +
+        '<dt>Nota de campo</dt><dd>' + x.total + '/100</dd>' +
+        '<dt>Diferença</dt><dd>' + dif + '</dd></dl></div>' +
+      '<div><h4>Encaminhamento</h4><dl>' +
+        '<dt>Envelope</dt><dd>' + env + '</dd>' +
+        '<dt>Postura de apoio</dt><dd>' + (POSTURAS[x.postura] || "—") + '</dd>' +
+        '<dt>Base informacional</dt><dd>' + (BASES[x.base_informacional] || "—") + '</dd>' +
+        '<dt>Rota</dt><dd>' + x.rota + (x.municipio ? " · " + x.municipio + "/" + x.estado : "") + '</dd></dl></div>' +
+      '<div><h4>O que se apoia</h4><p class="apoio">' + x.apoio + '</p></div>' +
+      '</div></td></tr>';
+  }
+
+  function render() {
+    var linhas = filtrar();
+    kpis(linhas);
+    document.getElementById("f-cnt").textContent =
+      linhas.length + " de " + exp.length + " experiências";
+
+    document.getElementById("corpo").innerHTML = linhas.map(function (x) {
+      var e = EIXOS[x.eixo_cod] || [x.eixo_cod, "#6b7080"];
+      var dims = DIMS.map(function (d) {
+        return '<i style="height:' + (x.notas[d[0]] / 5 * 22) + 'px"></i>';
+      }).join("");
+      var env = x.envelope.max > 0 ? fmt(x.envelope.min) + " – " + fmt(x.envelope.max) : "—";
+      var linha =
+        '<tr data-n="' + encodeURIComponent(x.nome) + '">' +
+        '<td class="nome">' + x.nome + '</td>' +
+        '<td><span class="eixo" style="background:' + e[1] + '">' + x.eixo_cod + '</span></td>' +
+        '<td><div class="dims" title="Operação, Investimento, Impacto, Inovação">' + dims + '</div></td>' +
+        '<td class="n"><strong>' + x.total + '</strong></td>' +
+        '<td><span class="cls ' + x.classificacao + '">' + CLS[x.classificacao] + '</span></td>' +
+        '<td class="n">' + env + '</td>' +
+        '<td><span class="ev ' + (x.base_informacional || "ausente") + '" title="base ' +
+            (x.base_informacional || "ausente") + '"></span></td></tr>';
+      return linha + (aberta === x.nome ? detalhe(x) : "");
+    }).join("");
+
+    Array.prototype.forEach.call(document.querySelectorAll("#corpo tr[data-n]"), function (tr) {
+      tr.addEventListener("click", function () {
+        var n = decodeURIComponent(tr.getAttribute("data-n"));
+        aberta = aberta === n ? null : n;
+        render();
+      });
+    });
+  }
+
+  document.getElementById("f-busca").addEventListener("input", function (e) {
+    estado.busca = e.target.value.toLowerCase(); render();
+  });
+  ["eixo", "cls", "ev"].forEach(function (k) {
+    document.getElementById("f-" + k).addEventListener("change", function (e) {
+      estado[k] = e.target.value; render();
+    });
+  });
+  document.getElementById("f-reset").addEventListener("click", function () {
+    estado = { busca: "", eixo: "", cls: "", ev: "" };
+    document.getElementById("f-busca").value = "";
+    ["eixo", "cls", "ev"].forEach(function (k) { document.getElementById("f-" + k).value = ""; });
+    render();
+  });
+
+  document.getElementById("rodape").innerHTML =
+    "Notas conforme o Apêndice 2 do Produto 5 — fonte canônica: o texto corrido dos eixos traz rótulos de classificação divergentes. " +
+    "Pesos: Impacto 30 · Inovação 30 · Operação 25 · Investimento 15. " +
+    "Valores em R$ milhões correntes de agosto de 2026, horizonte de 36 meses, <strong>não auditados</strong> — nenhuma das organizações compartilhou demonstração contábil.";
+
+  render();
+})();
+</script>
+</body>
+</html>
