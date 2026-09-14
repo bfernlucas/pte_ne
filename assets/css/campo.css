@@ -61,3 +61,46 @@
 .cmp-rodape{font-size:.74rem;color:var(--faint);line-height:1.65;margin-top:16px}
 
 @media(max-width:640px){.cmp-filtros .cnt{margin-left:0;flex-basis:100%}}
+
+/* ---- sub-navegação do módulo ---- */
+.cmp-nav{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--border)}
+.cmp-nav button{font-family:var(--display);font-size:.88rem;font-weight:500;letter-spacing:.01em;
+  padding:9px 15px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.cmp-nav button:hover{color:var(--ink)}
+.cmp-nav button.on{color:var(--brand);border-bottom-color:var(--orange)}
+.cmp-sub{display:none}
+.cmp-sub.on{display:block}
+
+/* ---- gráficos ---- */
+.cmp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 18px;margin-bottom:14px}
+.cmp-card h3{font-family:var(--display);font-size:1rem;font-weight:600;margin:0 0 3px}
+.cmp-card .sub{font-size:.8rem;color:var(--muted);margin:0 0 14px}
+.cmp-card svg{display:block;max-width:100%;height:auto}
+.cmp-nota{font-size:.76rem;color:var(--muted);line-height:1.6;margin:12px 0 0;padding-top:10px;
+  border-top:1px solid var(--border-2)}
+.cmp-toggle{display:inline-flex;align-items:center;gap:7px;font-size:.82rem;color:var(--ink);
+  cursor:pointer;margin-bottom:12px}
+
+/* ---- matriz de gargalos ---- */
+.cmp-mx{overflow-x:auto}
+.cmp-mx table{border-collapse:collapse;font-size:.8rem;width:100%}
+.cmp-mx th.rot{text-align:left;font-weight:400;color:var(--ink);white-space:nowrap;padding:5px 10px 5px 0;
+  font-size:.82rem;position:sticky;left:0;background:var(--surface)}
+.cmp-mx th.vert{height:126px;white-space:nowrap;vertical-align:bottom;padding:0 0 6px;font-weight:500;
+  color:var(--muted);font-size:.74rem}
+.cmp-mx th.vert>div{transform:rotate(-60deg);transform-origin:left bottom;width:18px}
+.cmp-mx td{text-align:center;padding:3px;border-top:1px solid var(--border-2)}
+.cmp-mx td i{display:inline-block;width:15px;height:15px;border-radius:3px;background:var(--border-2)}
+.cmp-mx td.on i{background:var(--red);opacity:.78}
+.cmp-mx td.pot.on i{background:var(--green);opacity:.8}
+.cmp-mx td.tot{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.76rem;text-align:right;padding-right:8px}
+
+/* ---- barras de frequência ---- */
+.cmp-freq{display:flex;flex-direction:column;gap:7px}
+.cmp-freq .r{display:flex;align-items:center;gap:10px;font-size:.83rem}
+.cmp-freq .r .t{flex:0 0 270px;color:var(--ink)}
+.cmp-freq .r .b{flex:1;height:16px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+.cmp-freq .r .b span{display:block;height:100%;border-radius:3px}
+.cmp-freq .r .v{flex:0 0 52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:.78rem}
+@media(max-width:700px){.cmp-freq .r .t{flex-basis:150px;font-size:.78rem}}

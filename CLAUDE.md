@@ -59,8 +59,9 @@ A camada de evidência de campo é publicada apenas cifrada
 
 ## Pendências conhecidas
 
-- **Projeto Vale Sustentável (id 40) está em Natal e deveria estar em Assú/RN**
-  (`-5.5772`, `-36.9089`). Corrigir via `ALT_LOCAIS` em `scripts/gen_data.py`
-  e regerar `iniciativas.js`.
+- 6 das 24 experiências de campo não cruzam com a base de prospecção
+  (descobertas em campo). Decidir se viram registros novos na planilha.
+- BA, MA e SE não receberam incursão; a Rota 4 (Bahia) foi postergada.
+
 - Senha atual é previsível (sigla + ano) e o arquivo cifrado é público,
   logo testável offline. Repositório privado eliminaria a exposição.

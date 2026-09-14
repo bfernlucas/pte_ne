@@ -69,6 +69,92 @@ EXP = [
   "Não recomendada nesta etapa: sem créditos gerados, sem receita e sem financiamento."),
 ]
 
+# ---------------------------------------------------------------------------
+# Gargalos e potencialidades recorrentes, codificados a partir das fichas
+# dos Produtos 3 e 4 (secoes de analise) e das fichas de recomendacao do P5.
+# So se registra o que o relatorio afirma sobre a iniciativa -- ausencia de
+# codigo significa "nao afirmado", nao "nao existe".
+# ---------------------------------------------------------------------------
+GARGALOS = {
+    "fonte_unica":      "Dependência de fonte única de financiamento",
+    "sem_indicadores":  "Indicadores de impacto ausentes ou frágeis",
+    "equipe_reduzida":  "Equipe reduzida ou sem remuneração",
+    "governanca":       "Governança concentrada em poucas lideranças",
+    "metodologia":      "Metodologia não documentada, impedindo replicação",
+    "regulatorio":      "Barreira regulatória ou jurídica",
+    "sem_cnpj":         "Sem personalidade jurídica ou delimitação institucional",
+    "descontinuidade":  "Descontinuidade política e administrativa",
+    "hidrica":          "Insegurança hídrica e climática",
+    "credito":          "Dificuldade de acesso a crédito e financiamento verde",
+}
+POTENCIAIS = {
+    "replicabilidade":  "Replicabilidade comprovada, não apenas potencial",
+    "participativa":    "Governança participativa e base social organizada",
+    "mulheres":         "Protagonismo de mulheres e juventude",
+    "carbono":          "Mercado de carbono ou PSA como oportunidade declarada",
+    "conserva_renda":   "Conservação convertida em renda",
+    "tec_social":       "Tecnologia social adaptada ao semiárido",
+    "consorcio":        "Interesse explícito na carteira do Consórcio Nordeste",
+    "inov_governanca":  "Inovação de governança transferível",
+}
+
+# nome -> (gargalos, potencialidades)
+ANALISE = {
+ "Consórcio Público da Ibiapaba": (["fonte_unica","sem_indicadores","equipe_reduzida","governanca","descontinuidade"], ["replicabilidade","inov_governanca"]),
+ "Instituto Caburé": (["fonte_unica","equipe_reduzida","governanca","metodologia"], ["participativa","mulheres","carbono","conserva_renda"]),
+ "Fazenda Nutrilite Brasil": (["hidrica"], ["replicabilidade","mulheres","conserva_renda"]),
+ "Trilha Caminhos da Ibiapaba": (["fonte_unica","sem_indicadores","equipe_reduzida","sem_cnpj"], ["participativa","carbono","conserva_renda"]),
+ "No Clima da Caatinga": (["fonte_unica"], ["replicabilidade","participativa","carbono","conserva_renda","tec_social"]),
+ "AMAREZ": (["fonte_unica","sem_indicadores","governanca","metodologia","regulatorio","credito"], []),
+ "CTERSA": (["fonte_unica","sem_indicadores","equipe_reduzida","governanca","metodologia","sem_cnpj","descontinuidade","credito"], ["consorcio"]),
+ "Tecnologia SARA": (["fonte_unica","sem_indicadores","hidrica","credito"], ["replicabilidade","tec_social","consorcio"]),
+ "Projeto Vale Sustentável": (["fonte_unica","sem_indicadores","equipe_reduzida","governanca","metodologia","regulatorio","hidrica"], ["replicabilidade","participativa","mulheres","carbono","conserva_renda","tec_social"]),
+ "Cooperativa Solar Bem Viver": (["fonte_unica","sem_indicadores","governanca","metodologia","regulatorio","credito"], ["participativa","mulheres","consorcio"]),
+ "Um Milhão de Tetos Solares": (["fonte_unica","sem_indicadores","regulatorio"], ["participativa","mulheres","tec_social","consorcio"]),
+ "Instituto Casaca de Couro": (["fonte_unica","sem_indicadores","equipe_reduzida","governanca","hidrica","credito"], ["replicabilidade","conserva_renda","consorcio"]),
+ "Porto Digital — Recife": (["sem_indicadores","governanca"], ["replicabilidade","participativa","mulheres"]),
+ "Programa Terra Plantar": (["fonte_unica","sem_indicadores","equipe_reduzida","metodologia","descontinuidade","hidrica","credito"], ["tec_social","inov_governanca"]),
+ "Banco Comunitário de Araçoiaba": (["fonte_unica","sem_indicadores","equipe_reduzida","governanca","sem_cnpj","descontinuidade"], ["mulheres"]),
+ "Acreditar Microcrédito": (["equipe_reduzida","credito"], ["replicabilidade","participativa","mulheres"]),
+ "Porto Digital — Caruaru": (["fonte_unica","sem_indicadores","descontinuidade"], ["consorcio"]),
+ "Carbono Social do Bioma Caatinga": (["fonte_unica","sem_indicadores","sem_cnpj"], ["participativa","carbono"]),
+ "Cooperativa Pindorama": (["fonte_unica","sem_indicadores","equipe_reduzida","governanca","metodologia"], ["carbono","conserva_renda","inov_governanca"]),
+ "Rede Xique Xique": (["sem_indicadores"], ["participativa","mulheres","conserva_renda"]),
+ "Fazenda Tamanduá": (["credito","metodologia"], ["replicabilidade","conserva_renda"]),
+ "Sistema Metroviário do Ceará": ([], ["replicabilidade"]),
+ "EMBRAPII IA — IFCE": (["sem_indicadores"], ["replicabilidade","consorcio"]),
+ "Blue C": (["equipe_reduzida","credito"], ["carbono","tec_social"]),
+}
+
+# Perfil institucional e agenda da visita. Valores None = nao informado na fonte.
+# custo_anual e gap em reais. Fonte: fichas dos P3/P4 e secao 7 do P5.
+PERFIL = {
+ "Consórcio Público da Ibiapaba":   dict(ano=2021, natureza="Consórcio Público", equipe=2, benef="128 catadores · 8 municípios", custo_anual=840_000, gap=None, custo_p5=True, gap_p5=False, data="17/07", modo="presencial"),
+ "Instituto Caburé":                dict(ano=2020, natureza="Associação Privada", equipe=0, benef="~1.400 hab. · 30 mulheres", custo_anual=607_400, gap=1_822_200, custo_p5=True, gap_p5=True, data="22/07", modo="virtual"),
+ "Fazenda Nutrilite Brasil":        dict(ano=1998, natureza="Sociedade Empresária Ltda.", equipe=226, benef="138 produtores integrados", custo_anual=None, gap=None, data="23/07", modo="presencial"),
+ "Trilha Caminhos da Ibiapaba":     dict(ano=2023, natureza="Movimento sem CNPJ", equipe=8, benef="18 comunidades · 6 municípios", custo_anual=421_000, gap=None, custo_p5=True, gap_p5=False, data="28/07", modo="presencial"),
+ "No Clima da Caatinga":            dict(ano=2011, natureza="Associação Privada", equipe=32, benef="33.309 pessoas · 40 comunidades", custo_anual=None, gap=None, data="29/07", modo="virtual"),
+ "AMAREZ":                          dict(ano=2018, natureza="Associação civil", equipe=13, benef="13 associados", custo_anual=72_000, gap=100_000, custo_p5=False, gap_p5=True, data="16/07", modo="presencial"),
+ "CTERSA":                          dict(ano=2026, natureza="Unidade de pesquisa (INSA)", equipe=1, benef="pesquisadores e empresas do semiárido", custo_anual=None, gap=None, data="17/07", modo="presencial"),
+ "Tecnologia SARA":                 dict(ano=2019, natureza="Órgão Público Federal", equipe=None, benef="+500 unidades em 9 estados", custo_anual=None, gap=None, data="17/07", modo="presencial"),
+ "Projeto Vale Sustentável":        dict(ano=2013, natureza="Associação Privada", equipe=9, benef="11 municípios · 26 comunidades", custo_anual=2_250_000, gap=None, custo_p5=True, gap_p5=False, data="21/07", modo="presencial"),
+ "Cooperativa Solar Bem Viver":     dict(ano=2015, natureza="Sociedade Cooperativa", equipe=0, benef="26 cooperados", custo_anual=None, gap=None, data="22/07", modo="presencial"),
+ "Um Milhão de Tetos Solares":      dict(ano=2024, natureza="Associação Privada", equipe=None, benef="100 famílias · 100 jovens", custo_anual=None, gap=None, data="23/07", modo="presencial"),
+ "Instituto Casaca de Couro":       dict(ano=2003, natureza="Associação Privada", equipe=7, benef="984 famílias · 71 municípios", custo_anual=None, gap=None, data="23/07", modo="presencial"),
+ "Porto Digital — Recife":          dict(ano=2000, natureza="Organização Social + ICT", equipe=150, benef="~600 empresas · 24 mil postos", custo_anual=None, gap=None, data="27/07", modo="presencial"),
+ "Programa Terra Plantar":          dict(ano=2022, natureza="Órgão Público Estadual", equipe=None, benef="+100 mil agricultores · 184 municípios", custo_anual=None, gap=None, custo_p5=False, gap_p5=True, data="27/07", modo="presencial"),
+ "Banco Comunitário de Araçoiaba":  dict(ano=2024, natureza="Não localizada", equipe=3, benef="~500 pessoas · 11 estabelecimentos", custo_anual=None, gap=None, data="28/07", modo="presencial"),
+ "Acreditar Microcrédito":          dict(ano=2006, natureza="OSCIP", equipe=32, benef="~20 mil beneficiários acumulados", custo_anual=650_000, gap=10000000, custo_p5=False, gap_p5=True, data="29/07", modo="presencial"),
+ "Porto Digital — Caruaru":         dict(ano=2016, natureza="Organização Social + ICT", equipe=None, benef="11 empresas · 34 profissionais", custo_anual=None, gap=None, data="29/07", modo="presencial"),
+ "Carbono Social do Bioma Caatinga":dict(ano=2020, natureza="Associação Privada", equipe=None, benef="8 municípios do Alto Sertão", custo_anual=None, gap=None, data="30/07", modo="presencial"),
+ "Cooperativa Pindorama":           dict(ano=1956, natureza="Sociedade Cooperativa", equipe=6, benef="1.100 associados · ~30 mil pessoas", custo_anual=None, gap=None, data="31/07", modo="presencial"),
+ "Rede Xique Xique":                dict(ano=2004, natureza="Rede + cooperativa", equipe=None, benef="~1.000 vinculadas · 80% mulheres", custo_anual=None, gap=None, data=None, modo="presencial"),
+ "Fazenda Tamanduá":                dict(ano=1977, natureza="Empresa privada", equipe=None, benef="2.717 ha · RPPN de 381,8 ha", custo_anual=None, gap=None, data=None, modo="presencial"),
+ "Sistema Metroviário do Ceará":    dict(ano=1997, natureza="Empresa estadual", equipe=None, benef="16,4 mi de passageiros/ano", custo_anual=None, gap=400_000_000, custo_p5=False, gap_p5=True, data="06/08", modo="presencial"),
+ "EMBRAPII IA — IFCE":              dict(ano=2015, natureza="Unidade EMBRAPII (IFCE)", equipe=None, benef="186 empresas · +3.000 estudantes", custo_anual=None, gap=27_000_000, custo_p5=False, gap_p5=True, data="06/08", modo="presencial"),
+ "Blue C":                          dict(ano=2017, natureza="Empresa (deep tech)", equipe=5, benef="4 famílias produtoras", custo_anual=10_000, gap=20_000, custo_p5=True, gap_p5=True, data="07/08", modo="presencial"),
+}
+
 PESOS = {"impacto": 30, "inovacao": 30, "operacao": 25, "investimento": 15}
 STOP = set("de da do das dos e a o as os para em no na programa projeto instituto "
            "associacao cooperativa rede sistema centro unidade publico parque "
@@ -116,6 +202,9 @@ def main():
             "base_informacional": baseinf,
             "rota": rota,
             "apoio": apoio,
+            "gargalos": ANALISE.get(nome, ([], []))[0],
+            "potenciais": ANALISE.get(nome, ([], []))[1],
+            "perfil": PERFIL.get(nome, {}),
             "ref_id": melhor["id"] if casou else None,
             "gabinete": melhor["pontuacao"] if casou else None,
             "municipio": melhor.get("municipio") if casou else None,
@@ -133,6 +222,8 @@ def main():
             "faixas": {"alta": "80 a 100", "estrategico": "50 a 79", "nao": "abaixo de 50"},
             "moeda": "R$ milhoes correntes de agosto de 2026, horizonte de 36 meses",
             "total": len(saida),
+        "gargalos": GARGALOS,
+        "potenciais": POTENCIAIS,
         },
         "experiencias": saida,
     }
