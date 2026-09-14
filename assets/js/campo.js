@@ -9,7 +9,7 @@
 
   var dados = window.PTEAuth && window.PTEAuth.dados();
   if (!dados || !dados.experiencias) {
-    raiz.innerHTML = '<p class="cmp-intro">Não foi possível carregar a camada de campo.</p>';
+    raiz.innerHTML = '<p class="ec-intro">Não foi possível carregar a camada de campo.</p>';
     return;
   }
 
@@ -52,10 +52,10 @@
 
   /* ------------------------------------------------------------------ casca */
   raiz.innerHTML =
-    '<p class="cmp-intro">Sistematização das três incursões — <strong>Produtos 3, 4 e 5</strong>. ' +
+    '<p class="ec-intro">Sistematização das três incursões — <strong>Produtos 3, 4 e 5</strong>. ' +
     '24 experiências avaliadas em quatro dimensões, convertidas em pontuação ponderada de 0 a 100 ' +
     '(Impacto 30 · Inovação 30 · Operação 25 · Investimento 15).</p>' +
-    '<div class="cmp-nav" id="cmp-nav">' +
+    '<div class="ec-nav" id="ec-nav">' +
       '<button data-sub="lista" class="on">Experiências</button>' +
       '<button data-sub="carteira">Carteira</button>' +
       '<button data-sub="prospeccao">Prospecção × campo</button>' +
@@ -64,19 +64,19 @@
       '<button data-sub="cobertura">Cobertura e lacunas</button>' +
       '<button data-sub="incursoes">Incursões</button>' +
     '</div>' +
-    '<div class="cmp-sub on" id="sub-lista"></div>' +
-    '<div class="cmp-sub" id="sub-carteira"></div>' +
-    '<div class="cmp-sub" id="sub-prospeccao"></div>' +
-    '<div class="cmp-sub" id="sub-gargalos"></div>' +
-    '<div class="cmp-sub" id="sub-captacao"></div>' +
-    '<div class="cmp-sub" id="sub-cobertura"></div>' +
-    '<div class="cmp-sub" id="sub-incursoes"></div>';
+    '<div class="ec-sub on" id="sub-lista"></div>' +
+    '<div class="ec-sub" id="sub-carteira"></div>' +
+    '<div class="ec-sub" id="sub-prospeccao"></div>' +
+    '<div class="ec-sub" id="sub-gargalos"></div>' +
+    '<div class="ec-sub" id="sub-captacao"></div>' +
+    '<div class="ec-sub" id="sub-cobertura"></div>' +
+    '<div class="ec-sub" id="sub-incursoes"></div>';
 
-  Array.prototype.forEach.call(document.querySelectorAll("#cmp-nav button"), function (b) {
+  Array.prototype.forEach.call(document.querySelectorAll("#ec-nav button"), function (b) {
     b.addEventListener("click", function () {
-      Array.prototype.forEach.call(document.querySelectorAll("#cmp-nav button"),
+      Array.prototype.forEach.call(document.querySelectorAll("#ec-nav button"),
         function (o) { o.classList.toggle("on", o === b); });
-      Array.prototype.forEach.call(document.querySelectorAll(".cmp-sub"),
+      Array.prototype.forEach.call(document.querySelectorAll(".ec-sub"),
         function (s) { s.classList.toggle("on", s.id === "sub-" + b.dataset.sub); });
     });
   });
@@ -85,31 +85,31 @@
   var estado = { busca: "", eixo: "", cls: "", ev: "" }, aberta = null;
 
   document.getElementById("sub-lista").innerHTML =
-    '<div class="cmp-kpis" id="cmp-kpis"></div>' +
-    '<div class="cmp-filtros">' +
-      '<input type="search" id="cmp-busca" placeholder="Buscar experiência…" />' +
-      '<select id="cmp-eixo"><option value="">Todos os eixos</option></select>' +
-      '<select id="cmp-cls"><option value="">Toda a carteira</option>' +
+    '<div class="ec-kpis" id="ec-kpis"></div>' +
+    '<div class="ec-filtros">' +
+      '<input type="search" id="ec-busca" placeholder="Buscar experiência…" />' +
+      '<select id="ec-eixo"><option value="">Todos os eixos</option></select>' +
+      '<select id="ec-cls"><option value="">Toda a carteira</option>' +
         '<option value="alta">Alta prioridade</option>' +
         '<option value="estrategico">Potencial estratégico</option>' +
         '<option value="nao">Não recomendada</option></select>' +
-      '<select id="cmp-ev"><option value="">Qualquer base informacional</option>' +
+      '<select id="ec-ev"><option value="">Qualquer base informacional</option>' +
         '<option value="completa">Base completa</option>' +
         '<option value="parcial">Base parcial</option>' +
         '<option value="ausente">Base ausente</option></select>' +
-      '<button id="cmp-reset">Limpar</button>' +
-      '<span class="cnt" id="cmp-cnt"></span>' +
+      '<button id="ec-reset">Limpar</button>' +
+      '<span class="cnt" id="ec-cnt"></span>' +
     '</div>' +
-    '<div class="cmp-tw"><table><thead><tr>' +
+    '<div class="ec-tw"><table><thead><tr>' +
       '<th>Experiência</th><th>Eixo</th><th>Dimensões</th>' +
       '<th style="text-align:right">Total</th><th>Classificação</th>' +
       '<th style="text-align:right">Envelope (R$ mi)</th><th>Base</th>' +
-    '</tr></thead><tbody id="cmp-corpo"></tbody></table></div>' +
-    '<p class="cmp-rodape">Notas conforme o Apêndice 2 do Produto 5 — fonte canônica: o texto corrido dos ' +
+    '</tr></thead><tbody id="ec-corpo"></tbody></table></div>' +
+    '<p class="ec-rodape">Notas conforme o Apêndice 2 do Produto 5 — fonte canônica: o texto corrido dos ' +
     'eixos traz rótulos de classificação divergentes. Valores em R$ milhões correntes de agosto de 2026, ' +
     'horizonte de 36 meses, <strong>não auditados</strong>.</p>';
 
-  var selEixo = document.getElementById("cmp-eixo");
+  var selEixo = document.getElementById("ec-eixo");
   Object.keys(EIXOS).forEach(function (k) {
     if (!exp.some(function (x) { return x.eixo_cod === k; })) return;
     var o = document.createElement("option");
@@ -132,18 +132,18 @@
     var min = linhas.reduce(function (s, x) { return s + x.envelope.min; }, 0);
     var max = linhas.reduce(function (s, x) { return s + x.envelope.max; }, 0);
     var comp = linhas.filter(function (x) { return x.base_informacional === "completa"; }).length;
-    document.getElementById("cmp-kpis").innerHTML =
-      '<div class="cmp-kpi a"><div class="v">' + linhas.length + '</div><div class="l">experiências avaliadas</div></div>' +
-      '<div class="cmp-kpi b"><div class="v">' + alta + '</div><div class="l">alta prioridade (≥ 80)</div></div>' +
-      '<div class="cmp-kpi c"><div class="v">' + fmt(min) + '–' + fmt(max) + '</div><div class="l">envelope R$ mi · 36 meses</div></div>' +
-      '<div class="cmp-kpi"><div class="v">' + comp + '</div><div class="l">com base informacional completa</div></div>';
+    document.getElementById("ec-kpis").innerHTML =
+      '<div class="ec-kpi a"><div class="v">' + linhas.length + '</div><div class="l">experiências avaliadas</div></div>' +
+      '<div class="ec-kpi b"><div class="v">' + alta + '</div><div class="l">alta prioridade (≥ 80)</div></div>' +
+      '<div class="ec-kpi c"><div class="v">' + fmt(min) + '–' + fmt(max) + '</div><div class="l">envelope R$ mi · 36 meses</div></div>' +
+      '<div class="ec-kpi"><div class="v">' + comp + '</div><div class="l">com base informacional completa</div></div>';
   }
 
   function detalhe(x) {
     var p = x.perfil || {};
     var barras = DIMS.map(function (d) {
       var n = x.notas[d[0]];
-      return '<div class="cmp-barra"><span class="t">' + d[1] + '</span>' +
+      return '<div class="ec-barra"><span class="t">' + d[1] + '</span>' +
              '<span class="b"><span style="width:' + (n / 5 * 100) + '%"></span></span>' +
              '<span class="v">' + n + '/5 · p' + d[2] + '</span></div>';
     }).join("");
@@ -156,7 +156,7 @@
       return '<li>' + esc(GARGALOS[g] || g) + '</li>'; }).join("");
     var pots = (x.potenciais || []).map(function (g) {
       return '<li>' + esc(POTENCIAIS[g] || g) + '</li>'; }).join("");
-    return '<tr class="cmp-det"><td colspan="7"><div class="grid">' +
+    return '<tr class="ec-det"><td colspan="7"><div class="grid">' +
       '<div><h4>Avaliação por dimensão</h4>' + barras +
         '<dl style="margin-top:10px"><dt>Prospecção × campo</dt><dd>' +
         (temGab ? x.gabinete + '/30 (' + gabNorm + '/100) → ' + x.total + '/100 · ' + dif
@@ -183,8 +183,8 @@
   function render() {
     var linhas = filtrar();
     kpis(linhas);
-    document.getElementById("cmp-cnt").textContent = linhas.length + " de " + exp.length + " experiências";
-    document.getElementById("cmp-corpo").innerHTML = linhas.map(function (x, i) {
+    document.getElementById("ec-cnt").textContent = linhas.length + " de " + exp.length + " experiências";
+    document.getElementById("ec-corpo").innerHTML = linhas.map(function (x, i) {
       var e = EIXOS[x.eixo_cod] || [x.eixo_cod, "#6b7080"];
       var dims = DIMS.map(function (d) {
         return '<i style="height:' + (x.notas[d[0]] / 5 * 22) + 'px"></i>'; }).join("");
@@ -192,15 +192,15 @@
       var base = x.base_informacional || "ausente";
       return '<tr data-n="' + i + '">' +
         '<td class="nome">' + esc(x.nome) + '</td>' +
-        '<td><span class="cmp-eixo" style="background:' + e[1] + '" title="' + esc(e[0]) + '">' + esc(x.eixo_cod) + '</span></td>' +
-        '<td><div class="cmp-dims" title="Operação, Investimento, Impacto, Inovação">' + dims + '</div></td>' +
+        '<td><span class="ec-eixo" style="background:' + e[1] + '" title="' + esc(e[0]) + '">' + esc(x.eixo_cod) + '</span></td>' +
+        '<td><div class="ec-dims" title="Operação, Investimento, Impacto, Inovação">' + dims + '</div></td>' +
         '<td class="n"><strong>' + x.total + '</strong></td>' +
-        '<td><span class="cmp-cls ' + x.classificacao + '">' + CLS[x.classificacao] + '</span></td>' +
+        '<td><span class="ec-cls ' + x.classificacao + '">' + CLS[x.classificacao] + '</span></td>' +
         '<td class="n">' + env + '</td>' +
-        '<td><span class="cmp-ev ' + base + '" title="base ' + base + '"></span></td></tr>' +
+        '<td><span class="ec-ev ' + base + '" title="base ' + base + '"></span></td></tr>' +
         (aberta === x.nome ? detalhe(x) : "");
     }).join("");
-    Array.prototype.forEach.call(document.querySelectorAll("#cmp-corpo tr[data-n]"), function (tr) {
+    Array.prototype.forEach.call(document.querySelectorAll("#ec-corpo tr[data-n]"), function (tr) {
       tr.addEventListener("click", function () {
         var x = linhas[Number(tr.getAttribute("data-n"))];
         aberta = aberta === x.nome ? null : x.nome;
@@ -209,15 +209,15 @@
     });
   }
 
-  document.getElementById("cmp-busca").addEventListener("input", function (e) {
+  document.getElementById("ec-busca").addEventListener("input", function (e) {
     estado.busca = e.target.value.toLowerCase(); render(); });
   ["eixo", "cls", "ev"].forEach(function (k) {
-    document.getElementById("cmp-" + k).addEventListener("change", function (e) {
+    document.getElementById("ec-" + k).addEventListener("change", function (e) {
       estado[k] = e.target.value; render(); }); });
-  document.getElementById("cmp-reset").addEventListener("click", function () {
+  document.getElementById("ec-reset").addEventListener("click", function () {
     estado = { busca: "", eixo: "", cls: "", ev: "" };
-    document.getElementById("cmp-busca").value = "";
-    ["eixo", "cls", "ev"].forEach(function (k) { document.getElementById("cmp-" + k).value = ""; });
+    document.getElementById("ec-busca").value = "";
+    ["eixo", "cls", "ev"].forEach(function (k) { document.getElementById("ec-" + k).value = ""; });
     render(); });
   render();
 
@@ -225,7 +225,7 @@
   function barrasFaixa(grupos, corDe, total) {
     var maxv = Math.max.apply(null, grupos.map(function (g) { return g.max; })) || 1;
     var esc100 = function (v) { return (v / maxv * 100); };
-    return '<div class="cmp-freq">' + grupos.map(function (g) {
+    return '<div class="ec-freq">' + grupos.map(function (g) {
       return '<div class="r"><span class="t">' + esc(g.rot) + ' <span style="color:var(--faint)">· ' +
         g.n + '</span></span><span class="b" title="' + fmt(g.min) + ' a ' + fmt(g.max) + ' mi">' +
         '<span style="width:' + esc100(g.max) + '%;background:' + corDe(g) + ';opacity:.35"></span>' +
@@ -251,34 +251,34 @@
     var tmin = base.reduce(function (s, x) { return s + x.envelope.min; }, 0);
     var tmax = base.reduce(function (s, x) { return s + x.envelope.max; }, 0);
 
-    document.getElementById("cmp-carteira-corpo").innerHTML =
-      '<div class="cmp-kpis">' +
-        '<div class="cmp-kpi c"><div class="v">' + fmt(tmin) + '–' + fmt(tmax) + '</div><div class="l">envelope total R$ mi</div></div>' +
-        '<div class="cmp-kpi a"><div class="v">' + base.filter(function (x) { return x.envelope.max > 0; }).length +
+    document.getElementById("ec-carteira-corpo").innerHTML =
+      '<div class="ec-kpis">' +
+        '<div class="ec-kpi c"><div class="v">' + fmt(tmin) + '–' + fmt(tmax) + '</div><div class="l">envelope total R$ mi</div></div>' +
+        '<div class="ec-kpi a"><div class="v">' + base.filter(function (x) { return x.envelope.max > 0; }).length +
           '</div><div class="l">experiências com alocação</div></div>' +
-        '<div class="cmp-kpi b"><div class="v">' + fmt(tmax / Math.max(1, base.filter(function (x) { return x.envelope.max > 0; }).length)) +
+        '<div class="ec-kpi b"><div class="v">' + fmt(tmax / Math.max(1, base.filter(function (x) { return x.envelope.max > 0; }).length)) +
           '</div><div class="l">média por experiência (teto)</div></div>' +
       '</div>' +
-      '<div class="cmp-card"><h3>Por eixo do PTE-NE</h3>' +
+      '<div class="ec-card"><h3>Por eixo do PTE-NE</h3>' +
         '<p class="sub">Faixa mínimo–máximo em R$ milhões, horizonte de 36 meses</p>' +
         barrasFaixa(porEixo, function (g) { return g.cor; }) +
-        '<p class="cmp-nota">Infraestrutura Verde-Azul concentra a carteira. Economia Circular não teve ' +
+        '<p class="ec-nota">Infraestrutura Verde-Azul concentra a carteira. Economia Circular não teve ' +
         'nenhuma experiência na faixa de alta prioridade e ficou <strong>sem alocação</strong> — ' +
         'o Consórcio da Ibiapaba entra pelo envelope preparatório.</p></div>' +
-      '<div class="cmp-card"><h3>Por postura de apoio</h3>' +
+      '<div class="ec-card"><h3>Por postura de apoio</h3>' +
         '<p class="sub">A postura decorre da base informacional e da capacidade de execução</p>' +
         barrasFaixa(porPost, function () { return "#1f4da1"; }) +
-        '<p class="cmp-nota">Quantificação prévia e Preparação ampla financiam <strong>estudo e ' +
+        '<p class="ec-nota">Quantificação prévia e Preparação ampla financiam <strong>estudo e ' +
         'fortalecimento</strong>, não a operação. O P5 conclui: “o primeiro movimento é de documentação, ' +
         'e não de desembolso”.</p></div>' +
-      '<div class="cmp-card"><h3>Quem compõe cada eixo</h3>' +
+      '<div class="ec-card"><h3>Quem compõe cada eixo</h3>' +
       '<p class="sub">Experiências ordenadas pela pontuação de campo</p>' +
-      '<div class="cmp-eixos">' + Object.keys(EIXOS).map(function (k) {
+      '<div class="ec-eixos">' + Object.keys(EIXOS).map(function (k) {
         var l = base.filter(function (x) { return x.eixo_cod === k; })
                     .sort(function (a, b) { return b.total - a.total; });
         var mn = l.reduce(function (s, x) { return s + x.envelope.min; }, 0);
         var mx2 = l.reduce(function (s, x) { return s + x.envelope.max; }, 0);
-        return '<div class="cmp-ex"><div class="faixa" style="background:' + EIXOS[k][1] + '"></div>' +
+        return '<div class="ec-ex"><div class="faixa" style="background:' + EIXOS[k][1] + '"></div>' +
           '<h4>' + esc(EIXOS[k][0]) + '</h4>' +
           '<div class="env">' + l.length + ' experiência' + (l.length === 1 ? "" : "s") + ' · ' +
             (mx2 > 0 ? "R$ " + fmt(mn) + "–" + fmt(mx2) + " mi" : "sem alocação") + '</div>' +
@@ -290,10 +290,10 @@
   }
 
   document.getElementById("sub-carteira").innerHTML =
-    '<label class="cmp-toggle"><input type="checkbox" id="cmp-semmetro" /> ' +
+    '<label class="ec-toggle"><input type="checkbox" id="ec-semmetro" /> ' +
     'Excluir o Sistema Metroviário do Ceará (R$ 40–80 mi distorcem a leitura)</label>' +
-    '<div id="cmp-carteira-corpo"></div>';
-  document.getElementById("cmp-semmetro").addEventListener("change", function (e) {
+    '<div id="ec-carteira-corpo"></div>';
+  document.getElementById("ec-semmetro").addEventListener("change", function (e) {
     carteira(e.target.checked); });
   carteira(false);
 
@@ -353,7 +353,7 @@
     });
 
     document.getElementById("sub-prospeccao").innerHTML =
-      '<div class="cmp-card"><h3>A prospecção de gabinete prevê pouco</h3>' +
+      '<div class="ec-card"><h3>A prospecção de gabinete prevê pouco</h3>' +
       '<p class="sub">' + n + ' experiências avaliadas nos dois momentos · correlação r = ' +
         r.toFixed(2).replace(".", ",") + '</p>' +
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Dispersão entre nota de gabinete e nota de campo. Correlação fraca.">' +
@@ -369,7 +369,7 @@
           '" text-anchor="middle" font-size="12" fill="var(--muted)">nota de gabinete · 0–30 normalizada para 100</text>' +
         '<text x="16" y="' + (H / 2) + '" text-anchor="middle" font-size="12" fill="var(--muted)" transform="rotate(-90 16 ' + (H / 2) + ')">nota de campo · 0–100</text>' +
       '</svg>' +
-      '<p class="cmp-nota">As médias quase coincidem — <strong>' + Math.round(mx) + '</strong> no gabinete contra ' +
+      '<p class="ec-nota">As médias quase coincidem — <strong>' + Math.round(mx) + '</strong> no gabinete contra ' +
       '<strong>' + Math.round(my) + '</strong> no campo — mas as posições individuais embaralham. ' +
       'Verde subiu mais de 12 pontos depois da visita; vermelho caiu. O caso extremo é o ' +
       '<strong>Carbono Social do Bioma Caatinga</strong>: 90 no gabinete, <strong>40</strong> no campo — ' +
@@ -386,7 +386,7 @@
       Object.keys(dic).forEach(function (k) { c[k] = 0; });
       exp.forEach(function (x) { (x[campo] || []).forEach(function (k) { c[k]++; }); });
       var ord = Object.keys(c).sort(function (a, b) { return c[b] - c[a]; });
-      return { ord: ord, html: '<div class="cmp-freq">' + ord.map(function (k) {
+      return { ord: ord, html: '<div class="ec-freq">' + ord.map(function (k) {
         return '<div class="r"><span class="t">' + esc(dic[k]) + '</span>' +
           '<span class="b"><span style="width:' + (c[k] / exp.length * 100) + '%;background:' + cor + ';opacity:.75"></span></span>' +
           '<span class="v">' + c[k] + '/' + exp.length + '</span></div>';
@@ -409,18 +409,18 @@
     }).join("");
 
     document.getElementById("sub-gargalos").innerHTML =
-      '<div class="cmp-card"><h3>Gargalos recorrentes</h3>' +
+      '<div class="ec-card"><h3>Gargalos recorrentes</h3>' +
       '<p class="sub">Frequência sobre as 24 experiências avaliadas</p>' + fg.html +
-      '<p class="cmp-nota">A ausência de indicadores sistematizados e a dependência de fonte única de ' +
+      '<p class="ec-nota">A ausência de indicadores sistematizados e a dependência de fonte única de ' +
       'financiamento atravessam quase toda a carteira. São <strong>pauta comum</strong>, não problema ' +
       'individual — e justificam apoio horizontal em vez de 15 apoios isolados.</p></div>' +
-      '<div class="cmp-card"><h3>Potencialidades recorrentes</h3>' +
+      '<div class="ec-card"><h3>Potencialidades recorrentes</h3>' +
       '<p class="sub">Frequência sobre as 24 experiências avaliadas</p>' + fp.html + '</div>' +
-      '<div class="cmp-card"><h3>Matriz experiência × gargalo</h3>' +
+      '<div class="ec-card"><h3>Matriz experiência × gargalo</h3>' +
       '<p class="sub">Ordenada por número de gargalos registrados</p>' +
-      '<div class="cmp-mx"><table><thead><tr><th class="rot"></th>' + cab +
+      '<div class="ec-mx"><table><thead><tr><th class="rot"></th>' + cab +
       '<th class="vert"><div>total</div></th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
-      '<p class="cmp-nota">Ausência de marca significa <strong>não afirmado no relatório</strong>, ' +
+      '<p class="ec-nota">Ausência de marca significa <strong>não afirmado no relatório</strong>, ' +
       'não “não existe”. As cinco experiências visitadas fora dos roteiros têm ficha menos detalhada ' +
       'e por isso aparecem com menos marcas.</p></div>';
   })();
@@ -458,16 +458,16 @@
     }).join("");
 
     document.getElementById("sub-cobertura").innerHTML =
-      '<div class="cmp-kpis">' +
-        '<div class="cmp-kpi a"><div class="v">' + TOTAL_BASE + '</div><div class="l">prospectadas em gabinete</div></div>' +
-        '<div class="cmp-kpi c"><div class="v">' + exp.length + '</div><div class="l">avaliadas em campo</div></div>' +
-        '<div class="cmp-kpi b"><div class="v">' + alta + '</div><div class="l">recomendadas (≥ 80)</div></div>' +
-        '<div class="cmp-kpi"><div class="v" style="color:var(--red)">' + nuncaVisitadas + '</div><div class="l">nunca visitadas</div></div>' +
+      '<div class="ec-kpis">' +
+        '<div class="ec-kpi a"><div class="v">' + TOTAL_BASE + '</div><div class="l">prospectadas em gabinete</div></div>' +
+        '<div class="ec-kpi c"><div class="v">' + exp.length + '</div><div class="l">avaliadas em campo</div></div>' +
+        '<div class="ec-kpi b"><div class="v">' + alta + '</div><div class="l">recomendadas (≥ 80)</div></div>' +
+        '<div class="ec-kpi"><div class="v" style="color:var(--red)">' + nuncaVisitadas + '</div><div class="l">nunca visitadas</div></div>' +
       '</div>' +
-      '<div class="cmp-card"><h3>O funil, do gabinete à carteira</h3>' +
+      '<div class="ec-card"><h3>O funil, do gabinete à carteira</h3>' +
       '<p class="sub">Das ' + TOTAL_BASE + ' prospectadas, ' + cruzadas + ' foram a campo · ' +
         novas.length + ' experiências foram descobertas na visita</p>' +
-      '<div class="cmp-freq">' +
+      '<div class="ec-freq">' +
         '<div class="r"><span class="t">Prospectadas em gabinete</span><span class="b">' +
           '<span style="width:100%;background:#1f4da1;opacity:.65"></span></span><span class="v">' + TOTAL_BASE + '</span></div>' +
         '<div class="r"><span class="t">Efetivamente visitadas</span><span class="b">' +
@@ -477,20 +477,20 @@
         '<div class="r"><span class="t">Descobertas em campo</span><span class="b">' +
           '<span style="width:' + (novas.length / TOTAL_BASE * 100) + '%;background:#c026d3;opacity:.8"></span></span><span class="v">+' + novas.length + '</span></div>' +
       '</div>' +
-      '<p class="cmp-nota">' + nuncaVisitadas + ' das ' + TOTAL_BASE + ' iniciativas mapeadas <strong>nunca receberam ' +
+      '<p class="ec-nota">' + nuncaVisitadas + ' das ' + TOTAL_BASE + ' iniciativas mapeadas <strong>nunca receberam ' +
       'visita</strong> — permanecem no painel como hipótese de gabinete. E o campo trouxe ' + novas.length +
       ' experiências que o levantamento prévio não continha' +
       (novas.length ? ': ' + novas.map(function (x) { return esc(x.nome); }).join(" e ") : "") + '.</p></div>' +
-      '<div class="cmp-card"><h3>Cobertura por estado</h3>' +
+      '<div class="ec-card"><h3>Cobertura por estado</h3>' +
       '<p class="sub">Quais dos nove estados do Nordeste receberam incursão</p>' +
-      '<div class="cmp-freq">' + ufHtml + '</div>' +
-      '<p class="cmp-nota"><strong>Bahia, Maranhão e Sergipe não receberam nenhuma visita.</strong> ' +
+      '<div class="ec-freq">' + ufHtml + '</div>' +
+      '<p class="ec-nota"><strong>Bahia, Maranhão e Sergipe não receberam nenhuma visita.</strong> ' +
       'A Rota 4, prevista para a Bahia em agosto, foi postergada — e a Bahia é o estado com mais ' +
       'iniciativas na base de prospecção.</p></div>' +
-      '<div class="cmp-card"><h3>Previsto e não realizado</h3>' +
+      '<div class="ec-card"><h3>Previsto e não realizado</h3>' +
       '<p class="sub">O que ficou de fora, e por quê</p>' +
-      '<div class="cmp-freq">' + naoRealizadas + '</div>' +
-      '<p class="cmp-nota">' + virtuais.length + ' das ' + exp.length + ' avaliações foram feitas ' +
+      '<div class="ec-freq">' + naoRealizadas + '</div>' +
+      '<p class="ec-nota">' + virtuais.length + ' das ' + exp.length + ' avaliações foram feitas ' +
       '<strong>por vídeo</strong>, não presencialmente' +
       (virtuais.length ? ' (' + virtuais.map(function (x) { return esc(x.nome); }).join(", ") + ')' : "") +
       ' — o que o próprio relatório registra como limitação metodológica.</p></div>';
@@ -506,20 +506,20 @@
     }).map(function (k) {
       var l = exp.filter(function (x) { return x.postura === k; });
       var info = mapa[k] || {};
-      return '<div class="cmp-mec"><h4>' + esc(POSTURAS[k]) + ' <span style="font-weight:400;color:var(--faint)">· ' +
+      return '<div class="ec-mec"><h4>' + esc(POSTURAS[k]) + ' <span style="font-weight:400;color:var(--faint)">· ' +
         l.length + ' experiência' + (l.length === 1 ? "" : "s") + '</span></h4>' +
         '<p>' + esc(info.familias || "—") + '</p>' +
         (info.obs ? '<p class="at">' + esc(info.obs) + '</p>' : '') + '</div>';
     }).join("");
 
     var famHtml = fams.map(function (f) {
-      return '<div class="cmp-mec"><h4>' + esc(f.nome) + '</h4>' +
+      return '<div class="ec-mec"><h4>' + esc(f.nome) + '</h4>' +
         '<p>' + esc(f.aderencia) + '</p>' +
         '<p class="at"><b>Atenção:</b> ' + esc(f.atencao) + '</p></div>';
     }).join("");
 
     var agHtml = agendas.map(function (a, i) {
-      return '<div class="cmp-mec"><h4>' + (i + 1) + '. ' + esc(a.t) + '</h4>' +
+      return '<div class="ec-mec"><h4>' + (i + 1) + '. ' + esc(a.t) + '</h4>' +
         '<p>' + esc(a.d) + '</p></div>';
     }).join("");
 
@@ -528,24 +528,24 @@
     var abaixoRed = recom.filter(function (x) { return x.envelope.max < (escala.piso_reduzido || 5); }).length;
 
     document.getElementById("sub-captacao").innerHTML =
-      '<div class="cmp-kpis">' +
-        '<div class="cmp-kpi a"><div class="v">' + fams.length + '</div><div class="l">famílias de mecanismos</div></div>' +
-        '<div class="cmp-kpi c"><div class="v">' + acimaPiso + '</div><div class="l">de ' + recom.length +
+      '<div class="ec-kpis">' +
+        '<div class="ec-kpi a"><div class="v">' + fams.length + '</div><div class="l">famílias de mecanismos</div></div>' +
+        '<div class="ec-kpi c"><div class="v">' + acimaPiso + '</div><div class="l">de ' + recom.length +
           ' alcançam o porte mínimo do fundo regional</div></div>' +
-        '<div class="cmp-kpi"><div class="v" style="color:var(--red)">' + abaixoRed +
+        '<div class="ec-kpi"><div class="v" style="color:var(--red)">' + abaixoRed +
           '</div><div class="l">abaixo até do piso reduzido</div></div>' +
       '</div>' +
-      '<div class="cmp-card"><h3>A que porta cada grupo bate</h3>' +
+      '<div class="ec-card"><h3>A que porta cada grupo bate</h3>' +
       '<p class="sub">O P5 mapeia mecanismo por postura de apoio, nunca iniciativa a iniciativa</p>' +
       porPostura +
-      '<p class="cmp-nota">Este é o único mapeamento do documento. Qualquer tabela “iniciativa × mecanismo” ' +
+      '<p class="ec-nota">Este é o único mapeamento do documento. Qualquer tabela “iniciativa × mecanismo” ' +
       'seria derivação nossa, não transcrição — e por isso não existe aqui.</p></div>' +
-      '<div class="cmp-card"><h3>Restrição de escala</h3>' +
+      '<div class="ec-card"><h3>Restrição de escala</h3>' +
       '<p class="sub">O porte individual não alcança os canais de maior volume</p>' +
       '<p style="font-size:.88rem;line-height:1.6;margin:0">' + esc(escala.nota || "") + '</p></div>' +
-      '<div class="cmp-card"><h3>As oito famílias de mecanismos</h3>' +
+      '<div class="ec-card"><h3>As oito famílias de mecanismos</h3>' +
       '<p class="sub">Aderência à carteira e pontos de atenção</p>' + famHtml + '</div>' +
-      '<div class="cmp-card"><h3>Três agendas coletivas</h3>' +
+      '<div class="ec-card"><h3>Três agendas coletivas</h3>' +
       '<p class="sub">Atravessam várias famílias e são pauta da carteira, não pendência individual</p>' +
       agHtml + '</div>';
   })();
@@ -568,10 +568,10 @@
                  .sort(function (a, b) { return dataNum((a.perfil || {}).data) - dataNum((b.perfil || {}).data); });
       if (!l.length) return "";
       var virt = l.filter(function (x) { return (x.perfil || {}).modo === "virtual"; }).length;
-      return '<div class="cmp-rota"><h4>' + esc(ROTAS[k][0]) + '</h4>' +
+      return '<div class="ec-rota"><h4>' + esc(ROTAS[k][0]) + '</h4>' +
         '<p class="meta">' + esc(ROTAS[k][1]) + ' · ' + l.length + ' experiências' +
         (virt ? ' · ' + virt + ' por vídeo' : '') + '</p>' +
-        '<div class="cmp-tl">' + l.map(function (x) {
+        '<div class="ec-tl">' + l.map(function (x) {
           var q = x.perfil || {};
           return '<div class="ev' + (q.modo === "virtual" ? " virtual" : "") + '">' +
             '<div class="d">' + esc(q.data || "data não registrada") +
@@ -585,11 +585,91 @@
 
     var virtuais = exp.filter(function (x) { return (x.perfil || {}).modo === "virtual"; });
     document.getElementById("sub-incursoes").innerHTML =
-      '<div class="cmp-card"><h3>As incursões, como aconteceram</h3>' +
+      '<div class="ec-card"><h3>As incursões, como aconteceram</h3>' +
       '<p class="sub">' + exp.length + ' experiências em quatro roteiros, entre 16 de julho e agosto de 2026</p>' +
       html +
-      '<p class="cmp-nota">Marcador tracejado em âmbar indica avaliação <strong>feita por vídeo</strong> — ' +
+      '<p class="ec-nota">Marcador tracejado em âmbar indica avaliação <strong>feita por vídeo</strong> — ' +
       virtuais.length + ' das ' + exp.length + '. O painel já planeja rotas ótimas na aba Rotas Manuais; ' +
       'esta é a rota que de fato se percorreu.</p></div>';
+  })();
+  /* --------------------------------------------- 8. Camada de campo em Comparar
+     A aba Comparar confronta os dez critérios de gabinete. Aqui se acrescenta,
+     para as iniciativas selecionadas, o que a visita de campo encontrou.
+     A seleção é lida do DOM (os cartões que o painel já renderiza), para não
+     depender do estado interno de dashboard.js. */
+  (function () {
+    var alvo = document.getElementById("view-comparar");
+    var cards = document.getElementById("cmp-cards");
+    if (!alvo || !cards) return;
+
+    var porId = {};
+    exp.forEach(function (x) { if (x.ref_id) porId[x.ref_id] = x; });
+
+    var caixa = document.createElement("div");
+    caixa.className = "ec-cmp";
+    caixa.id = "ec-comparar";
+    var barra = alvo.querySelector(".exp-bar");
+    if (barra) alvo.insertBefore(caixa, barra); else alvo.appendChild(caixa);
+
+    function nomeDoCartao(btn) {
+      var c = btn.closest(".cmp-card");
+      var h = c && c.querySelector(".cc-h");
+      if (!h) return "";
+      // a nota vem num <b> dentro do título, sem espaço antes: remover o nó,
+      // não recortar por regex, senão o número gruda no nome
+      var copia = h.cloneNode(true);
+      Array.prototype.forEach.call(copia.querySelectorAll("b"), function (b) { b.remove(); });
+      return copia.textContent.trim();
+    }
+
+    function render() {
+      var botoes = Array.prototype.slice.call(cards.querySelectorAll(".cc-rm[data-id]"));
+      if (!botoes.length) { caixa.innerHTML = ""; return; }
+
+      var linhas = botoes.map(function (b) {
+        var id = Number(b.getAttribute("data-id"));
+        return { id: id, nome: nomeDoCartao(b), c: porId[id] || null };
+      });
+      var comCampo = linhas.filter(function (l) { return l.c; });
+
+      caixa.innerHTML =
+        '<h3>O que o campo encontrou</h3>' +
+        '<p class="sub">' + (comCampo.length
+          ? comCampo.length + ' de ' + linhas.length + ' selecionadas foram avaliadas nas incursões'
+          : 'nenhuma das selecionadas foi avaliada em campo') + '</p>' +
+        '<div class="ec-cmp-grid">' + linhas.map(function (l) {
+          if (!l.c) {
+            return '<div class="ec-cc sem"><h4>' + esc(l.nome) + '</h4>' +
+              '<p class="vazio">Não visitada. A pontuação de gabinete não foi verificada em campo.</p></div>';
+          }
+          var x = l.c, p = x.perfil || {};
+          var dims = DIMS.map(function (d) {
+            return '<i style="height:' + (x.notas[d[0]] / 5 * 26) + 'px" title="' + d[1] +
+                   ': ' + x.notas[d[0]] + '/5"></i>'; }).join("");
+          var gabNorm = x.gabinete != null ? Math.round(x.gabinete / 30 * 100) : null;
+          var dif = gabNorm != null
+            ? (x.total - gabNorm > 0 ? "+" : "") + (x.total - gabNorm) + " pontos vs. gabinete"
+            : "não estava na base";
+          var env = x.envelope.max > 0
+            ? "R$ " + fmt(x.envelope.min) + " a " + fmt(x.envelope.max) + " mi" : "sem alocação";
+          return '<div class="ec-cc ' + x.classificacao + '">' +
+            '<h4>' + esc(x.nome) + '</h4>' +
+            '<div class="tot">' + x.total + '<small>/100</small></div>' +
+            '<span class="cls ' + x.classificacao + '">' + CLS[x.classificacao] + '</span>' +
+            '<div class="dims" title="Operação, Investimento, Impacto, Inovação">' + dims + '</div>' +
+            '<dl><dt>Diferença</dt><dd>' + dif + '</dd>' +
+            '<dt>Envelope</dt><dd>' + env + '</dd>' +
+            '<dt>Postura</dt><dd>' + (POSTURAS[x.postura] || "—") + '</dd>' +
+            '<dt>Base informacional</dt><dd>' + (x.base_informacional || "—") + '</dd></dl></div>';
+        }).join("") + '</div>' +
+        (comCampo.length
+          ? '<p class="ec-cmp-nota">A barra mostra as quatro dimensões na ordem Operação, Investimento, ' +
+            'Impacto e Inovação. Duas iniciativas com a mesma nota final podem ter perfis opostos — é o ' +
+            'perfil, não o total, que orienta o tipo de apoio.</p>'
+          : '');
+    }
+
+    new MutationObserver(render).observe(cards, { childList: true, subtree: true });
+    render();
   })();
 })();

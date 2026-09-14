@@ -57,8 +57,10 @@ A camada de evidência de campo é publicada apenas cifrada
   leitura. Rótulo grita, nome não.
 
 - Interface e documentação em português
-- CSS de módulo novo em arquivo próprio, com prefixo de classe
-  (ex.: `cmp-` para a aba Evidência de campo) — não inchar `dashboard.css`
+- CSS de módulo novo em arquivo próprio, com prefixo de classe — não inchar
+  `dashboard.css`. **Conferir que o prefixo é mesmo livre**: o módulo de campo
+  nasceu com `cmp-`, que a aba Comparar já usava, e a colisão em `.cmp-card`
+  quebrou a borda dos cartões daquela aba. Hoje o prefixo é `ec-`.
 - Notas das experiências de campo: **fonte canônica é o Apêndice 2 do
   Produto 5**. O texto corrido dos eixos traz rótulos de classificação
   divergentes e a coluna de peso das fichas é ambígua — não usar.
