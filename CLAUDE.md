@@ -59,8 +59,11 @@ A camada de evidência de campo é publicada apenas cifrada
 
 ## Pendências conhecidas
 
-- 6 das 24 experiências de campo não cruzam com a base de prospecção
-  (descobertas em campo). Decidir se viram registros novos na planilha.
+- **CTERSA pode ser o mesmo que `Renova-Semiárido` (id 46)**: mesmo INSA,
+  mesma cidade, mesmo tema, nomes diferentes. Não reconciliei por falta de
+  evidência — confirmar com a equipe de campo.
+- 2 experiências não constam da base de prospecção (CTERSA e Instituto
+  Caburé). Decidir se entram na planilha como registros novos.
 - BA, MA e SE não receberam incursão; a Rota 4 (Bahia) foi postergada.
 
 - Senha atual é previsível (sigla + ano) e o arquivo cifrado é público,

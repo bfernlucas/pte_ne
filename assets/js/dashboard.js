@@ -237,6 +237,28 @@
     else markers.forEach(m => m.addTo(layer));
   }
 
+  // ---------- CAMADA DE EVIDÊNCIA DE CAMPO ----------
+  // Indexa por id da base as experiências efetivamente avaliadas em campo,
+  // e separa as que foram descobertas na visita (não constam da prospecção).
+  const CAMPO = (function () {
+    const d = window.PTEAuth && window.PTEAuth.dados();
+    const porId = {}, novas = [];
+    if (d && d.experiencias) d.experiencias.forEach(x => {
+      if (x.ref_id) porId[x.ref_id] = x;
+      else if (x.lat != null) novas.push(x);
+    });
+    return { porId, novas, ativo: !!(d && d.experiencias) };
+  })();
+  const COR_CAMPO = "#0d9488", COR_NOVA = "#c026d3";
+  const CLS_CAMPO = { alta: "Alta prioridade", estrategico: "Potencial estratégico", nao: "Não recomendada" };
+
+  function campoPopup(c) {
+    return `<br><span class="pp-k">Avaliada em campo:</span> <b>${c.total}/100</b> · ${CLS_CAMPO[c.classificacao] || ""}` +
+           (c.envelope && c.envelope.max > 0
+             ? `<br><span class="pp-k">Envelope:</span> R$ ${c.envelope.min.toFixed(1).replace(".", ",")}–${c.envelope.max.toFixed(1).replace(".", ",")} mi`
+             : "");
+  }
+
   // ---------- MAPA GERAL ----------
   let mapGeral, layerGeral, mapGeralFitted = false, mapGeralCtrl = null, heatLayer = null, mapCountEl = null, mapGeralSig = "";
   const NE_BOUNDS = [[-18.4, -48.9], [-1.0, -34.2]]; // enquadra o Nordeste (foco do plano)
@@ -272,6 +294,8 @@
     $("#map-side").innerHTML = `
       <div class="legend"><h4>Eixo (cor do círculo) <small>clique para filtrar</small></h4>${cores}</div>
       <div class="legend"><h4>Nota (tamanho do círculo)</h4><div class="sizes">${szs}</div>
+        ${CAMPO.ativo ? `<div class="li" style="margin-top:8px"><span class="dot" style="background:transparent;box-shadow:inset 0 0 0 2px ${COR_CAMPO}"></span>Avaliada em campo (P3/P4/P5)</div>
+        <div class="li"><span class="dot" style="background:${COR_NOVA}"></span>Descoberta em campo</div>` : ""}
         <div class="li" style="margin-top:8px"><span class="dot ring-pre"></span>Visita técnica (Seleção)</div>
         <div class="li"><span class="dot ring-ent"></span>Entrevista (Seleção)</div>
         <div class="li"><span class="dot ext-dot"></span>Sede fora do NE</div>
@@ -300,13 +324,28 @@
           ? { radius: r, fillColor: eixoColor(i.eixo_cod), fillOpacity: .85, color: t === "visita" ? COR_VISITA : t === "entrevista" ? "#16a34a" : "#fff", weight: t ? 3.4 : 1.4 }
           : { radius: Math.max(6, r * 0.8), fillColor: eixoColor(i.eixo_cod), fillOpacity: .4, color: "#8a90a0", weight: 1.5, dashArray: "3 3" };
         const ext = ne ? "" : `<br><span class="pp-k">Sede fora do NE</span> (${esc(loc.municipio || "")})`;
-        const mk = L.circleMarker([loc.lat, loc.lon], base).bindPopup(popupHtml(i) + extra + ext);
+        const c = CAMPO.porId[i.id];
+        if (c && ne) {
+          markers.push(L.circleMarker([loc.lat, loc.lon],
+            { radius: r + 5.5, fill: false, color: COR_CAMPO, weight: 2.2, opacity: .9, interactive: false }));
+        }
+        const mk = L.circleMarker([loc.lat, loc.lon], base)
+          .bindPopup(popupHtml(i) + extra + ext + (c ? campoPopup(c) : ""));
         mk.on("mouseover", () => { mk.setStyle({ weight: base.weight + 2.5, fillOpacity: Math.min(1, base.fillOpacity + .15) }); if (mk.bringToFront) mk.bringToFront(); });
         mk.on("mouseout", () => mk.setStyle(base));
         markers.push(mk);
         heatPts.push([loc.lat, loc.lon, 0.35 + 0.65 * ((i.pontuacao - PMIN) / Math.max(1, PMAX - PMIN))]);
         if (ne) fitPts.push([loc.lat, loc.lon]);
       });
+    });
+    if (CAMPO.ativo) CAMPO.novas.forEach(c => {
+      const mk = L.circleMarker([c.lat, c.lon],
+        { radius: 9, fillColor: COR_NOVA, fillOpacity: .85, color: "#fff", weight: 2 })
+        .bindPopup(`<span class="pp-h">${esc(c.nome)}</span>` +
+          `<span class="pp-k">Descoberta em campo</span> — não consta da base de prospecção<br>` +
+          `<span class="pp-k">Local:</span> ${esc(c.municipio || "")}/${esc(c.estado || "")}` + campoPopup(c));
+      markers.push(mk);
+      fitPts.push([c.lat, c.lon]);
     });
     addMarkers(layerGeral, markers);
     if (heatLayer) heatLayer.setLatLngs(heatPts);

@@ -155,6 +155,23 @@ PERFIL = {
  "Blue C":                          dict(ano=2017, natureza="Empresa (deep tech)", equipe=5, benef="4 famílias produtoras", custo_anual=10_000, gap=20_000, custo_p5=True, gap_p5=True, data="07/08", modo="presencial"),
 }
 
+# Correspondencias que o cruzamento por tokens nao acha (nomes muito distintos
+# entre o relatorio e a planilha). Conferidas uma a uma contra municipio e
+# organizacao. None = confirmado como ausente da base de prospeccao.
+REF_OVERRIDES = {
+    "EMBRAPII IA — IFCE": 9,               # Rede MCTI/EMBRAPII de Inovacao em IA
+    "AMAREZ": 31,                          # Modelo de Gestao Municipal de Residuos de Arez
+    "Blue C": 55,                          # BlueC (grafia sem espaco na planilha)
+    "Carbono Social do Bioma Caatinga": 53, # Projetos de Conservacao do Bioma Caatinga, Delmiro Gouveia/AL
+}
+
+# Descobertas em campo: nao constam da base de prospecao. Coordenadas do local
+# efetivamente visitado, para que aparecam no mapa.
+NOVAS_EM_CAMPO = {
+    "CTERSA":            {"municipio": "Campina Grande", "estado": "PB", "lat": -7.2306, "lon": -35.8811},
+    "Instituto Caburé":  {"municipio": "Cajueiro da Praia", "estado": "PI", "lat": -2.9333, "lon": -41.3417},
+}
+
 PESOS = {"impacto": 30, "inovacao": 30, "operacao": 25, "investimento": 15}
 STOP = set("de da do das dos e a o as os para em no na programa projeto instituto "
            "associacao cooperativa rede sistema centro unidade publico parque "
@@ -190,7 +207,11 @@ def main():
             s = len(ti & tb) / max(1, min(len(ti), len(tb)))
             if s > escore:
                 escore, melhor = s, r
-        casou = escore >= 0.6
+        forcado = REF_OVERRIDES.get(nome)
+        if forcado is not None:
+            melhor = next((r for r in base if r["id"] == forcado), None)
+            escore = 1.0
+        casou = melhor is not None and escore >= 0.6
         saida.append({
             "nome": nome,
             "eixo_cod": eixo,
@@ -207,10 +228,11 @@ def main():
             "perfil": PERFIL.get(nome, {}),
             "ref_id": melhor["id"] if casou else None,
             "gabinete": melhor["pontuacao"] if casou else None,
-            "municipio": melhor.get("municipio") if casou else None,
-            "estado": melhor.get("estado") if casou else None,
-            "lat": melhor.get("lat") if casou else None,
-            "lon": melhor.get("lon") if casou else None,
+            "nova_em_campo": nome in NOVAS_EM_CAMPO,
+            "municipio": melhor.get("municipio") if casou else NOVAS_EM_CAMPO.get(nome, {}).get("municipio"),
+            "estado": melhor.get("estado") if casou else NOVAS_EM_CAMPO.get(nome, {}).get("estado"),
+            "lat": melhor.get("lat") if casou else NOVAS_EM_CAMPO.get(nome, {}).get("lat"),
+            "lon": melhor.get("lon") if casou else NOVAS_EM_CAMPO.get(nome, {}).get("lon"),
         })
 
     doc = {

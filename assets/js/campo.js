@@ -60,11 +60,13 @@
       '<button data-sub="carteira">Carteira</button>' +
       '<button data-sub="prospeccao">Prospecção × campo</button>' +
       '<button data-sub="gargalos">Gargalos e potencialidades</button>' +
+      '<button data-sub="cobertura">Cobertura e lacunas</button>' +
     '</div>' +
     '<div class="cmp-sub on" id="sub-lista"></div>' +
     '<div class="cmp-sub" id="sub-carteira"></div>' +
     '<div class="cmp-sub" id="sub-prospeccao"></div>' +
-    '<div class="cmp-sub" id="sub-gargalos"></div>';
+    '<div class="cmp-sub" id="sub-gargalos"></div>' +
+    '<div class="cmp-sub" id="sub-cobertura"></div>';
 
   Array.prototype.forEach.call(document.querySelectorAll("#cmp-nav button"), function (b) {
     b.addEventListener("click", function () {
@@ -349,9 +351,12 @@
       '</svg>' +
       '<p class="cmp-nota">As médias quase coincidem — <strong>' + Math.round(mx) + '</strong> no gabinete contra ' +
       '<strong>' + Math.round(my) + '</strong> no campo — mas as posições individuais embaralham. ' +
-      'Verde subiu mais de 12 pontos depois da visita; vermelho caiu. A prospecção acerta a média da ' +
-      'carteira e erra o caso individual, que é a unidade de decisão. É a justificativa quantitativa ' +
-      'do trabalho de campo.</p></div>';
+      'Verde subiu mais de 12 pontos depois da visita; vermelho caiu. O caso extremo é o ' +
+      '<strong>Carbono Social do Bioma Caatinga</strong>: 90 no gabinete, <strong>40</strong> no campo — ' +
+      'a visita encontrou uma organização sem créditos gerados, sem receita e sem financiamento, ' +
+      'nada disso visível no levantamento documental. A prospecção acerta a média da carteira e erra ' +
+      'o caso individual, que é a unidade de decisão. É a justificativa quantitativa do trabalho ' +
+      'de campo.</p></div>';
   })();
 
   /* ------------------------------------------------------------ 4. Gargalos */
@@ -398,5 +403,76 @@
       '<p class="cmp-nota">Ausência de marca significa <strong>não afirmado no relatório</strong>, ' +
       'não “não existe”. As cinco experiências visitadas fora dos roteiros têm ficha menos detalhada ' +
       'e por isso aparecem com menos marcas.</p></div>';
+  })();
+  /* ----------------------------------------------------------- 5. Cobertura */
+  (function () {
+    var TOTAL_BASE = (window.PTE_DATA && window.PTE_DATA.meta && window.PTE_DATA.meta.total) || 79;
+    var cruzadas = exp.filter(function (x) { return x.ref_id; }).length;
+    var novas = exp.filter(function (x) { return !x.ref_id; });
+    var nuncaVisitadas = TOTAL_BASE - cruzadas;
+    var alta = exp.filter(function (x) { return x.classificacao === "alta"; }).length;
+    var virtuais = exp.filter(function (x) { return (x.perfil || {}).modo === "virtual"; });
+
+    var UF = { MA: "Maranhão", PI: "Piauí", CE: "Ceará", RN: "Rio Grande do Norte",
+               PB: "Paraíba", PE: "Pernambuco", AL: "Alagoas", SE: "Sergipe", BA: "Bahia" };
+    var VISITADOS = { RN: "Rota 1", PB: "Rota 1", CE: "Rota 2", PI: "Rota 2",
+                      PE: "Roteiro 3", AL: "Roteiro 3" };
+
+    var ufHtml = Object.keys(UF).map(function (u) {
+      var v = VISITADOS[u];
+      return '<div class="r"><span class="t">' + u + ' · ' + UF[u] + '</span>' +
+        '<span class="b"><span style="width:' + (v ? 100 : 6) + '%;background:' +
+        (v ? "#43a047" : "#d9dde6") + ';opacity:' + (v ? ".75" : "1") + '"></span></span>' +
+        '<span class="v" style="flex-basis:92px">' + (v || "sem visita") + '</span></div>';
+    }).join("");
+
+    var naoRealizadas = [
+      ["Redeser (Crato/CE)", "Não realizada — sem retorno da Fundação Araripe"],
+      ["Hub Pecém", "Adiada — operação só começa em 2029/2030"],
+      ["Rota 4 — Bahia", "Postergada por dificuldades logísticas"],
+      ["7 de 13 organizações do Roteiro 3", "Sem retorno apesar de e-mail, telefone e WhatsApp"]
+    ].map(function (x) {
+      return '<div class="r"><span class="t">' + esc(x[0]) + '</span>' +
+        '<span class="b"><span style="width:100%;background:#e0392b;opacity:.18"></span></span>' +
+        '<span class="v" style="flex-basis:230px;text-align:left;color:var(--muted)">' + esc(x[1]) + '</span></div>';
+    }).join("");
+
+    document.getElementById("sub-cobertura").innerHTML =
+      '<div class="cmp-kpis">' +
+        '<div class="cmp-kpi a"><div class="v">' + TOTAL_BASE + '</div><div class="l">prospectadas em gabinete</div></div>' +
+        '<div class="cmp-kpi c"><div class="v">' + exp.length + '</div><div class="l">avaliadas em campo</div></div>' +
+        '<div class="cmp-kpi b"><div class="v">' + alta + '</div><div class="l">recomendadas (≥ 80)</div></div>' +
+        '<div class="cmp-kpi"><div class="v" style="color:var(--red)">' + nuncaVisitadas + '</div><div class="l">nunca visitadas</div></div>' +
+      '</div>' +
+      '<div class="cmp-card"><h3>O funil, do gabinete à carteira</h3>' +
+      '<p class="sub">Das ' + TOTAL_BASE + ' prospectadas, ' + cruzadas + ' foram a campo · ' +
+        novas.length + ' experiências foram descobertas na visita</p>' +
+      '<div class="cmp-freq">' +
+        '<div class="r"><span class="t">Prospectadas em gabinete</span><span class="b">' +
+          '<span style="width:100%;background:#1f4da1;opacity:.65"></span></span><span class="v">' + TOTAL_BASE + '</span></div>' +
+        '<div class="r"><span class="t">Efetivamente visitadas</span><span class="b">' +
+          '<span style="width:' + (cruzadas / TOTAL_BASE * 100) + '%;background:#f37520;opacity:.8"></span></span><span class="v">' + cruzadas + '</span></div>' +
+        '<div class="r"><span class="t">Recomendadas para apoio</span><span class="b">' +
+          '<span style="width:' + (alta / TOTAL_BASE * 100) + '%;background:#43a047;opacity:.8"></span></span><span class="v">' + alta + '</span></div>' +
+        '<div class="r"><span class="t">Descobertas em campo</span><span class="b">' +
+          '<span style="width:' + (novas.length / TOTAL_BASE * 100) + '%;background:#c026d3;opacity:.8"></span></span><span class="v">+' + novas.length + '</span></div>' +
+      '</div>' +
+      '<p class="cmp-nota">' + nuncaVisitadas + ' das ' + TOTAL_BASE + ' iniciativas mapeadas <strong>nunca receberam ' +
+      'visita</strong> — permanecem no painel como hipótese de gabinete. E o campo trouxe ' + novas.length +
+      ' experiências que o levantamento prévio não continha' +
+      (novas.length ? ': ' + novas.map(function (x) { return esc(x.nome); }).join(" e ") : "") + '.</p></div>' +
+      '<div class="cmp-card"><h3>Cobertura por estado</h3>' +
+      '<p class="sub">Quais dos nove estados do Nordeste receberam incursão</p>' +
+      '<div class="cmp-freq">' + ufHtml + '</div>' +
+      '<p class="cmp-nota"><strong>Bahia, Maranhão e Sergipe não receberam nenhuma visita.</strong> ' +
+      'A Rota 4, prevista para a Bahia em agosto, foi postergada — e a Bahia é o estado com mais ' +
+      'iniciativas na base de prospecção.</p></div>' +
+      '<div class="cmp-card"><h3>Previsto e não realizado</h3>' +
+      '<p class="sub">O que ficou de fora, e por quê</p>' +
+      '<div class="cmp-freq">' + naoRealizadas + '</div>' +
+      '<p class="cmp-nota">' + virtuais.length + ' das ' + exp.length + ' avaliações foram feitas ' +
+      '<strong>por vídeo</strong>, não presencialmente' +
+      (virtuais.length ? ' (' + virtuais.map(function (x) { return esc(x.nome); }).join(", ") + ')' : "") +
+      ' — o que o próprio relatório registra como limitação metodológica.</p></div>';
   })();
 })();
