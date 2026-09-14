@@ -346,19 +346,24 @@
     carteira(e.target.checked); });
   carteira(false);
 
-  /* -------------------------------------------------- 3. Prospecção × campo */
+  /* -------------------------------------------------- 3. Prospecção × campo
+     Metade gráfico, metade análise. Nenhum rótulo dentro da área de plotagem:
+     a identidade fica na lista de desvios, ligada ao gráfico por destaque
+     recíproco. Rotular seletivamente é o padrão; 23 rótulos com linha-guia
+     dentro do gráfico era o anti-padrão. */
   (function () {
     var TODOS = exp.filter(function (x) { return x.gabinete != null; })
-      .map(function (x) {
-        return { nome: x.nome, g: x.gabinete / 30 * 100, c: x.total,
-                 cls: x.classificacao, eixo: x.eixo_cod };
+      .map(function (x, i) {
+        return { i: i, nome: x.nome, g: x.gabinete / 30 * 100, c: x.total,
+                 cls: x.classificacao, d: x.total - x.gabinete / 30 * 100 };
       });
-
-    var ctrl = { rotulos: "desvios", cls: "" };
+    var ctrl = { cls: "" };
+    var COR = { sobe: "#43a047", desce: "#e0392b", perto: "#1f4da1" };
+    function corDe(d) { return d > 12 ? COR.sobe : (d < -12 ? COR.desce : COR.perto); }
 
     function correl(ps) {
       var n = ps.length;
-      if (n < 3) return null;
+      if (n < 4) return null;
       var mx = ps.reduce(function (a, p) { return a + p.g; }, 0) / n;
       var my = ps.reduce(function (a, p) { return a + p.c; }, 0) / n;
       var sx = Math.sqrt(ps.reduce(function (a, p) { return a + Math.pow(p.g - mx, 2); }, 0) / n);
@@ -369,107 +374,84 @@
     }
 
     function svg(ps) {
-      var todos = ctrl.rotulos === "todos";
-      var W = todos ? 1240 : 900, H = 520,
-          L = todos ? 250 : 58, R = todos ? 250 : 215, T = 20, B = 52;
+      var W = 620, H = 470, L = 46, R = 16, T = 18, B = 46;
       var x0 = 50, x1 = 100, y0 = 35, y1 = 105;
       var px = function (v) { return L + (v - x0) / (x1 - x0) * (W - L - R); };
       var py = function (v) { return H - B - (v - y0) / (y1 - y0) * (H - T - B); };
       var PL = W - R, PB = H - B;
-
-      // zonas de leitura: acima da diagonal o campo superou o gabinete
-      var zonas =
-        '<polygon points="' + L + ',' + PB + ' ' + PL + ',' + py(100) + ' ' + L + ',' + T +
-          '" fill="#43a047" opacity=".05"/>' +
-        '<polygon points="' + L + ',' + PB + ' ' + PL + ',' + py(100) + ' ' + PL + ',' + PB +
-          '" fill="#e0392b" opacity=".05"/>' +
-        '<text x="' + (L + 16) + '" y="' + (T + 26) + '" font-size="11.5" fill="#2c6b23" opacity=".85">' +
-          'o campo encontrou mais do que o gabinete previa</text>' +
-        '<text x="' + (PL - 10) + '" y="' + (PB - 14) + '" text-anchor="end" font-size="11.5" ' +
-          'fill="#a5241a" opacity=".85">o campo encontrou menos</text>';
-
-      var eixos = "";
+      var g = "";
+      // zonas: sem texto dentro: o significado vai na legenda, fora do gráfico
+      g += '<polygon points="' + L + ',' + PB + ' ' + PL + ',' + py(100) + ' ' + L + ',' + T +
+           '" fill="' + COR.sobe + '" opacity=".045"/>' +
+           '<polygon points="' + L + ',' + PB + ' ' + PL + ',' + py(100) + ' ' + PL + ',' + PB +
+           '" fill="' + COR.desce + '" opacity=".045"/>';
       [50, 60, 70, 80, 90, 100].forEach(function (v) {
-        eixos += '<line x1="' + L + '" y1="' + py(v).toFixed(1) + '" x2="' + PL + '" y2="' + py(v).toFixed(1) +
-                 '" stroke="var(--border-2)"/>' +
-                 '<text x="' + px(v).toFixed(1) + '" y="' + (PB + 18) + '" text-anchor="middle" font-size="12" fill="var(--muted)">' + v + '</text>' +
-                 '<text x="' + (todos ? L + 8 : L - 9) + '" y="' + (py(v) + 4).toFixed(1) +
-                 '" text-anchor="' + (todos ? "start" : "end") +
-                 '" font-size="12" fill="var(--muted)">' + v + '</text>';
+        g += '<line x1="' + L + '" y1="' + py(v).toFixed(1) + '" x2="' + PL + '" y2="' + py(v).toFixed(1) +
+             '" stroke="var(--border-2)"/>' +
+             '<text x="' + px(v).toFixed(1) + '" y="' + (PB + 17) + '" text-anchor="middle" font-size="11" fill="var(--muted)">' + v + '</text>' +
+             '<text x="' + (L - 7) + '" y="' + (py(v) + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="var(--muted)">' + v + '</text>';
       });
-
-      var pontos = ps.map(function (p) {
-        var d = p.c - p.g;
-        var cor = d > 12 ? "#43a047" : (d < -12 ? "#e0392b" : "#1f4da1");
-        return '<circle cx="' + px(p.g).toFixed(1) + '" cy="' + py(p.c).toFixed(1) +
-          '" r="6" fill="' + cor + '" opacity=".88"><title>' + esc(p.nome) + ' — gabinete ' +
-          Math.round(p.g) + ', campo ' + p.c + ' (' + (d > 0 ? "+" : "") + Math.round(d) + ')</title></circle>';
-      }).join("");
-
-      var marc = ctrl.rotulos === "nenhum" ? []
-        : ctrl.rotulos === "todos" ? ps.slice()
-        : ps.filter(function (p) { return Math.abs(p.c - p.g) >= 15; });
-      marc = marc.sort(function (a, b) { return Math.abs(b.c - b.g) - Math.abs(a.c - a.g); })
-                 .slice(0, ctrl.rotulos === "todos" ? 24 : 7)
-                 .sort(function (a, b) { return py(a.c) - py(b.c); });
-
-      var usados = { e: [], d: [] }, rotulos = "", meio = L + (PL - L) * 0.5;
-      marc.forEach(function (p) {
-        var cx = px(p.g), cy = py(p.c);
-        var esq = cx > meio;                       // ponto à direita -> rótulo à esquerda
-        var lado = esq ? usados.e : usados.d, ly = cy;
-        while (lado.some(function (u) { return Math.abs(u - ly) < 16; })) ly += 16;
-        // se transbordou embaixo, recomeça acima do gráfico
-        if (ly > PB - 6) { ly = T + 12; while (lado.some(function (u) { return Math.abs(u - ly) < 16; })) ly += 16; }
-        lado.push(ly);
-        var lx = esq ? cx - 13 : cx + 13, d = p.c - p.g;
-        if (todos) lx = esq ? L - 12 : PL + 12;   // alinha na margem, em coluna
-        rotulos += '<line x1="' + (esq ? cx - 7 : cx + 7).toFixed(1) + '" y1="' + cy.toFixed(1) +
-          '" x2="' + (esq ? lx + 3 : lx - 3).toFixed(1) + '" y2="' + (ly - 4).toFixed(1) +
-          '" stroke="var(--border)" opacity=".7"/>' +
-          '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' + (esq ? "end" : "start") +
-          '" font-size="' + (todos ? 11 : 12) + '" fill="var(--ink)">' + esc(p.nome) +
-          ' <tspan fill="' + (d > 0 ? "#2c6b23" : "#a5241a") + '">' + (d > 0 ? "+" : "") + Math.round(d) + '</tspan></text>';
+      g += '<line x1="' + px(50).toFixed(1) + '" y1="' + py(50).toFixed(1) + '" x2="' + px(100).toFixed(1) +
+           '" y2="' + py(100).toFixed(1) + '" stroke="var(--muted)" stroke-dasharray="5 5" opacity=".55"/>';
+      ps.forEach(function (p) {
+        g += '<circle class="ec-pt" data-i="' + p.i + '" cx="' + px(p.g).toFixed(1) + '" cy="' + py(p.c).toFixed(1) +
+          '" r="6" fill="' + corDe(p.d) + '" opacity=".85" stroke="var(--surface)" stroke-width="2">' +
+          '<title>' + esc(p.nome) + ' — gabinete ' + Math.round(p.g) + ', campo ' + p.c +
+          ' (' + (p.d > 0 ? "+" : "") + Math.round(p.d) + ')</title></circle>';
       });
-
-      return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Dispersão entre a nota de gabinete e a nota de campo.">' +
-        zonas + eixos +
-        '<line x1="' + px(50).toFixed(1) + '" y1="' + py(50).toFixed(1) + '" x2="' + px(100).toFixed(1) +
-          '" y2="' + py(100).toFixed(1) + '" stroke="var(--muted)" stroke-dasharray="5 5" opacity=".6"/>' +
-        '<text x="' + px(98).toFixed(1) + '" y="' + (py(100) - 8).toFixed(1) + '" text-anchor="end" ' +
-          'font-size="11.5" fill="var(--muted)">as duas notas coincidem</text>' +
-        pontos + rotulos +
-        '<line x1="' + L + '" y1="' + PB + '" x2="' + PL + '" y2="' + PB + '" stroke="var(--border)"/>' +
-        '<line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + PB + '" stroke="var(--border)"/>' +
-        '<text x="' + ((PL + L) / 2).toFixed(0) + '" y="' + (H - 10) + '" text-anchor="middle" font-size="12" fill="var(--muted)">nota de gabinete · 0–30 normalizada para 100</text>' +
-        '<text x="16" y="' + (H / 2) + '" text-anchor="middle" font-size="12" fill="var(--muted)" transform="rotate(-90 16 ' + (H / 2) + ')">nota de campo · 0–100</text>' +
-      '</svg>';
+      g += '<line x1="' + L + '" y1="' + PB + '" x2="' + PL + '" y2="' + PB + '" stroke="var(--border)"/>' +
+           '<line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + PB + '" stroke="var(--border)"/>' +
+           '<text x="' + ((PL + L) / 2).toFixed(0) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11.5" fill="var(--muted)">nota de gabinete</text>' +
+           '<text x="13" y="' + (H / 2) + '" text-anchor="middle" font-size="11.5" fill="var(--muted)" transform="rotate(-90 13 ' + (H / 2) + ')">nota de campo</text>';
+      return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Dispersão entre a nota de gabinete e a nota de campo das experiências avaliadas nos dois momentos.">' + g + '</svg>';
     }
 
     function pinta() {
       var ps = TODOS.filter(function (p) { return !ctrl.cls || p.cls === ctrl.cls; });
       var co = correl(ps);
-      document.getElementById("ec-disp-sub").innerHTML =
-        ps.length + ' de ' + TODOS.length + ' avaliadas nos dois momentos' +
-        (co ? ' · correlação r = ' + co.r.toFixed(2).replace(".", ",") : ' · amostra pequena demais para correlação');
+      var desvios = ps.slice().sort(function (a, b) { return Math.abs(b.d) - Math.abs(a.d); });
+
       document.getElementById("ec-disp-svg").innerHTML = svg(ps);
-      document.getElementById("ec-disp-nota").innerHTML = co
-        ? 'As médias quase coincidem — <strong>' + Math.round(co.mx) + '</strong> no gabinete contra ' +
-          '<strong>' + Math.round(co.my) + '</strong> no campo — mas as posições individuais embaralham. ' +
-          'O caso extremo é o <strong>Carbono Social do Bioma Caatinga</strong>: 90 no gabinete, ' +
-          '<strong>40</strong> no campo. A prospecção acerta a média da carteira e erra o caso individual, ' +
-          'que é a unidade de decisão.'
-        : 'Selecione uma faixa com mais experiências para que a correlação faça sentido.';
+      document.getElementById("ec-disp-sub").textContent =
+        ps.length + (ps.length === 1 ? " experiência" : " experiências") + " avaliadas nos dois momentos";
+
+      document.getElementById("ec-disp-metr").innerHTML = co
+        ? '<div class="ec-m"><span class="k">correlação r</span><span class="v">' +
+            co.r.toFixed(2).replace(".", ",") + '</span></div>' +
+          '<div class="ec-m"><span class="k">média no gabinete</span><span class="v">' + Math.round(co.mx) + '</span></div>' +
+          '<div class="ec-m"><span class="k">média no campo</span><span class="v">' + Math.round(co.my) + '</span></div>'
+        : '<p class="ec-mini">Amostra pequena demais para calcular correlação.</p>';
+
+      document.getElementById("ec-disp-lista").innerHTML = desvios.map(function (p) {
+        return '<li class="ec-dv" data-i="' + p.i + '">' +
+          '<i style="background:' + corDe(p.d) + '"></i>' +
+          '<span class="n">' + esc(p.nome) + '</span>' +
+          '<span class="p">' + Math.round(p.g) + '<span class="seta">→</span>' + p.c + '</span>' +
+          '<span class="d" style="color:' + (p.d > 0 ? "#2c6b23" : (p.d < 0 ? "#a5241a" : "var(--muted)")) + '">' +
+          (p.d > 0 ? "+" : "") + Math.round(p.d) + '</span></li>';
+      }).join("");
+
+      // destaque recíproco entre a lista e o gráfico
+      function realce(i, on) {
+        var c = document.querySelector('#ec-disp-svg circle[data-i="' + i + '"]');
+        var li = document.querySelector('#ec-disp-lista li[data-i="' + i + '"]');
+        if (c) { c.setAttribute("r", on ? 9 : 6); c.setAttribute("opacity", on ? 1 : .85); }
+        if (li) li.classList.toggle("on", on);
+      }
+      Array.prototype.forEach.call(document.querySelectorAll("#ec-disp-lista li"), function (li) {
+        var i = li.getAttribute("data-i");
+        li.addEventListener("mouseenter", function () { realce(i, true); });
+        li.addEventListener("mouseleave", function () { realce(i, false); });
+      });
+      Array.prototype.forEach.call(document.querySelectorAll("#ec-disp-svg circle"), function (c) {
+        var i = c.getAttribute("data-i");
+        c.addEventListener("mouseenter", function () { realce(i, true); });
+        c.addEventListener("mouseleave", function () { realce(i, false); });
+      });
     }
 
     document.getElementById("sub-prospeccao").innerHTML =
       '<div class="ec-controles">' +
-        '<label class="ec-campo-ctrl">Rótulos ' +
-          '<select id="ec-disp-rot">' +
-            '<option value="desvios">Maiores desvios</option>' +
-            '<option value="todos">Todos</option>' +
-            '<option value="nenhum">Nenhum</option>' +
-          '</select></label>' +
         '<label class="ec-campo-ctrl">Faixa ' +
           '<select id="ec-disp-cls">' +
             '<option value="">Toda a carteira</option>' +
@@ -477,44 +459,49 @@
             '<option value="estrategico">Potencial estratégico</option>' +
             '<option value="nao">Não recomendada</option>' +
           '</select></label>' +
-        '<button class="ec-ajuda" id="ec-disp-ajuda" aria-expanded="false" ' +
-          'aria-controls="ec-disp-expl" title="Como ler este gráfico">?</button>' +
+        '<button class="ec-ajuda" id="ec-disp-ajuda" aria-expanded="false" aria-controls="ec-disp-expl" ' +
+          'title="Como ler este gráfico">?</button>' +
         '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
-        '<button class="exp-btn" data-exp="png" data-target="#ec-disp" data-name="prospeccao-x-campo">Gráfico (PNG)</button></div>' +
+        '<button class="exp-btn" data-exp="png" data-target="#ec-disp" data-name="prospeccao-x-campo">Imagem (PNG)</button></div>' +
       '</div>' +
       '<div class="ec-expl" id="ec-disp-expl" hidden>' +
         '<h4>Como ler este gráfico</h4>' +
         '<ul>' +
-          '<li>Cada ponto é uma experiência avaliada <strong>duas vezes</strong>: no levantamento ' +
-            'documental (eixo horizontal) e depois da visita de campo (eixo vertical).</li>' +
-          '<li>A <strong>linha tracejada</strong> é onde as duas notas coincidem. Acima dela, a visita ' +
-            'encontrou mais do que o gabinete previa; abaixo, encontrou menos.</li>' +
-          '<li>A <strong>cor</strong> marca desvios acima de 12 pontos: verde subiu, vermelho caiu, ' +
-            'azul ficou perto do previsto.</li>' +
-          '<li>O <strong>r</strong> mede o quanto uma nota prevê a outra. Vai de 0 (nenhuma relação) ' +
-            'a 1 (previsão perfeita). Abaixo de 0,3 a prospecção documental explica muito pouco do ' +
-            'resultado de campo.</li>' +
-          '<li>Passe o mouse sobre um ponto para ver a experiência e as duas notas.</li>' +
+          '<li>Cada ponto é uma experiência avaliada <strong>duas vezes</strong>: no levantamento documental (eixo horizontal) e depois da visita de campo (eixo vertical).</li>' +
+          '<li>A <strong>linha tracejada</strong> é onde as duas notas coincidem. O fundo verde marca onde a visita encontrou mais do que o gabinete previa; o vermelho, onde encontrou menos.</li>' +
+          '<li>O <strong>r</strong> mede o quanto uma nota prevê a outra, de 0 a 1. Abaixo de 0,3, a prospecção documental explica muito pouco do resultado de campo.</li>' +
+          '<li>Passe o mouse sobre um ponto ou sobre um nome da lista para ligar os dois.</li>' +
         '</ul>' +
       '</div>' +
-      '<div class="ec-card" id="ec-disp">' +
-        '<h3>Nota de gabinete × nota de campo</h3>' +
-        '<p class="sub" id="ec-disp-sub"></p>' +
-        '<div id="ec-disp-svg"></div>' +
-        '<p class="ec-nota" id="ec-disp-nota"></p>' +
+      '<div class="ec-split" id="ec-disp">' +
+        '<div class="ec-card ec-graf">' +
+          '<h3>Nota de gabinete × nota de campo</h3>' +
+          '<p class="sub" id="ec-disp-sub"></p>' +
+          '<div id="ec-disp-svg"></div>' +
+          '<div class="ec-zleg">' +
+            '<span><i style="background:' + COR.sobe + '"></i>o campo encontrou mais</span>' +
+            '<span><i style="background:' + COR.perto + '"></i>ficou perto do previsto</span>' +
+            '<span><i style="background:' + COR.desce + '"></i>o campo encontrou menos</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ec-card ec-analise">' +
+          '<h3>A análise</h3>' +
+          '<div class="ec-metr" id="ec-disp-metr"></div>' +
+          '<p class="ec-mini ec-concl">As médias quase coincidem, mas as posições individuais embaralham. ' +
+            'A prospecção documental acerta a média da carteira e erra o caso individual — que é a ' +
+            'unidade de decisão. O extremo é o <strong>Carbono Social do Bioma Caatinga</strong>: 90 no ' +
+            'gabinete, 40 no campo.</p>' +
+          '<h4 class="ec-lt">Maiores desvios</h4>' +
+          '<ol class="ec-dvlista" id="ec-disp-lista"></ol>' +
+        '</div>' +
       '</div>';
 
-    document.getElementById("ec-disp-rot").addEventListener("change", function (e) {
-      ctrl.rotulos = e.target.value; pinta(); });
     document.getElementById("ec-disp-cls").addEventListener("change", function (e) {
       ctrl.cls = e.target.value; pinta(); });
-    var bAjuda = document.getElementById("ec-disp-ajuda");
-    bAjuda.addEventListener("click", function () {
-      var painel = document.getElementById("ec-disp-expl");
-      var abrir = painel.hidden;
-      painel.hidden = !abrir;
-      bAjuda.setAttribute("aria-expanded", String(abrir));
-      bAjuda.classList.toggle("on", abrir);
+    var bA = document.getElementById("ec-disp-ajuda");
+    bA.addEventListener("click", function () {
+      var pn = document.getElementById("ec-disp-expl"), abrir = pn.hidden;
+      pn.hidden = !abrir; bA.setAttribute("aria-expanded", String(abrir)); bA.classList.toggle("on", abrir);
     });
     pinta();
   })();
