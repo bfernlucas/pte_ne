@@ -60,13 +60,17 @@
       '<button data-sub="carteira">Carteira</button>' +
       '<button data-sub="prospeccao">Prospecção × campo</button>' +
       '<button data-sub="gargalos">Gargalos e potencialidades</button>' +
+      '<button data-sub="captacao">Captação</button>' +
       '<button data-sub="cobertura">Cobertura e lacunas</button>' +
+      '<button data-sub="incursoes">Incursões</button>' +
     '</div>' +
     '<div class="cmp-sub on" id="sub-lista"></div>' +
     '<div class="cmp-sub" id="sub-carteira"></div>' +
     '<div class="cmp-sub" id="sub-prospeccao"></div>' +
     '<div class="cmp-sub" id="sub-gargalos"></div>' +
-    '<div class="cmp-sub" id="sub-cobertura"></div>';
+    '<div class="cmp-sub" id="sub-captacao"></div>' +
+    '<div class="cmp-sub" id="sub-cobertura"></div>' +
+    '<div class="cmp-sub" id="sub-incursoes"></div>';
 
   Array.prototype.forEach.call(document.querySelectorAll("#cmp-nav button"), function (b) {
     b.addEventListener("click", function () {
@@ -169,7 +173,7 @@
           (p.custo_anual && !p.custo_p5 ? ' <span style="font-weight:400;color:var(--faint)">(não utilizável no P5)</span>' : '') + '</dd>' +
         '<dt>Necessidade declarada</dt><dd>' + reais(p.gap) + '</dd>' +
         '<dt>Visita</dt><dd>' + esc(p.data || "—") + ' · ' + esc(p.modo || "—") +
-          (x.municipio ? ' · ' + esc(x.municipio) + "/" + esc(x.estado) : "") + '</dd></dl></div>' +
+          (p.mun ? ' · ' + esc(p.mun) + "/" + esc(p.uf) : "") + '</dd></dl></div>' +
       '<div><h4>O que se apoia</h4><p class="apoio">' + esc(x.apoio) + '</p>' +
         (gargs ? '<h4 style="margin-top:12px">Gargalos</h4><ul style="margin:0;padding-left:17px;font-size:.82rem;line-height:1.5">' + gargs + '</ul>' : '') +
         (pots ? '<h4 style="margin-top:10px">Potencialidades</h4><ul style="margin:0;padding-left:17px;font-size:.82rem;line-height:1.5">' + pots + '</ul>' : '') +
@@ -266,7 +270,23 @@
         barrasFaixa(porPost, function () { return "#1f4da1"; }) +
         '<p class="cmp-nota">Quantificação prévia e Preparação ampla financiam <strong>estudo e ' +
         'fortalecimento</strong>, não a operação. O P5 conclui: “o primeiro movimento é de documentação, ' +
-        'e não de desembolso”.</p></div>';
+        'e não de desembolso”.</p></div>' +
+      '<div class="cmp-card"><h3>Quem compõe cada eixo</h3>' +
+      '<p class="sub">Experiências ordenadas pela pontuação de campo</p>' +
+      '<div class="cmp-eixos">' + Object.keys(EIXOS).map(function (k) {
+        var l = base.filter(function (x) { return x.eixo_cod === k; })
+                    .sort(function (a, b) { return b.total - a.total; });
+        var mn = l.reduce(function (s, x) { return s + x.envelope.min; }, 0);
+        var mx2 = l.reduce(function (s, x) { return s + x.envelope.max; }, 0);
+        return '<div class="cmp-ex"><div class="faixa" style="background:' + EIXOS[k][1] + '"></div>' +
+          '<h4>' + esc(EIXOS[k][0]) + '</h4>' +
+          '<div class="env">' + l.length + ' experiência' + (l.length === 1 ? "" : "s") + ' · ' +
+            (mx2 > 0 ? "R$ " + fmt(mn) + "–" + fmt(mx2) + " mi" : "sem alocação") + '</div>' +
+          (l.length ? '<ol>' + l.map(function (x) {
+            return '<li>' + esc(x.nome) + ' <b>' + x.total + '</b></li>'; }).join("") + '</ol>'
+                    : '<p class="vazio">nenhuma experiência</p>') +
+        '</div>';
+      }).join("") + '</div></div>';
   }
 
   document.getElementById("sub-carteira").innerHTML =
@@ -474,5 +494,102 @@
       '<strong>por vídeo</strong>, não presencialmente' +
       (virtuais.length ? ' (' + virtuais.map(function (x) { return esc(x.nome); }).join(", ") + ')' : "") +
       ' — o que o próprio relatório registra como limitação metodológica.</p></div>';
+  })();
+  /* ------------------------------------------------------------ 6. Captação */
+  (function () {
+    var m = dados.meta || {};
+    var fams = m.captacao || [], mapa = m.postura_mecanismo || {},
+        agendas = m.agendas || [], escala = m.escala || {};
+
+    var porPostura = Object.keys(POSTURAS).filter(function (k) {
+      return exp.some(function (x) { return x.postura === k; });
+    }).map(function (k) {
+      var l = exp.filter(function (x) { return x.postura === k; });
+      var info = mapa[k] || {};
+      return '<div class="cmp-mec"><h4>' + esc(POSTURAS[k]) + ' <span style="font-weight:400;color:var(--faint)">· ' +
+        l.length + ' experiência' + (l.length === 1 ? "" : "s") + '</span></h4>' +
+        '<p>' + esc(info.familias || "—") + '</p>' +
+        (info.obs ? '<p class="at">' + esc(info.obs) + '</p>' : '') + '</div>';
+    }).join("");
+
+    var famHtml = fams.map(function (f) {
+      return '<div class="cmp-mec"><h4>' + esc(f.nome) + '</h4>' +
+        '<p>' + esc(f.aderencia) + '</p>' +
+        '<p class="at"><b>Atenção:</b> ' + esc(f.atencao) + '</p></div>';
+    }).join("");
+
+    var agHtml = agendas.map(function (a, i) {
+      return '<div class="cmp-mec"><h4>' + (i + 1) + '. ' + esc(a.t) + '</h4>' +
+        '<p>' + esc(a.d) + '</p></div>';
+    }).join("");
+
+    var recom = exp.filter(function (x) { return x.classificacao === "alta"; });
+    var acimaPiso = recom.filter(function (x) { return x.envelope.max >= (escala.piso_padrao || 15); }).length;
+    var abaixoRed = recom.filter(function (x) { return x.envelope.max < (escala.piso_reduzido || 5); }).length;
+
+    document.getElementById("sub-captacao").innerHTML =
+      '<div class="cmp-kpis">' +
+        '<div class="cmp-kpi a"><div class="v">' + fams.length + '</div><div class="l">famílias de mecanismos</div></div>' +
+        '<div class="cmp-kpi c"><div class="v">' + acimaPiso + '</div><div class="l">de ' + recom.length +
+          ' alcançam o porte mínimo do fundo regional</div></div>' +
+        '<div class="cmp-kpi"><div class="v" style="color:var(--red)">' + abaixoRed +
+          '</div><div class="l">abaixo até do piso reduzido</div></div>' +
+      '</div>' +
+      '<div class="cmp-card"><h3>A que porta cada grupo bate</h3>' +
+      '<p class="sub">O P5 mapeia mecanismo por postura de apoio, nunca iniciativa a iniciativa</p>' +
+      porPostura +
+      '<p class="cmp-nota">Este é o único mapeamento do documento. Qualquer tabela “iniciativa × mecanismo” ' +
+      'seria derivação nossa, não transcrição — e por isso não existe aqui.</p></div>' +
+      '<div class="cmp-card"><h3>Restrição de escala</h3>' +
+      '<p class="sub">O porte individual não alcança os canais de maior volume</p>' +
+      '<p style="font-size:.88rem;line-height:1.6;margin:0">' + esc(escala.nota || "") + '</p></div>' +
+      '<div class="cmp-card"><h3>As oito famílias de mecanismos</h3>' +
+      '<p class="sub">Aderência à carteira e pontos de atenção</p>' + famHtml + '</div>' +
+      '<div class="cmp-card"><h3>Três agendas coletivas</h3>' +
+      '<p class="sub">Atravessam várias famílias e são pauta da carteira, não pendência individual</p>' +
+      agHtml + '</div>';
+  })();
+
+  /* ----------------------------------------------------------- 7. Incursões */
+  (function () {
+    var ROTAS = {
+      R1: ["Rota 1 · Rio Grande do Norte e Paraíba", "16 a 24 de julho · Lucas Fernandes e Bruna Torquato Pinho"],
+      R2: ["Rota 2 · Ceará e Piauí", "17 a 29 de julho · Leidiane Farias e Renata Mesquita"],
+      R3: ["Roteiro 3 · Pernambuco e Alagoas", "27 a 31 de julho · Sinoel Batista, Tamara Crantschaninov e Luiz Henrique Apollo"],
+      Extra: ["Fora dos roteiros", "Agosto · experiências de maturidade elevada e escala sistêmica"]
+    };
+    function dataNum(d) {
+      if (!d) return 9999;
+      var q = d.split("/");
+      return Number(q[1]) * 100 + Number(q[0]);
+    }
+    var html = Object.keys(ROTAS).map(function (k) {
+      var l = exp.filter(function (x) { return x.rota === k; })
+                 .sort(function (a, b) { return dataNum((a.perfil || {}).data) - dataNum((b.perfil || {}).data); });
+      if (!l.length) return "";
+      var virt = l.filter(function (x) { return (x.perfil || {}).modo === "virtual"; }).length;
+      return '<div class="cmp-rota"><h4>' + esc(ROTAS[k][0]) + '</h4>' +
+        '<p class="meta">' + esc(ROTAS[k][1]) + ' · ' + l.length + ' experiências' +
+        (virt ? ' · ' + virt + ' por vídeo' : '') + '</p>' +
+        '<div class="cmp-tl">' + l.map(function (x) {
+          var q = x.perfil || {};
+          return '<div class="ev' + (q.modo === "virtual" ? " virtual" : "") + '">' +
+            '<div class="d">' + esc(q.data || "data não registrada") +
+              (q.modo === "virtual" ? " · por vídeo" : "") + '</div>' +
+            '<div class="n">' + esc(x.nome) + ' <span class="sc">' + x.total + '</span></div>' +
+            '<div class="l">' + esc(q.mun || x.municipio || "—") +
+              (q.uf ? "/" + esc(q.uf) : "") +
+              ' · ' + esc((EIXOS[x.eixo_cod] || [x.eixo_cod])[0]) + '</div></div>';
+        }).join("") + '</div></div>';
+    }).join("");
+
+    var virtuais = exp.filter(function (x) { return (x.perfil || {}).modo === "virtual"; });
+    document.getElementById("sub-incursoes").innerHTML =
+      '<div class="cmp-card"><h3>As incursões, como aconteceram</h3>' +
+      '<p class="sub">' + exp.length + ' experiências em quatro roteiros, entre 16 de julho e agosto de 2026</p>' +
+      html +
+      '<p class="cmp-nota">Marcador tracejado em âmbar indica avaliação <strong>feita por vídeo</strong> — ' +
+      virtuais.length + ' das ' + exp.length + '. O painel já planeja rotas ótimas na aba Rotas Manuais; ' +
+      'esta é a rota que de fato se percorreu.</p></div>';
   })();
 })();

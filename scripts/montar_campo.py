@@ -129,30 +129,30 @@ ANALISE = {
 # Perfil institucional e agenda da visita. Valores None = nao informado na fonte.
 # custo_anual e gap em reais. Fonte: fichas dos P3/P4 e secao 7 do P5.
 PERFIL = {
- "Consórcio Público da Ibiapaba":   dict(ano=2021, natureza="Consórcio Público", equipe=2, benef="128 catadores · 8 municípios", custo_anual=840_000, gap=None, custo_p5=True, gap_p5=False, data="17/07", modo="presencial"),
- "Instituto Caburé":                dict(ano=2020, natureza="Associação Privada", equipe=0, benef="~1.400 hab. · 30 mulheres", custo_anual=607_400, gap=1_822_200, custo_p5=True, gap_p5=True, data="22/07", modo="virtual"),
- "Fazenda Nutrilite Brasil":        dict(ano=1998, natureza="Sociedade Empresária Ltda.", equipe=226, benef="138 produtores integrados", custo_anual=None, gap=None, data="23/07", modo="presencial"),
- "Trilha Caminhos da Ibiapaba":     dict(ano=2023, natureza="Movimento sem CNPJ", equipe=8, benef="18 comunidades · 6 municípios", custo_anual=421_000, gap=None, custo_p5=True, gap_p5=False, data="28/07", modo="presencial"),
- "No Clima da Caatinga":            dict(ano=2011, natureza="Associação Privada", equipe=32, benef="33.309 pessoas · 40 comunidades", custo_anual=None, gap=None, data="29/07", modo="virtual"),
- "AMAREZ":                          dict(ano=2018, natureza="Associação civil", equipe=13, benef="13 associados", custo_anual=72_000, gap=100_000, custo_p5=False, gap_p5=True, data="16/07", modo="presencial"),
- "CTERSA":                          dict(ano=2026, natureza="Unidade de pesquisa (INSA)", equipe=1, benef="pesquisadores e empresas do semiárido", custo_anual=None, gap=None, data="17/07", modo="presencial"),
- "Tecnologia SARA":                 dict(ano=2019, natureza="Órgão Público Federal", equipe=None, benef="+500 unidades em 9 estados", custo_anual=None, gap=None, data="17/07", modo="presencial"),
- "Projeto Vale Sustentável":        dict(ano=2013, natureza="Associação Privada", equipe=9, benef="11 municípios · 26 comunidades", custo_anual=2_250_000, gap=None, custo_p5=True, gap_p5=False, data="21/07", modo="presencial"),
- "Cooperativa Solar Bem Viver":     dict(ano=2015, natureza="Sociedade Cooperativa", equipe=0, benef="26 cooperados", custo_anual=None, gap=None, data="22/07", modo="presencial"),
- "Um Milhão de Tetos Solares":      dict(ano=2024, natureza="Associação Privada", equipe=None, benef="100 famílias · 100 jovens", custo_anual=None, gap=None, data="23/07", modo="presencial"),
- "Instituto Casaca de Couro":       dict(ano=2003, natureza="Associação Privada", equipe=7, benef="984 famílias · 71 municípios", custo_anual=None, gap=None, data="23/07", modo="presencial"),
- "Porto Digital — Recife":          dict(ano=2000, natureza="Organização Social + ICT", equipe=150, benef="~600 empresas · 24 mil postos", custo_anual=None, gap=None, data="27/07", modo="presencial"),
- "Programa Terra Plantar":          dict(ano=2022, natureza="Órgão Público Estadual", equipe=None, benef="+100 mil agricultores · 184 municípios", custo_anual=None, gap=None, custo_p5=False, gap_p5=True, data="27/07", modo="presencial"),
- "Banco Comunitário de Araçoiaba":  dict(ano=2024, natureza="Não localizada", equipe=3, benef="~500 pessoas · 11 estabelecimentos", custo_anual=None, gap=None, data="28/07", modo="presencial"),
- "Acreditar Microcrédito":          dict(ano=2006, natureza="OSCIP", equipe=32, benef="~20 mil beneficiários acumulados", custo_anual=650_000, gap=10000000, custo_p5=False, gap_p5=True, data="29/07", modo="presencial"),
- "Porto Digital — Caruaru":         dict(ano=2016, natureza="Organização Social + ICT", equipe=None, benef="11 empresas · 34 profissionais", custo_anual=None, gap=None, data="29/07", modo="presencial"),
- "Carbono Social do Bioma Caatinga":dict(ano=2020, natureza="Associação Privada", equipe=None, benef="8 municípios do Alto Sertão", custo_anual=None, gap=None, data="30/07", modo="presencial"),
- "Cooperativa Pindorama":           dict(ano=1956, natureza="Sociedade Cooperativa", equipe=6, benef="1.100 associados · ~30 mil pessoas", custo_anual=None, gap=None, data="31/07", modo="presencial"),
- "Rede Xique Xique":                dict(ano=2004, natureza="Rede + cooperativa", equipe=None, benef="~1.000 vinculadas · 80% mulheres", custo_anual=None, gap=None, data=None, modo="presencial"),
- "Fazenda Tamanduá":                dict(ano=1977, natureza="Empresa privada", equipe=None, benef="2.717 ha · RPPN de 381,8 ha", custo_anual=None, gap=None, data=None, modo="presencial"),
- "Sistema Metroviário do Ceará":    dict(ano=1997, natureza="Empresa estadual", equipe=None, benef="16,4 mi de passageiros/ano", custo_anual=None, gap=400_000_000, custo_p5=False, gap_p5=True, data="06/08", modo="presencial"),
- "EMBRAPII IA — IFCE":              dict(ano=2015, natureza="Unidade EMBRAPII (IFCE)", equipe=None, benef="186 empresas · +3.000 estudantes", custo_anual=None, gap=27_000_000, custo_p5=False, gap_p5=True, data="06/08", modo="presencial"),
- "Blue C":                          dict(ano=2017, natureza="Empresa (deep tech)", equipe=5, benef="4 famílias produtoras", custo_anual=10_000, gap=20_000, custo_p5=True, gap_p5=True, data="07/08", modo="presencial"),
+ "Consórcio Público da Ibiapaba":   dict(ano=2021, natureza="Consórcio Público", equipe=2, benef="128 catadores · 8 municípios", custo_anual=840_000, gap=None, custo_p5=True, gap_p5=False, mun="Tianguá", uf="CE", data="17/07", modo="presencial"),
+ "Instituto Caburé":                dict(ano=2020, natureza="Associação Privada", equipe=0, benef="~1.400 hab. · 30 mulheres", custo_anual=607_400, gap=1_822_200, custo_p5=True, gap_p5=True, mun="Cajueiro da Praia", uf="PI", data="22/07", modo="virtual"),
+ "Fazenda Nutrilite Brasil":        dict(ano=1998, natureza="Sociedade Empresária Ltda.", equipe=226, benef="138 produtores integrados", custo_anual=None, gap=None, mun="Ubajara", uf="CE", data="23/07", modo="presencial"),
+ "Trilha Caminhos da Ibiapaba":     dict(ano=2023, natureza="Movimento sem CNPJ", equipe=8, benef="18 comunidades · 6 municípios", custo_anual=421_000, gap=None, custo_p5=True, gap_p5=False, mun="Viçosa do Ceará", uf="CE", data="28/07", modo="presencial"),
+ "No Clima da Caatinga":            dict(ano=2011, natureza="Associação Privada", equipe=32, benef="33.309 pessoas · 40 comunidades", custo_anual=None, gap=None, mun="Crateús", uf="CE", data="29/07", modo="virtual"),
+ "AMAREZ":                          dict(ano=2018, natureza="Associação civil", equipe=13, benef="13 associados", custo_anual=72_000, gap=100_000, custo_p5=False, gap_p5=True, mun="Arez", uf="RN", data="16/07", modo="presencial"),
+ "CTERSA":                          dict(ano=2026, natureza="Unidade de pesquisa (INSA)", equipe=1, benef="pesquisadores e empresas do semiárido", custo_anual=None, gap=None, mun="Campina Grande", uf="PB", data="17/07", modo="presencial"),
+ "Tecnologia SARA":                 dict(ano=2019, natureza="Órgão Público Federal", equipe=None, benef="+500 unidades em 9 estados", custo_anual=None, gap=None, mun="Campina Grande", uf="PB", data="17/07", modo="presencial"),
+ "Projeto Vale Sustentável":        dict(ano=2013, natureza="Associação Privada", equipe=9, benef="11 municípios · 26 comunidades", custo_anual=2_250_000, gap=None, custo_p5=True, gap_p5=False, mun="Assú", uf="RN", data="21/07", modo="presencial"),
+ "Cooperativa Solar Bem Viver":     dict(ano=2015, natureza="Sociedade Cooperativa", equipe=0, benef="26 cooperados", custo_anual=None, gap=None, mun="Maturéia", uf="PB", data="22/07", modo="presencial"),
+ "Um Milhão de Tetos Solares":      dict(ano=2024, natureza="Associação Privada", equipe=None, benef="100 famílias · 100 jovens", custo_anual=None, gap=None, mun="Remígio", uf="PB", data="23/07", modo="presencial"),
+ "Instituto Casaca de Couro":       dict(ano=2003, natureza="Associação Privada", equipe=7, benef="984 famílias · 71 municípios", custo_anual=None, gap=None, mun="Pirpirituba", uf="PB", data="23/07", modo="presencial"),
+ "Porto Digital — Recife":          dict(ano=2000, natureza="Organização Social + ICT", equipe=150, benef="~600 empresas · 24 mil postos", custo_anual=None, gap=None, mun="Recife", uf="PE", data="27/07", modo="presencial"),
+ "Programa Terra Plantar":          dict(ano=2022, natureza="Órgão Público Estadual", equipe=None, benef="+100 mil agricultores · 184 municípios", custo_anual=None, gap=None, custo_p5=False, gap_p5=True, mun="Recife", uf="PE", data="27/07", modo="presencial"),
+ "Banco Comunitário de Araçoiaba":  dict(ano=2024, natureza="Não localizada", equipe=3, benef="~500 pessoas · 11 estabelecimentos", custo_anual=None, gap=None, mun="Araçoiaba", uf="PE", data="28/07", modo="presencial"),
+ "Acreditar Microcrédito":          dict(ano=2006, natureza="OSCIP", equipe=32, benef="~20 mil beneficiários acumulados", custo_anual=650_000, gap=10000000, custo_p5=False, gap_p5=True, mun="Glória do Goitá", uf="PE", data="29/07", modo="presencial"),
+ "Porto Digital — Caruaru":         dict(ano=2016, natureza="Organização Social + ICT", equipe=None, benef="11 empresas · 34 profissionais", custo_anual=None, gap=None, mun="Caruaru", uf="PE", data="29/07", modo="presencial"),
+ "Carbono Social do Bioma Caatinga":dict(ano=2020, natureza="Associação Privada", equipe=None, benef="8 municípios do Alto Sertão", custo_anual=None, gap=None, mun="Delmiro Gouveia", uf="AL", data="30/07", modo="presencial"),
+ "Cooperativa Pindorama":           dict(ano=1956, natureza="Sociedade Cooperativa", equipe=6, benef="1.100 associados · ~30 mil pessoas", custo_anual=None, gap=None, mun="Coruripe", uf="AL", data="31/07", modo="presencial"),
+ "Rede Xique Xique":                dict(ano=2004, natureza="Rede + cooperativa", equipe=None, benef="~1.000 vinculadas · 80% mulheres", custo_anual=None, gap=None, mun="Mossoró", uf="RN", data=None, modo="presencial"),
+ "Fazenda Tamanduá":                dict(ano=1977, natureza="Empresa privada", equipe=None, benef="2.717 ha · RPPN de 381,8 ha", custo_anual=None, gap=None, mun="Patos", uf="PB", data=None, modo="presencial"),
+ "Sistema Metroviário do Ceará":    dict(ano=1997, natureza="Empresa estadual", equipe=None, benef="16,4 mi de passageiros/ano", custo_anual=None, gap=400_000_000, custo_p5=False, gap_p5=True, mun="Fortaleza", uf="CE", data="06/08", modo="presencial"),
+ "EMBRAPII IA — IFCE":              dict(ano=2015, natureza="Unidade EMBRAPII (IFCE)", equipe=None, benef="186 empresas · +3.000 estudantes", custo_anual=None, gap=27_000_000, custo_p5=False, gap_p5=True, mun="Fortaleza", uf="CE", data="06/08", modo="presencial"),
+ "Blue C":                          dict(ano=2017, natureza="Empresa (deep tech)", equipe=5, benef="4 famílias produtoras", custo_anual=10_000, gap=20_000, custo_p5=True, gap_p5=True, mun="Flecheiras", uf="CE", data="07/08", modo="presencial"),
 }
 
 # Correspondencias que o cruzamento por tokens nao acha (nomes muito distintos
@@ -170,6 +170,65 @@ REF_OVERRIDES = {
 NOVAS_EM_CAMPO = {
     "CTERSA":            {"municipio": "Campina Grande", "estado": "PB", "lat": -7.2306, "lon": -35.8811},
     "Instituto Caburé":  {"municipio": "Cajueiro da Praia", "estado": "PI", "lat": -2.9333, "lon": -41.3417},
+}
+
+# ---------------------------------------------------------------------------
+# Secao 7.4 do P5: familias de mecanismos de captacao e a aproximacao
+# postura -> familia. O documento nunca mapeia mecanismo a iniciativa
+# nominalmente; o mapa e por grupo, e assim fica registrado aqui.
+# ---------------------------------------------------------------------------
+CAPTACAO = [
+ {"nome": "Instrumentos do Plano de Transformação Ecológica nacional",
+  "aderencia": "Carteira integralmente climática; o PTE-NE é desdobramento territorial do plano nacional",
+  "atencao": "Desenhados para operações de valor elevado e de acesso tecnicamente complexo. A classificação na Taxonomia Sustentável Brasileira tende a virar requisito de elegibilidade."},
+ {"nome": "Canal regional em capitalização — NBD e AFD via FDNE/Sudene",
+  "aderencia": "O fluxo internacional mais diretamente destinado ao Nordeste",
+  "atencao": "Porte mínimo de R$ 15 a 20 mi, com redução excepcional a R$ 5 mi, e contrapartida de 20%. Nenhuma iniciativa da carteira acessou a Sudene."},
+ {"nome": "Fundos climáticos internacionais",
+  "aderencia": "Experiências de infraestrutura verde-azul e bioeconomia",
+  "atencao": "Exigem personalidade jurídica própria, entidade acreditada como intermediária, salvaguardas e sistemas de mensuração — pré-condições que parte da carteira não atende."},
+ {"nome": "Fundos constitucionais e crédito de desenvolvimento",
+  "aderencia": "Operações com capacidade de endividamento: cooperativas, empresas e ICTs",
+  "atencao": "Garantias e regularidade contábil. Parte das organizações não comporta dívida."},
+ {"nome": "Fundos socioambientais privados e filantropia",
+  "aderencia": "Organizações de base comunitária, várias com histórico nessas fontes",
+  "atencao": "Apoios pontuais e de menor volume. Não financiam ativo pesado nem custeio prolongado."},
+ {"nome": "Mercado de carbono e pagamento por serviços ambientais",
+  "aderencia": "Conservação e restauração da Caatinga, com base fundiária definida",
+  "atencao": "A ausência de metodologia consolidada de contabilização para a Caatinga ainda bloqueia a monetização."},
+ {"nome": "Compras públicas e mercados institucionais",
+  "aderencia": "Comercialização solidária e produção da agricultura familiar",
+  "atencao": "Certificação, habilitação sanitária e logística de entrega."},
+ {"nome": "Parcerias público-privadas, concessões e contratos de gestão",
+  "aderencia": "Infraestrutura de grande porte e equipamentos públicos",
+  "atencao": "Modelagem jurídica específica e prazos longos de estruturação."},
+]
+
+POSTURA_MECANISMO = {
+ "direto":        {"familias": "Blended finance e capital catalítico · fundos socioambientais privados",
+                   "obs": "Perfil compatível com tranche de primeira perda."},
+ "condicionado":  {"familias": "Crédito de desenvolvimento · PPPs · mercado de carbono, onde couber",
+                   "obs": "O dado que falta define o instrumento: sem custo apurado o crédito é inviável; sem necessidade quantificada a parceria não se modela."},
+ "quantificacao": {"familias": "Sublinha de estruturação de projetos do Eco Invest · assistência técnica de organismos de cooperação",
+                   "obs": "A correspondência mais direta do mapa: essas experiências precisam exatamente do produto que a sublinha oferece."},
+ "preparacao":    {"familias": "Fundos socioambientais privados · filantropia · emendas e fundos estaduais",
+                   "obs": "Volumes pequenos e finalidade institucional."},
+ "preparatorio":  {"familias": "Fundos socioambientais privados · filantropia · emendas e fundos estaduais",
+                   "obs": "O envelope financia a remoção da pré-condição, não a operação."},
+}
+
+AGENDAS = [
+ {"t": "Metodologia de contabilização de carbono para a Caatinga",
+  "d": "Inexistente. Bloqueia ao mesmo tempo o mecanismo de maior potencial de receita recorrente e o eixo de maior peso. O Vale Sustentável já mensurou mais de 1.700 t sem conseguir monetizar; suas áreas são a base empírica natural."},
+ {"t": "Formalização jurídica",
+  "d": "A Trilha opera sem personalidade jurídica, o CTERSA aponta a configuração jurídica como gargalo primário e a AMAREZ estuda a transição de modelo. Enquanto não se resolve, os canais de maior volume permanecem fechados independentemente do mérito técnico."},
+ {"t": "Previsibilidade plurianual",
+  "d": "Gargalo mais determinante que o volume. Formatos de âncora de médio prazo: contrato de gestão, fundo territorial, chamada permanente. O Fundo Caatinga, em estudo por uma das organizações, é a referência citada."},
+]
+
+ESCALA = {
+ "piso_padrao": 15.0, "piso_reduzido": 5.0,
+ "nota": "Individualmente, apenas 2 das 15 recomendadas alcançam o porte mínimo padrão do fundo regional e 5 ficam abaixo até do piso reduzido. Agregadas por eixo, Infraestrutura Verde-Azul e Adensamento Tecnológico superam o piso padrão com folga; Finanças e Transição Energética superam o reduzido; Bioeconomia permanece abaixo de qualquer patamar mesmo somada. Daí a proposta de tratar a carteira como programa único, com subprojetos sob agente credenciado."
 }
 
 PESOS = {"impacto": 30, "inovacao": 30, "operacao": 25, "investimento": 15}
@@ -246,6 +305,10 @@ def main():
             "total": len(saida),
         "gargalos": GARGALOS,
         "potenciais": POTENCIAIS,
+        "captacao": CAPTACAO,
+        "postura_mecanismo": POSTURA_MECANISMO,
+        "agendas": AGENDAS,
+        "escala": ESCALA,
         },
         "experiencias": saida,
     }
