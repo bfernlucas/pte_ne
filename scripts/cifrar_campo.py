@@ -38,9 +38,14 @@ def main() -> int:
         return 1
 
     senha = args.senha or getpass.getpass("Senha da equipe: ")
-    if len(senha) < 12:
-        print("ERRO: use ao menos 12 caracteres.", file=sys.stderr)
+    if len(senha) < 8:
+        print("ERRO: use ao menos 8 caracteres.", file=sys.stderr)
         return 1
+    if len(senha) < 16:
+        print("AVISO: senha curta. O arquivo cifrado e publico, entao pode ser\n"
+              "       testada offline sem limite de tentativas. Evite padroes\n"
+              "       previsiveis (sigla do projeto + ano, por exemplo).",
+              file=sys.stderr)
 
     dados = json.load(open(SRC, encoding="utf-8"))
     claro = json.dumps(dados, ensure_ascii=False, separators=(",", ":")).encode("utf-8")

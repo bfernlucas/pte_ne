@@ -2,6 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
+<script src="assets/data/campo.enc.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>if(!window.PTEAuth||!PTEAuth.dados())location.replace("entrar.html");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Plano Brasil Nordeste - Incursões</title>
 
@@ -21,10 +24,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
 <link rel="stylesheet" href="assets/css/dashboard.css?v=66" />
+<link rel="stylesheet" href="assets/css/campo.css?v=1" />
 <style>
-.area-restrita{align-self:flex-start;margin-left:auto;font-size:.78rem;color:#fff;text-decoration:none;
+.sair-link{align-self:flex-start;margin-left:auto;font-size:.78rem;color:#fff;text-decoration:none;
   border:1px solid rgba(255,255,255,.35);padding:6px 13px;border-radius:999px;white-space:nowrap}
-.area-restrita:hover{background:rgba(255,255,255,.12)}
+.sair-link:hover{background:rgba(255,255,255,.12)}
 </style>
 </head>
 <body>
@@ -36,7 +40,7 @@
     </div>
   </div>
   <div id="kpis" class="kpis"></div>
-  <a class="area-restrita" href="entrar.html" title="Evidência das incursões de campo">&#128274; Área restrita</a>
+  <a class="sair-link" href="#" id="sair">Sair</a>
 </header>
 
 <div class="hills" aria-hidden="true">
@@ -54,6 +58,7 @@
   <button data-view="analises">Análises</button>
   <button data-view="rota-manual">Rotas Manuais de Campo</button>
   <button data-view="comparar">Comparar</button>
+  <button data-view="campo">Evidência de campo</button>
 </nav>
 
 <section class="filters" id="filters">
@@ -257,6 +262,11 @@
     <div class="cmp-matrix" id="cmp-matrix"></div>
     <div class="cmp-cards" id="cmp-cards"></div>
   </div>
+
+  <div class="view hidden" id="view-campo">
+    <!-- preenchido por assets/js/campo.js -->
+  </div>
+
 </main>
 
 <section class="parceiros">
@@ -277,5 +287,11 @@
 <script src="assets/js/rota.js?v=66"></script>
 <script src="assets/js/dashboard.js?v=66"></script>
 <script src="assets/js/export.js?v=66"></script>
+<script src="assets/js/campo.js?v=1"></script>
+<script>
+document.getElementById("sair").addEventListener("click",function(e){
+  e.preventDefault();PTEAuth.sair();location.replace("entrar.html");
+});
+</script>
 </body>
 </html>

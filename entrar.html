@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Área restrita — Plano Brasil Nordeste</title>
+<title>Entrar — Plano Brasil Nordeste</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -58,7 +58,7 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
 <header class="topo">
   <div class="inner">
     <h1>Plano Brasil Nordeste — Incursões</h1>
-    <p>Área restrita · evidência das incursões de campo</p>
+    <p>Plano Brasil Nordeste de Transformação Ecológica · acesso restrito</p>
   </div>
 </header>
 <div class="hills" aria-hidden="true">
@@ -71,25 +71,24 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
 <main>
   <form class="card" id="form" autocomplete="on">
     <h2>Acesso da equipe</h2>
-    <p class="lede">Esta área reúne a sistematização das três incursões: notas por dimensão, classificação e estimativas de recurso por experiência.</p>
+    <p class="lede">O painel reúne as iniciativas mapeadas, o planejamento das incursões e a evidência de campo dos Produtos 3, 4 e 5.</p>
 
     <div class="aviso erro" id="erro" role="alert"></div>
     <div class="aviso info" id="info" role="status"></div>
 
     <label for="usuario">Usuário</label>
-    <input type="text" id="usuario" name="usuario" value="equipe" autocomplete="username" required />
+    <input type="text" id="usuario" name="usuario" autocomplete="username" required />
 
     <label for="senha">Senha</label>
     <input type="password" id="senha" name="senha" autocomplete="current-password" required
-           placeholder="XXXXX-XXXXX-XXXXX-XXXXX" />
+/>
 
     <button type="submit" id="btn">Entrar</button>
 
-    <p class="nota">Os dados desta área são publicados apenas cifrados (AES-256-GCM). A senha não é conferida por um servidor: ela é o que decifra o conteúdo. Por isso não há recuperação — se for perdida, a equipe gera outra e republica.</p>
+    <p class="nota">A evidência de campo é publicada apenas cifrada (AES-256-GCM) e a senha é o que a decifra — não há conferência em servidor, e por isso não há recuperação. Se a senha se perder, a equipe gera outra e republica.</p>
   </form>
 </main>
 
-<p class="volta"><a href="./">← Voltar ao painel público</a></p>
 
 <script src="assets/data/campo.enc.js"></script>
 <script src="assets/js/auth.js"></script>
@@ -101,8 +100,8 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
   var info = document.getElementById("info");
 
   var params = new URLSearchParams(location.search);
-  var destino = params.get("destino") || "restrito.html";
-  if (!/^[a-z0-9._-]+\.html$/i.test(destino)) destino = "restrito.html";
+  var destino = params.get("destino") || "index.html";
+  if (!/^[a-z0-9._-]+\.html$/i.test(destino)) destino = "index.html";
 
   if (PTEAuth.dados()) location.replace(destino);
 

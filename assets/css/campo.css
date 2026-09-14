@@ -1,0 +1,63 @@
+/* Modulo: Evidencia das incursoes de campo (aba "Evidencia de campo").
+   Classes prefixadas com cmp- para nao colidir com dashboard.css. */
+
+.cmp-intro{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;margin-bottom:14px;font-size:.86rem;line-height:1.6;color:var(--muted)}
+.cmp-intro strong{color:var(--ink)}
+
+.cmp-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-bottom:16px}
+.cmp-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px}
+.cmp-kpi .v{font-family:var(--display);font-size:1.6rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.cmp-kpi .l{font-size:.74rem;color:var(--muted);margin-top:2px}
+.cmp-kpi.a .v{color:var(--brand-2)} .cmp-kpi.b .v{color:var(--green)} .cmp-kpi.c .v{color:var(--orange)}
+
+.cmp-filtros{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px}
+.cmp-filtros select,.cmp-filtros input{font-family:var(--font);font-size:.86rem;padding:8px 10px;
+  border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--ink)}
+.cmp-filtros input{min-width:210px}
+.cmp-filtros button{font-family:var(--font);font-size:.84rem;padding:8px 12px;border:1px solid var(--border);
+  border-radius:8px;background:var(--surface-2);color:var(--ink);cursor:pointer}
+.cmp-filtros .cnt{font-size:.8rem;color:var(--muted);margin-left:auto}
+
+.cmp-tw{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow-x:auto}
+.cmp-tw table{width:100%;border-collapse:collapse;font-size:.86rem}
+.cmp-tw th{text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+  font-weight:500;padding:11px 12px;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--surface-2)}
+.cmp-tw td{padding:10px 12px;border-bottom:1px solid var(--border-2);vertical-align:middle}
+.cmp-tw tbody tr[data-n]{cursor:pointer}
+.cmp-tw tbody tr[data-n]:hover{background:var(--surface-2)}
+.cmp-tw td.n{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.cmp-tw td.nome{font-weight:500;min-width:210px}
+
+.cmp-eixo{display:inline-block;font-size:.68rem;font-weight:500;padding:2px 7px;border-radius:4px;color:#fff;white-space:nowrap}
+.cmp-cls{display:inline-block;font-size:.7rem;font-weight:500;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.cmp-cls.alta{background:#e6f4e4;color:#2c6b23;border:1px solid #c3e5bd}
+.cmp-cls.estrategico{background:#fff2d6;color:#9a5b00;border:1px solid #f3d08a}
+.cmp-cls.nao{background:#fdecea;color:#a5241a;border:1px solid #f5c6c2}
+
+.cmp-dims{display:flex;gap:3px;align-items:flex-end;height:22px}
+.cmp-dims i{width:7px;border-radius:1px;display:block;background:var(--brand-2);opacity:.85}
+
+.cmp-ev{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px}
+.cmp-ev.completa{background:var(--green)}
+.cmp-ev.parcial{background:var(--amber)}
+.cmp-ev.ausente{background:#d9dde6;border:1px solid #c3c9d6}
+
+.cmp-det{background:var(--surface-2)}
+.cmp-det td{padding:16px 18px}
+.cmp-det .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:16px}
+.cmp-det h4{font-family:var(--display);font-size:.92rem;font-weight:600;margin:0 0 7px}
+.cmp-det dl{margin:0;font-size:.84rem;line-height:1.65}
+.cmp-det dt{color:var(--muted);font-size:.73rem;text-transform:uppercase;letter-spacing:.04em}
+.cmp-det dd{margin:0 0 9px;font-weight:500}
+.cmp-det .apoio{font-size:.88rem;line-height:1.6;color:var(--ink);margin:0}
+.cmp-barra{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.cmp-barra .t{flex:0 0 96px;color:var(--muted);font-size:.75rem}
+.cmp-barra .b{flex:1;height:7px;background:#e7e9f1;border-radius:4px;overflow:hidden}
+.cmp-barra .b span{display:block;height:100%;background:var(--brand-2);border-radius:4px}
+.cmp-barra .v{flex:0 0 68px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:.75rem}
+
+.cmp-rodape{font-size:.74rem;color:var(--faint);line-height:1.65;margin-top:16px}
+
+@media(max-width:640px){.cmp-filtros .cnt{margin-left:0;flex-basis:100%}}
