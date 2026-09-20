@@ -73,3 +73,22 @@ A camada de evidência de campo é publicada apenas cifrada
 
 - Senha atual é previsível (sigla + ano) e o arquivo cifrado é público,
   logo testável offline. Repositório privado eliminaria a exposição.
+
+## Fluxo de trabalho com o Claude (Cowork)
+
+O contêiner da sessão não tem credencial de escrita neste repositório
+(o proxy só injeta credencial para repositórios autorizados na sessão, e
+não há ferramenta para autorizar de dentro dela). O fluxo validado é:
+
+- **Clone de trabalho:** `C:\Users\Lucas\pte_ne` (fora do OneDrive de propósito).
+- **Editar:** direto no clone, pela ponte do desktop (`sed -i` / Python
+  read-modify-write). Só o trecho alterado trafega — nunca reescrever
+  arquivo inteiro a partir de saída de ferramenta.
+- **Git:** sempre pelo Windows, shell `cmd.exe` (PowerShell polui a saída
+  com `NativeCommandError` e engole variáveis `$`). Credencial: `gh` logado
+  como `bfernlucas`, escopo `repo`.
+- **Nunca rodar git pelo shell Linux da ponte:** o `core.autocrlf=true` do
+  Git for Windows deixa CRLF no disco e o git Linux enxerga todos os
+  arquivos de texto como modificados (diff falso de ~11 mil linhas).
+- **Não usar a API de conteúdo do GitHub para editar:** ela exige o arquivo
+  inteiro em base64 a cada alteração — dezenas de KB para trocar uma linha.
