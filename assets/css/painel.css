@@ -145,6 +145,18 @@ td.nome{font-weight:500;min-width:230px}
 td.nome small{display:block;font-weight:400;color:var(--faint);font-size:.76rem}
 .vazio{color:var(--faint)}
 
+/* ranking: cabe na largura da página, sem rolagem lateral */
+table.ranking{table-layout:fixed;font-size:.8rem}
+table.ranking thead th{padding:8px 7px;font-size:.68rem;letter-spacing:.04em;white-space:normal;line-height:1.25}
+table.ranking thead th small{white-space:normal}
+table.ranking tbody td{padding:7px 7px;overflow-wrap:anywhere}
+table.ranking td.nome{min-width:0}
+table.ranking td.nome small{font-size:.72rem;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+table.ranking td.loc small{display:block;color:var(--faint);font-size:.72rem}
+table.ranking td.nat{font-size:.76rem;color:var(--muted)}
+table.ranking .tag{font-size:.62rem;padding:2px 5px}
+table.ranking .pill-campo{font-size:.6rem}
+
 /* ------------------------------------------------------------------- tags */
 .tag{
   display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;

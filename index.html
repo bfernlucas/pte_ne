@@ -5,7 +5,7 @@
 <script src="assets/data/campo.enc.js?v=70"></script>
 <script src="assets/data/p5.enc.js?v=70"></script>
 <script src="assets/js/auth.js?v=70"></script>
-<script>if(!window.PTEAuth||!PTEAuth.dados())location.replace("entrar.html");</script>
+<script>if(!window.PTEAuth)location.replace("entrar.html");else PTEAuth.exigir();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Painel PTE-NE — carteira e incursões de campo</title>
 
@@ -34,7 +34,7 @@
       <span>Transformação Ecológica · carteira e incursões de campo</span>
     </div>
     <div class="fim">
-      <span class="selo">Produto 5 B · uso restrito</span>
+      <span class="selo">Relatório final · uso restrito</span>
       <a class="sair-link" href="#" id="sair">Sair</a>
     </div>
   </div>
@@ -46,7 +46,6 @@
     <button data-view="mapa">Mapa</button>
     <button data-view="experiencias">Experiências de campo</button>
     <button data-view="analise">Análise</button>
-    <button data-view="metodo">Método e downloads</button>
   </div>
 </nav>
 
@@ -65,20 +64,20 @@
   <div class="bloco">
     <h3>Trajetória do valor da carteira</h3>
     <p class="sub">Do bloco de recursos ao componente do apoio, passando pelo eixo e pela postura de cada
-      experiência. A espessura de cada fluxo é o valor máximo estimado. Figura 7.10 do Produto 5 B.</p>
+      experiência. A espessura de cada fluxo é o valor máximo estimado. Figura 7.10 do relatório final.</p>
     <div class="exp-bar">
       <span class="exp-lab">Exportar:</span>
       <button class="exp-btn" data-exp="png" data-target="#fig-aluvial" data-name="trajetoria-valor">PNG</button>
     </div>
     <div id="fig-aluvial" class="figura" style="border:0"></div>
-    <p class="nota-fonte"><b>Fonte:</b> Produto 5 B, seção 7.3. Valores máximos em R$ milhões,
+    <p class="nota-fonte"><b>Fonte:</b> relatório final, seção 7.3. Valores máximos em R$ milhões,
       preços de setembro de 2026, horizonte de 36 meses.</p>
   </div>
 
   <div class="bloco">
     <h3>Ranking das iniciativas</h3>
     <p class="sub">Todas as iniciativas da base de prospecção. Duas notas convivem e não são comparáveis entre si:
-      a <b>nota da matriz</b> avalia toda a base em dez critérios; a <b>pontuação P5</b> (0 a 100) só existe
+      a <b>nota da matriz</b> avalia toda a base em dez critérios; a <b>pontuação final</b> (0 a 100) só existe
       para as organizações com ficha de campo. Marque linhas para comparar perfis.</p>
     <div class="barra">
       <input type="search" id="f-busca" placeholder="Buscar iniciativa, organização ou município…" />
@@ -98,26 +97,30 @@
               data-title="Ranking das iniciativas">PDF</button>
     </div>
     <div class="tbl-scroll">
-      <table id="tbl-ranking">
+      <table id="tbl-ranking" class="ranking">
+        <colgroup>
+          <col style="width:30px"><col style="width:26%"><col style="width:11%"><col style="width:52px">
+          <col style="width:13%"><col style="width:7%"><col style="width:7%"><col style="width:7%">
+          <col style="width:12%"><col style="width:8.5%"><col style="width:8.5%">
+        </colgroup>
         <thead><tr>
-          <th style="width:34px"></th>
+          <th></th>
           <th data-sort="nome">Iniciativa<span class="arr"></span></th>
-          <th data-sort="municipio">Município<span class="arr"></span></th>
-          <th data-sort="uf">UF<span class="arr"></span></th>
+          <th data-sort="municipio">Local<span class="arr"></span></th>
           <th data-sort="eixo">Eixo<span class="arr"></span></th>
           <th data-sort="natureza">Natureza jurídica<span class="arr"></span></th>
-          <th data-sort="matriz" class="num">Nota<small>matriz, 0–30</small><span class="arr"></span></th>
+          <th data-sort="matriz" class="num">Nota<span class="arr"></span><small>matriz, 0–30</small></th>
           <th data-sort="campo">Campo<span class="arr"></span></th>
-          <th data-sort="p5" class="num">Pontuação<small>P5, 0–100</small><span class="arr"></span></th>
+          <th data-sort="p5" class="num">Pontuação<span class="arr"></span><small>final, 0–100</small></th>
           <th data-sort="postura">Postura de apoio<span class="arr"></span></th>
-          <th data-sort="blocoa" class="num">Bloco A<small>R$ mi, mín–máx</small><span class="arr"></span></th>
-          <th data-sort="blocob" class="num">Bloco B<small>R$ mi, mín–máx</small><span class="arr"></span></th>
+          <th data-sort="blocoa" class="num">Bloco A<span class="arr"></span><small>R$ mi, mín–máx</small></th>
+          <th data-sort="blocob" class="num">Bloco B<span class="arr"></span><small>R$ mi, mín–máx</small></th>
         </tr></thead>
         <tbody id="tb-ranking"></tbody>
       </table>
     </div>
     <p class="nota-fonte"><b>Fonte:</b> matriz de prospecção (PTE2026_matriz_dashboard.xlsx) e
-      seção 7 do Produto 5 B. Bloco A = recursos contratáveis nesta etapa; Bloco B = referência indicativa.</p>
+      seção 7 do relatório final. Bloco A = recursos contratáveis nesta etapa; Bloco B = referência indicativa.</p>
 
     <div class="cmp-drawer hidden" id="cmp-drawer">
       <div class="cmp-head">
@@ -162,7 +165,7 @@
     <div id="map-geral" class="map"></div>
     <aside class="map-side" id="map-side"><p class="ph">Clique em um ponto para ver a ficha da iniciativa.</p></aside>
   </div>
-  <p class="nota-fonte"><b>Fonte:</b> matriz de prospecção e tabela de rotas da seção 2 do Produto 5 B.
+  <p class="nota-fonte"><b>Fonte:</b> matriz de prospecção e tabela de rotas da seção 2 do relatório final.
     Iniciativas de alcance multiestadual aparecem na coordenada da sede.</p>
 </section>
 
@@ -171,17 +174,17 @@
   <div class="sec-head">
     <h2>Experiências de campo</h2>
     <p id="exp-lead">As organizações visitadas ou entrevistadas nas incursões, na ordem em que foram
-      percorridas. Cada ficha traz a avaliação do Produto 5 e a faixa de recursos estimada.</p>
+      percorridas. Cada ficha traz a avaliação do relatório final e a faixa de recursos estimada.</p>
   </div>
 
   <div class="bloco">
     <h3>Rotas efetivamente realizadas</h3>
-    <p class="sub">Conforme a tabela da seção 2 do Produto 5 B. A rota extra, em agosto, foi feita por três
+    <p class="sub">Conforme a tabela da seção 2 do relatório final. A rota extra, em agosto, foi feita por três
       equipes: voltou ao Rio Grande do Norte, à Paraíba e ao Ceará e levou a primeira incursão à Bahia.</p>
     <div class="rotas-nav" id="rotas-nav"></div>
     <p class="rota-info" id="rota-info"></p>
     <div class="fichas" id="fichas"></div>
-    <p class="nota-fonte"><b>Fonte:</b> fichas de campo das incursões e seção 7 do Produto 5 B.
+    <p class="nota-fonte"><b>Fonte:</b> fichas de campo das incursões e seção 7 do relatório final.
       Faixas em R$ milhões, preços de setembro de 2026, horizonte de 36 meses, Classe 5 da AACE International.</p>
   </div>
 
@@ -196,73 +199,58 @@
 <section class="view hidden" id="view-analise">
   <div class="sec-head">
     <h2>Análise da carteira</h2>
-    <p>O que a seção 7 do Produto 5 B mostra sobre a situação financeira das organizações visitadas,
-      o tamanho da carteira estimada e como esse valor se distribui. Cada gráfico traz o número da
-      figura ou tabela correspondente no relatório.</p>
+    <p>O que a seção 7 do relatório final mostra sobre a situação financeira das organizações visitadas,
+      o tamanho da carteira estimada e como esse valor se distribui.</p>
   </div>
 
   <div class="bloco">
     <h3>Situação econômico-financeira</h3>
-    <p class="sub" id="an-sit-sub">O que as fichas de campo registram sobre custos, receita e busca de recursos.
-      É o ponto de partida da estimativa: onde o dado falta, a faixa se alarga.</p>
     <div class="grade dois">
       <div class="painel">
         <h4>Disponibilidade dos dados econômico-financeiros</h4>
-        <p class="sub">Figura 7.1 · número de fichas em cada situação, por pergunta.</p>
         <div class="chart-box"><canvas id="ch-71"></canvas></div>
       </div>
       <div class="painel">
         <h4>Maturidade operacional e potencial de escalonamento</h4>
-        <p class="sub">Figura 7.2 · número de fichas em cada cruzamento, conforme declarado.</p>
         <div class="chart-box"><canvas id="ch-72"></canvas></div>
       </div>
       <div class="painel">
         <h4>Receita × busca de recursos externos</h4>
-        <p class="sub">Figura 7.3 · a receita cobre os custos? E a organização já buscou recursos de fora?</p>
         <div class="chart-box"><canvas id="ch-73"></canvas></div>
       </div>
       <div class="painel">
         <h4>Fontes de recursos já acessadas</h4>
-        <p class="sub">Figura 7.4 · menções; uma organização pode citar mais de uma fonte.</p>
         <div class="chart-box"><canvas id="ch-74"></canvas></div>
       </div>
       <div class="painel">
         <h4>Tipo de recurso que gostaria de captar</h4>
-        <p class="sub">Figura 7.5 · menções; uma organização pode citar mais de um tipo.</p>
         <div class="chart-box"><canvas id="ch-75"></canvas></div>
       </div>
       <div class="painel">
         <h4>Acesso a financiamento verde</h4>
-        <p class="sub">Figura 7.6 · situação declarada diante de instrumentos de financiamento verde.</p>
         <div class="chart-box"><canvas id="ch-76"></canvas></div>
       </div>
     </div>
-    <p class="nota-fonte"><b>Fonte:</b> fichas de campo (formulário Kobo, blocos B e C), seção 7.1 do Produto 5 B.</p>
+    <p class="nota-fonte"><b>Fonte:</b> fichas de campo (formulário Kobo, blocos B e C), seção 7.1 do relatório final.</p>
   </div>
 
   <div class="bloco">
     <h3>Carteira estimada</h3>
-    <p class="sub">Bloco A reúne o que é contratável nesta etapa; Bloco B, a referência indicativa
-      para dimensionar o investimento adiante. A faixa expressa a incerteza de uma estimativa Classe 5.</p>
     <div class="grade dois">
       <div class="painel">
         <h4>Faixa por bloco</h4>
-        <p class="sub">Figura 7.7 · mínimo e máximo de cada bloco e da carteira total, com gestão e contingência.</p>
         <div class="chart-box"><canvas id="ch-blocos"></canvas></div>
       </div>
       <div class="painel">
         <h4>Custo-base contratável por componente</h4>
-        <p class="sub">Figura 7.8 · Bloco A, mínimo e máximo, antes de gestão e contingência.</p>
         <div class="chart-box"><canvas id="ch-componentes"></canvas></div>
       </div>
       <div class="painel">
         <h4>Distribuição anual do contratável</h4>
-        <p class="sub">Figura 7.9 · valor máximo do Bloco A, com gestão e contingência.</p>
         <div class="chart-box"><canvas id="ch-anual"></canvas></div>
       </div>
       <div class="painel">
         <h4>Carteira por eixo do PTE-NE</h4>
-        <p class="sub">Tabela 7.3 · soma dos valores máximos das experiências de cada eixo.</p>
         <div class="chart-box"><canvas id="ch-eixo"></canvas></div>
       </div>
     </div>
@@ -271,8 +259,6 @@
 
   <div class="bloco">
     <h3>Por postura de apoio</h3>
-    <p class="sub">Tabela 7.4 · a postura resume o que cada organização precisa antes de receber recursos.
-      É ela que separa o contratável agora do que ainda depende de estudo ou de fortalecimento.</p>
     <div class="painel">
       <div class="chart-box"><canvas id="ch-postura"></canvas></div>
     </div>
@@ -280,8 +266,6 @@
 
   <div class="bloco">
     <h3>Por experiência</h3>
-    <p class="sub">Figura 7.11 e Tabela 7.5 · as 27 experiências com estimativa, ordenadas pelo valor máximo
-      da carteira (A + B).</p>
     <div class="exp-bar">
       <span class="exp-lab">Exportar:</span>
       <button class="exp-btn" data-exp="xlsx" data-target="#tbl-exp" data-name="estimativa-por-experiencia"
@@ -308,60 +292,7 @@
         <tbody id="tb-exp"></tbody>
       </table>
     </div>
-    <p class="nota-fonte"><b>Fonte:</b> Quadro 5 da planilha de estimativa (Tabela 7.5 do Produto 5 B). Valores em R$ milhões.</p>
-  </div>
-</section>
-
-<!-- ======================================================== MÉTODO -->
-<section class="view hidden" id="view-metodo">
-  <div class="sec-head">
-    <h2>Método e downloads</h2>
-    <p>O que cada número deste painel significa, de onde vem e até onde vai.</p>
-  </div>
-
-  <div class="bloco">
-    <h3>Como ler os números</h3>
-    <dl class="metodo">
-      <dt>Nota da matriz (0 a 30)</dt>
-      <dd>Avaliação de gabinete de toda a base de prospecção em dez critérios, de 1 a 3 cada.
-        Serve para ordenar a base e orientar a seleção de campo.</dd>
-      <dt>Pontuação do Produto 5 (0 a 100)</dt>
-      <dd>Só existe para as organizações com ficha de campo. Combina impacto (30), inovação (30),
-        operação (25) e investimento (15), conforme o Apêndice 2 do Produto 5 B.
-        Não é comparável com a nota da matriz.</dd>
-      <dt>Bloco A — contratável</dt>
-      <dd>Itens com valor declarado pela organização, preço de mercado verificado, ou estudo e
-        pré-condição. É o que pode ser contratado nesta etapa.</dd>
-      <dt>Bloco B — referência</dt>
-      <dd>Referência indicativa para dimensionar o investimento adiante. Não é compromisso de aporte.</dd>
-      <dt>Postura de apoio</dt>
-      <dd>O que a organização precisa antes de receber recursos: estar pronta, confirmar um dado,
-        dimensionar o investimento, fortalecer-se institucionalmente ou cumprir etapa preparatória.</dd>
-      <dt>Classe da estimativa</dt>
-      <dd>Classe 5 da AACE International (RP 18R-97): estimativa preliminar, feita com definição de
-        escopo entre 0% e 2%. A faixa entre mínimo e máximo é parte do resultado, não imprecisão a corrigir.</dd>
-      <dt>Preços e horizonte</dt>
-      <dd>R$ milhões a preços de setembro de 2026, horizonte de 36 meses. A conversão para dólares
-        usa a taxa registrada na aba Método da planilha de estimativa.</dd>
-    </dl>
-    <div class="aviso">Este painel é de uso restrito da equipe e das instituições parceiras.
-      As faixas de recursos por organização são estimativas preliminares de planejamento e
-      não constituem oferta, compromisso de aporte ou valor contratado.</div>
-  </div>
-
-  <div class="bloco">
-    <h3>Fontes</h3>
-    <div class="downloads">
-      <div class="dl"><b>Produto 5 B — Relatório final</b><span>Seção 7: estimativa preliminar de recursos.
-        Contrato 13849/2026 OEI/FPOS — TdR 12.500/2026.</span></div>
-      <div class="dl"><b>PTE2026_fichas_investimento.xlsx</b><span>Planilha de estimativa: catálogo de custos
-        unitários, base de itens, quadros consolidados e uma aba por experiência.</span></div>
-      <div class="dl"><b>Matriz de prospecção</b><span>Base das iniciativas mapeadas, com a avaliação
-        de gabinete nos dez critérios.</span></div>
-      <div class="dl"><b>Fichas de campo</b><span>Uma por organização visitada ou entrevistada,
-        com registro fotográfico e transcrição.</span></div>
-    </div>
-    <p class="nota-fonte">Os arquivos-fonte não são distribuídos por este painel. Solicite à equipe do projeto.</p>
+    <p class="nota-fonte"><b>Fonte:</b> Quadro 5 da planilha de estimativa (Tabela 7.5 do relatório final). Valores em R$ milhões.</p>
   </div>
 </section>
 
