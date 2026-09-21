@@ -4,73 +4,149 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Entrar — Plano Brasil Nordeste</title>
+<title>Entrar — Plano Brasil Nordeste de Transformação Ecológica</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
+/* Paleta da capa do Plano Brasil Nordeste de Transformação Ecológica */
 :root{
-  --bg:#f5f6f9; --surface:#ffffff; --ink:#23262f; --muted:#6b7080; --faint:#9aa0b0;
-  --border:#e7e9f1; --brand:#292d76; --brand-2:#1f4da1; --green:#55b847; --red:#e0392b;
-  --radius:10px;
+  --navy:#253571; --navy-2:#2E4288; --navy-3:#1C2A5E; --azul:#2F56B0; --azul-claro:#5EC7DA;
+  --vermelho:#CD2131; --laranja:#EF9825; --amarelo:#FAE030; --verde:#58B948; --creme:#FFFBF7;
+  --ink:#1B1F3B; --muted:#5A5F73; --border:#D9D6CF;
   --font:"Roboto",system-ui,-apple-system,"Segoe UI",sans-serif;
   --display:"Oswald","Roboto Condensed",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--font);
-  display:flex;flex-direction:column}
-.topo{background:var(--brand);color:#fff;padding:22px 20px 18px}
-.topo .inner{max-width:1100px;margin:0 auto}
-.topo h1{font-family:var(--display);font-size:1.25rem;font-weight:600;margin:0;letter-spacing:.01em}
-.topo p{margin:4px 0 0;font-size:.82rem;opacity:.82;font-weight:300}
-.hills{line-height:0;background:var(--brand)}
-.hills svg{display:block;width:100%;height:30px}
-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:44px 20px 60px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  width:100%;max-width:430px;padding:30px 30px 26px}
-.card h2{font-family:var(--display);font-size:1.16rem;font-weight:600;margin:0 0 6px}
-.card .lede{font-size:.88rem;color:var(--muted);margin:0 0 22px;line-height:1.55}
-label{display:block;font-size:.76rem;font-weight:500;color:var(--muted);text-transform:uppercase;
-  letter-spacing:.05em;margin-bottom:6px}
-input{width:100%;font-family:var(--font);font-size:.95rem;padding:11px 12px;border:1px solid var(--border);
-  border-radius:8px;background:#fff;color:var(--ink);margin-bottom:16px}
-input:focus{outline:2px solid var(--brand-2);outline-offset:1px;border-color:var(--brand-2)}
-input[name="senha"]{font-family:ui-monospace,"SFMono-Regular",Menlo,monospace;letter-spacing:.04em}
-button{width:100%;font-family:var(--font);font-size:.95rem;font-weight:500;padding:12px;border:none;
-  border-radius:8px;background:var(--brand);color:#fff;cursor:pointer}
-button:hover:not(:disabled){background:var(--brand-2)}
-button:disabled{opacity:.6;cursor:progress}
-button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
-.aviso{display:none;font-size:.85rem;padding:11px 13px;border-radius:8px;margin-bottom:16px;line-height:1.5}
+html,body{height:100%}
+body{margin:0;background:var(--creme);color:var(--ink);font-family:var(--font);
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(380px,1fr);min-height:100vh}
+
+/* ------------------------------------------------------------ capa */
+.capa{position:relative;overflow:hidden;background:var(--navy);min-height:100vh;isolation:isolate}
+.capa svg.arte{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.capa svg.grama{position:absolute;left:0;right:0;bottom:0;width:100%;height:34px}
+.titulo{position:absolute;left:7%;top:48%;transform:translateY(-50%);max-width:min(560px,78%);
+  padding:44px 40px 40px 0}
+.titulo::before{content:"";position:absolute;z-index:-1;left:-40vw;right:-6%;top:0;bottom:0;
+  background:var(--vermelho);border-radius:0 180px 180px 0}
+.titulo h1{font-family:var(--display);font-weight:700;text-transform:uppercase;color:#fff;
+  font-size:clamp(2rem,3.7vw,3.5rem);line-height:1.04;letter-spacing:.005em;margin:0}
+.titulo p{margin:16px 0 0;color:#FFE9EA;font-size:clamp(.95rem,1.15vw,1.08rem);font-weight:400;max-width:34ch;line-height:1.5}
+.titulo .rabisco{position:absolute;left:30%;bottom:-38px;width:120px;height:46px}
+
+/* ----------------------------------------------------------- acesso */
+.acesso{display:flex;flex-direction:column;justify-content:center;padding:48px clamp(24px,5vw,72px) 28px;position:relative}
+.acesso::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;
+  background:linear-gradient(90deg,var(--vermelho) 0 25%,var(--laranja) 25% 50%,var(--verde) 50% 75%,var(--azul-claro) 75%)}
+form{width:100%;max-width:400px;margin:auto 0}
+.selo{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--vermelho);margin-bottom:10px}
+form h2{font-family:var(--display);font-weight:700;font-size:2rem;text-transform:uppercase;color:var(--navy);
+  margin:0 0 8px;letter-spacing:.01em;line-height:1.1}
+.lede{font-size:.95rem;color:var(--muted);margin:0 0 28px;line-height:1.55}
+label{display:block;font-size:.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+input{width:100%;font-family:var(--font);font-size:1rem;padding:13px 14px;border:2px solid var(--border);
+  border-radius:12px;background:#fff;color:var(--ink);margin-bottom:18px;transition:border-color .15s,box-shadow .15s}
+input:hover{border-color:#B9B5AC}
+input:focus{outline:0;border-color:var(--azul);box-shadow:0 0 0 4px rgba(47,86,176,.16)}
+input[name="senha"]{letter-spacing:.06em}
+button{width:100%;font-family:var(--display);font-size:1.12rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  padding:14px;border:0;border-radius:12px;background:var(--vermelho);color:#fff;cursor:pointer;margin-top:4px;
+  box-shadow:0 4px 0 #9E1824;transition:transform .08s,box-shadow .08s,background .15s}
+button:hover:not(:disabled){background:#B81C2B}
+button:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #9E1824}
+button:disabled{opacity:.7;cursor:progress}
+button:focus-visible{outline:3px solid var(--amarelo);outline-offset:3px}
+.aviso{display:none;font-size:.88rem;padding:12px 14px;border-radius:10px;margin-bottom:18px;line-height:1.5}
 .aviso.on{display:block}
-.aviso.erro{background:#fdecea;border:1px solid #f5c6c2;color:#a5241a}
-.aviso.info{background:#eef2fb;border:1px solid #d5deF3;color:#1f3f80}
-.nota{font-size:.76rem;color:var(--faint);line-height:1.6;margin:20px 0 0;padding-top:16px;
-  border-top:1px solid var(--border)}
-.nota a{color:var(--brand-2)}
-.volta{text-align:center;margin-top:18px;font-size:.84rem}
-.volta a{color:var(--muted)}
-@media(max-width:520px){.card{padding:24px 20px}main{padding:28px 16px 44px}}
+.aviso.erro{background:#FDECEC;border:1px solid #F3C2C6;color:#9E1824}
+.aviso.info{background:#EAF0FB;border:1px solid #C9D6F1;color:var(--navy)}
+.rodape{margin-top:40px;padding-top:20px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;
+  align-items:center;justify-content:space-between;gap:16px}
+.rodape .pl{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
+.rodape img{display:block;height:30px;width:auto;max-width:100%}
+.rodape .tec img{height:34px}
+
+@media (max-width:900px){
+  body{grid-template-columns:1fr}
+  .capa{min-height:340px}
+  .titulo{top:auto;bottom:34px;transform:none;padding:26px 28px 24px 0}
+  .titulo .rabisco{display:none}
+  .acesso{padding-top:40px}
+}
+@media (max-width:520px){ .capa{min-height:300px} .titulo{left:16px;max-width:88%} .titulo h1{font-size:1.75rem} }
+@media (prefers-reduced-motion:no-preference){
+  .brilho{transform-origin:center;transform-box:fill-box;animation:gira 26s linear infinite}
+  @keyframes gira{to{transform:rotate(360deg)}}
+}
 </style>
 </head>
 <body>
 
-<header class="topo">
-  <div class="inner">
-    <h1>Plano Brasil Nordeste — painel de iniciativas</h1>
-    <p>Plano Brasil Nordeste de Transformação Ecológica. Acesso restrito à equipe.</p>
-  </div>
-</header>
-<div class="hills" aria-hidden="true">
-  <svg viewBox="0 0 1440 44" preserveAspectRatio="none">
-    <path d="M0,24 C160,8 320,32 480,22 C640,12 800,34 960,22 C1120,10 1280,30 1440,18 L1440,44 L0,44 Z" fill="#3f9e3f"/>
-    <path d="M0,32 C180,18 300,40 520,30 C700,22 860,40 1040,30 C1220,20 1320,38 1440,30 L1440,44 L0,44 Z" fill="#55b847"/>
+<section class="capa" aria-label="Plano Brasil Nordeste de Transformação Ecológica">
+  <svg class="arte" viewBox="0 0 700 820" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <filter id="grao" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/>
+        <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .07 0"/>
+      </filter>
+    </defs>
+    <!-- faixas horizontais do fundo -->
+    <g fill="var(--navy-2)">
+      <rect x="0" y="100" width="700" height="14"/><rect x="0" y="126" width="700" height="14"/>
+      <rect x="0" y="152" width="700" height="14"/><rect x="0" y="178" width="420" height="14"/>
+    </g>
+    <!-- sol laranja no canto -->
+    <circle cx="660" cy="80" r="180" fill="var(--laranja)"/>
+    <!-- forma verde orgânica -->
+    <path d="M320 50 C400 20 480 70 525 125 C585 195 640 230 612 320 C590 395 525 420 490 490 C462 548 478 610 430 640
+             C392 664 362 612 372 556 C384 490 342 452 312 402 C282 352 244 332 262 262 C276 210 250 160 272 112 C284 82 300 60 320 50 Z"
+          fill="var(--verde)"/>
+    <g fill="#4AA33C" opacity=".7"><circle cx="430" cy="160" r="3"/><circle cx="480" cy="240" r="2.5"/><circle cx="390" cy="120" r="3"/>
+      <circle cx="540" cy="300" r="2"/><circle cx="350" cy="200" r="2"/></g>
+    <!-- círculos concêntricos -->
+    <g fill="none" stroke-width="24">
+      <circle cx="620" cy="700" r="56" stroke="var(--azul)"/><circle cx="620" cy="700" r="112" stroke="var(--navy-3)"/>
+      <circle cx="620" cy="700" r="168" stroke="var(--azul)"/><circle cx="620" cy="700" r="224" stroke="var(--navy-3)"/>
+    </g>
+    <!-- listras vermelhas acima do título -->
+    <g fill="var(--vermelho)"><rect x="0" y="206" width="170" height="8"/><rect x="0" y="222" width="200" height="8"/></g>
+    <!-- ladrilhos -->
+    <g transform="translate(34 58)"><rect width="92" height="92" fill="var(--verde)"/>
+      <path d="M40 82 V28 a8 8 0 0 1 16 0 V82 Z M20 58 V42 a6 6 0 0 1 12 0 V54 H40 V62 H26 a6 6 0 0 1-6-4 Z M56 52 H64 V38 a6 6 0 0 1 12 0 V50 a8 8 0 0 1-8 8 H56 Z" fill="#1F7A5A"/></g>
+    <g transform="translate(166 46)"><rect width="84" height="70" fill="var(--amarelo)"/>
+      <path d="M20 54 C20 28 42 12 68 10 C68 36 50 56 24 56 M24 56 L56 24" fill="none" stroke="var(--vermelho)" stroke-width="5" stroke-linecap="round"/></g>
+    <g transform="translate(628 480)"><rect width="72" height="72" fill="var(--creme)"/>
+      <path d="M0 36 A36 36 0 0 1 72 36 Z" fill="var(--vermelho)"/><rect y="36" width="72" height="36" fill="var(--verde)"/></g>
+    <g transform="translate(410 590)"><rect width="100" height="84" fill="var(--azul-claro)"/>
+      <path d="M8 26 q11 -10 21 0 t21 0 t21 0 t21 0 M8 44 q11 -10 21 0 t21 0 t21 0 t21 0 M8 62 q11 -10 21 0 t21 0 t21 0 t21 0"
+            fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>
+    <g transform="translate(560 612)"><rect width="112" height="104" fill="var(--laranja)"/>
+      <path d="M56 16 C60 44 70 50 96 52 C70 55 60 62 56 90 C52 62 42 55 16 52 C42 50 52 44 56 16 Z" fill="#fff"/></g>
+    <!-- estrela branca -->
+    <path class="brilho" d="M250 196 L258 226 L286 206 L266 234 L298 244 L264 248 L278 280 L254 256 L240 288 L242 252 L210 260 L236 238 L212 216 L246 226 Z" fill="var(--creme)"/>
+    <rect width="700" height="820" filter="url(#grao)"/>
   </svg>
-</div>
+  <svg class="grama" viewBox="0 0 700 40" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 40 V26 L20 4 L34 26 L52 0 L68 24 L88 -2 L104 24 L124 2 L140 26 L160 -2 L178 24 L198 4 L214 26 L234 -4 L252 24 L270 2 L288 26
+             L308 0 L326 24 L346 -2 L362 26 L382 2 L400 24 L420 -4 L436 24 L456 4 L474 26 L494 0 L512 24 L530 -2 L548 26 L566 2 L584 24
+             L604 -4 L620 24 L640 4 L660 26 L680 0 L700 20 V40 Z" fill="var(--verde)"/>
+  </svg>
 
-<main>
-  <form class="card" id="form" autocomplete="on">
+  <div class="titulo">
+    <h1>Plano Brasil Nordeste de Transformação Ecológica</h1>
+    <p>Painel da carteira de iniciativas e das incursões de campo.</p>
+    <svg class="rabisco" viewBox="0 0 120 46" aria-hidden="true"><path d="M4 30 C14 6 22 44 34 22 C44 4 50 42 62 20 C72 2 80 40 92 18 C100 4 108 22 116 14"
+      fill="none" stroke="var(--amarelo)" stroke-width="7" stroke-linecap="round"/></svg>
+  </div>
+</section>
+
+<main class="acesso">
+  <form id="form" autocomplete="on">
+    <span class="selo">Acesso restrito</span>
     <h2>Acesso da equipe</h2>
+    <p class="lede">Entre com o usuário e a senha da equipe para abrir o painel.</p>
 
     <div class="aviso erro" id="erro" role="alert"></div>
     <div class="aviso info" id="info" role="status"></div>
@@ -79,11 +155,17 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
     <input type="text" id="usuario" name="usuario" autocomplete="username" required />
 
     <label for="senha">Senha</label>
-    <input type="password" id="senha" name="senha" autocomplete="current-password" required
-/>
+    <input type="password" id="senha" name="senha" autocomplete="current-password" required />
 
     <button type="submit" id="btn">Entrar</button>
   </form>
+
+  <div class="rodape">
+    <div><span class="pl">Realização e parceiros</span>
+      <img src="assets/img/parceiros.png" alt="OEI, Open Society Foundations, Ministério da Fazenda, Governo do Brasil e Consórcio Nordeste" /></div>
+    <div class="tec"><span class="pl">Parceiro técnico</span>
+      <img src="assets/img/logotipo-quanta.png" alt="QCP — Inteligência em Políticas Públicas" /></div>
+  </div>
 </main>
 
 
