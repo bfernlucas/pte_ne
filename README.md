@@ -182,3 +182,13 @@ conferida por servidor, ela **é** a chave. Perdida, gera-se outra e republica.
 
 > A área exige contexto seguro (https ou localhost). Abrir por `file://` não
 > funciona — o navegador bloqueia a API de criptografia.
+
+## Teste visual com dados fictícios
+
+`scripts/teste_visual.py` abre o painel em um servidor local, injeta na sessão
+pacotes **fictícios** (`scripts/dados_ficticios.py`, mesma estrutura dos
+pacotes cifrados, valores inventados) e confere, em cada seção, que a página
+não tem rolagem horizontal, além de registrar erros de console e capturas de
+tela. Não depende da senha e não altera a proteção do site publicado.
+
+    python3 scripts/teste_visual.py capturas 1280 1366 1920
