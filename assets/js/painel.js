@@ -741,12 +741,106 @@
             "<dt>Carteira (A + B)</dt><dd>" + faixa((e.bloco_a.min || 0) + (e.bloco_b.min || 0),
               (e.bloco_a.max || 0) + (e.bloco_b.max || 0)) + "</dd>" +
           '</dl><p style="margin:6px 0 0;font-size:.72rem;color:#8A8A94">R$ milhões, 36 meses</p></div>';
+        if (e.ficha_inv) {
+          h += '<button class="abrir" data-aba="' + esc(e.aba) + '">Ver ficha de investimento</button>';
+        }
       } else {
         h += '<div class="faixa">Sem estimativa de recursos: não recomendada para apoio nesta etapa ' +
           "(ver Evidência de campo, abaixo).</div>";
       }
       return h + "</article>";
     }).join("");
+    $$("#fichas .abrir").forEach(function (b) {
+      b.addEventListener("click", function () { abreInvestimento(b.dataset.aba); });
+    });
+    if (invAberta && !lista.some(function (e) { return e.aba === invAberta; })) fechaInvestimento();
+    else if (invAberta) marcaAberta();
+  }
+
+  /* ---- ficha de investimento: a aba da planilha, no estilo de uma ficha
+     de carteira. Só existe quando os itens vieram no pacote cifrado. ---- */
+  var invAberta = null;
+  function reais(v) {
+    if (v == null) return "—";
+    if (Math.abs(v) >= 1e6) return num(v / 1e6, 2) + " mi";
+    return Number(v).toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+  }
+  function pct(v) { return v == null ? "" : num(v * 100, 0) + "%"; }
+  function marcaAberta() {
+    $$("#fichas .ficha").forEach(function (f) {
+      var b = f.querySelector(".abrir");
+      f.classList.toggle("aberta", !!(b && b.dataset.aba === invAberta));
+    });
+  }
+  function fechaInvestimento() {
+    invAberta = null; $("#inv").classList.add("hidden"); $("#inv").innerHTML = ""; marcaAberta();
+  }
+  function abreInvestimento(aba) {
+    var e = EXP.filter(function (x) { return x.aba === aba; })[0];
+    if (!e || !e.ficha_inv) return;
+    if (invAberta === aba) { fechaInvestimento(); return; }
+    invAberta = aba; marcaAberta();
+    var f = e.ficha_inv, cor = corEixo(e.eixo_cod);
+    var slug = String(e.curto).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    var h = '<div class="inv-head"><div><h4>' + esc(e.curto) + "</h4>" +
+      '<p class="meta">' + esc(e.municipio) + " · " + esc(e.uf) + " · " + esc(e.rota_nome) + " · " + esc(e.data) +
+      ' · <span class="tag tag-eixo" style="background:' + cor + '">' + esc(e.eixo_cod) + "</span></p></div>" +
+      '<div class="exp-bar" style="margin:0"><span class="exp-lab">Exportar:</span>' +
+      '<button class="exp-btn" data-exp="xlsx" data-target="#inv-tabelas" data-name="ficha-' + slug +
+        '" data-title="Ficha de investimento — ' + esc(e.curto) + '" data-sheet="Ficha">XLS</button>' +
+      '<button class="exp-btn" data-exp="pdf" data-target="#inv-tabelas" data-name="ficha-' + slug +
+        '" data-title="Ficha de investimento — ' + esc(e.curto) + '">PDF</button></div>' +
+      '<button class="ghost fechar" id="inv-fechar">Fechar</button></div>';
+    h += '<div class="inv-kpis">' +
+      "<div><b>" + esc(ROTULO_POSTURA[e.postura] || e.postura) + "</b><span>postura de apoio</span></div>" +
+      "<div><b>" + num(e.pontuacao, 0) + "</b><span>pontuação final · " + esc(e.posicao) + "º de 27</span></div>" +
+      "<div><b>" + esc(maiusc(e.confianca)) + "</b><span>confiança · informação " + esc(e.info_financeira) + "</span></div>" +
+      "<div><b>" + faixa(e.bloco_a.min, e.bloco_a.max) + "</b><span>Bloco A — contratável, R$ mi</span></div>" +
+      "<div><b>" + faixa(e.bloco_b.min, e.bloco_b.max) + "</b><span>Bloco B — referência, R$ mi</span></div>" +
+      "<div><b>" + faixa((e.bloco_a.min || 0) + (e.bloco_b.min || 0), (e.bloco_a.max || 0) + (e.bloco_b.max || 0)) +
+        "</b><span>carteira A + B, R$ mi · 36 meses</span></div></div>";
+    h += '<div id="inv-tabelas">';
+    f.blocos.forEach(function (bl) {
+      h += '<div class="inv-bloco ' + bl.id.toLowerCase() + '"><h5>' + esc(bl.titulo) + "</h5>" +
+        '<div class="tbl-scroll" style="max-height:none"><table class="inv-tbl"><colgroup>' +
+        '<col style="width:44px"><col style="width:34%"><col style="width:16%"><col style="width:8%">' +
+        '<col style="width:7%"><col style="width:7%"><col style="width:9%"><col style="width:9%"><col style="width:9%"><col style="width:9%">' +
+        "</colgroup><thead><tr><th>Nº</th><th>Item</th><th>Rubrica</th><th>Unidade</th>" +
+        '<th class="num">Qtd. mín.</th><th class="num">Qtd. máx.</th><th class="num">Unit. mín. (R$)</th><th class="num">Unit. máx. (R$)</th>' +
+        '<th class="num">Total mín. (R$)</th><th class="num">Total máx. (R$)</th></tr></thead><tbody>';
+      bl.componentes.forEach(function (c) {
+        h += '<tr class="comp"><td>' + c.n + "</td><td>" + esc(c.nome) + "</td><td></td><td></td><td></td><td></td><td></td><td></td>" +
+          '<td class="num">' + reais(c.min) + '</td><td class="num">' + reais(c.max) + "</td></tr>";
+        c.itens.forEach(function (it) {
+          h += '<tr class="item"><td class="n">' + esc(it.n) + '</td><td class="it">' + esc(it.item) +
+            (it.racional ? "<small>" + esc(it.racional) + "</small>" : "") + "</td>" +
+            "<td>" + esc(it.rubrica || "") + "</td><td>" + esc(it.unidade || "") + "</td>" +
+            '<td class="num">' + (it.q_min == null ? "" : num(it.q_min, 0)) + '</td><td class="num">' + (it.q_max == null ? "" : num(it.q_max, 0)) + "</td>" +
+            '<td class="num">' + reais(it.u_min) + '</td><td class="num">' + reais(it.u_max) + "</td>" +
+            '<td class="num">' + reais(it.min) + '</td><td class="num">' + reais(it.max) + "</td></tr>";
+        });
+      });
+      bl.resumo.forEach(function (r) {
+        var total = /^TOTAL GERAL/.test(r.rotulo);
+        h += '<tr class="' + (total ? "total " + bl.id.toLowerCase() : "resumo") + '"><td></td><td>' + esc(r.rotulo) +
+          "</td><td>" + esc(r.racional || "") + "</td><td></td>" +
+          '<td class="num"></td><td class="num"></td><td class="num">' + pct(r.pct_min) + '</td><td class="num">' + pct(r.pct_max) + "</td>" +
+          '<td class="num">' + reais(r.min) + '</td><td class="num">' + reais(r.max) + "</td></tr>";
+      });
+      h += "</tbody></table></div></div>";
+    });
+    h += "</div>";
+    if (f.contrapartida || f.cofinanciamento) {
+      h += '<div class="inv-extra">' +
+        (f.contrapartida ? "<div><b>Contrapartida identificada</b>" + esc(f.contrapartida) + "</div>" : "") +
+        (f.cofinanciamento ? "<div><b>Cofinanciamento possível</b>" + esc(f.cofinanciamento) + "</div>" : "") + "</div>";
+    }
+    if (f.notas.length) h += '<div class="inv-notas">' + f.notas.map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("") + "</div>";
+    h += '<p class="nota-fonte"><b>Fonte:</b> aba "' + esc(e.aba) + '" da planilha de estimativa. Valores em reais de setembro de 2026, ' +
+      "36 meses, Classe 5 da AACE International; percentuais de gestão e contingência aplicados sobre o custo-base.</p>";
+    var inv = $("#inv"); inv.innerHTML = h; inv.classList.remove("hidden");
+    $("#inv-fechar").addEventListener("click", fechaInvestimento);
+    inv.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   /* ====================================================== 4. ANÁLISE === */

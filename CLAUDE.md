@@ -69,6 +69,11 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
   - **Publicar:** `python scripts\publicar_p5.py` no Windows — gera os dois,
     pede a senha uma vez, confere contra o `campo.enc.js` atual e cifra os
     dois pacotes. Só quem tem a senha roda este passo.
+- Fichas de investimento: `gen_p5.py` lê a aba de cada experiência linha a
+  linha (blocos, componentes, itens, gestão, contingência, notas) e confere o
+  total de cada bloco com o Quadro. Vão no pacote cifrado; `painel.js` abre a
+  ficha abaixo do cartão da experiência ("Ver ficha de investimento").
+- Não citar "Produto 5 B" na interface: é "relatório final".
 - Rotas: a tabela da seção 2 do P5 B é a fonte canônica (Rota 1, 2, 3 e rota
   extra). A rota extra teve três equipes; no mapa cada uma é um trecho, e
   entrevistas virtuais não entram nas linhas.
