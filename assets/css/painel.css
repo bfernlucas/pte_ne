@@ -73,7 +73,7 @@ a{color:var(--brand-2)}
 main{padding-bottom:64px}
 .view{padding-top:32px}
 .view.hidden{display:none}
-.sec-head{max-width:70ch;margin-bottom:24px}
+.sec-head{margin-bottom:24px}
 .sec-head h2{
   font-family:var(--display);font-weight:700;font-size:1.75rem;
   letter-spacing:.005em;color:var(--brand);margin-bottom:8px;
@@ -85,9 +85,9 @@ main{padding-bottom:64px}
   font-family:var(--display);font-weight:600;font-size:1.12rem;
   text-transform:uppercase;letter-spacing:.05em;color:var(--ink);margin-bottom:6px;
 }
-.bloco>.sub{margin:0 0 18px;color:var(--muted);font-size:.89rem;max-width:80ch}
-.nota-fonte{margin:12px 0 0;font-size:.78rem;color:var(--faint);max-width:90ch}
-.nota-fonte b{color:var(--muted);font-weight:500}
+.bloco>.sub{margin:0 0 18px;color:var(--muted);font-size:.89rem}
+.leitura{margin:18px 0 0;font-size:.97rem;line-height:1.6;color:var(--ink)}
+.leitura b{color:var(--brand)}
 
 /* ---------------------------------------------------------- números-chave */
 .numeros{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
@@ -169,9 +169,10 @@ table.ranking .pill-campo{font-size:.6rem}
 
 /* ----------------------------------------------------------------- mapa */
 .map{height:640px;border:1px solid var(--border);background:var(--surface-2)}
-.map-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0;border:1px solid var(--border)}
+.map-layout{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:0;border:1px solid var(--border)}
 .map-layout .map{border:0;border-right:1px solid var(--border);height:660px}
-.map-side{padding:18px;overflow:auto;max-height:660px;background:#fff}
+.map-side{padding:20px 22px;overflow:auto;max-height:660px;background:#fff;min-width:0}
+.map-side .tag{white-space:normal;line-height:1.35}
 .map-side .ph{color:var(--faint);font-size:.87rem}
 .map-side h4{font-size:1rem;margin-bottom:4px;color:var(--brand)}
 .map-side dl{margin:14px 0 0;font-size:.83rem}

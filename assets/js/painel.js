@@ -160,6 +160,7 @@
     }).join("");
 
     desenhaAluvial($("#fig-aluvial"));
+    $("#aluvial-leitura").innerHTML = leituraAluvial();
 
     if (!P5) {
       $("#carteira-lead").insertAdjacentHTML("afterend",
@@ -316,6 +317,37 @@
     alvo.innerHTML = '<svg id="svg-aluvial" viewBox="0 0 ' + W + " " + altura +
       '" width="100%" role="img" aria-label="Trajetória do valor da carteira, do bloco ao componente" ' +
       'style="font-family:Roboto,system-ui,sans-serif;background:#fff">' + svg.join("") + "</svg>";
+  }
+
+  /* parágrafo de leitura do aluvial, calculado dos mesmos fluxos que o desenham */
+  var FRASE_POSTURA = { "pronta": "prontas para receber apoio", "pronta c/ dado": "prontas, com um dado a confirmar",
+    "dimensionar": "que precisam dimensionar o investimento", "fortalecer": "que precisam se fortalecer institucionalmente",
+    "preparatório": "em etapa preparatória" };
+  function leituraAluvial() {
+    var F = (P5 && P5.fluxos) || [];
+    if (!F.length) return "";
+    function soma(chave, val) { return F.reduce(function (a, f) { return a + (val == null || f[chave] === val ? f.valor : 0); }, 0); }
+    function maior(chave) {
+      var t = {}; F.forEach(function (f) { t[f[chave]] = (t[f[chave]] || 0) + f.valor; });
+      return Object.keys(t).sort(function (a, b) { return t[b] - t[a]; }).map(function (k) { return { k: k, v: t[k] }; });
+    }
+    var tot = soma(), A = soma("bloco", "A"), B = soma("bloco", "B");
+    var eixos = maior("eixo"), post = maior("postura"), comps = maior("comp");
+    var nomeEixo = {}; (META.eixos || []).forEach(function (e) { nomeEixo[e.cod] = e.nome; });
+    var nomeComp = {}; (PMETA.componentes || []).forEach(function (c) { nomeComp[c.cod] = c.nome.toLowerCase(); });
+    var prontaA = F.reduce(function (a, f) { return a + (f.postura === "pronta" && f.bloco === "A" ? f.valor : 0); }, 0);
+    var prontaB = F.reduce(function (a, f) { return a + (f.postura === "pronta" && f.bloco === "B" ? f.valor : 0); }, 0);
+    var p = function (v) { return num(v / tot * 100, 0) + "%"; };
+    return "No valor máximo, a carteira soma <b>R$ " + num(tot, 1) + " milhões</b>. O Bloco A, contratável nesta etapa, " +
+      "responde por " + p(A) + " (R$ " + num(A, 1) + " milhões); o Bloco B, de referência indicativa, pelos outros " + p(B) + ". " +
+      "<b>" + esc(nomeEixo[eixos[0].k] || eixos[0].k) + "</b> concentra " + p(eixos[0].v) + " do total, seguido de " +
+      esc(nomeEixo[eixos[1].k] || eixos[1].k) + " (" + p(eixos[1].v) + "). " +
+      "Pela postura, a maior parte do valor está em organizações <b>" + esc(FRASE_POSTURA[post[0].k] || post[0].k) +
+      "</b> (" + p(post[0].v) + ") ou " + esc(FRASE_POSTURA[post[1].k] || post[1].k) + " (" + p(post[1].v) +
+      "); as prontas para receber apoio somam " +
+      "R$ " + num(prontaA + prontaB, 1) + " milhões" + (prontaB < 0.05 ? ", todos no Bloco A" : "") + ". " +
+      "É por isso que o apoio se concentra em <b>" + esc(nomeComp[comps[0].k] || comps[0].k) + "</b> (" + p(comps[0].v) + ") e " +
+      esc(nomeComp[comps[1].k] || comps[1].k) + " (" + p(comps[1].v) + "), e não em estudos ou estruturação.";
   }
 
   /* ---- filtros do ranking ---- */
@@ -836,8 +868,6 @@
         (f.cofinanciamento ? "<div><b>Cofinanciamento possível</b>" + esc(f.cofinanciamento) + "</div>" : "") + "</div>";
     }
     if (f.notas.length) h += '<div class="inv-notas">' + f.notas.map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("") + "</div>";
-    h += '<p class="nota-fonte"><b>Fonte:</b> aba "' + esc(e.aba) + '" da planilha de estimativa. Valores em reais de setembro de 2026, ' +
-      "36 meses, Classe 5 da AACE International; percentuais de gestão e contingência aplicados sobre o custo-base.</p>";
     var inv = $("#inv"); inv.innerHTML = h; inv.classList.remove("hidden");
     $("#inv-fechar").addEventListener("click", fechaInvestimento);
     inv.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -865,11 +895,6 @@
     if (S7fin()) situacaoFinanceira(P5.secao7);
     else $("#view-analise .bloco > h3").insertAdjacentHTML("afterend",
       '<div class="aviso">Os indicadores da seção 7.1 não vieram nesta versão dos dados.</div>');
-    if (QUADROS.carteira && P5.secao7 && P5.secao7.cambio) {
-      var m = /R\$ ?([\d,]+)\/US\$/.exec(P5.secao7.cambio);
-      if (m) $("#an-cambio").insertAdjacentHTML("beforeend",
-        " Câmbio de referência: R$ " + m[1] + " por dólar.");
-    }
 
     /* ---- faixa por bloco (barra flutuante mín–máx) ---- */
     graficos.push(new Chart($("#ch-blocos"), {
