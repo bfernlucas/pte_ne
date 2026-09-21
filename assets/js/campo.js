@@ -81,8 +81,8 @@
   var SECOES = [
     { id: "experiencias", rot: "Perfis", subs: ["lista"],
       perg: "Quem são as " + exp.length + " avaliadas em campo, uma a uma",
-      leitura: "<strong>" + nAlta + " das " + exp.length + "</strong> alcançam 80 pontos ou mais no Apêndice 2 " +
-        "do relatório final. O perfil nas quatro dimensões importa mais que a nota final: duas experiências " +
+      leitura: "<strong>" + nAlta + " das " + exp.length + "</strong> alcançam 80 pontos ou mais. " +
+        "O perfil nas quatro dimensões importa mais que a nota final: duas experiências " +
         "com 80 pontos podem pedir apoios opostos." },
     { id: "evidencia", rot: "Evidência", subs: ["prospeccao", "gargalos"],
       perg: "O que sustenta as notas, e o que as ameaça",
@@ -619,7 +619,7 @@
           '</div><div class="l">abaixo até do piso reduzido</div></div>' +
       '</div>' +
       '<div class="ec-card"><h3>A que porta cada grupo bate</h3>' +
-      '<p class="sub">O relatório final associa mecanismo a postura de apoio, nunca iniciativa a iniciativa</p>' +
+      '<p class="sub">O mecanismo de captação é associado à postura de apoio, nunca iniciativa a iniciativa</p>' +
       porPostura +
       '<p class="ec-nota">Este é o único mapeamento do documento. Qualquer tabela “iniciativa × mecanismo” ' +
       'seria derivação nossa, não transcrição — e por isso não existe aqui.</p></div>' +

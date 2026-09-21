@@ -146,7 +146,7 @@
       ["" + LINHAS.length, "iniciativas", INI.length + " da prospecção" +
         (novas ? " + " + novas + " encontradas em campo" : "") + ", sem repetição"],
       ["" + comFicha, "foram a campo", "visita técnica ou entrevista"],
-      ["" + estimadas, "com estimativa de recursos", "seção 7 do relatório final"]
+      ["" + estimadas, "com estimativa de recursos", "estimativa preliminar de recursos"]
     ];
     if (cart && cart.reais) {
       blocos.push([
@@ -164,7 +164,7 @@
 
     if (!P5) {
       $("#carteira-lead").insertAdjacentHTML("afterend",
-        '<div class="aviso">A camada do relatório final não abriu nesta sessão. ' +
+        '<div class="aviso">A camada de estimativas não abriu nesta sessão. ' +
         'O ranking aparece só com a nota da matriz.</div>');
     }
     montaRanking();
@@ -709,7 +709,7 @@
 
   INICIA.experiencias = function () {
     if (!EXP.length) {
-      $("#fichas").innerHTML = '<div class="aviso">A camada do relatório final não abriu nesta sessão.</div>';
+      $("#fichas").innerHTML = '<div class="aviso">A camada de estimativas não abriu nesta sessão.</div>';
       return;
     }
     var nEst = EXP.filter(function (e) { return e.estimada; }).length;
@@ -880,21 +880,60 @@
   Chart.defaults.color = "#55555F";
   Chart.defaults.borderColor = "#ECECEF";
 
-  var AZ_A = "#1d5fb0", AZ_B = "#a3b3c6";   /* mesma paleta da Figura 7.10 */
+  var AZ_A = "#1d5fb0", AZ_B = "#a3b3c6";   /* mesma paleta do aluvial */
+
+  /* Rótulo de valor em toda barra: dentro do segmento quando cabe, senão
+     na ponta. Barras flutuantes ([mín, máx]) mostram os dois valores. */
+  var rotulosBarras = {
+    id: "rotulosBarras",
+    afterDatasetsDraw: function (ch) {
+      if (ch.config.type !== "bar") return;
+      var ctx = ch.ctx, horiz = ch.options.indexAxis === "y";
+      var inteiro = !!ch.options.rotuloInteiro;
+      var fmt = function (v) { return num(v, inteiro ? 0 : 1); };
+      ctx.save(); ctx.font = "600 10.5px Roboto, sans-serif"; ctx.textBaseline = "middle";
+      ch.data.datasets.forEach(function (ds, di) {
+        var meta = ch.getDatasetMeta(di); if (meta.hidden) return;
+        meta.data.forEach(function (bar, i) {
+          var raw = ds.data[i]; if (raw == null) return;
+          var txt, v;
+          if (Array.isArray(raw)) { if (!raw[1]) return; txt = fmt(raw[0]) + " – " + fmt(raw[1]); v = raw[1]; }
+          else { v = Number(raw); if (!v) return; txt = fmt(v); }
+          var w = ctx.measureText(txt).width;
+          var claro = /^#(a3b3c6|dbe3ec|D9D9DE|6fa3dc)/i.test(String(ds.backgroundColor)) ||
+            (Array.isArray(ds.backgroundColor) && /^#(a3b3c6|dbe3ec|D9D9DE)/i.test(String(ds.backgroundColor[i])));
+          if (horiz) {
+            var x0 = bar.base, x1 = bar.x, larg = Math.abs(x1 - x0);
+            if (larg > w + 10) { ctx.fillStyle = claro ? "#1A1A1F" : "#fff"; ctx.textAlign = "right"; ctx.fillText(txt, x1 - 5, bar.y); }
+            else if (di === ch.data.datasets.length - 1 || ch.data.datasets.length === 1) {
+              ctx.fillStyle = "#1A1A1F"; ctx.textAlign = "left"; ctx.fillText(txt, x1 + 5, bar.y); }
+          } else {
+            var y0 = bar.base, y1 = bar.y, alt = Math.abs(y0 - y1);
+            ctx.textAlign = "center";
+            if (alt > 16 && bar.width > w + 6) { ctx.fillStyle = claro ? "#1A1A1F" : "#fff"; ctx.fillText(txt, bar.x, (y0 + y1) / 2); }
+            else if (di === ch.data.datasets.length - 1 || ch.data.datasets.length === 1) {
+              ctx.fillStyle = "#1A1A1F"; ctx.fillText(txt, bar.x, y1 - 8); }
+          }
+        });
+      });
+      ctx.restore();
+    }
+  };
+  Chart.register(rotulosBarras);
 
   function eixoMil(v) { return num(v, 0); }
 
   INICIA.analise = function () {
     if (!QUADROS) {
       $("#view-analise .bloco").insertAdjacentHTML("beforebegin",
-        '<div class="aviso">A camada do relatório final não abriu nesta sessão.</div>');
+        '<div class="aviso">A camada de estimativas não abriu nesta sessão.</div>');
       return;
     }
     var qa = QUADROS.contratavel, qb = QUADROS.referencia, qc = QUADROS.carteira;
 
     if (S7fin()) situacaoFinanceira(P5.secao7);
     else $("#view-analise .bloco > h3").insertAdjacentHTML("afterend",
-      '<div class="aviso">Os indicadores da seção 7.1 não vieram nesta versão dos dados.</div>');
+      '<div class="aviso">Os indicadores financeiros não vieram nesta versão dos dados.</div>');
 
     /* ---- faixa por bloco (barra flutuante mín–máx) ---- */
     graficos.push(new Chart($("#ch-blocos"), {
@@ -1050,6 +1089,7 @@
       options: {
         indexAxis: "y", responsive: true, maintainAspectRatio: false,
         plugins: { legend: { position: "bottom", labels: { boxWidth: 11, font: { size: 10.5 } } } },
+        rotuloInteiro: true,
         scales: { x: { stacked: true, beginAtZero: true, ticks: { precision: 0 },
             title: { display: true, text: eixo || "fichas" } },
           y: { stacked: true, grid: { display: false }, ticks: { autoSkip: false } } }
@@ -1065,7 +1105,7 @@
         datasets: [{ data: l.map(function (x) { return x.n; }), backgroundColor: AZ_A, barPercentage: 0.62 }] },
       options: {
         indexAxis: "y", responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: { legend: { display: false } }, rotuloInteiro: true,
         scales: { x: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: rotEixo } },
           y: { grid: { display: false }, ticks: { autoSkip: false } } }
       }
@@ -1119,7 +1159,7 @@
         return "<tr>" +
           '<td class="nome">' + esc(e.curto) + "<small>" + esc(e.municipio) + " · " + esc(e.uf) + "</small></td>" +
           '<td><span class="tag tag-eixo" style="background:' + corEixo(e.eixo_cod) + '">' + esc(e.eixo_cod) + "</span></td>" +
-          "<td>" + esc(ROTULO_POSTURA[e.postura] || e.postura) + "</td>" +
+          '<td title="' + esc(ROTULO_POSTURA[e.postura] || e.postura) + '">' + esc(POSTURA_CURTA[e.postura] || e.postura) + "</td>" +
           "<td>" + esc(maiusc(e.confianca)) + "</td>" +
           '<td class="num">' + num(e.pontuacao, 0) + "</td>" +
           '<td class="num">' + esc(e.itens) + "</td>" +

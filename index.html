@@ -2,9 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<script src="assets/data/campo.enc.js?v=72"></script>
-<script src="assets/data/p5.enc.js?v=72"></script>
-<script src="assets/js/auth.js?v=72"></script>
+<script src="assets/data/campo.enc.js?v=73"></script>
+<script src="assets/data/p5.enc.js?v=73"></script>
+<script src="assets/js/auth.js?v=73"></script>
 <script>if(!window.PTEAuth)location.replace("entrar.html");else PTEAuth.exigir();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Painel PTE-NE — carteira e incursões de campo</title>
@@ -22,8 +22,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/painel.css?v=72" />
-<link rel="stylesheet" href="assets/css/campo.css?v=72" />
+<link rel="stylesheet" href="assets/css/painel.css?v=73" />
+<link rel="stylesheet" href="assets/css/campo.css?v=73" />
 </head>
 <body>
 
@@ -34,7 +34,7 @@
       <span>Transformação Ecológica · carteira e incursões de campo</span>
     </div>
     <div class="fim">
-      <span class="selo">Relatório final · uso restrito</span>
+      <span class="selo">Uso restrito</span>
       <a class="sair-link" href="#" id="sair">Sair</a>
     </div>
   </div>
@@ -65,7 +65,7 @@
   <div class="bloco">
     <h3>Trajetória do valor da carteira</h3>
     <p class="sub">Do bloco de recursos ao componente do apoio, passando pelo eixo e pela postura de cada
-      experiência. A espessura de cada fluxo é o valor máximo estimado. Figura 7.10 do relatório final.</p>
+      experiência. A espessura de cada fluxo é o valor máximo estimado.</p>
     <div class="exp-bar">
       <span class="exp-lab">Exportar:</span>
       <button class="exp-btn" data-exp="png" data-target="#fig-aluvial" data-name="trajetoria-valor">PNG</button>
@@ -170,13 +170,13 @@
   <div class="sec-head">
     <h2>Incursões e fichas de investimento</h2>
     <p id="exp-lead">As organizações visitadas ou entrevistadas nas incursões, na ordem em que foram
-      percorridas. Cada ficha traz a avaliação do relatório final, a faixa de recursos estimada e a
+      percorridas. Cada ficha traz a avaliação, a faixa de recursos estimada e a
       ficha de investimento completa.</p>
   </div>
 
   <div class="bloco">
     <h3>Rotas efetivamente realizadas</h3>
-    <p class="sub">Conforme a tabela da seção 2 do relatório final. A rota extra, em agosto, foi feita por três
+    <p class="sub">A rota extra, em agosto, foi feita por três
       equipes: voltou ao Rio Grande do Norte, à Paraíba e ao Ceará e levou a primeira incursão à Bahia.</p>
     <div class="rotas-nav" id="rotas-nav"></div>
     <p class="rota-info" id="rota-info"></p>
@@ -200,8 +200,7 @@
 <section class="view hidden" id="view-analise">
   <div class="sec-head">
     <h2>Análise da carteira</h2>
-    <p>O que a seção 7 do relatório final mostra sobre a situação financeira das organizações visitadas,
-      o tamanho da carteira estimada e como esse valor se distribui.</p>
+    <p>A situação financeira das organizações visitadas, o tamanho da carteira estimada e como esse valor se distribui.</p>
   </div>
 
   <div class="bloco">
@@ -274,7 +273,12 @@
     </div>
     <div class="painel" style="margin-bottom:24px"><div class="chart-box" style="height:760px"><canvas id="ch-experiencias"></canvas></div></div>
     <div class="tbl-scroll">
-      <table id="tbl-exp">
+      <table id="tbl-exp" class="ranking">
+        <colgroup>
+          <col style="width:24%"><col style="width:52px"><col style="width:13%"><col style="width:8%">
+          <col style="width:7%"><col style="width:5%"><col style="width:7%"><col style="width:7%">
+          <col style="width:7%"><col style="width:7%"><col style="width:8%">
+        </colgroup>
         <thead><tr>
           <th data-sort="nome">Experiência<span class="arr"></span></th>
           <th data-sort="eixo">Eixo<span class="arr"></span></th>
@@ -282,10 +286,10 @@
           <th data-sort="conf">Confiança<span class="arr"></span></th>
           <th data-sort="p5" class="num">Pontuação<span class="arr"></span></th>
           <th data-sort="itens" class="num">Itens<span class="arr"></span></th>
-          <th data-sort="amin" class="num">Bloco A mín.<span class="arr"></span></th>
-          <th data-sort="amax" class="num">Bloco A máx.<span class="arr"></span></th>
-          <th data-sort="bmin" class="num">Bloco B mín.<span class="arr"></span></th>
-          <th data-sort="bmax" class="num">Bloco B máx.<span class="arr"></span></th>
+          <th data-sort="amin" class="num">A mín.<span class="arr"></span></th>
+          <th data-sort="amax" class="num">A máx.<span class="arr"></span></th>
+          <th data-sort="bmin" class="num">B mín.<span class="arr"></span></th>
+          <th data-sort="bmax" class="num">B máx.<span class="arr"></span></th>
           <th data-sort="tmax" class="num">Carteira máx.<span class="arr"></span></th>
         </tr></thead>
         <tbody id="tb-exp"></tbody>
@@ -310,12 +314,12 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=72"></script>
-<script src="assets/data/uf_ne.js?v=72"></script>
-<script src="assets/js/maplayers.js?v=72"></script>
-<script src="assets/js/painel.js?v=72"></script>
-<script src="assets/js/export.js?v=72"></script>
-<script src="assets/js/campo.js?v=72"></script>
+<script src="assets/data/iniciativas.js?v=73"></script>
+<script src="assets/data/uf_ne.js?v=73"></script>
+<script src="assets/js/maplayers.js?v=73"></script>
+<script src="assets/js/painel.js?v=73"></script>
+<script src="assets/js/export.js?v=73"></script>
+<script src="assets/js/campo.js?v=73"></script>
 <script>
 document.getElementById("sair").addEventListener("click",function(e){
   e.preventDefault();PTEAuth.sair();location.replace("entrar.html");

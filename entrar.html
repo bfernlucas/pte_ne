@@ -87,9 +87,9 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
 </main>
 
 
-<script src="assets/data/campo.enc.js?v=72"></script>
-<script src="assets/data/p5.enc.js?v=72"></script>
-<script src="assets/js/auth.js?v=72"></script>
+<script src="assets/data/campo.enc.js?v=73"></script>
+<script src="assets/data/p5.enc.js?v=73"></script>
+<script src="assets/js/auth.js?v=73"></script>
 <script>
 (function () {
   var form = document.getElementById("form");
@@ -106,7 +106,7 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
   function mostra(el, texto) { el.textContent = texto; el.classList.add("on"); }
   function limpa() { erro.classList.remove("on"); info.classList.remove("on"); }
   if (params.get("motivo") === "camada") {
-    mostra(info, "O painel ganhou uma camada nova de dados. Entre de novo para abri-la.");
+    mostra(info, "Os dados do painel foram atualizados. Entre de novo para carregar a versão nova.");
   }
 
   form.addEventListener("submit", function (ev) {
@@ -131,7 +131,7 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
       } else if (e.message === "arquivo-ausente") {
         mostra(erro, "Não encontrei os dados cifrados. Rode scripts/publicar_p5.py e publique o resultado.");
       } else if (e.message === "camadas-desalinhadas") {
-        mostra(erro, "A senha está certa, mas a camada do relatório final foi cifrada com outras credenciais. " +
+        mostra(erro, "A senha está certa, mas a camada de estimativas foi cifrada com outras credenciais. " +
           "Rode scripts/publicar_p5.py de novo e publique os dois arquivos.");
       } else {
         mostra(erro, "Usuário ou senha incorretos.");

@@ -69,6 +69,7 @@
         var dados = JSON.parse(new TextDecoder().decode(claro));
         try {
           sessionStorage.setItem(spec.chave, JSON.stringify(dados));
+          sessionStorage.setItem(spec.chave + ".v", pacote.ct.slice(0, 40));   /* versao do pacote aberto */
         } catch (e) {
           /* sessao indisponivel: segue so em memoria */
         }
@@ -131,6 +132,7 @@
     PACOTES.forEach(function (spec) {
       try {
         sessionStorage.removeItem(spec.chave);
+        sessionStorage.removeItem(spec.chave + ".v");
       } catch (e) {
         /* nada a fazer */
       }
@@ -147,7 +149,12 @@
     }
     /* sessao aberta antes de a camada do relatorio final existir: o pacote
        esta na pagina, mas nao na sessao. Refaz o login para abrir os dois. */
-    if (global[PACOTES[1].enc] && !p5()) {
+    var desatualizada = PACOTES.some(function (spec) {
+      var pac = global[spec.enc]; if (!pac) return false;
+      try { var v = sessionStorage.getItem(spec.chave + ".v"); return v && v !== pac.ct.slice(0, 40); }
+      catch (e) { return false; }
+    });
+    if ((global[PACOTES[1].enc] && !p5()) || desatualizada) {
       sair();
       location.replace(PAGINA_LOGIN + "?destino=" + encodeURIComponent(location.pathname.split("/").pop()) + "&motivo=camada");
       return null;
