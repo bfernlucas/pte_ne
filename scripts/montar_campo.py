@@ -192,7 +192,7 @@ PERFIL = {
  "Fazenda Tamanduá":                dict(ano=1977, natureza="Empresa privada", equipe=None, benef="2.717 ha · RPPN de 381,8 ha", custo_anual=None, gap=None, mun="Patos", uf="PB", data=None, modo="presencial"),
  "Sistema Metroviário do Ceará":    dict(ano=1997, natureza="Empresa estadual", equipe=None, benef="16,4 mi de passageiros/ano", custo_anual=None, gap=400_000_000, custo_p5=False, gap_p5=True, mun="Fortaleza", uf="CE", data="06/08", modo="presencial"),
  "EMBRAPII IA — IFCE":              dict(ano=2015, natureza="Unidade EMBRAPII (IFCE)", equipe=None, benef="186 empresas · +3.000 estudantes", custo_anual=None, gap=27_000_000, custo_p5=False, gap_p5=True, mun="Fortaleza", uf="CE", data="06/08", modo="presencial"),
- "Blue C":                          dict(ano=2017, natureza="Empresa (deep tech)", equipe=5, benef="4 famílias produtoras", custo_anual=10_000, gap=20_000, custo_p5=True, gap_p5=True, mun="Flecheiras", uf="CE", data="07/08", modo="presencial"),
+ "Blue C":                          dict(ano=2017, natureza="Empresa (deep tech)", equipe=5, benef="4 famílias produtoras", custo_anual=10_000, gap=20_000, custo_p5=True, gap_p5=True, mun="Flecheiras", uf="CE", data="13/08", modo="virtual"),   # tabela de rotas do P5 B: entrevista virtual em 13/08
 }
 
 # Correspondencias que o cruzamento por tokens nao acha (nomes muito distintos

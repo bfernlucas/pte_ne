@@ -57,8 +57,8 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
 
 <header class="topo">
   <div class="inner">
-    <h1>Plano Brasil Nordeste — Incursões</h1>
-    <p>Plano Brasil Nordeste de Transformação Ecológica · acesso restrito</p>
+    <h1>Plano Brasil Nordeste — painel de iniciativas</h1>
+    <p>Plano Brasil Nordeste de Transformação Ecológica. Acesso restrito à equipe.</p>
   </div>
 </header>
 <div class="hills" aria-hidden="true">
@@ -87,9 +87,9 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
 </main>
 
 
-<script src="assets/data/campo.enc.js?v=73"></script>
-<script src="assets/data/p5.enc.js?v=73"></script>
-<script src="assets/js/auth.js?v=73"></script>
+<script src="assets/data/campo.enc.js?v=74"></script>
+<script src="assets/data/p5.enc.js?v=74"></script>
+<script src="assets/js/auth.js?v=74"></script>
 <script>
 (function () {
   var form = document.getElementById("form");
@@ -106,15 +106,15 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
   function mostra(el, texto) { el.textContent = texto; el.classList.add("on"); }
   function limpa() { erro.classList.remove("on"); info.classList.remove("on"); }
   if (params.get("motivo") === "camada") {
-    mostra(info, "Os dados do painel foram atualizados. Entre de novo para carregar a versão nova.");
+    mostra(info, "Os dados do painel foram atualizados. Entre novamente para carregar a nova versão.");
   }
 
   form.addEventListener("submit", function (ev) {
     ev.preventDefault();
     limpa();
     btn.disabled = true;
-    btn.textContent = "Abrindo…";
-    mostra(info, "Derivando a chave — leva alguns segundos por segurança.");
+    btn.textContent = "Entrando…";
+    mostra(info, "Verificando o acesso. Isso pode levar alguns segundos.");
 
     var usuario = document.getElementById("usuario").value;
     var senha = document.getElementById("senha").value;
@@ -127,12 +127,12 @@ button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
       btn.textContent = "Entrar";
       document.getElementById("senha").value = "";
       if (e.message === "contexto-inseguro") {
-        mostra(erro, "Abra a página por https ou localhost — o navegador bloqueia criptografia em file://.");
+        mostra(erro, "Abra a página por um endereço https ou localhost. O navegador bloqueia a criptografia em arquivos locais (file://).");
       } else if (e.message === "arquivo-ausente") {
-        mostra(erro, "Não encontrei os dados cifrados. Rode scripts/publicar_p5.py e publique o resultado.");
+        mostra(erro, "Os dados cifrados não foram encontrados. Execute scripts/publicar_p5.py e publique o resultado.");
       } else if (e.message === "camadas-desalinhadas") {
-        mostra(erro, "A senha está certa, mas a camada de estimativas foi cifrada com outras credenciais. " +
-          "Rode scripts/publicar_p5.py de novo e publique os dois arquivos.");
+        mostra(erro, "A senha está correta, mas as estimativas foram cifradas com outras credenciais. " +
+          "Execute scripts/publicar_p5.py novamente e publique os dois arquivos.");
       } else {
         mostra(erro, "Usuário ou senha incorretos.");
       }
