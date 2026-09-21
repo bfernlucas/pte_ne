@@ -14,3 +14,9 @@ Thumbs.db
 
 # camada de evidencia de campo em claro: nao publicar
 dados_campo.json
+
+# camada do Produto 5 em claro: nao publicar
+dados_p5.json
+
+# Python
+__pycache__/

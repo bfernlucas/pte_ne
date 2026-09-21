@@ -3,9 +3,14 @@
 """
 Monta dados_campo.json -- a camada de evidencia das incursoes (P3, P4, P5).
 
-Fonte: Documentos Tecnicos 3, 4 e 5 (Quanta/OEI). As notas vem do Apendice 2
-do P5, que e a fonte canonica: o texto corrido dos eixos tem rotulos de
-classificacao divergentes e a coluna "peso" das fichas e ambigua.
+Universo e numeros: Produto 5 B, via dados_p5.json (scripts/gen_p5.py) --
+as 29 organizacoes com visita ou entrevista, notas do Apendice 2, postura,
+rota e faixas de recursos (Bloco A + Bloco B). Rode gen_p5.py antes.
+
+Leitura qualitativa: Documentos Tecnicos 3, 4 e 5 (Quanta/OEI), codificada
+abaixo (EXP: o que se apoia; ANALISE: gargalos e potencialidades; PERFIL).
+As cinco organizacoes da Bahia visitadas na rota extra ainda nao tem essa
+codificacao: entram com os numeros do P5 B e campos qualitativos vazios.
 
 Cruza cada experiencia com a base de prospeccao (assets/data/iniciativas.js)
 para permitir a comparacao gabinete x campo.
@@ -15,57 +20,78 @@ import json, os, re, unicodedata
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = os.path.join(ROOT, "assets", "data", "iniciativas.js")
 OUT = os.path.join(ROOT, "dados_campo.json")
+P5 = os.path.join(ROOT, "dados_p5.json")
+
+# nome no P5 B (tabela de rotas) -> chave da codificacao qualitativa abaixo
+ALIAS_P5 = {
+    "Amarez": "AMAREZ",
+    "Cooperativa de Energia Solar Bem Viver": "Cooperativa Solar Bem Viver",
+    "Consórcio Público de Manejo de Resíduos Sólidos da Ibiapaba": "Consórcio Público da Ibiapaba",
+    "Parque Tecnológico Porto Digital — Recife": "Porto Digital — Recife",
+    "Programa Terra Plantar (IPA)": "Programa Terra Plantar",
+    "Acreditar — Associação de Microcrédito e Desenvolvimento": "Acreditar Microcrédito",
+    "Porto Digital — Unidade Caruaru": "Porto Digital — Caruaru",
+    "Associação dos Produtores de Crédito de Carbono Social do Bioma Caatinga": "Carbono Social do Bioma Caatinga",
+    "Cooperativa Agroindustrial Pindorama": "Cooperativa Pindorama",
+    "Unidade MCTI/EMBRAPII de Inovação em IA — IFCE": "EMBRAPII IA — IFCE",
+}
+# postura do P5 B -> chave interna usada por campo.js e POSTURA_MECANISMO
+POSTURA_P5 = {
+    "pronta": "direto", "pronta c/ dado": "condicionado", "dimensionar": "quantificacao",
+    "fortalecer": "preparacao", "preparatório": "preparatorio",
+}
 
 # nome | eixo | A oper | B inv | C impacto | D inov | total/100 | classif
-# | envelope min | max (R$ mi) | postura | base informacional | rota | o que se apoia
+# | (envelope do P5 A, removido: os valores vêm do P5 B, só no pacote cifrado)
+# | postura | base informacional | rota | o que se apoia
 EXP = [
- ("Fazenda Nutrilite Brasil","NIVA",5,5,5,5,100,"alta",1.1,2.2,"condicionado","parcial","R2",
+ ("Fazenda Nutrilite Brasil","NIVA",5,5,5,5,100,"alta",None,None,"condicionado","parcial","R2",
   "Semimecanização da colheita de acerola, diversificação de culturas e contabilização de emissões."),
- ("Trilha Caminhos da Ibiapaba","NIVA",5,5,5,5,100,"alta",3.6,5.1,"condicionado","parcial","R2",
+ ("Trilha Caminhos da Ibiapaba","NIVA",5,5,5,5,100,"alta",None,None,"condicionado","parcial","R2",
   "Formalização jurídica do movimento, indicadores e cadeia do ecoturismo comunitário."),
- ("No Clima da Caatinga","NIVA",5,5,5,5,100,"alta",5.1,8.3,"quantificacao","ausente","R2",
+ ("No Clima da Caatinga","NIVA",5,5,5,5,100,"alta",None,None,"quantificacao","ausente","R2",
   "Restauração com raízes alongadas, SAFs, segurança hídrica e diversificação financeira."),
- ("Tecnologia SARA","NIVA",5,5,5,5,100,"alta",3.0,5.6,"quantificacao","ausente","R1",
+ ("Tecnologia SARA","NIVA",5,5,5,5,100,"alta",None,None,"quantificacao","ausente","R1",
   "Programa permanente de difusão, dimensionamento nas três escalas e unidades nos 9 estados."),
- ("Rede Xique Xique","BIO",5,4,5,5,97,"alta",2.0,3.5,"quantificacao","ausente","Extra",
+ ("Rede Xique Xique","BIO",5,4,5,5,97,"alta",None,None,"quantificacao","ausente","Extra",
   "Política de logística para 33 municípios, capital de giro e unidade de polpa com SIF."),
- ("Acreditar Microcrédito","FSI",4,5,5,5,95,"alta",10.2,13.6,"direto","completa","R3",
+ ("Acreditar Microcrédito","FSI",4,5,5,5,95,"alta",None,None,"direto","completa","R3",
   "Ampliação do fundo, redução de juros por diluição de custo e formação de agentes de crédito."),
- ("Sistema Metroviário do Ceará","NIVA",5,5,4,5,94,"alta",40.0,80.0,"condicionado","parcial","Extra",
+ ("Sistema Metroviário do Ceará","NIVA",5,5,4,5,94,"alta",None,None,"condicionado","parcial","Extra",
   "Interiorização (VLT Cariri e Sobral), integração tarifária e transição para energia limpa."),
- ("Porto Digital — Recife","ADT",5,4,4,5,91,"alta",13.0,23.5,"quantificacao","ausente","R3",
+ ("Porto Digital — Recife","ADT",5,4,4,5,91,"alta",None,None,"quantificacao","ausente","R3",
   "Interiorização para Petrolina, Garanhuns e Araripina e sistematização da transferência."),
- ("Fazenda Tamanduá","NIVA",5,4,5,4,91,"alta",1.7,3.0,"quantificacao","ausente","Extra",
+ ("Fazenda Tamanduá","NIVA",5,4,5,4,91,"alta",None,None,"quantificacao","ausente","Extra",
   "Crédito e ATER para médio porte, mecanismo de PSA e selo de origem. Não é custeio."),
- ("CTERSA","TE",3,5,5,5,90,"alta",3.6,6.1,"preparacao","ausente","R1",
+ ("CTERSA","TE",3,5,5,5,90,"alta",None,None,"preparacao","ausente","R1",
   "Definição da configuração jurídica (gargalo primário) e custeio pós-implantação."),
- ("EMBRAPII IA — IFCE","ADT",5,4,3,5,85,"alta",4.8,8.8,"condicionado","parcial","Extra",
+ ("EMBRAPII IA — IFCE","ADT",5,4,3,5,85,"alta",None,None,"condicionado","parcial","Extra",
   "Prospecção dirigida à transformação ecológica e serviços tecnológicos a pequenos produtores."),
- ("Projeto Vale Sustentável","NIVA",4,3,5,4,83,"alta",10.4,12.7,"condicionado","parcial","R1",
+ ("Projeto Vale Sustentável","NIVA",4,3,5,4,83,"alta",None,None,"condicionado","parcial","R1",
   "Metodologia de contabilização de carbono para a Caatinga e piloto de PSA com o INCRA."),
- ("Instituto Caburé","NIVA",3,4,5,4,81,"alta",3.4,4.5,"direto","completa","R2",
+ ("Instituto Caburé","NIVA",3,4,5,4,81,"alta",None,None,"direto","completa","R2",
   "Fortalecimento institucional, sistematização da metodologia e economia azul."),
- ("Instituto Casaca de Couro","NIVA",4,4,4,4,80,"alta",2.3,3.9,"preparacao","ausente","R1",
+ ("Instituto Casaca de Couro","NIVA",4,4,4,4,80,"alta",None,None,"preparacao","ausente","R1",
   "Irrigação de áreas coletivas, redução do custo da certificação e ampliação da equipe."),
- ("Cooperativa Pindorama","TE",4,4,4,4,80,"alta",5.9,11.1,"preparacao","ausente","R3",
+ ("Cooperativa Pindorama","TE",4,4,4,4,80,"alta",None,None,"preparacao","ausente","R3",
   "Antecipação do projeto de biogás da vinhaça e sistematização da repartição de CBIOs."),
- ("Blue C","NIVA",3,3,5,4,78,"estrategico",0.15,0.35,"preparatorio","completa","Extra",
+ ("Blue C","NIVA",3,3,5,4,78,"estrategico",None,None,"preparatorio","completa","Extra",
   "Capital de giro para produzir algas antes da venda. Menor operação da carteira."),
- ("Um Milhão de Tetos Solares","TE",5,3,3,4,76,"estrategico",0.8,1.5,"preparatorio","ausente","R1",
+ ("Um Milhão de Tetos Solares","TE",5,3,3,4,76,"estrategico",None,None,"preparatorio","ausente","R1",
   "Assessoria jurídica para a barreira regulatória com a concessionária."),
- ("Consórcio Público da Ibiapaba","EC",3,4,4,4,75,"estrategico",1.5,3.0,"preparatorio","parcial","R2",
+ ("Consórcio Público da Ibiapaba","EC",3,4,4,4,75,"estrategico",None,None,"preparatorio","parcial","R2",
   "Centrais de resíduos, redução da dependência do ICMS Verde e inclusão de catadores."),
- ("Cooperativa Solar Bem Viver","TE",3,4,4,4,75,"estrategico",0.4,0.8,"preparatorio","ausente","R1",
+ ("Cooperativa Solar Bem Viver","TE",3,4,4,4,75,"estrategico",None,None,"preparatorio","ausente","R1",
   "Equacionamento da divisão de áreas de concessão entre dois cadastros da concessionária."),
- ("Porto Digital — Caruaru","ADT",3,4,2,4,63,"estrategico",0.0,0.0,"preparatorio","ausente","R3",
+ ("Porto Digital — Caruaru","ADT",3,4,2,4,63,"estrategico",None,None,"preparatorio","ausente","R3",
   "Sem alocação própria: contemplada no envelope do Porto Digital — Recife."),
- ("Programa Terra Plantar","BIO",4,2,3,3,62,"estrategico",1.0,2.0,"preparatorio","ausente","R3",
+ ("Programa Terra Plantar","BIO",4,2,3,3,62,"estrategico",None,None,"preparatorio","ausente","R3",
   "Estruturação de indicadores e rastreabilidade da aplicação de recursos."),
- ("AMAREZ","EC",3,3,3,3,60,"estrategico",0.10,0.20,"preparatorio","parcial","R1",
+ ("AMAREZ","EC",3,3,3,3,60,"estrategico",None,None,"preparatorio","parcial","R1",
   "Capital de giro para estocar material e vender direto à indústria, sem intermediação."),
- ("Banco Comunitário de Araçoiaba","FSI",2,2,2,3,46,"nao",0.0,0.0,"","","R3",
+ ("Banco Comunitário de Araçoiaba","FSI",2,2,2,3,46,"nao",None,None,"","","R3",
   "Não recomendada nesta etapa: requer fortalecimento institucional prévio."),
- ("Carbono Social do Bioma Caatinga","FSI",2,2,1,3,40,"nao",0.0,0.0,"","","R3",
+ ("Carbono Social do Bioma Caatinga","FSI",2,2,1,3,40,"nao",None,None,"","","R3",
   "Não recomendada nesta etapa: sem créditos gerados, sem receita e sem financiamento."),
 ]
 
@@ -243,7 +269,7 @@ AGENDAS = [
 
 ESCALA = {
  "piso_padrao": 15.0, "piso_reduzido": 5.0,
- "nota": "Individualmente, apenas 2 das 15 recomendadas alcançam o porte mínimo padrão do fundo regional e 5 ficam abaixo até do piso reduzido. Agregadas por eixo, Infraestrutura Verde-Azul e Adensamento Tecnológico superam o piso padrão com folga; Finanças e Transição Energética superam o reduzido; Bioeconomia permanece abaixo de qualquer patamar mesmo somada. Daí a proposta de tratar a carteira como programa único, com subprojetos sob agente credenciado."
+ "nota": "Individualmente, pelo valor máximo da carteira (Bloco A + Bloco B), 2 das 27 experiências com estimativa alcançam R$ 20 milhões, 3 alcançam R$ 15 milhões e 11 ficam abaixo até do piso reduzido de R$ 5 milhões. Agregadas por eixo, Infraestrutura Verde-Azul, Transição Energética, Adensamento Tecnológico e Economia Circular superam o porte mínimo padrão; Finanças Sustentáveis e Bioeconomia ficam entre o piso reduzido e o padrão. Daí a proposta de tratar a carteira como programa único, com subprojetos sob agente credenciado."
 }
 
 PESOS = {"impacto": 30, "inovacao": 30, "operacao": 25, "investimento": 15}
@@ -268,55 +294,56 @@ def carregar_base():
 
 
 def main():
-    base = carregar_base()
+    if not os.path.exists(P5):
+        raise SystemExit("ERRO: rode scripts/gen_p5.py antes (falta dados_p5.json)")
+    p5 = json.load(open(P5, encoding="utf-8"))
+    apoio = {x[0]: x[13] for x in EXP}
     saida = []
-    for (nome, eixo, a, b, c, d, total, classif, emin, emax,
-         postura, baseinf, rota, apoio) in EXP:
-        ti = _toks(nome)
-        melhor, escore = None, 0.0
-        for r in base:
-            tb = _toks(r["nome"] + " " + (r.get("org") or ""))
-            if not ti or not tb:
-                continue
-            s = len(ti & tb) / max(1, min(len(ti), len(tb)))
-            if s > escore:
-                escore, melhor = s, r
-        forcado = REF_OVERRIDES.get(nome)
-        if forcado is not None:
-            melhor = next((r for r in base if r["id"] == forcado), None)
-            escore = 1.0
-        casou = melhor is not None and escore >= 0.6
+    for e in p5["experiencias"]:
+        chave = ALIAS_P5.get(e["nome"], e["nome"])
+        a, b = e.get("bloco_a") or {}, e.get("bloco_b") or {}
+        env_min = (a.get("min") or 0) + (b.get("min") or 0)
+        env_max = (a.get("max") or 0) + (b.get("max") or 0)
+        perfil = dict(PERFIL.get(chave, {}))
+        perfil.setdefault("modo", "virtual" if e.get("coleta") == "Virtual" else "presencial")
+        perfil.setdefault("data", e.get("data"))
+        perfil.setdefault("mun", e.get("municipio"))
         saida.append({
-            "nome": nome,
-            "eixo_cod": eixo,
-            "notas": {"operacao": a, "investimento": b, "impacto": c, "inovacao": d},
-            "total": total,
-            "classificacao": classif,
-            "envelope": {"min": emin, "max": emax},
-            "postura": postura,
-            "base_informacional": baseinf,
-            "rota": rota,
-            "apoio": apoio,
-            "gargalos": ANALISE.get(nome, ([], []))[0],
-            "potenciais": ANALISE.get(nome, ([], []))[1],
-            "perfil": PERFIL.get(nome, {}),
-            "ref_id": melhor["id"] if casou else None,
-            "gabinete": melhor["pontuacao"] if casou else None,
-            "nova_em_campo": nome in NOVAS_EM_CAMPO,
-            "municipio": melhor.get("municipio") if casou else NOVAS_EM_CAMPO.get(nome, {}).get("municipio"),
-            "estado": melhor.get("estado") if casou else NOVAS_EM_CAMPO.get(nome, {}).get("estado"),
-            "lat": melhor.get("lat") if casou else NOVAS_EM_CAMPO.get(nome, {}).get("lat"),
-            "lon": melhor.get("lon") if casou else NOVAS_EM_CAMPO.get(nome, {}).get("lon"),
+            "nome": e.get("curto") if e.get("estimada") else chave,
+            "nome_p5": e["nome"],
+            "eixo_cod": e.get("eixo_cod"),
+            "notas": e["notas"],
+            "total": e["pontuacao"],
+            "classificacao": e["classificacao"],
+            "envelope": {"min": round(env_min, 4), "max": round(env_max, 4)},
+            "bloco_a": a, "bloco_b": b,
+            "postura": POSTURA_P5.get(e.get("postura") or "", ""),
+            "base_informacional": e.get("info_financeira") or "",
+            "rota": e["rota"],
+            "apoio": apoio.get(chave, ""),
+            "codificada": chave in ANALISE,
+            "gargalos": ANALISE.get(chave, ([], []))[0],
+            "potenciais": ANALISE.get(chave, ([], []))[1],
+            "perfil": perfil,
+            "ref_id": e.get("ref_id"),
+            "gabinete": e.get("gabinete"),
+            "nova_em_campo": e.get("nova_em_campo", False),
+            "municipio": e.get("municipio"),
+            "estado": e.get("uf"),
+            "lat": e.get("lat"),
+            "lon": e.get("lon"),
         })
 
     doc = {
         "meta": {
-            "fonte": "Documentos Tecnicos 3, 4 e 5 - Quanta/OEI",
+            "fonte": "Produto 5 B (numeros) e Documentos Tecnicos 3, 4 e 5 (leitura qualitativa) - Quanta/OEI",
             "contrato": "13849/2026 OEI/FPOS - TdR 12.500/2026",
-            "referencia_notas": "Apendice 2 do Produto 5",
+            "referencia_notas": "Apendice 2 do Produto 5 B",
             "pesos": PESOS,
             "faixas": {"alta": "80 a 100", "estrategico": "50 a 79", "nao": "abaixo de 50"},
-            "moeda": "R$ milhoes correntes de agosto de 2026, horizonte de 36 meses",
+            "moeda": "R$ milhoes a precos de setembro de 2026, horizonte de 36 meses",
+            "envelope": "Bloco A + Bloco B da secao 7 do P5 B",
+            "rotas": p5.get("rotas", []),
             "total": len(saida),
         "gargalos": GARGALOS,
         "gargalos_curto": GARGALOS_CURTO,

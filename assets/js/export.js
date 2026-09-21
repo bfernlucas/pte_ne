@@ -40,12 +40,13 @@ window.PTE_EXPORT = (function () {
   }
   // texto legível de uma célula (junta nome + subtítulo, ignora dots/barras vazias)
   function cellText(td) {
+    if (td.dataset && td.dataset.exp) return clean(td.dataset.exp);   // texto integral p/ célula abreviada
     const parts = [];
     td.childNodes.forEach(n => {
       if (n.nodeType === 3) { const t = clean(n.textContent); if (t) parts.push(t); }
       else if (n.nodeType === 1) {
         const t = clean(n.textContent); if (!t) return;
-        parts.push(n.classList && n.classList.contains("sub") ? "— " + t : t);
+        parts.push((n.classList && n.classList.contains("sub")) || n.tagName === "SMALL" ? "— " + t : t);
       }
     });
     return clean(parts.join(" "));
@@ -54,8 +55,15 @@ window.PTE_EXPORT = (function () {
   function extract(table) {
     const headRow = table.querySelector("thead tr");
     const ths = headRow ? [...headRow.children] : [];
-    const skip = ths.map((th, i) => /âncora|ancora/i.test(th.textContent) || (clean(th.textContent) === "" && i === ths.length - 1));
-    const headers = ths.filter((_, i) => !skip[i]).map(th => clean(th.textContent));
+    const skip = ths.map(th => /âncora|ancora/i.test(th.textContent) || clean(th.textContent) === "");
+    const headText = th => {
+      const sm = th.querySelector("small");
+      let main = "";
+      th.childNodes.forEach(n => { if (n.nodeType === 3) main += n.textContent; });
+      main = clean(main) || clean(th.textContent);
+      return sm ? main + " (" + clean(sm.textContent) + ")" : main;
+    };
+    const headers = ths.filter((_, i) => !skip[i]).map(headText);
     const rows = [];
     table.querySelectorAll("tbody tr").forEach(tr => {
       const cells = [...tr.children];

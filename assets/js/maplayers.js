@@ -5,20 +5,28 @@ window.PTE_MAP = (function () {
 
   // ---------- camadas de base ----------
   function bases() {
-    const ruas = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20, crossOrigin: true });
+    /* As bases da CARTO passaram a exigir chave de API e a devolver os
+       ladrilhos com marca d'água: substituídas por serviços da Esri, que
+       dispensam chave com atribuição. */
+    const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services/";
+    const cinza = L.layerGroup([
+      L.tileLayer(ESRI + "Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+        { attribution: "&copy; Esri, HERE, Garmin, OpenStreetMap", maxZoom: 16, crossOrigin: true }),
+      L.tileLayer(ESRI + "Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 16, crossOrigin: true, pane: "rotulos" })
+    ]);
+    const ruas = L.tileLayer(ESRI + "World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+      { attribution: "&copy; Esri, HERE, Garmin, OpenStreetMap", maxZoom: 19, crossOrigin: true });
     const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       { attribution: "&copy; OpenStreetMap", maxZoom: 19, crossOrigin: true });
-    const claro = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-      { attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 20, crossOrigin: true });
     const relevo = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
       { attribution: "&copy; OpenTopoMap (CC-BY-SA)", maxZoom: 17, crossOrigin: true });
-    const satelite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    const satelite = L.tileLayer(ESRI + "World_Imagery/MapServer/tile/{z}/{y}/{x}",
       { attribution: "&copy; Esri, Maxar, Earthstar Geographics", maxZoom: 19, crossOrigin: true });
     return {
+      "Cinza claro": cinza,
       "Ruas e estradas": ruas,
       "Mapa OSM (detalhado)": osm,
-      "Claro (mínimo)": claro,
       "Relevo": relevo,
       "Satélite": satelite,
     };
@@ -85,6 +93,13 @@ window.PTE_MAP = (function () {
   // opts: { base: nome da base padrão, boundaries: bool, airports: bool }
   function setup(map, opts) {
     opts = opts || {};
+    /* painel próprio para os rótulos da base cinza: acima dos ladrilhos,
+       abaixo dos pontos e linhas, sem capturar cliques */
+    if (!map.getPane("rotulos")) {
+      map.createPane("rotulos");
+      map.getPane("rotulos").style.zIndex = 350;
+      map.getPane("rotulos").style.pointerEvents = "none";
+    }
     const b = bases();
     const def = b[opts.base] ? opts.base : "Ruas e estradas";
     b[def].addTo(map);

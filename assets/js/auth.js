@@ -1,9 +1,13 @@
 /**
  * Area restrita do painel PTE-NE.
  *
- * A camada de evidencia de campo e publicada apenas cifrada
- * (assets/data/campo.enc.js). A senha da equipe deriva a chave que a abre;
- * sem ela o arquivo e ruido, mesmo baixado direto do repositorio.
+ * O painel inteiro fica atras de login. As camadas com dado sensivel sao
+ * publicadas apenas cifradas:
+ *   - assets/data/campo.enc.js -> evidencia das incursoes (PTE_CAMPO_ENC)
+ *   - assets/data/p5.enc.js    -> faixas de recursos por organizacao,
+ *                                 seção 7 do Produto 5 B (PTE_P5_ENC)
+ * A senha da equipe deriva a chave que abre as duas; sem ela os arquivos
+ * sao ruido, mesmo baixados direto do repositorio publico.
  *
  * Esquema: PBKDF2-HMAC-SHA256 (600.000 iteracoes) -> AES-256-GCM.
  * Exige contexto seguro (https ou localhost) -- nao funciona em file://.
@@ -11,8 +15,14 @@
 (function (global) {
   "use strict";
 
-  var CHAVE_SESSAO = "pte.campo";
   var PAGINA_LOGIN = "entrar.html";
+
+  /* Pacotes conhecidos. 'obrigatorio' derruba o login se faltar ou nao abrir;
+     os opcionais permitem publicar o painel antes de uma camada existir. */
+  var PACOTES = [
+    { chave: "pte.campo", enc: "PTE_CAMPO_ENC", claro: "PTE_CAMPO", obrigatorio: true },
+    { chave: "pte.p5", enc: "PTE_P5_ENC", claro: "PTE_P5", obrigatorio: false }
+  ];
 
   function bytes(txt) {
     return new TextEncoder().encode(txt);
@@ -40,14 +50,12 @@
       });
   }
 
-  /** Tenta abrir o pacote cifrado. Resolve com os dados; rejeita se a senha nao confere. */
-  function abrir(usuario, senha) {
-    var pacote = global.PTE_CAMPO_ENC;
+  function abrirPacote(usuario, senha, spec) {
+    var pacote = global[spec.enc];
     if (!pacote) {
-      return Promise.reject(new Error("arquivo-ausente"));
-    }
-    if (!global.crypto || !global.crypto.subtle) {
-      return Promise.reject(new Error("contexto-inseguro"));
+      return spec.obrigatorio
+        ? Promise.reject(new Error("arquivo-ausente"))
+        : Promise.resolve(null);
     }
     return derivarChave(usuario, senha, deB64(pacote.salt), pacote.iter)
       .then(function (chave) {
@@ -60,29 +68,44 @@
       .then(function (claro) {
         var dados = JSON.parse(new TextDecoder().decode(claro));
         try {
-          sessionStorage.setItem(CHAVE_SESSAO, JSON.stringify(dados));
+          sessionStorage.setItem(spec.chave, JSON.stringify(dados));
         } catch (e) {
           /* sessao indisponivel: segue so em memoria */
         }
-        global.PTE_CAMPO = dados;
+        global[spec.claro] = dados;
         return dados;
-      })
-      .catch(function (erro) {
-        if (erro && (erro.message === "arquivo-ausente" || erro.message === "contexto-inseguro")) {
-          throw erro;
-        }
-        throw new Error("senha-incorreta");
       });
   }
 
-  /** Dados ja abertos nesta sessao, ou null. */
-  function dados() {
-    if (global.PTE_CAMPO) return global.PTE_CAMPO;
+  /** Abre todos os pacotes com as mesmas credenciais. Rejeita se a senha nao confere. */
+  function abrir(usuario, senha) {
+    if (!global.crypto || !global.crypto.subtle) {
+      return Promise.reject(new Error("contexto-inseguro"));
+    }
+    return Promise.all(
+      PACOTES.map(function (spec) {
+        return abrirPacote(usuario, senha, spec).catch(function (erro) {
+          if (erro && erro.message === "arquivo-ausente") throw erro;
+          if (spec.obrigatorio) throw new Error("senha-incorreta");
+          /* camada opcional que nao abriu: segue sem ela, mas avisa no console */
+          if (global.console) {
+            console.warn("camada " + spec.enc + " nao abriu com estas credenciais");
+          }
+          return null;
+        });
+      })
+    ).then(function (r) {
+      return r[0];
+    });
+  }
+
+  function lerSessao(spec) {
+    if (global[spec.claro]) return global[spec.claro];
     try {
-      var bruto = sessionStorage.getItem(CHAVE_SESSAO);
+      var bruto = sessionStorage.getItem(spec.chave);
       if (bruto) {
-        global.PTE_CAMPO = JSON.parse(bruto);
-        return global.PTE_CAMPO;
+        global[spec.claro] = JSON.parse(bruto);
+        return global[spec.claro];
       }
     } catch (e) {
       /* sem sessionStorage */
@@ -90,13 +113,25 @@
     return null;
   }
 
+  /** Evidencia de campo ja aberta nesta sessao, ou null. */
+  function dados() {
+    return lerSessao(PACOTES[0]);
+  }
+
+  /** Camada do Produto 5 ja aberta nesta sessao, ou null. */
+  function p5() {
+    return lerSessao(PACOTES[1]);
+  }
+
   function sair() {
-    try {
-      sessionStorage.removeItem(CHAVE_SESSAO);
-    } catch (e) {
-      /* nada a fazer */
-    }
-    delete global.PTE_CAMPO;
+    PACOTES.forEach(function (spec) {
+      try {
+        sessionStorage.removeItem(spec.chave);
+      } catch (e) {
+        /* nada a fazer */
+      }
+      delete global[spec.claro];
+    });
   }
 
   /** Em paginas restritas: devolve os dados ou manda para o login. */
@@ -106,8 +141,10 @@
       location.replace(PAGINA_LOGIN + "?destino=" + encodeURIComponent(location.pathname.split("/").pop()));
       return null;
     }
+    /* reidrata a camada do P5 a partir da sessao, se houver */
+    p5();
     return d;
   }
 
-  global.PTEAuth = { abrir: abrir, dados: dados, sair: sair, exigir: exigir };
+  global.PTEAuth = { abrir: abrir, dados: dados, p5: p5, sair: sair, exigir: exigir };
 })(window);

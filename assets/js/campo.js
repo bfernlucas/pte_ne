@@ -14,20 +14,21 @@
   }
 
   var EIXOS = {
-    FSI:  ["Finanças Sustentáveis e Inclusivas", "#1f4da1"],
-    ADT:  ["Adensamento Tecnológico", "#7a3fb8"],
-    BIO:  ["Bioeconomia e Sist. Agroalimentares", "#43a047"],
-    TE:   ["Transição Energética", "#f37520"],
-    EC:   ["Economia Circular e Solidária", "#f6a609"],
-    NIVA: ["Nova Infraestrutura Verde-Azul", "#0d9488"]
+    FSI:  ["Finanças Sustentáveis e Inclusivas", "#24246C"],
+    ADT:  ["Adensamento Tecnológico", "#0C549C"],
+    BIO:  ["Bioeconomia e Sist. Agroalimentares", "#54B43C"],
+    TE:   ["Transição Energética", "#F09C18"],
+    EC:   ["Economia Circular e Solidária", "#E42424"],
+    NIVA: ["Nova Infraestrutura Verde-Azul", "#0F7D8C"]
   };
   var CLS = { alta: "Alta prioridade", estrategico: "Potencial estratégico", nao: "Não recomendada" };
+  /* chaves internas (montar_campo.py) com os rótulos de postura do P5 B */
   var POSTURAS = {
-    direto: "Apoio direto",
-    condicionado: "Apoio direto condicionado",
-    quantificacao: "Quantificação prévia",
-    preparacao: "Preparação ampla",
-    preparatorio: "Apoio preparatório"
+    direto: "Pronta para receber apoio",
+    condicionado: "Pronta, com dado a confirmar",
+    quantificacao: "Precisa dimensionar o investimento",
+    preparacao: "Precisa se fortalecer institucionalmente",
+    preparatorio: "Etapa preparatória"
   };
   var DIMS = [
     ["operacao", "Operação", 25], ["investimento", "Investimento", 15],
@@ -55,37 +56,54 @@
   /* ------------------------------------------------------------------ casca
      Quatro seções, cada uma respondendo a uma pergunta de decisão. Cada uma
      abre pela leitura — o que o dado quer dizer — e não pela descrição do dado. */
-  var totMin = exp.reduce(function (s, x) { return s + x.envelope.min; }, 0);
-  var totMax = exp.reduce(function (s, x) { return s + x.envelope.max; }, 0);
   var nAlta = exp.filter(function (x) { return x.classificacao === "alta"; }).length;
-  var comAloc = exp.filter(function (x) { return x.envelope.max > 0; }).length;
-  var metro = exp.filter(function (x) { return x.nome.indexOf("Metroviário") !== -1; })[0];
+  var codif = exp.filter(function (x) { return x.codificada; });
+  var semCod = exp.filter(function (x) { return !x.codificada; });
+  var TOTAL_BASE = (window.PTE_DATA && window.PTE_DATA.meta && window.PTE_DATA.meta.total) || 79;
+  var nuncaVisitadas = TOTAL_BASE - exp.filter(function (x) { return x.ref_id; }).length;
+  var UF_NE = ["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"];
+  var NOME_UF = { MA: "Maranhão", PI: "Piauí", CE: "Ceará", RN: "Rio Grande do Norte",
+    PB: "Paraíba", PE: "Pernambuco", AL: "Alagoas", SE: "Sergipe", BA: "Bahia" };
+  var ufsCampo = {};
+  exp.forEach(function (x) {
+    String(x.estado || "").split(/[,/]/).forEach(function (u) { u = u.trim(); if (u) ufsCampo[u] = 1; });
+  });
+  var ufsSem = UF_NE.filter(function (u) { return !ufsCampo[u]; });
+  function listaUF(us) {
+    var n = us.map(function (u) { return NOME_UF[u] || u; });
+    return n.length < 2 ? n.join("") : n.slice(0, -1).join(", ") + " e " + n[n.length - 1];
+  }
+  var notaSemCod = semCod.length
+    ? " As " + semCod.length + " organizações visitadas na Bahia em agosto ainda não têm gargalos " +
+      "e potencialidades codificados: entram nas notas e na captação, não nas frequências."
+    : "";
 
   var SECOES = [
-    { id: "carteira", rot: "Carteira", subs: ["carteira", "captacao"],
-      perg: "O que apoiar, com quanto, e por qual porta captar",
-      leitura: "<strong>R$ " + fmt(totMin) + " a " + fmt(totMax) + " milhões</strong> em 36 meses para " +
-        comAloc + " experiências. Dois terços vão para Infraestrutura Verde-Azul" +
-        (metro ? ", e o METROFOR sozinho responde por R$ " + fmt(metro.envelope.min) + "–" +
-          fmt(metro.envelope.max) + " mi — um terço do total" : "") + "." },
-    { id: "experiencias", rot: "Experiências", subs: ["lista"],
-      perg: "Quem são as 24 avaliadas, uma a uma",
-      leitura: "<strong>" + nAlta + " das " + exp.length + "</strong> alcançam a faixa de apoio imediato. " +
-        "O perfil nas quatro dimensões importa mais que a nota final: duas experiências com 80 pontos " +
-        "podem pedir apoios opostos." },
+    { id: "experiencias", rot: "Perfis", subs: ["lista"],
+      perg: "Quem são as " + exp.length + " avaliadas em campo, uma a uma",
+      leitura: "<strong>" + nAlta + " das " + exp.length + "</strong> alcançam 80 pontos ou mais no Apêndice 2 " +
+        "do Produto 5 B. O perfil nas quatro dimensões importa mais que a nota final: duas experiências " +
+        "com 80 pontos podem pedir apoios opostos." },
     { id: "evidencia", rot: "Evidência", subs: ["prospeccao", "gargalos"],
       perg: "O que sustenta as notas, e o que as ameaça",
       leitura: "A prospecção de gabinete prevê pouco. E o gargalo que atravessa a carteira " +
-        "<strong>não é dinheiro</strong>: é a informação que falta para converter mérito em pedido financiável." },
+        "<strong>não é dinheiro</strong>: é a informação que falta para converter mérito em pedido financiável." +
+        notaSemCod },
+    { id: "captacao", rot: "Captação", subs: ["captacao"],
+      perg: "Por qual porta captar, conforme a postura de cada experiência",
+      leitura: "A postura de apoio define o instrumento: quem está pronta pode ir a capital catalítico; " +
+        "quem precisa dimensionar o investimento depende de uma linha de estruturação de projetos." },
     { id: "comparar", rot: "Comparar", subs: ["comparar"],
       perg: "Entre estas, qual apoiar primeiro",
       leitura: "Compare até quatro experiências pelo <strong>perfil nas quatro dimensões</strong>, " +
         "não pela nota final. O que elas compartilham pode ser apoiado de uma vez; o que é exclusivo " +
         "exige tratamento próprio." },
-    { id: "campo", rot: "Campo", subs: ["cobertura", "incursoes"],
+    { id: "campo", rot: "Cobertura", subs: ["cobertura"],
       perg: "De onde vieram os dados, e o que ficou de fora",
-      leitura: "<strong>56 das 79</strong> iniciativas mapeadas nunca receberam visita. " +
-        "Bahia, Maranhão e Sergipe não tiveram incursão." }
+      leitura: "<strong>" + nuncaVisitadas + " das " + TOTAL_BASE + "</strong> iniciativas mapeadas não " +
+        "receberam visita nem entrevista." +
+        (ufsSem.length ? " " + listaUF(ufsSem) + (ufsSem.length > 1 ? " não tiveram" : " não teve") +
+          " incursão." : " Todos os nove estados tiveram ao menos uma incursão.") }
   ];
 
   raiz.innerHTML =
@@ -148,11 +166,11 @@
     '<div class="ec-tw"><table id="ec-tabela"><thead><tr>' +
       '<th>Experiência</th><th>Eixo</th><th>Dimensões</th>' +
       '<th style="text-align:right">Total</th><th>Classificação</th>' +
-      '<th style="text-align:right">Envelope (R$ mi)</th><th>Base</th>' +
+      '<th style="text-align:right">Carteira A + B (R$ mi)</th><th>Base</th>' +
     '</tr></thead><tbody id="ec-corpo"></tbody></table></div>' +
-    '<p class="ec-rodape">Notas conforme o Apêndice 2 do Produto 5 — fonte canônica: o texto corrido dos ' +
-    'eixos traz rótulos de classificação divergentes. Valores em R$ milhões correntes de agosto de 2026, ' +
-    'horizonte de 36 meses, <strong>não auditados</strong>.</p>';
+    '<p class="ec-rodape">Notas conforme o Apêndice 2 do Produto 5 B. Carteira = Bloco A + Bloco B da ' +
+    'seção 7, em R$ milhões a preços de setembro de 2026, horizonte de 36 meses — estimativa Classe 5, ' +
+    '<strong>não auditada</strong>.</p>';
 
   var selEixo = document.getElementById("ec-eixo");
   Object.keys(EIXOS).forEach(function (k) {
@@ -180,7 +198,7 @@
     document.getElementById("ec-kpis").innerHTML =
       '<div class="ec-kpi a"><div class="v">' + linhas.length + '</div><div class="l">experiências avaliadas</div></div>' +
       '<div class="ec-kpi b"><div class="v">' + alta + '</div><div class="l">alta prioridade (≥ 80)</div></div>' +
-      '<div class="ec-kpi c"><div class="v">' + fmt(min) + '–' + fmt(max) + '</div><div class="l">envelope R$ mi · 36 meses</div></div>' +
+      '<div class="ec-kpi c"><div class="v">' + fmt(min) + '–' + fmt(max) + '</div><div class="l">carteira A + B, R$ mi · 36 meses</div></div>' +
       '<div class="ec-kpi"><div class="v">' + comp + '</div><div class="l">com base informacional completa</div></div>';
   }
 
@@ -196,7 +214,7 @@
     var gabNorm = temGab ? Math.round(x.gabinete / 30 * 100) : null;
     var dif = temGab ? (x.total - gabNorm > 0 ? "+" : "") + (x.total - gabNorm) + " pontos" : "—";
     var env = x.envelope.max > 0
-      ? "R$ " + fmt(x.envelope.min) + " a " + fmt(x.envelope.max) + " mi" : "sem alocação";
+      ? "R$ " + fmt(x.envelope.min) + " a " + fmt(x.envelope.max) + " mi" : "sem estimativa";
     var gargs = (x.gargalos || []).map(function (g) {
       return '<li>' + esc(GARGALOS[g] || g) + '</li>'; }).join("");
     var pots = (x.potenciais || []).map(function (g) {
@@ -212,7 +230,7 @@
         '<dt>Equipe</dt><dd>' + (p.equipe != null ? p.equipe + " pessoas" : "—") + '</dd>' +
         '<dt>Alcance</dt><dd>' + esc(p.benef || "—") + '</dd></dl></div>' +
       '<div><h4>Encaminhamento</h4><dl>' +
-        '<dt>Envelope</dt><dd>' + env + '</dd>' +
+        '<dt>Carteira (A + B)</dt><dd>' + env + '</dd>' +
         '<dt>Postura</dt><dd>' + (POSTURAS[x.postura] || "—") + '</dd>' +
         '<dt>Custo operacional</dt><dd>' + reais(p.custo_anual) +
           (p.custo_anual && !p.custo_p5 ? ' <span style="font-weight:400;color:var(--faint)">(não utilizável no P5)</span>' : '') + '</dd>' +
@@ -266,86 +284,6 @@
     render(); });
   render();
 
-  /* ------------------------------------------------------------ 2. Carteira */
-  function barrasFaixa(grupos, corDe, total) {
-    var maxv = Math.max.apply(null, grupos.map(function (g) { return g.max; })) || 1;
-    var esc100 = function (v) { return (v / maxv * 100); };
-    return '<div class="ec-freq">' + grupos.map(function (g) {
-      return '<div class="r"><span class="t">' + esc(g.rot) + ' <span style="color:var(--faint)">· ' +
-        g.n + '</span></span><span class="b" title="' + fmt(g.min) + ' a ' + fmt(g.max) + ' mi">' +
-        '<span style="width:' + esc100(g.max) + '%;background:' + corDe(g) + ';opacity:.35"></span>' +
-        '</span><span class="v">' + (g.max > 0 ? fmt(g.min) + "–" + fmt(g.max) : "—") + '</span></div>';
-    }).join("") + '</div>';
-  }
-
-  function carteira(semMetro) {
-    var base = exp.filter(function (x) {
-      return !(semMetro && x.nome.indexOf("Metroviário") !== -1); });
-    var porEixo = Object.keys(EIXOS).map(function (k) {
-      var l = base.filter(function (x) { return x.eixo_cod === k; });
-      return { rot: EIXOS[k][0], cor: EIXOS[k][1], n: l.length,
-               min: l.reduce(function (s, x) { return s + x.envelope.min; }, 0),
-               max: l.reduce(function (s, x) { return s + x.envelope.max; }, 0) };
-    }).sort(function (a, b) { return b.max - a.max; });
-    var porPost = Object.keys(POSTURAS).map(function (k) {
-      var l = base.filter(function (x) { return x.postura === k; });
-      return { rot: POSTURAS[k], cor: "#1f4da1", n: l.length,
-               min: l.reduce(function (s, x) { return s + x.envelope.min; }, 0),
-               max: l.reduce(function (s, x) { return s + x.envelope.max; }, 0) };
-    }).filter(function (g) { return g.n > 0; }).sort(function (a, b) { return b.max - a.max; });
-    var tmin = base.reduce(function (s, x) { return s + x.envelope.min; }, 0);
-    var tmax = base.reduce(function (s, x) { return s + x.envelope.max; }, 0);
-
-    document.getElementById("ec-carteira-corpo").innerHTML =
-      '<div class="ec-kpis">' +
-        '<div class="ec-kpi c"><div class="v">' + fmt(tmin) + '–' + fmt(tmax) + '</div><div class="l">envelope total R$ mi</div></div>' +
-        '<div class="ec-kpi a"><div class="v">' + base.filter(function (x) { return x.envelope.max > 0; }).length +
-          '</div><div class="l">experiências com alocação</div></div>' +
-        '<div class="ec-kpi b"><div class="v">' + fmt(tmax / Math.max(1, base.filter(function (x) { return x.envelope.max > 0; }).length)) +
-          '</div><div class="l">média por experiência (teto)</div></div>' +
-      '</div>' +
-      '<div class="ec-card"><h3>Por eixo do PTE-NE</h3>' +
-        '<p class="sub">Faixa mínimo–máximo em R$ milhões, horizonte de 36 meses</p>' +
-        barrasFaixa(porEixo, function (g) { return g.cor; }) +
-        '<p class="ec-nota">Infraestrutura Verde-Azul concentra a carteira. Economia Circular não teve ' +
-        'nenhuma experiência na faixa de alta prioridade e ficou <strong>sem alocação</strong> — ' +
-        'o Consórcio da Ibiapaba entra pelo envelope preparatório.</p></div>' +
-      '<div class="ec-card"><h3>Por postura de apoio</h3>' +
-        '<p class="sub">A postura decorre da base informacional e da capacidade de execução</p>' +
-        barrasFaixa(porPost, function () { return "#1f4da1"; }) +
-        '<p class="ec-nota">Quantificação prévia e Preparação ampla financiam <strong>estudo e ' +
-        'fortalecimento</strong>, não a operação. O P5 conclui: “o primeiro movimento é de documentação, ' +
-        'e não de desembolso”.</p></div>' +
-      '<div class="ec-card"><h3>Quem compõe cada eixo</h3>' +
-      '<p class="sub">Experiências ordenadas pela pontuação de campo</p>' +
-      '<div class="ec-eixos">' + Object.keys(EIXOS).map(function (k) {
-        var l = base.filter(function (x) { return x.eixo_cod === k; })
-                    .sort(function (a, b) { return b.total - a.total; });
-        var mn = l.reduce(function (s, x) { return s + x.envelope.min; }, 0);
-        var mx2 = l.reduce(function (s, x) { return s + x.envelope.max; }, 0);
-        return '<div class="ec-ex"><div class="faixa" style="background:' + EIXOS[k][1] + '"></div>' +
-          '<h4>' + esc(EIXOS[k][0]) + '</h4>' +
-          '<div class="env">' + l.length + ' experiência' + (l.length === 1 ? "" : "s") + ' · ' +
-            (mx2 > 0 ? "R$ " + fmt(mn) + "–" + fmt(mx2) + " mi" : "sem alocação") + '</div>' +
-          (l.length ? '<ol>' + l.map(function (x) {
-            return '<li>' + esc(x.nome) + ' <b>' + x.total + '</b></li>'; }).join("") + '</ol>'
-                    : '<p class="vazio">nenhuma experiência</p>') +
-        '</div>';
-      }).join("") + '</div></div>';
-  }
-
-  document.getElementById("sub-carteira").innerHTML =
-    '<div class="ec-controles">' +
-      '<label class="ec-toggle"><input type="checkbox" id="ec-semmetro" /> ' +
-      'Excluir o Sistema Metroviário do Ceará, que sozinho distorce a leitura</label>' +
-      '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
-      '<button class="exp-btn" data-exp="png" data-target="#ec-carteira-corpo" data-name="carteira">Imagem (PNG)</button></div>' +
-    '</div>' +
-    '<div id="ec-carteira-corpo"></div>';
-  document.getElementById("ec-semmetro").addEventListener("change", function (e) {
-    carteira(e.target.checked); });
-  carteira(false);
-
   /* -------------------------------------------------- 3. Prospecção × campo
      Metade gráfico, metade análise. Nenhum rótulo dentro da área de plotagem:
      a identidade fica na lista de desvios, ligada ao gráfico por destaque
@@ -358,7 +296,7 @@
                  cls: x.classificacao, d: x.total - x.gabinete / 30 * 100 };
       });
     var ctrl = { cls: "" };
-    var COR = { sobe: "#43a047", desce: "#e0392b", perto: "#1f4da1" };
+    var COR = { sobe: "#54B43C", desce: "#E42424", perto: "#24246C" };
     function corDe(d) { return d > 12 ? COR.sobe : (d < -12 ? COR.desce : COR.perto); }
 
     function correl(ps) {
@@ -519,8 +457,8 @@
           '<span class="v">' + c[k] + '/' + exp.length + '</span></div>';
       }).join("") + '</div>' };
     }
-    var fg = freq(GARGALOS, "gargalos", "#e0392b");
-    var fp = freq(POTENCIAIS, "potenciais", "#43a047");
+    var fg = freq(GARGALOS, "gargalos", "#E42424");
+    var fp = freq(POTENCIAIS, "potenciais", "#54B43C");
 
     var ordExp = exp.slice().sort(function (a, b) {
       return (b.gargalos || []).length - (a.gargalos || []).length; });
@@ -538,12 +476,12 @@
 
     document.getElementById("sub-gargalos").innerHTML =
       '<div class="ec-card"><h3>Gargalos recorrentes</h3>' +
-      '<p class="sub">Frequência sobre as 24 experiências avaliadas</p>' + fg.html +
+      '<p class="sub">Frequência sobre as ' + codif.length + ' experiências com leitura qualitativa codificada</p>' + fg.html +
       '<p class="ec-nota">A ausência de indicadores sistematizados e a dependência de fonte única de ' +
       'financiamento atravessam quase toda a carteira. São <strong>pauta comum</strong>, não problema ' +
       'individual — e justificam apoio horizontal em vez de 15 apoios isolados.</p></div>' +
       '<div class="ec-card"><h3>Potencialidades recorrentes</h3>' +
-      '<p class="sub">Frequência sobre as 24 experiências avaliadas</p>' + fp.html + '</div>' +
+      '<p class="sub">Frequência sobre as ' + codif.length + ' experiências com leitura qualitativa codificada</p>' + fp.html + '</div>' +
       '<div class="ec-card"><h3>Matriz experiência × gargalo</h3>' +
       '<p class="sub">Ordenada por número de gargalos registrados</p>' +
       '<div class="exp-bar"><span class="exp-lab">Exportar:</span>' +
@@ -559,71 +497,82 @@
       'não “não existe”. As cinco experiências visitadas fora dos roteiros têm ficha menos detalhada ' +
       'e por isso aparecem com menos marcas.</p></div>';
   })();
-  /* ----------------------------------------------------------- 5. Cobertura */
+  /* ----------------------------------------------------------- 5. Cobertura
+     Calculada a partir das rotas do Produto 5 B (dados.meta.rotas), sem
+     nenhuma afirmação fixa sobre quais estados receberam incursão. */
   (function () {
-    var TOTAL_BASE = (window.PTE_DATA && window.PTE_DATA.meta && window.PTE_DATA.meta.total) || 79;
     var cruzadas = exp.filter(function (x) { return x.ref_id; }).length;
     var novas = exp.filter(function (x) { return !x.ref_id; });
-    var nuncaVisitadas = TOTAL_BASE - cruzadas;
-    var alta = exp.filter(function (x) { return x.classificacao === "alta"; }).length;
     var virtuais = exp.filter(function (x) { return (x.perfil || {}).modo === "virtual"; });
+    var ROTAS = (dados.meta.rotas || []);
+    var nomeRota = {};
+    ROTAS.forEach(function (r) { nomeRota[r.id] = r.nome; });
 
-    var UF = { MA: "Maranhão", PI: "Piauí", CE: "Ceará", RN: "Rio Grande do Norte",
-               PB: "Paraíba", PE: "Pernambuco", AL: "Alagoas", SE: "Sergipe", BA: "Bahia" };
-    var VISITADOS = { RN: "Rota 1", PB: "Rota 1", CE: "Rota 2", PI: "Rota 2",
-                      PE: "Roteiro 3", AL: "Roteiro 3" };
-
-    var ufHtml = Object.keys(UF).map(function (u) {
-      var v = VISITADOS[u];
-      return '<div class="r"><span class="t">' + u + ' · ' + UF[u] + '</span>' +
-        '<span class="b"><span style="width:' + (v ? 100 : 6) + '%;background:' +
-        (v ? "#43a047" : "#d9dde6") + ';opacity:' + (v ? ".75" : "1") + '"></span></span>' +
-        '<span class="v">' + (v || "sem visita") + '</span></div>';
+    /* por UF: quantas organizações e em quais rotas */
+    var porUF = {};
+    exp.forEach(function (x) {
+      String(x.estado || "").split(/[,/]/).forEach(function (u) {
+        u = u.trim(); if (!u) return;
+        porUF[u] = porUF[u] || { n: 0, rotas: {} };
+        porUF[u].n += 1; porUF[u].rotas[nomeRota[x.rota] || x.rota] = 1;
+      });
+    });
+    var maxUF = Math.max.apply(null, UF_NE.map(function (u) { return (porUF[u] || {}).n || 0; })) || 1;
+    var ufHtml = UF_NE.map(function (u) {
+      var v = porUF[u];
+      return '<div class="r"><span class="t">' + u + ' · ' + NOME_UF[u] + '</span>' +
+        '<span class="b"><span style="width:' + (v ? v.n / maxUF * 100 : 4) + '%;background:' +
+        (v ? "#54B43C" : "#D9D9DE") + ';opacity:' + (v ? ".8" : "1") + '"></span></span>' +
+        '<span class="v">' + (v ? v.n + " · " + Object.keys(v.rotas).join(", ") : "sem incursão") + '</span></div>';
     }).join("");
 
     var naoRealizadas = [
       ["Redeser (Crato/CE)", "Não realizada — sem retorno da Fundação Araripe"],
       ["Hub Pecém", "Adiada — operação só começa em 2029/2030"],
-      ["Rota 4 — Bahia", "Postergada por dificuldades logísticas"],
-      ["7 de 13 organizações do Roteiro 3", "Sem retorno apesar de e-mail, telefone e WhatsApp"]
+      ["7 de 13 organizações da Rota 3", "Sem retorno apesar de e-mail, telefone e WhatsApp"]
     ].map(function (x) {
       return '<div class="r"><span class="t">' + esc(x[0]) + '</span>' +
-        '<span class="b"><span style="width:100%;background:#e0392b;opacity:.18"></span></span>' +
+        '<span class="b"><span style="width:100%;background:#E42424;opacity:.18"></span></span>' +
         '<span class="v" style="flex-basis:230px;text-align:left;color:var(--muted)">' + esc(x[1]) + '</span></div>';
     }).join("");
+
+    var bahia = porUF.BA ? porUF.BA.n : 0;
 
     document.getElementById("sub-cobertura").innerHTML =
       '<div class="ec-kpis">' +
         '<div class="ec-kpi a"><div class="v">' + TOTAL_BASE + '</div><div class="l">prospectadas em gabinete</div></div>' +
         '<div class="ec-kpi c"><div class="v">' + exp.length + '</div><div class="l">avaliadas em campo</div></div>' +
-        '<div class="ec-kpi b"><div class="v">' + alta + '</div><div class="l">recomendadas (≥ 80)</div></div>' +
-        '<div class="ec-kpi"><div class="v" style="color:var(--red)">' + nuncaVisitadas + '</div><div class="l">nunca visitadas</div></div>' +
+        '<div class="ec-kpi b"><div class="v">' + nAlta + '</div><div class="l">com 80 pontos ou mais</div></div>' +
+        '<div class="ec-kpi"><div class="v" style="color:var(--red)">' + nuncaVisitadas + '</div><div class="l">sem visita nem entrevista</div></div>' +
       '</div>' +
       '<div class="ec-card"><h3>O funil, do gabinete à carteira</h3>' +
       '<p class="sub">Das ' + TOTAL_BASE + ' prospectadas, ' + cruzadas + ' foram a campo · ' +
-        novas.length + (novas.length === 1 ? ' experiência foi descoberta' : ' experiências foram descobertas') +
+        novas.length + (novas.length === 1 ? ' organização foi descoberta' : ' organizações foram descobertas') +
         ' na visita</p>' +
       '<div class="ec-freq">' +
         '<div class="r"><span class="t">Prospectadas em gabinete</span><span class="b">' +
-          '<span style="width:100%;background:#1f4da1;opacity:.65"></span></span><span class="v">' + TOTAL_BASE + '</span></div>' +
-        '<div class="r"><span class="t">Efetivamente visitadas</span><span class="b">' +
-          '<span style="width:' + (cruzadas / TOTAL_BASE * 100) + '%;background:#f37520;opacity:.8"></span></span><span class="v">' + cruzadas + '</span></div>' +
-        '<div class="r"><span class="t">Recomendadas para apoio</span><span class="b">' +
-          '<span style="width:' + (alta / TOTAL_BASE * 100) + '%;background:#43a047;opacity:.8"></span></span><span class="v">' + alta + '</span></div>' +
+          '<span style="width:100%;background:#24246C;opacity:.65"></span></span><span class="v">' + TOTAL_BASE + '</span></div>' +
+        '<div class="r"><span class="t">Visitadas ou entrevistadas</span><span class="b">' +
+          '<span style="width:' + (cruzadas / TOTAL_BASE * 100) + '%;background:#0C549C;opacity:.8"></span></span><span class="v">' + cruzadas + '</span></div>' +
+        '<div class="r"><span class="t">Com 80 pontos ou mais</span><span class="b">' +
+          '<span style="width:' + (nAlta / TOTAL_BASE * 100) + '%;background:#54B43C;opacity:.8"></span></span><span class="v">' + nAlta + '</span></div>' +
         '<div class="r"><span class="t">Descobertas em campo</span><span class="b">' +
-          '<span style="width:' + (novas.length / TOTAL_BASE * 100) + '%;background:#c026d3;opacity:.8"></span></span><span class="v">+' + novas.length + '</span></div>' +
+          '<span style="width:' + (novas.length / TOTAL_BASE * 100) + '%;background:#F09C18;opacity:.85"></span></span><span class="v">+' + novas.length + '</span></div>' +
       '</div>' +
-      '<p class="ec-nota">' + nuncaVisitadas + ' das ' + TOTAL_BASE + ' iniciativas mapeadas <strong>nunca receberam ' +
-      'visita</strong> — permanecem no painel como hipótese de gabinete. E o campo trouxe ' + novas.length +
-      (novas.length === 1 ? ' experiência que o levantamento prévio não continha'
-                          : ' experiências que o levantamento prévio não continha') +
+      '<p class="ec-nota">' + nuncaVisitadas + ' das ' + TOTAL_BASE + ' iniciativas mapeadas <strong>não receberam ' +
+      'visita nem entrevista</strong> — permanecem no painel como hipótese de gabinete. E o campo trouxe ' + novas.length +
+      (novas.length === 1 ? ' organização que o levantamento prévio não continha'
+                          : ' organizações que o levantamento prévio não continha') +
       (novas.length ? ': ' + novas.map(function (x) { return esc(x.nome); }).join(" e ") : "") + '.</p></div>' +
       '<div class="ec-card"><h3>Cobertura por estado</h3>' +
-      '<p class="sub">Quais dos nove estados do Nordeste receberam incursão</p>' +
+      '<p class="sub">Organizações avaliadas em cada um dos nove estados, e as rotas que passaram por lá</p>' +
       '<div class="ec-freq">' + ufHtml + '</div>' +
-      '<p class="ec-nota"><strong>Bahia, Maranhão e Sergipe não receberam nenhuma visita.</strong> ' +
-      'A Rota 4, prevista para a Bahia em agosto, foi postergada — e a Bahia é o estado com mais ' +
-      'iniciativas na base de prospecção.</p></div>' +
+      '<p class="ec-nota">' +
+        (ufsSem.length ? '<strong>' + listaUF(ufsSem) + (ufsSem.length > 1 ? ' não receberam' : ' não recebeu') +
+          ' incursão.</strong> ' : '') +
+        (bahia ? 'A Bahia, estado com mais iniciativas na base de prospecção, entrou na rota extra de agosto, com ' +
+          bahia + ' organizações visitadas em Salvador e no Recôncavo.' : '') +
+      '</p></div>' +
       '<div class="ec-card"><h3>Previsto e não realizado</h3>' +
       '<p class="sub">O que ficou de fora, e por quê</p>' +
       '<div class="ec-freq">' + naoRealizadas + '</div>' +
@@ -673,7 +622,7 @@
           '</div><div class="l">abaixo até do piso reduzido</div></div>' +
       '</div>' +
       '<div class="ec-card"><h3>A que porta cada grupo bate</h3>' +
-      '<p class="sub">O P5 mapeia mecanismo por postura de apoio, nunca iniciativa a iniciativa</p>' +
+      '<p class="sub">O Produto 5 B associa mecanismo a postura de apoio, nunca iniciativa a iniciativa</p>' +
       porPostura +
       '<p class="ec-nota">Este é o único mapeamento do documento. Qualquer tabela “iniciativa × mecanismo” ' +
       'seria derivação nossa, não transcrição — e por isso não existe aqui.</p></div>' +
@@ -687,128 +636,6 @@
       agHtml + '</div>';
   })();
 
-  /* ----------------------------------------------------------- 7. Incursões */
-  (function () {
-    var ROTAS = {
-      R1: ["Rota 1 · Rio Grande do Norte e Paraíba", "16 a 24 de julho · Lucas Fernandes e Bruna Torquato Pinho"],
-      R2: ["Rota 2 · Ceará e Piauí", "17 a 29 de julho · Leidiane Farias e Renata Mesquita"],
-      R3: ["Roteiro 3 · Pernambuco e Alagoas", "27 a 31 de julho · Sinoel Batista, Tamara Crantschaninov e Luiz Henrique Apollo"],
-      Extra: ["Fora dos roteiros", "Agosto · experiências de maturidade elevada e escala sistêmica"]
-    };
-    function dataNum(d) {
-      if (!d) return 9999;
-      var q = d.split("/");
-      return Number(q[1]) * 100 + Number(q[0]);
-    }
-    var html = Object.keys(ROTAS).map(function (k) {
-      var l = exp.filter(function (x) { return x.rota === k; })
-                 .sort(function (a, b) { return dataNum((a.perfil || {}).data) - dataNum((b.perfil || {}).data); });
-      if (!l.length) return "";
-      var virt = l.filter(function (x) { return (x.perfil || {}).modo === "virtual"; }).length;
-      return '<div class="ec-rota"><h4>' + esc(ROTAS[k][0]) + '</h4>' +
-        '<p class="meta">' + esc(ROTAS[k][1]) + ' · ' + l.length + ' experiências' +
-        (virt ? ' · ' + virt + ' por vídeo' : '') + '</p>' +
-        '<div class="ec-tl">' + l.map(function (x) {
-          var q = x.perfil || {};
-          return '<div class="ev' + (q.modo === "virtual" ? " virtual" : "") + '">' +
-            '<div class="d">' + esc(q.data || "data não registrada") +
-              (q.modo === "virtual" ? " · por vídeo" : "") + '</div>' +
-            '<div class="n">' + esc(x.nome) + ' <span class="sc">' + x.total + '</span></div>' +
-            '<div class="l">' + esc(q.mun || x.municipio || "—") +
-              (q.uf ? "/" + esc(q.uf) : "") +
-              ' · ' + esc((EIXOS[x.eixo_cod] || [x.eixo_cod])[0]) + '</div></div>';
-        }).join("") + '</div></div>';
-    }).join("");
-
-    var virtuais = exp.filter(function (x) { return (x.perfil || {}).modo === "virtual"; });
-    document.getElementById("sub-incursoes").innerHTML =
-      '<div class="ec-card"><h3>As incursões, como aconteceram</h3>' +
-      '<p class="sub">' + exp.length + ' experiências em quatro roteiros, entre 16 de julho e agosto de 2026</p>' +
-      html +
-      '<p class="ec-nota">Marcador tracejado em âmbar indica avaliação <strong>feita por vídeo</strong> — ' +
-      virtuais.length + ' das ' + exp.length + '. O painel já planeja rotas ótimas na aba Rotas Manuais; ' +
-      'esta é a rota que de fato se percorreu.</p></div>';
-  })();
-  /* --------------------------------------------- 8. Camada de campo em Comparar
-     A aba Comparar confronta os dez critérios de gabinete. Aqui se acrescenta,
-     para as iniciativas selecionadas, o que a visita de campo encontrou.
-     A seleção é lida do DOM (os cartões que o painel já renderiza), para não
-     depender do estado interno de dashboard.js. */
-  (function () {
-    var alvo = document.getElementById("view-comparar");
-    var cards = document.getElementById("cmp-cards");
-    if (!alvo || !cards) return;
-
-    var porId = {};
-    exp.forEach(function (x) { if (x.ref_id) porId[x.ref_id] = x; });
-
-    var caixa = document.createElement("div");
-    caixa.className = "ec-cmp";
-    caixa.id = "ec-comparar";
-    var barra = alvo.querySelector(".exp-bar");
-    if (barra) alvo.insertBefore(caixa, barra); else alvo.appendChild(caixa);
-
-    function nomeDoCartao(btn) {
-      var c = btn.closest(".cmp-card");
-      var h = c && c.querySelector(".cc-h");
-      if (!h) return "";
-      // a nota vem num <b> dentro do título, sem espaço antes: remover o nó,
-      // não recortar por regex, senão o número gruda no nome
-      var copia = h.cloneNode(true);
-      Array.prototype.forEach.call(copia.querySelectorAll("b"), function (b) { b.remove(); });
-      return copia.textContent.trim();
-    }
-
-    function render() {
-      var botoes = Array.prototype.slice.call(cards.querySelectorAll(".cc-rm[data-id]"));
-      if (!botoes.length) { caixa.innerHTML = ""; return; }
-
-      var linhas = botoes.map(function (b) {
-        var id = Number(b.getAttribute("data-id"));
-        return { id: id, nome: nomeDoCartao(b), c: porId[id] || null };
-      });
-      var comCampo = linhas.filter(function (l) { return l.c; });
-
-      caixa.innerHTML =
-        '<h3>O que o campo encontrou</h3>' +
-        '<p class="sub">' + (comCampo.length
-          ? comCampo.length + ' de ' + linhas.length + ' selecionadas foram avaliadas nas incursões'
-          : 'nenhuma das selecionadas foi avaliada em campo') + '</p>' +
-        '<div class="ec-cmp-grid">' + linhas.map(function (l) {
-          if (!l.c) {
-            return '<div class="ec-cc sem"><h4>' + esc(l.nome) + '</h4>' +
-              '<p class="vazio">Não visitada. A pontuação de gabinete não foi verificada em campo.</p></div>';
-          }
-          var x = l.c, p = x.perfil || {};
-          var dims = DIMS.map(function (d) {
-            return '<i style="height:' + (x.notas[d[0]] / 5 * 26) + 'px" title="' + d[1] +
-                   ': ' + x.notas[d[0]] + '/5"></i>'; }).join("");
-          var gabNorm = x.gabinete != null ? Math.round(x.gabinete / 30 * 100) : null;
-          var dif = gabNorm != null
-            ? (x.total - gabNorm > 0 ? "+" : "") + (x.total - gabNorm) + " pontos vs. gabinete"
-            : "não estava na base";
-          var env = x.envelope.max > 0
-            ? "R$ " + fmt(x.envelope.min) + " a " + fmt(x.envelope.max) + " mi" : "sem alocação";
-          return '<div class="ec-cc ' + x.classificacao + '">' +
-            '<h4>' + esc(x.nome) + '</h4>' +
-            '<div class="tot">' + x.total + '<small>/100</small></div>' +
-            '<span class="cls ' + x.classificacao + '">' + CLS[x.classificacao] + '</span>' +
-            '<div class="dims" title="Operação, Investimento, Impacto, Inovação">' + dims + '</div>' +
-            '<dl><dt>Diferença</dt><dd>' + dif + '</dd>' +
-            '<dt>Envelope</dt><dd>' + env + '</dd>' +
-            '<dt>Postura</dt><dd>' + (POSTURAS[x.postura] || "—") + '</dd>' +
-            '<dt>Base informacional</dt><dd>' + (x.base_informacional || "—") + '</dd></dl></div>';
-        }).join("") + '</div>' +
-        (comCampo.length
-          ? '<p class="ec-cmp-nota">A barra mostra as quatro dimensões na ordem Operação, Investimento, ' +
-            'Impacto e Inovação. Duas iniciativas com a mesma nota final podem ter perfis opostos — é o ' +
-            'perfil, não o total, que orienta o tipo de apoio.</p>'
-          : '');
-    }
-
-    new MutationObserver(render).observe(cards, { childList: true, subtree: true });
-    render();
-  })();
   /* ----------------------------------------------------------- 9. Comparar
      Estratégia: o que separa e o que aproxima. O perfil nas quatro dimensões
      mostra a diferença de natureza; os gargalos em comum dizem o que pode ser
@@ -838,7 +665,7 @@
     function barras(itens) {
       var W = 880, H = 230, L = 130, R = 20, T = 30, B = 34;
       var pw = W - L - R, gw = pw / DIMS.length, bw = Math.min(26, (gw - 18) / itens.length);
-      var COR = ["#1f4da1", "#f37520", "#43a047", "#7a3fb8"];
+      var COR = ["#24246C", "#F09C18", "#54B43C", "#0C549C"];
       var g = "";
       [1, 2, 3, 4, 5].forEach(function (v) {
         var y = H - B - (v / 5) * (H - T - B);
