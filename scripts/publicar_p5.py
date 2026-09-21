@@ -30,7 +30,7 @@ ENC_P5 = os.path.join(ROOT, "assets", "data", "p5.enc.js")
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--xlsx", help="PTE2026_fichas_investimento.xlsx (padrão: pasta PTE - Incursões)")
-    ap.add_argument("--usuario", default="equipe")
+    ap.add_argument("--usuario", help="usuário do login (se omitido, o script pergunta)")
     ap.add_argument("--nova-senha", action="store_true",
                     help="não conferir contra o pacote atual (troca deliberada de senha)")
     a = ap.parse_args()
@@ -41,22 +41,28 @@ def main() -> int:
     print("2/3  gerando dados_campo.json ...")
     montar_campo.main()
 
-    senha = getpass.getpass("3/3  senha da equipe (usuário '%s'): " % a.usuario)
+    print("3/3  credenciais — as mesmas que você digita em entrar.html")
+    usuario = a.usuario or input("     usuário: ").strip()
+    if not usuario:
+        print("ERRO: informe o usuário. Nada foi gravado.")
+        return 1
+    senha = getpass.getpass("     senha: ")
     if a.nova_senha:
         if getpass.getpass("     repita a nova senha: ") != senha:
             print("ERRO: as senhas não conferem. Nada foi gravado.")
             return 1
-    elif os.path.exists(ENC_CAMPO) and not cifrar_campo.abrir_pacote(ENC_CAMPO, a.usuario, senha):
-        print("ERRO: essa senha não abre o campo.enc.js publicado. Nada foi gravado.\n"
-              "      (Para trocar a senha de propósito, rode com --nova-senha.)")
+    elif os.path.exists(ENC_CAMPO) and not cifrar_campo.abrir_pacote(ENC_CAMPO, usuario, senha):
+        print("ERRO: usuário e senha não abrem o campo.enc.js publicado. Nada foi gravado.\n"
+              "      Confira se entram no site (entrar.html); maiúsculas contam na senha,\n"
+              "      no usuário não. Para trocar a senha de propósito, rode com --nova-senha.")
         return 1
 
     cifrar_campo.cifrar_arquivo(os.path.join(ROOT, "dados_campo.json"), ENC_CAMPO,
-                                "PTE_CAMPO_ENC", a.usuario, senha)
+                                "PTE_CAMPO_ENC", usuario, senha)
     cifrar_campo.cifrar_arquivo(os.path.join(ROOT, "dados_p5.json"), ENC_P5,
-                                "PTE_P5_ENC", a.usuario, senha)
+                                "PTE_P5_ENC", usuario, senha)
     for f in (ENC_CAMPO, ENC_P5):
-        if not cifrar_campo.abrir_pacote(f, a.usuario, senha):
+        if not cifrar_campo.abrir_pacote(f, usuario, senha):
             print("ERRO: conferência pós-cifra falhou em %s" % f)
             return 1
     print("OK   campo.enc.js e p5.enc.js cifrados e conferidos com a mesma senha.")

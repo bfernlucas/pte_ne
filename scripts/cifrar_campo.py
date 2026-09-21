@@ -30,9 +30,9 @@ OUT = os.path.join(ROOT, "assets", "data", "campo.enc.js")
 ITER = 600_000
 
 
-def derivar(usuario: str, senha: str, salt: bytes) -> bytes:
+def derivar(usuario: str, senha: str, salt: bytes, iteracoes: int = ITER) -> bytes:
     material = f"{usuario.strip().lower()}\n{senha}".encode("utf-8")
-    return hashlib.pbkdf2_hmac("sha256", material, salt, ITER, dklen=32)
+    return hashlib.pbkdf2_hmac("sha256", material, salt, iteracoes, dklen=32)
 
 
 def cifrar_arquivo(src: str, out: str, var: str, usuario: str, senha: str) -> dict:
@@ -58,7 +58,7 @@ def abrir_pacote(caminho: str, usuario: str, senha: str) -> bool:
     """True se o pacote cifrado existente abre com estas credenciais."""
     txt = open(caminho, encoding="utf-8").read()
     pacote = json.loads(txt[txt.index("{"):txt.rindex("}") + 1])
-    chave = derivar(usuario, senha, base64.b64decode(pacote["salt"]))
+    chave = derivar(usuario, senha, base64.b64decode(pacote["salt"]), int(pacote.get("iter", ITER)))
     try:
         AESGCM(chave).decrypt(base64.b64decode(pacote["nonce"]), base64.b64decode(pacote["ct"]), None)
         return True
