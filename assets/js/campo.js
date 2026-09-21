@@ -167,10 +167,7 @@
       '<th>Experiência</th><th>Eixo</th><th>Dimensões</th>' +
       '<th style="text-align:right">Total</th><th>Classificação</th>' +
       '<th style="text-align:right">Carteira A + B (R$ mi)</th><th>Base</th>' +
-    '</tr></thead><tbody id="ec-corpo"></tbody></table></div>' +
-    '<p class="ec-rodape">Notas conforme o Apêndice 2 do relatório final. Carteira = Bloco A + Bloco B da ' +
-    'seção 7, em R$ milhões a preços de setembro de 2026, horizonte de 36 meses — estimativa Classe 5, ' +
-    '<strong>não auditada</strong>.</p>';
+    '</tr></thead><tbody id="ec-corpo"></tbody></table></div>';
 
   var selEixo = document.getElementById("ec-eixo");
   Object.keys(EIXOS).forEach(function (k) {

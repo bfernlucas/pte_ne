@@ -44,7 +44,8 @@
   <div class="wrap" id="secnav">
     <button data-view="carteira" class="active">Carteira</button>
     <button data-view="mapa">Mapa</button>
-    <button data-view="experiencias">Experiências de campo</button>
+    <button data-view="experiencias">Incursões</button>
+    <button data-view="diagnostico">Diagnóstico de campo</button>
     <button data-view="analise">Análise</button>
   </div>
 </nav>
@@ -70,8 +71,7 @@
       <button class="exp-btn" data-exp="png" data-target="#fig-aluvial" data-name="trajetoria-valor">PNG</button>
     </div>
     <div id="fig-aluvial" class="figura" style="border:0"></div>
-    <p class="nota-fonte"><b>Fonte:</b> relatório final, seção 7.3. Valores máximos em R$ milhões,
-      preços de setembro de 2026, horizonte de 36 meses.</p>
+    <p class="leitura" id="aluvial-leitura"></p>
   </div>
 
   <div class="bloco">
@@ -119,8 +119,6 @@
         <tbody id="tb-ranking"></tbody>
       </table>
     </div>
-    <p class="nota-fonte"><b>Fonte:</b> matriz de prospecção (PTE2026_matriz_dashboard.xlsx) e
-      seção 7 do relatório final. Bloco A = recursos contratáveis nesta etapa; Bloco B = referência indicativa.</p>
 
     <div class="cmp-drawer hidden" id="cmp-drawer">
       <div class="cmp-head">
@@ -165,16 +163,15 @@
     <div id="map-geral" class="map"></div>
     <aside class="map-side" id="map-side"><p class="ph">Clique em um ponto para ver a ficha da iniciativa.</p></aside>
   </div>
-  <p class="nota-fonte"><b>Fonte:</b> matriz de prospecção e tabela de rotas da seção 2 do relatório final.
-    Iniciativas de alcance multiestadual aparecem na coordenada da sede.</p>
 </section>
 
 <!-- ================================================== EXPERIÊNCIAS -->
 <section class="view hidden" id="view-experiencias">
   <div class="sec-head">
-    <h2>Experiências de campo</h2>
+    <h2>Incursões e fichas de investimento</h2>
     <p id="exp-lead">As organizações visitadas ou entrevistadas nas incursões, na ordem em que foram
-      percorridas. Cada ficha traz a avaliação do relatório final e a faixa de recursos estimada.</p>
+      percorridas. Cada ficha traz a avaliação do relatório final, a faixa de recursos estimada e a
+      ficha de investimento completa.</p>
   </div>
 
   <div class="bloco">
@@ -185,15 +182,18 @@
     <p class="rota-info" id="rota-info"></p>
     <div class="fichas" id="fichas"></div>
     <div class="inv hidden" id="inv"></div>
-    <p class="nota-fonte"><b>Fonte:</b> fichas de campo das incursões e seção 7 do relatório final.
-      Faixas em R$ milhões, preços de setembro de 2026, horizonte de 36 meses, Classe 5 da AACE International.</p>
   </div>
 
-  <div class="bloco">
-    <h3>Evidência de campo</h3>
-    <p class="sub">A leitura qualitativa das incursões: gargalos, potencialidades, cobertura e captação.</p>
-    <div id="view-campo"><!-- preenchido por assets/js/campo.js --></div>
+</section>
+
+<!-- =================================================== DIAGNÓSTICO -->
+<section class="view hidden" id="view-diagnostico">
+  <div class="sec-head">
+    <h2>Diagnóstico de campo</h2>
+    <p>A leitura qualitativa das incursões: perfis, gargalos, potencialidades, captação e cobertura,
+      a partir das fichas de campo e das transcrições.</p>
   </div>
+  <div id="view-campo"><!-- preenchido por assets/js/campo.js --></div>
 </section>
 
 <!-- ======================================================= ANÁLISE -->
@@ -232,7 +232,6 @@
         <div class="chart-box"><canvas id="ch-76"></canvas></div>
       </div>
     </div>
-    <p class="nota-fonte"><b>Fonte:</b> fichas de campo (formulário Kobo, blocos B e C), seção 7.1 do relatório final.</p>
   </div>
 
   <div class="bloco">
@@ -255,7 +254,6 @@
         <div class="chart-box"><canvas id="ch-eixo"></canvas></div>
       </div>
     </div>
-    <p class="nota-fonte" id="an-cambio"><b>Fonte:</b> Quadros 1 a 4 da planilha de estimativa (PTE2026_fichas_investimento.xlsx).</p>
   </div>
 
   <div class="bloco">
@@ -293,7 +291,6 @@
         <tbody id="tb-exp"></tbody>
       </table>
     </div>
-    <p class="nota-fonte"><b>Fonte:</b> Quadro 5 da planilha de estimativa (Tabela 7.5 do relatório final). Valores em R$ milhões.</p>
   </div>
 </section>
 
