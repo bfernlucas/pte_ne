@@ -3,7 +3,7 @@
 
    Consome:
      window.PTE_DATA  (assets/data/iniciativas.js)  — base de prospecção
-     window.PTE_P5    (decifrado por auth.js)       — camada do Produto 5 B
+     window.PTE_P5    (decifrado por auth.js)       — camada do relatório final
    O módulo "Evidência de campo" (campo.js) continua responsável pela
    leitura qualitativa das incursões.
    ========================================================================== */
@@ -139,12 +139,14 @@
   /* ====================================================== 1. CARTEIRA === */
   INICIA.carteira = function () {
     var comFicha = LINHAS.filter(function (l) { return l.exp; }).length;
+    var novas = LINHAS.length - INI.length;   /* visitadas que a prospecção não continha */
     var estimadas = EXP.filter(function (e) { return e.estimada; }).length;
     var cart = QUADROS && QUADROS.carteira;
     var blocos = [
-      ["" + INI.length, "iniciativas mapeadas", "em nove estados do Nordeste"],
+      ["" + LINHAS.length, "iniciativas", INI.length + " da prospecção" +
+        (novas ? " + " + novas + " encontradas em campo" : "") + ", sem repetição"],
       ["" + comFicha, "foram a campo", "visita técnica ou entrevista"],
-      ["" + estimadas, "com estimativa de recursos", "seção 7 do Produto 5 B"]
+      ["" + estimadas, "com estimativa de recursos", "seção 7 do relatório final"]
     ];
     if (cart && cart.reais) {
       blocos.push([
@@ -161,7 +163,7 @@
 
     if (!P5) {
       $("#carteira-lead").insertAdjacentHTML("afterend",
-        '<div class="aviso">A camada do Produto 5 não abriu nesta sessão. ' +
+        '<div class="aviso">A camada do relatório final não abriu nesta sessão. ' +
         'O ranking aparece só com a nota da matriz.</div>');
     }
     montaRanking();
@@ -383,6 +385,21 @@
 
   /* UF: até duas siglas por extenso; acima disso, a primeira + contagem,
      com a lista completa no title e no arquivo exportado (data-exp). */
+  var POSTURA_CURTA = { "pronta": "Pronta", "pronta c/ dado": "Pronta, dado a confirmar",
+    "dimensionar": "Dimensionar", "fortalecer": "Fortalecer", "preparatório": "Preparatória" };
+
+  /* Município e UF numa célula só: acima de duas UFs, a primeira + contagem,
+     com a lista completa no title e no arquivo exportado. */
+  function localCelula(l) {
+    var us = ufsDe(l.uf), uf;
+    if (!us.length) uf = esc(l.uf || "");
+    else if (us.length <= 2) uf = esc(us.join(", "));
+    else uf = esc(us[0]) + ' <span class="vazio">+' + (us.length - 1) + "</span>";
+    var cheio = (l.municipio ? l.municipio + " · " : "") + (us.length ? us.join(", ") : (l.uf || ""));
+    return '<td class="loc" data-exp="' + esc(cheio) + '" title="' + esc(cheio) + '">' +
+      esc(l.municipio || "—") + "<small>" + uf + "</small></td>";
+  }
+
   function ufCelula(uf) {
     var us = ufsDe(uf);
     if (!us.length) return "<td>" + esc(uf || "—") + "</td>";
@@ -409,15 +426,15 @@
         '<td><input type="checkbox" class="mk"' + (m ? " checked" : "") +
           (l.criterios ? "" : " disabled title=\"sem perfil nos dez critérios\"") + " /></td>" +
         '<td class="nome">' + esc(l.nome) + (l.org ? "<small>" + esc(l.org) + "</small>" : "") + "</td>" +
-        "<td>" + esc(l.municipio || "—") + "</td>" +
-        ufCelula(l.uf) +
+        localCelula(l) +
         "<td>" + (l.eixo ? '<span class="tag tag-eixo" style="background:' + corEixo(l.eixo) + '">' +
           esc(l.eixo) + "</span>" : '<span class="vazio">—</span>') + "</td>" +
-        "<td>" + esc(l.natureza || "—") + "</td>" +
+        '<td class="nat" title="' + esc(l.natureza) + '">' + esc(l.natureza || "—") + "</td>" +
         '<td class="num">' + (l.matriz == null ? '<span class="vazio">—</span>' : num(l.matriz, 0)) + "</td>" +
         "<td>" + (l.campo ? '<span class="tag pill-campo">' + esc(l.campo) + "</span>" : "") + "</td>" +
         '<td class="num">' + (l.p5 == null ? '<span class="vazio">—</span>' : num(l.p5, 0)) + "</td>" +
-        "<td>" + esc(l.postura ? (ROTULO_POSTURA[l.postura] || l.postura) : "—") + "</td>" +
+        '<td title="' + esc(l.postura ? (ROTULO_POSTURA[l.postura] || l.postura) : "") + '">' +
+          esc(l.postura ? (POSTURA_CURTA[l.postura] || l.postura) : "—") + "</td>" +
         '<td class="num">' + faixa(l.amin, l.amax) + "</td>" +
         '<td class="num">' + faixa(l.bmin, l.bmax) + "</td>" +
         "</tr>";
@@ -516,7 +533,7 @@
       '<tr><td><b>Nota da matriz</b></td>' +
         sel.map(function (l) { return '<td class="num"><b>' + num(l.matriz, 0) + "</b></td>"; }).join("") +
       "</tr>" +
-      '<tr><td>Pontuação do P5</td>' +
+      '<tr><td>Pontuação final</td>' +
         sel.map(function (l) { return '<td class="num">' + (l.p5 == null ? "—" : num(l.p5, 0)) + "</td>"; }).join("") +
       "</tr></tbody></table>";
   }
@@ -640,7 +657,7 @@
     if (e) {
       h += "<dt>Coleta em campo</dt><dd>" + esc(e.coleta) + " · " + esc(e.data) +
         " · " + esc(e.rota_nome) + "</dd>";
-      if (e.pontuacao != null) h += "<dt>Pontuação do P5</dt><dd>" + num(e.pontuacao, 0) + " de 100</dd>";
+      if (e.pontuacao != null) h += "<dt>Pontuação final</dt><dd>" + num(e.pontuacao, 0) + " de 100</dd>";
       if (e.postura) h += "<dt>Postura de apoio</dt><dd>" + esc(ROTULO_POSTURA[e.postura] || e.postura) + "</dd>";
       if (e.estimada) {
         h += "<dt>Bloco A — contratável</dt><dd>R$ " + faixa(e.bloco_a.min, e.bloco_a.max) + " mi</dd>";
@@ -660,7 +677,7 @@
 
   INICIA.experiencias = function () {
     if (!EXP.length) {
-      $("#fichas").innerHTML = '<div class="aviso">A camada do Produto 5 não abriu nesta sessão.</div>';
+      $("#fichas").innerHTML = '<div class="aviso">A camada do relatório final não abriu nesta sessão.</div>';
       return;
     }
     var nEst = EXP.filter(function (e) { return e.estimada; }).length;
@@ -712,7 +729,7 @@
       if (e.estimada) {
         h += "<dl>" +
           "<dt>Postura de apoio</dt><dd>" + esc(ROTULO_POSTURA[e.postura] || e.postura) + "</dd>" +
-          "<dt>Pontuação do P5</dt><dd>" + num(e.pontuacao, 0) + " · " + esc(e.posicao) + "º de 27</dd>" +
+          "<dt>Pontuação final</dt><dd>" + num(e.pontuacao, 0) + " · " + esc(e.posicao) + "º de 27</dd>" +
           "<dt>Informação financeira</dt><dd>" + esc(maiusc(e.info_financeira)) + "</dd>" +
           "<dt>Confiança da estimativa</dt><dd>" + esc(maiusc(e.confianca)) + "</dd>" +
           "<dt>Itens estimados</dt><dd>" + esc(e.itens) + "</dd>" +
@@ -746,13 +763,13 @@
   INICIA.analise = function () {
     if (!QUADROS) {
       $("#view-analise .bloco").insertAdjacentHTML("beforebegin",
-        '<div class="aviso">A camada do Produto 5 não abriu nesta sessão.</div>');
+        '<div class="aviso">A camada do relatório final não abriu nesta sessão.</div>');
       return;
     }
     var qa = QUADROS.contratavel, qb = QUADROS.referencia, qc = QUADROS.carteira;
 
     if (S7fin()) situacaoFinanceira(P5.secao7);
-    else $("#an-sit-sub").insertAdjacentHTML("afterend",
+    else $("#view-analise .bloco > h3").insertAdjacentHTML("afterend",
       '<div class="aviso">Os indicadores da seção 7.1 não vieram nesta versão dos dados.</div>');
     if (QUADROS.carteira && P5.secao7 && P5.secao7.cambio) {
       var m = /R\$ ?([\d,]+)\/US\$/.exec(P5.secao7.cambio);

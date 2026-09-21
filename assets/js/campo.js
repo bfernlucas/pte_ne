@@ -22,7 +22,7 @@
     NIVA: ["Nova Infraestrutura Verde-Azul", "#0F7D8C"]
   };
   var CLS = { alta: "Alta prioridade", estrategico: "Potencial estratégico", nao: "Não recomendada" };
-  /* chaves internas (montar_campo.py) com os rótulos de postura do P5 B */
+  /* chaves internas (montar_campo.py) com os rótulos de postura do relatório final */
   var POSTURAS = {
     direto: "Pronta para receber apoio",
     condicionado: "Pronta, com dado a confirmar",
@@ -82,7 +82,7 @@
     { id: "experiencias", rot: "Perfis", subs: ["lista"],
       perg: "Quem são as " + exp.length + " avaliadas em campo, uma a uma",
       leitura: "<strong>" + nAlta + " das " + exp.length + "</strong> alcançam 80 pontos ou mais no Apêndice 2 " +
-        "do Produto 5 B. O perfil nas quatro dimensões importa mais que a nota final: duas experiências " +
+        "do relatório final. O perfil nas quatro dimensões importa mais que a nota final: duas experiências " +
         "com 80 pontos podem pedir apoios opostos." },
     { id: "evidencia", rot: "Evidência", subs: ["prospeccao", "gargalos"],
       perg: "O que sustenta as notas, e o que as ameaça",
@@ -168,7 +168,7 @@
       '<th style="text-align:right">Total</th><th>Classificação</th>' +
       '<th style="text-align:right">Carteira A + B (R$ mi)</th><th>Base</th>' +
     '</tr></thead><tbody id="ec-corpo"></tbody></table></div>' +
-    '<p class="ec-rodape">Notas conforme o Apêndice 2 do Produto 5 B. Carteira = Bloco A + Bloco B da ' +
+    '<p class="ec-rodape">Notas conforme o Apêndice 2 do relatório final. Carteira = Bloco A + Bloco B da ' +
     'seção 7, em R$ milhões a preços de setembro de 2026, horizonte de 36 meses — estimativa Classe 5, ' +
     '<strong>não auditada</strong>.</p>';
 
@@ -233,7 +233,7 @@
         '<dt>Carteira (A + B)</dt><dd>' + env + '</dd>' +
         '<dt>Postura</dt><dd>' + (POSTURAS[x.postura] || "—") + '</dd>' +
         '<dt>Custo operacional</dt><dd>' + reais(p.custo_anual) +
-          (p.custo_anual && !p.custo_p5 ? ' <span style="font-weight:400;color:var(--faint)">(não utilizável no P5)</span>' : '') + '</dd>' +
+          (p.custo_anual && !p.custo_p5 ? ' <span style="font-weight:400;color:var(--faint)">(não utilizável na estimativa)</span>' : '') + '</dd>' +
         '<dt>Necessidade declarada</dt><dd>' + reais(p.gap) + '</dd>' +
         '<dt>Visita</dt><dd>' + esc(p.data || "—") + ' · ' + esc(p.modo || "—") +
           (p.mun ? ' · ' + esc(p.mun) + "/" + esc(p.uf) : "") + '</dd></dl></div>' +
@@ -498,7 +498,7 @@
       'e por isso aparecem com menos marcas.</p></div>';
   })();
   /* ----------------------------------------------------------- 5. Cobertura
-     Calculada a partir das rotas do Produto 5 B (dados.meta.rotas), sem
+     Calculada a partir das rotas do relatório final (dados.meta.rotas), sem
      nenhuma afirmação fixa sobre quais estados receberam incursão. */
   (function () {
     var cruzadas = exp.filter(function (x) { return x.ref_id; }).length;
@@ -622,7 +622,7 @@
           '</div><div class="l">abaixo até do piso reduzido</div></div>' +
       '</div>' +
       '<div class="ec-card"><h3>A que porta cada grupo bate</h3>' +
-      '<p class="sub">O Produto 5 B associa mecanismo a postura de apoio, nunca iniciativa a iniciativa</p>' +
+      '<p class="sub">O relatório final associa mecanismo a postura de apoio, nunca iniciativa a iniciativa</p>' +
       porPostura +
       '<p class="ec-nota">Este é o único mapeamento do documento. Qualquer tabela “iniciativa × mecanismo” ' +
       'seria derivação nossa, não transcrição — e por isso não existe aqui.</p></div>' +

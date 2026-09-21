@@ -5,7 +5,7 @@
  * publicadas apenas cifradas:
  *   - assets/data/campo.enc.js -> evidencia das incursoes (PTE_CAMPO_ENC)
  *   - assets/data/p5.enc.js    -> faixas de recursos por organizacao,
- *                                 seção 7 do Produto 5 B (PTE_P5_ENC)
+ *                                 secao 7 do relatorio final (PTE_P5_ENC)
  * A senha da equipe deriva a chave que abre as duas; sem ela os arquivos
  * sao ruido, mesmo baixados direto do repositorio publico.
  *
@@ -87,14 +87,18 @@
         return abrirPacote(usuario, senha, spec).catch(function (erro) {
           if (erro && erro.message === "arquivo-ausente") throw erro;
           if (spec.obrigatorio) throw new Error("senha-incorreta");
-          /* camada opcional que nao abriu: segue sem ela, mas avisa no console */
-          if (global.console) {
-            console.warn("camada " + spec.enc + " nao abriu com estas credenciais");
-          }
-          return null;
+          return { falhou: spec.enc };
         });
       })
     ).then(function (r) {
+      var falhas = r.filter(function (x) { return x && x.falhou; });
+      if (falhas.length) {
+        /* o pacote obrigatorio abriu, logo a senha esta certa: o outro pacote
+           foi cifrado com credenciais diferentes. Melhor avisar do que abrir
+           o painel pela metade. */
+        sair();
+        throw new Error("camadas-desalinhadas");
+      }
       return r[0];
     });
   }
@@ -141,8 +145,13 @@
       location.replace(PAGINA_LOGIN + "?destino=" + encodeURIComponent(location.pathname.split("/").pop()));
       return null;
     }
-    /* reidrata a camada do P5 a partir da sessao, se houver */
-    p5();
+    /* sessao aberta antes de a camada do relatorio final existir: o pacote
+       esta na pagina, mas nao na sessao. Refaz o login para abrir os dois. */
+    if (global[PACOTES[1].enc] && !p5()) {
+      sair();
+      location.replace(PAGINA_LOGIN + "?destino=" + encodeURIComponent(location.pathname.split("/").pop()) + "&motivo=camada");
+      return null;
+    }
     return d;
   }
 
