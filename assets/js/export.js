@@ -38,6 +38,24 @@ window.PTE_EXPORT = (function () {
     if (!el) return null;
     return el.tagName === "TABLE" ? el : el.querySelector("table");
   }
+  // Um contêiner com várias tabelas (a ficha de investimento tem uma por
+  // bloco) vira uma tabela só: o título do bloco entra como linha divisória.
+  function extractAll(sel) {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const tables = el.tagName === "TABLE" ? [el] : [...el.querySelectorAll("table")];
+    if (!tables.length) return null;
+    if (tables.length === 1) return extract(tables[0]);
+    let headers = null; const rows = [];
+    tables.forEach(tb => {
+      const x = extract(tb);
+      if (!headers) headers = x.headers;
+      const h5 = tb.closest(".inv-bloco") && tb.closest(".inv-bloco").querySelector("h5");
+      if (h5) rows.push([clean(h5.textContent)].concat(Array(headers.length - 1).fill("")));
+      rows.push(...x.rows);
+    });
+    return { headers, rows };
+  }
   // texto legível de uma célula (junta nome + subtítulo, ignora dots/barras vazias)
   function cellText(td) {
     if (td.dataset && td.dataset.exp) return clean(td.dataset.exp);   // texto integral p/ célula abreviada
@@ -75,9 +93,9 @@ window.PTE_EXPORT = (function () {
 
   // ---------- XLSX ----------
   async function toXLSX(t) {
-    const table = getTable(t.target);
-    if (!table) return alert("Nada para exportar ainda nesta tabela.");
-    const { headers, rows } = extract(table);
+    const x = extractAll(t.target);
+    if (!x) return alert("Nada para exportar ainda nesta tabela.");
+    const { headers, rows } = x;
     if (!rows.length) return alert("Nada para exportar ainda nesta tabela.");
     const XLSX = await ensureXLSX();
     const aoa = [headers, ...rows];
@@ -101,9 +119,9 @@ window.PTE_EXPORT = (function () {
     doc.setTextColor(0, 0, 0);
   }
   async function toPDF(t) {
-    const table = getTable(t.target);
-    if (!table) return alert("Nada para exportar ainda nesta tabela.");
-    const { headers, rows } = extract(table);
+    const x = extractAll(t.target);
+    if (!x) return alert("Nada para exportar ainda nesta tabela.");
+    const { headers, rows } = x;
     if (!rows.length) return alert("Nada para exportar ainda nesta tabela.");
     const { jsPDF } = await ensurePDF();
     const landscape = headers.length > 6;

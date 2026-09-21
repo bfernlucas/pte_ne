@@ -321,6 +321,67 @@ def main(xlsx=None):
         ],
     }
 
+    # --- fichas de investimento: a aba de cada experiencia, linha a linha ----
+    # A aba ja traz a apresentacao (blocos A e B, subtotais por componente,
+    # custo-base, gestao, contingencias, total, notas). Le-se como esta.
+    def ler_ficha(ws):
+        blocos, bloco, comp, notas, extras = [], None, None, [], {}
+        em_notas = False
+        for r in range(13, ws.max_row + 1):
+            a, b_ = ws.cell(r, 1).value, ws.cell(r, 2).value
+            if a is None and b_ is None:
+                continue
+            txt = str(b_ or "")
+            if em_notas:
+                for chave in ("Contrapartida identificada", "Cofinanciamento possível"):
+                    if txt.startswith(chave):
+                        extras[chave] = txt.split(":", 1)[1].strip() if ":" in txt else txt
+                        break
+                else:
+                    if txt.startswith("("):
+                        notas.append(txt)
+                continue
+            if txt == "Notas":
+                em_notas = True
+                continue
+            v = lambda c: n(ws.cell(r, c).value)
+            if isinstance(a, str) and a[:2] in ("A.", "B."):
+                bloco = {"id": a[0], "titulo": a, "componentes": [], "resumo": []}
+                blocos.append(bloco)
+                comp = None
+            elif txt.startswith("CARTEIRA DA EXPERI"):
+                extras["carteira"] = {"min": v(10), "max": v(11)}
+            elif bloco is None:
+                continue
+            elif txt.startswith("CUSTO-BASE") or txt.startswith("TOTAL GERAL") or \
+                    txt.startswith("Gestão do apoio") or txt.startswith("Contingência"):
+                bloco["resumo"].append({"rotulo": txt, "racional": ws.cell(r, 5).value,
+                                        "pct_min": v(8), "pct_max": v(9), "min": v(10), "max": v(11)})
+                comp = None
+            elif isinstance(a, int):
+                comp = {"n": a, "nome": txt, "min": v(10), "max": v(11), "itens": []}
+                bloco["componentes"].append(comp)
+            elif isinstance(a, str) and comp is not None:
+                comp["itens"].append({
+                    "n": a, "item": txt, "rubrica": ws.cell(r, 3).value, "unidade": ws.cell(r, 4).value,
+                    "racional": ws.cell(r, 5).value, "q_min": v(6), "q_max": v(7),
+                    "u_min": v(8), "u_max": v(9), "min": v(10), "max": v(11)})
+        return {"blocos": blocos, "notas": notas,
+                "contrapartida": extras.get("Contrapartida identificada"),
+                "cofinanciamento": extras.get("Cofinanciamento possível"),
+                "carteira": extras.get("carteira")}
+
+    for e in experiencias:
+        if e["aba"] and e["aba"] in wb.sheetnames:
+            f = ler_ficha(wb[e["aba"]])
+            # conferencia: o total de cada bloco na aba = Quadro por experiencia
+            for bl in f["blocos"]:
+                tot = [x for x in bl["resumo"] if x["rotulo"].startswith("TOTAL GERAL")]
+                alvo = e["bloco_a"] if bl["id"] == "A" else e["bloco_b"]
+                if tot and abs((tot[0]["max"] or 0) / 1e6 - (alvo["max"] or 0)) > 1e-3:
+                    sys.exit("ficha %s: total do bloco %s nao fecha com o Quadro" % (e["aba"], bl["id"]))
+            e["ficha_inv"] = f
+
     # --- fluxos da Figura 7.10: bloco -> eixo -> postura -> componente ------
     # Cada item da aba Base entra com o seu custo-base maximo, escalado para
     # que a soma por experiencia e bloco feche com o total maximo (com gestao
