@@ -2,28 +2,25 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<script src="assets/data/campo.enc.js?v=73"></script>
-<script src="assets/data/p5.enc.js?v=73"></script>
-<script src="assets/js/auth.js?v=73"></script>
+<script src="assets/data/campo.enc.js?v=74"></script>
+<script src="assets/data/p5.enc.js?v=74"></script>
+<script src="assets/js/auth.js?v=74"></script>
 <script>if(!window.PTEAuth)location.replace("entrar.html");else PTEAuth.exigir();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Painel PTE-NE — carteira e incursões de campo</title>
+<title>Plano Brasil Nordeste de Transformação Ecológica — carteira e incursões de campo</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/painel.css?v=73" />
-<link rel="stylesheet" href="assets/css/campo.css?v=73" />
+<link rel="stylesheet" href="assets/css/painel.css?v=74" />
+<link rel="stylesheet" href="assets/css/campo.css?v=74" />
 </head>
 <body>
 
@@ -31,7 +28,7 @@
   <div class="wrap">
     <div class="marca">
       <b>Plano Brasil Nordeste</b>
-      <span>Transformação Ecológica · carteira e incursões de campo</span>
+      <span>Transformação Ecológica: carteira de iniciativas e incursões de campo</span>
     </div>
     <div class="fim">
       <span class="selo">Uso restrito</span>
@@ -57,15 +54,15 @@
   <div class="sec-head">
     <h2>A carteira em números</h2>
     <p id="carteira-lead">A prospecção mapeou iniciativas de transformação ecológica nos nove estados do Nordeste.
-      Uma parte foi visitada ou entrevistada em campo, e para essas há estimativa preliminar de recursos.</p>
+      Parte delas recebeu visita técnica ou entrevista, e a maioria dessas organizações tem estimativa preliminar de recursos.</p>
   </div>
 
   <div class="numeros" id="carteira-numeros"></div>
 
   <div class="bloco">
     <h3>Trajetória do valor da carteira</h3>
-    <p class="sub">Do bloco de recursos ao componente do apoio, passando pelo eixo e pela postura de cada
-      experiência. A espessura de cada fluxo é o valor máximo estimado.</p>
+    <p class="sub">Como o valor estimado se distribui por bloco de recursos, eixo do plano, postura de apoio e
+      componente do apoio. A espessura de cada faixa corresponde ao valor máximo estimado.</p>
     <div class="exp-bar">
       <span class="exp-lab">Exportar:</span>
       <button class="exp-btn" data-exp="png" data-target="#fig-aluvial" data-name="trajetoria-valor">PNG</button>
@@ -76,18 +73,18 @@
 
   <div class="bloco">
     <h3>Ranking das iniciativas</h3>
-    <p class="sub">Todas as iniciativas da base de prospecção. Duas notas convivem e não são comparáveis entre si:
-      a <b>nota da matriz</b> avalia toda a base em dez critérios; a <b>pontuação final</b> (0 a 100) só existe
-      para as organizações com ficha de campo. Marque linhas para comparar perfis.</p>
+    <p class="sub">Todas as iniciativas da base de prospecção. As duas notas da tabela não são comparáveis entre si:
+      a <b>nota da matriz</b> (0 a 30) avalia toda a base em dez critérios, e a <b>pontuação final</b> (0 a 100)
+      existe apenas para as organizações avaliadas em campo. Selecione até seis linhas para comparar os perfis.</p>
     <div class="barra">
-      <input type="search" id="f-busca" placeholder="Buscar iniciativa, organização ou município…" />
-      <select id="f-eixo"><option value="">Todos os eixos</option></select>
-      <select id="f-uf"><option value="">Todos os estados</option></select>
-      <select id="f-bioma"><option value="">Todos os biomas</option></select>
-      <select id="f-nat"><option value="">Todas as naturezas jurídicas</option></select>
-      <label class="chk"><input type="checkbox" id="f-campo" /> Só as que foram a campo</label>
+      <input type="search" id="f-busca" placeholder="Buscar iniciativa, organização ou município…" aria-label="Buscar iniciativa, organização ou município" />
+      <select id="f-eixo" aria-label="Filtrar por eixo"><option value="">Todos os eixos</option></select>
+      <select id="f-uf" aria-label="Filtrar por estado"><option value="">Todos os estados</option></select>
+      <select id="f-bioma" aria-label="Filtrar por bioma"><option value="">Todos os biomas</option></select>
+      <select id="f-nat" aria-label="Filtrar por natureza jurídica"><option value="">Todas as naturezas jurídicas</option></select>
+      <label class="chk"><input type="checkbox" id="f-campo" /> Apenas as avaliadas em campo</label>
       <span class="cnt" id="f-cnt"></span>
-      <button id="f-reset" class="ghost">Limpar</button>
+      <button id="f-reset" class="ghost">Limpar filtros</button>
     </div>
     <div class="exp-bar">
       <span class="exp-lab">Exportar:</span>
@@ -96,7 +93,7 @@
       <button class="exp-btn" data-exp="pdf" data-target="#tbl-ranking" data-name="ranking-pte-ne"
               data-title="Ranking das iniciativas">PDF</button>
     </div>
-    <div class="tbl-scroll">
+    <div class="tbl-scroll" tabindex="0" role="region" aria-label="Ranking das iniciativas">
       <table id="tbl-ranking" class="ranking">
         <colgroup>
           <col style="width:30px"><col style="width:26%"><col style="width:11%"><col style="width:52px">
@@ -104,17 +101,17 @@
           <col style="width:12%"><col style="width:8.5%"><col style="width:8.5%">
         </colgroup>
         <thead><tr>
-          <th></th>
+          <th aria-label="Seleção"></th>
           <th data-sort="nome">Iniciativa<span class="arr"></span></th>
           <th data-sort="municipio">Local<span class="arr"></span></th>
           <th data-sort="eixo">Eixo<span class="arr"></span></th>
           <th data-sort="natureza">Natureza jurídica<span class="arr"></span></th>
-          <th data-sort="matriz" class="num">Nota<span class="arr"></span><small>matriz, 0–30</small></th>
+          <th data-sort="matriz" class="num">Nota<span class="arr"></span><small>da matriz, 0 a 30</small></th>
           <th data-sort="campo">Campo<span class="arr"></span></th>
-          <th data-sort="p5" class="num">Pontuação<span class="arr"></span><small>final, 0–100</small></th>
+          <th data-sort="p5" class="num">Pontuação<span class="arr"></span><small>final, 0 a 100</small></th>
           <th data-sort="postura">Postura de apoio<span class="arr"></span></th>
-          <th data-sort="blocoa" class="num">Bloco A<span class="arr"></span><small>R$ mi, mín–máx</small></th>
-          <th data-sort="blocob" class="num">Bloco B<span class="arr"></span><small>R$ mi, mín–máx</small></th>
+          <th data-sort="blocoa" class="num">Bloco A<span class="arr"></span><small>R$ milhões</small></th>
+          <th data-sort="blocob" class="num">Bloco B<span class="arr"></span><small>R$ milhões</small></th>
         </tr></thead>
         <tbody id="tb-ranking"></tbody>
       </table>
@@ -127,12 +124,12 @@
         <button class="ghost" id="cmp-clear" style="margin-left:auto">Limpar seleção</button>
       </div>
       <div class="cmp-layout">
-        <div><canvas id="cmp-radar"></canvas></div>
+        <div><canvas id="cmp-radar" role="img" aria-label="Gráfico de radar da comparação nos dez critérios"></canvas></div>
         <div class="tbl-scroll" id="cmp-matriz" style="max-height:none"></div>
       </div>
       <div class="exp-bar" style="margin-top:12px">
         <span class="exp-lab">Exportar:</span>
-        <button class="exp-btn" data-exp="png" data-target="#cmp-radar" data-name="comparacao-radar">Radar (PNG)</button>
+        <button class="exp-btn" data-exp="png" data-target="#cmp-radar" data-name="comparacao-radar">Gráfico de radar (PNG)</button>
         <button class="exp-btn" data-exp="xlsx" data-target="#cmp-matriz" data-name="comparacao"
                 data-title="Comparação de iniciativas" data-sheet="Comparacao">XLS</button>
       </div>
@@ -144,15 +141,15 @@
 <section class="view hidden" id="view-mapa">
   <div class="sec-head">
     <h2>Onde estão as iniciativas</h2>
-    <p>Toda a base de prospecção no território. A cor indica o eixo do PTE-NE e o tamanho, a nota da matriz.
-      As organizações que receberam visita ou entrevista aparecem com contorno escuro, ligadas pela rota
-      em que foram percorridas.</p>
+    <p>Localização de todas as iniciativas da base de prospecção. A cor indica o eixo do plano, e o tamanho do
+      círculo, a nota da matriz. As organizações que receberam visita ou entrevista têm contorno escuro, e as
+      linhas tracejadas mostram os trechos percorridos em cada rota.</p>
   </div>
   <div class="barra">
-    <select id="m-eixo"><option value="">Todos os eixos</option></select>
-    <select id="m-uf"><option value="">Todos os estados</option></select>
-    <label class="chk"><input type="checkbox" id="m-rotas" checked /> Mostrar as rotas de campo</label>
-    <label class="chk"><input type="checkbox" id="m-so-campo" /> Só as que foram a campo</label>
+    <select id="m-eixo" aria-label="Filtrar por eixo"><option value="">Todos os eixos</option></select>
+    <select id="m-uf" aria-label="Filtrar por estado"><option value="">Todos os estados</option></select>
+    <label class="chk"><input type="checkbox" id="m-rotas" checked /> Mostrar rotas de campo</label>
+    <label class="chk"><input type="checkbox" id="m-so-campo" /> Apenas as avaliadas em campo</label>
     <span class="cnt" id="m-cnt"></span>
   </div>
   <div class="exp-bar">
@@ -169,15 +166,14 @@
 <section class="view hidden" id="view-experiencias">
   <div class="sec-head">
     <h2>Incursões e fichas de investimento</h2>
-    <p id="exp-lead">As organizações visitadas ou entrevistadas nas incursões, na ordem em que foram
-      percorridas. Cada ficha traz a avaliação, a faixa de recursos estimada e a
-      ficha de investimento completa.</p>
+    <p id="exp-lead">Organizações visitadas ou entrevistadas nas incursões, na ordem das rotas. Cada cartão traz
+      a avaliação, a faixa de recursos estimada e o acesso à ficha de investimento.</p>
   </div>
 
   <div class="bloco">
-    <h3>Rotas efetivamente realizadas</h3>
-    <p class="sub">A rota extra, em agosto, foi feita por três
-      equipes: voltou ao Rio Grande do Norte, à Paraíba e ao Ceará e levou a primeira incursão à Bahia.</p>
+    <h3>Rotas realizadas</h3>
+    <p class="sub">A rota extra, em agosto, foi feita por três equipes, que voltaram ao Rio Grande do Norte,
+      à Paraíba e ao Ceará e fizeram a primeira incursão na Bahia.</p>
     <div class="rotas-nav" id="rotas-nav"></div>
     <p class="rota-info" id="rota-info"></p>
     <div class="fichas" id="fichas"></div>
@@ -190,8 +186,8 @@
 <section class="view hidden" id="view-diagnostico">
   <div class="sec-head">
     <h2>Diagnóstico de campo</h2>
-    <p>A leitura qualitativa das incursões: perfis, gargalos, potencialidades, captação e cobertura,
-      a partir das fichas de campo e das transcrições.</p>
+    <p>Leitura qualitativa das incursões, com base nas fichas de campo e nas transcrições das entrevistas:
+      perfil das organizações, gargalos, potencialidades, captação de recursos e cobertura territorial.</p>
   </div>
   <div id="view-campo"><!-- preenchido por assets/js/campo.js --></div>
 </section>
@@ -200,7 +196,7 @@
 <section class="view hidden" id="view-analise">
   <div class="sec-head">
     <h2>Análise da carteira</h2>
-    <p>A situação financeira das organizações visitadas, o tamanho da carteira estimada e como esse valor se distribui.</p>
+    <p>Situação financeira das organizações visitadas, valor total da carteira estimada e sua distribuição por componente, ano, eixo, postura de apoio e experiência.</p>
   </div>
 
   <div class="bloco">
@@ -208,27 +204,27 @@
     <div class="grade dois">
       <div class="painel">
         <h4>Disponibilidade dos dados econômico-financeiros</h4>
-        <div class="chart-box"><canvas id="ch-71"></canvas></div>
+        <div class="chart-box"><canvas id="ch-71" role="img" aria-label="Gráfico: Disponibilidade dos dados econômico-financeiros"></canvas></div>
       </div>
       <div class="painel">
         <h4>Maturidade operacional e potencial de escalonamento</h4>
-        <div class="chart-box"><canvas id="ch-72"></canvas></div>
+        <div class="chart-box"><canvas id="ch-72" role="img" aria-label="Gráfico: Maturidade operacional e potencial de escalonamento"></canvas></div>
       </div>
       <div class="painel">
-        <h4>Receita × busca de recursos externos</h4>
-        <div class="chart-box"><canvas id="ch-73"></canvas></div>
+        <h4>Receita e busca de recursos externos</h4>
+        <div class="chart-box"><canvas id="ch-73" role="img" aria-label="Gráfico: Receita e busca de recursos externos"></canvas></div>
       </div>
       <div class="painel">
         <h4>Fontes de recursos já acessadas</h4>
-        <div class="chart-box"><canvas id="ch-74"></canvas></div>
+        <div class="chart-box"><canvas id="ch-74" role="img" aria-label="Gráfico: Fontes de recursos já acessadas"></canvas></div>
       </div>
       <div class="painel">
-        <h4>Tipo de recurso que gostaria de captar</h4>
-        <div class="chart-box"><canvas id="ch-75"></canvas></div>
+        <h4>Tipo de recurso que a organização pretende captar</h4>
+        <div class="chart-box"><canvas id="ch-75" role="img" aria-label="Gráfico: Tipo de recurso que a organização pretende captar"></canvas></div>
       </div>
       <div class="painel">
         <h4>Acesso a financiamento verde</h4>
-        <div class="chart-box"><canvas id="ch-76"></canvas></div>
+        <div class="chart-box"><canvas id="ch-76" role="img" aria-label="Gráfico: Acesso a financiamento verde"></canvas></div>
       </div>
     </div>
   </div>
@@ -237,33 +233,34 @@
     <h3>Carteira estimada</h3>
     <div class="grade dois">
       <div class="painel">
-        <h4>Faixa por bloco</h4>
-        <div class="chart-box"><canvas id="ch-blocos"></canvas></div>
+        <h4>Valor estimado por bloco, do mínimo ao máximo</h4>
+        <div class="chart-box"><canvas id="ch-blocos" role="img" aria-label="Gráfico: Valor estimado por bloco, do mínimo ao máximo"></canvas></div>
       </div>
       <div class="painel">
         <h4>Custo-base contratável por componente</h4>
-        <div class="chart-box"><canvas id="ch-componentes"></canvas></div>
+        <div class="chart-box"><canvas id="ch-componentes" role="img" aria-label="Gráfico: Custo-base contratável por componente"></canvas></div>
       </div>
       <div class="painel">
-        <h4>Distribuição anual do contratável</h4>
-        <div class="chart-box"><canvas id="ch-anual"></canvas></div>
+        <h4>Distribuição anual do Bloco A (contratável)</h4>
+        <div class="chart-box"><canvas id="ch-anual" role="img" aria-label="Gráfico: Distribuição anual do Bloco A (contratável)"></canvas></div>
       </div>
       <div class="painel">
-        <h4>Carteira por eixo do PTE-NE</h4>
-        <div class="chart-box"><canvas id="ch-eixo"></canvas></div>
+        <h4>Carteira por eixo do plano</h4>
+        <div class="chart-box"><canvas id="ch-eixo" role="img" aria-label="Gráfico: Carteira por eixo do plano"></canvas></div>
       </div>
     </div>
   </div>
 
   <div class="bloco">
-    <h3>Por postura de apoio</h3>
+    <h3>Carteira por postura de apoio</h3>
     <div class="painel">
-      <div class="chart-box"><canvas id="ch-postura"></canvas></div>
+      <div class="chart-box"><canvas id="ch-postura" role="img" aria-label="Gráfico: carteira por postura de apoio"></canvas></div>
     </div>
   </div>
 
   <div class="bloco">
-    <h3>Por experiência</h3>
+    <h3>Carteira por experiência</h3>
+    <p class="sub">Valores em R$ milhões, para 36 meses. Clique no cabeçalho de uma coluna para ordenar a tabela.</p>
     <div class="exp-bar">
       <span class="exp-lab">Exportar:</span>
       <button class="exp-btn" data-exp="xlsx" data-target="#tbl-exp" data-name="estimativa-por-experiencia"
@@ -271,8 +268,8 @@
       <button class="exp-btn" data-exp="pdf" data-target="#tbl-exp" data-name="estimativa-por-experiencia"
               data-title="Recursos estimados por experiência">PDF</button>
     </div>
-    <div class="painel" style="margin-bottom:24px"><div class="chart-box" style="height:760px"><canvas id="ch-experiencias"></canvas></div></div>
-    <div class="tbl-scroll">
+    <div class="painel" style="margin-bottom:24px"><div class="chart-box" style="height:760px"><canvas id="ch-experiencias" role="img" aria-label="Gráfico: carteira por experiência"></canvas></div></div>
+    <div class="tbl-scroll" tabindex="0" role="region" aria-label="Carteira por experiência">
       <table id="tbl-exp" class="ranking">
         <colgroup>
           <col style="width:24%"><col style="width:52px"><col style="width:13%"><col style="width:8%">
@@ -286,11 +283,11 @@
           <th data-sort="conf">Confiança<span class="arr"></span></th>
           <th data-sort="p5" class="num">Pontuação<span class="arr"></span></th>
           <th data-sort="itens" class="num">Itens<span class="arr"></span></th>
-          <th data-sort="amin" class="num">A mín.<span class="arr"></span></th>
-          <th data-sort="amax" class="num">A máx.<span class="arr"></span></th>
-          <th data-sort="bmin" class="num">B mín.<span class="arr"></span></th>
-          <th data-sort="bmax" class="num">B máx.<span class="arr"></span></th>
-          <th data-sort="tmax" class="num">Carteira máx.<span class="arr"></span></th>
+          <th data-sort="amin" class="num">Bloco A<span class="arr"></span><small>mínimo</small></th>
+          <th data-sort="amax" class="num">Bloco A<span class="arr"></span><small>máximo</small></th>
+          <th data-sort="bmin" class="num">Bloco B<span class="arr"></span><small>mínimo</small></th>
+          <th data-sort="bmax" class="num">Bloco B<span class="arr"></span><small>máximo</small></th>
+          <th data-sort="tmax" class="num">Total<span class="arr"></span><small>máximo</small></th>
         </tr></thead>
         <tbody id="tb-exp"></tbody>
       </table>
@@ -314,12 +311,12 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=73"></script>
-<script src="assets/data/uf_ne.js?v=73"></script>
-<script src="assets/js/maplayers.js?v=73"></script>
-<script src="assets/js/painel.js?v=73"></script>
-<script src="assets/js/export.js?v=73"></script>
-<script src="assets/js/campo.js?v=73"></script>
+<script src="assets/data/iniciativas.js?v=74"></script>
+<script src="assets/data/uf_ne.js?v=74"></script>
+<script src="assets/js/maplayers.js?v=74"></script>
+<script src="assets/js/painel.js?v=74"></script>
+<script src="assets/js/export.js?v=74"></script>
+<script src="assets/js/campo.js?v=74"></script>
 <script>
 document.getElementById("sair").addEventListener("click",function(e){
   e.preventDefault();PTEAuth.sair();location.replace("entrar.html");
