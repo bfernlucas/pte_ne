@@ -1,14 +1,17 @@
-# PTE2026 — Painel de Iniciativas
+# PTE-NE — Painel da carteira e das incursões de campo
 
-Dashboards das iniciativas do Plano Brasil Nordeste de Transformação Ecológica,
-com **cartões KPI, gráficos, mapa e tabela** das 52 iniciativas.
+Painel do Plano Brasil Nordeste de Transformação Ecológica, na versão do
+Produto 5 B. Cinco seções, com a identidade visual do documento PTE:
 
-Há duas versões:
+| Seção | O que mostra |
+|---|---|
+| **Carteira** | os números da carteira, o aluvial da trajetória do valor (Figura 7.10) e o ranking de todas as iniciativas, com a nota da matriz e a pontuação do P5; linhas marcadas abrem a comparação nos dez critérios |
+| **Mapa** | toda a base de prospecção, as organizações visitadas e os trechos das rotas efetivamente percorridas |
+| **Experiências de campo** | as 29 organizações visitadas ou entrevistadas, por rota, com postura, pontuação e faixas de Bloco A e B; e a leitura qualitativa das incursões |
+| **Análise** | as Figuras 7.1 a 7.11 e as Tabelas 7.3 a 7.5 da seção 7 |
+| **Método e downloads** | o que cada número significa e de onde vem |
 
-| Página | Arquivo | Descrição |
-|--------|---------|-----------|
-| **Dashboard publicável** (padrão) | `index.html` | Autocontido, com os 52 dados embutidos e **mapa em destaque** com filtros e legenda interativa. Abre direto, sem servidor. É a página servida pelo GitHub Pages. |
-| **Painel ao vivo** | `painel-sheets.html` | Lê o **Google Sheets** em tempo real (endpoint `gviz`). Use quando quiser que o painel reflita a planilha conforme ela é editada. |
+A página `painel-sheets.html` é a versão antiga, que lê o Google Sheets ao vivo.
 
 ## Publicar no GitHub Pages
 
@@ -130,16 +133,17 @@ assets/js/app.js           lógica (busca, gráficos, mapa, tabela)
 
 O painel inteiro fica atrás de um login da equipe: quem abre o site cai em
 `entrar.html` e só vê `index.html` depois de entrar. A sistematização dos
-Produtos 3, 4 e 5 — 24 experiências avaliadas, notas por dimensão,
-classificação e estimativa de recursos — é a aba **Evidência de campo**.
+Produtos 3, 4 e 5 B — 29 organizações avaliadas, notas por dimensão,
+classificação e estimativa de recursos — fica em **Experiências de campo** e
+**Análise**.
 
 **Como a proteção funciona.** O GitHub Pages não tem autenticação, então ela
-não está numa tela de senha e sim no dado: `assets/data/campo.enc.js` é
-publicado cifrado com **AES-256-GCM**, e as credenciais da equipe derivam a
+não está numa tela de senha e sim no dado: `assets/data/campo.enc.js` e
+`assets/data/p5.enc.js` são publicados cifrados com **AES-256-GCM**, e as credenciais da equipe derivam a
 chave que o abre (PBKDF2-HMAC-SHA256, 600.000 iterações). Sem elas o arquivo é
 ruído, mesmo baixado direto do repositório.
 
-O arquivo em claro (`dados_campo.json`) **nunca entra no Git** — está no
+Os arquivos em claro (`dados_campo.json`, `dados_p5.json`) **nunca entram no Git** — está no
 `.gitignore`. Só o cifrado é versionado. As credenciais não ficam em lugar
 nenhum do repositório: circulam fora dele.
 
@@ -155,22 +159,25 @@ nenhum do repositório: circulam fora dele.
 |---|---|
 | `entrar.html` | página de entrada |
 | `assets/js/auth.js` | derivação de chave e sessão (WebCrypto) |
-| `assets/js/campo.js` | aba Evidência de campo |
-| `assets/css/campo.css` | estilos da aba (classes `cmp-`) |
-| `assets/data/campo.enc.js` | dados cifrados |
-| `scripts/montar_campo.py` | monta `dados_campo.json` a partir dos relatórios |
-| `scripts/cifrar_campo.py` | cifra para publicação |
+| `assets/js/painel.js` | seções, ranking, mapa, gráficos e aluvial |
+| `assets/js/campo.js` | leitura qualitativa das incursões (classes `ec-`) |
+| `assets/data/campo.enc.js` · `p5.enc.js` | dados cifrados |
+| `scripts/gen_p5.py` | monta `dados_p5.json` a partir da planilha de estimativa |
+| `scripts/montar_campo.py` | monta `dados_campo.json` (números do P5 B + leitura de campo) |
+| `scripts/cifrar_campo.py` | cifra um pacote |
+| `scripts/publicar_p5.py` | faz tudo de uma vez: gera, confere a senha e cifra os dois pacotes |
 
 ### Regenerar os dados ou trocar a senha
 
 ```bash
 pip install cryptography openpyxl
 
-python3 scripts/montar_campo.py                    # dados_campo.json (fora do Git)
-python3 scripts/cifrar_campo.py --usuario NOME     # pede a senha e gera campo.enc.js
+python scripts/publicar_p5.py                 # gera os dois JSON, pede a senha, cifra os dois pacotes
+python scripts/publicar_p5.py --nova-senha    # idem, trocando a senha de propósito
 ```
 
-Publique o `campo.enc.js` resultante. Não há recuperação: a senha não é
+O script lê as planilhas da pasta `PTE - Incursões` e confere a senha contra o
+`campo.enc.js` publicado antes de gravar. Publique os dois `.enc.js` resultantes. Não há recuperação: a senha não é
 conferida por servidor, ela **é** a chave. Perdida, gera-se outra e republica.
 
 > A área exige contexto seguro (https ou localhost). Abrir por `file://` não

@@ -1,0 +1,252 @@
+/* ==========================================================================
+   Painel PTE-NE — folha principal.
+   Identidade: documento Plano Brasil Nordeste de Transformação Ecológica.
+   Layout: referência data.worldbank.org — fundo branco, régua de 1px,
+   sem sombra e sem gradiente; a cor fica reservada ao dado.
+   ========================================================================== */
+
+:root{
+  /* --- paleta do documento PTE --- */
+  --brand:#24246C; --brand-2:#0C549C; --brand-3:#3A6FB8;
+  --red:#E42424; --amber:#F09C18; --green:#54B43C; --orange:#F09C18;
+  --teal:#0F7D8C;
+
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#F5F5F7;
+  --ink:#1A1A1F; --muted:#55555F; --faint:#8A8A94;
+  --border:#D9D9DE; --border-2:#ECECEF;
+
+  --gold:#F09C18; --gold-ink:#8A5A00;
+  --pre:#8A5A00; --pre-bg:#FDF3E0; --pre-bd:#F3D8A8;
+
+  --shadow:none; --shadow-sm:none; --radius:2px;
+  --font:"Roboto",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Oswald","Archivo Black","Roboto Condensed",system-ui,sans-serif;
+
+  --gutter:24px; --max:1440px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-.01em}
+a{color:var(--brand-2)}
+:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
+
+/* ------------------------------------------------------------------ topo */
+.topbar{background:var(--brand);color:#fff}
+.topbar .wrap{display:flex;align-items:center;gap:20px;min-height:58px}
+.topbar .marca{display:flex;align-items:baseline;gap:12px;min-width:0}
+.topbar .marca b{
+  font-family:var(--display);font-weight:700;font-size:1.06rem;
+  text-transform:uppercase;letter-spacing:.055em;white-space:nowrap;
+}
+.topbar .marca span{
+  font-size:.78rem;color:rgba(255,255,255,.72);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.topbar .fim{margin-left:auto;display:flex;align-items:center;gap:16px}
+.topbar .selo{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+.sair-link{
+  color:#fff;text-decoration:none;font-size:.78rem;
+  border:1px solid rgba(255,255,255,.4);padding:5px 14px;border-radius:2px;white-space:nowrap;
+}
+.sair-link:hover{background:rgba(255,255,255,.13)}
+
+/* -------------------------------------------------------------- navegação */
+.secnav{border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:600}
+.secnav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.secnav .wrap::-webkit-scrollbar{display:none}
+.secnav button{
+  appearance:none;background:none;border:0;border-bottom:3px solid transparent;
+  padding:14px 16px 11px;font:inherit;font-size:.92rem;font-weight:500;color:var(--muted);
+  cursor:pointer;white-space:nowrap;
+}
+.secnav button:hover{color:var(--ink)}
+.secnav button.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:700}
+
+/* -------------------------------------------------------------- estrutura */
+main{padding-bottom:64px}
+.view{padding-top:32px}
+.view.hidden{display:none}
+.sec-head{max-width:70ch;margin-bottom:24px}
+.sec-head h2{
+  font-family:var(--display);font-weight:700;font-size:1.75rem;
+  letter-spacing:.005em;color:var(--brand);margin-bottom:8px;
+}
+.sec-head p{margin:0;color:var(--muted);font-size:.97rem}
+.bloco{padding:32px 0;border-top:1px solid var(--border)}
+.bloco:first-of-type{border-top:0;padding-top:0}
+.bloco>h3{
+  font-family:var(--display);font-weight:600;font-size:1.12rem;
+  text-transform:uppercase;letter-spacing:.05em;color:var(--ink);margin-bottom:6px;
+}
+.bloco>.sub{margin:0 0 18px;color:var(--muted);font-size:.89rem;max-width:80ch}
+.nota-fonte{margin:12px 0 0;font-size:.78rem;color:var(--faint);max-width:90ch}
+.nota-fonte b{color:var(--muted);font-weight:500}
+
+/* ---------------------------------------------------------- números-chave */
+.numeros{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.numeros div{flex:1 1 170px;padding:18px 24px 18px 0;border-right:1px solid var(--border-2)}
+.numeros div:last-child{border-right:0}
+.numeros b{display:block;font-family:var(--display);font-weight:600;font-size:1.9rem;line-height:1.1;color:var(--brand)}
+.numeros span{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
+.numeros small{display:block;font-size:.72rem;color:var(--faint)}
+
+/* -------------------------------------------------------------- controles */
+.barra{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.barra input[type=search],.barra select{
+  font:inherit;font-size:.87rem;padding:7px 10px;border:1px solid var(--border);
+  border-radius:2px;background:#fff;color:var(--ink);min-width:150px;
+}
+.barra input[type=search]{min-width:250px;flex:1 1 250px;max-width:420px}
+.barra input:focus,.barra select:focus{border-color:var(--brand-2);outline:0}
+.barra .cnt{font-size:.82rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted);cursor:pointer}
+.btn,.ghost{
+  font:inherit;font-size:.84rem;padding:7px 14px;border-radius:2px;cursor:pointer;
+  border:1px solid var(--border);background:#fff;color:var(--muted);
+}
+.btn{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:500}
+.btn:hover{background:#1B1B57}
+.ghost:hover{border-color:var(--brand-2);color:var(--brand-2)}
+.exp-bar{display:flex;gap:8px;align-items:center;margin:0 0 12px;flex-wrap:wrap}
+.exp-lab{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}
+.exp-btn{
+  font:inherit;font-size:.78rem;padding:5px 11px;border:1px solid var(--border);
+  background:#fff;color:var(--muted);border-radius:2px;cursor:pointer;
+}
+.exp-btn:hover{border-color:var(--brand-2);color:var(--brand-2)}
+
+/* ---------------------------------------------------------------- tabelas */
+.tbl-scroll{overflow:auto;border:1px solid var(--border);background:#fff;max-height:74vh}
+table{border-collapse:collapse;width:100%;font-size:.855rem}
+thead th{
+  position:sticky;top:0;z-index:2;background:var(--surface-2);text-align:left;
+  padding:9px 10px;border-bottom:1px solid var(--border);font-weight:700;
+  font-size:.74rem;text-transform:uppercase;letter-spacing:.055em;color:var(--muted);
+  white-space:nowrap;vertical-align:bottom;
+}
+thead th small{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-size:.68rem;color:var(--faint)}
+thead th[data-sort]{cursor:pointer;user-select:none}
+thead th[data-sort]:hover{color:var(--brand-2)}
+thead th .arr{display:inline-block;width:0;margin-left:4px;color:var(--brand-2)}
+thead th.on .arr::after{content:"▲"}
+thead th.on.desc .arr::after{content:"▼"}
+tbody td{padding:8px 10px;border-bottom:1px solid var(--border-2);vertical-align:top}
+tbody tr:hover{background:#FAFAFC}
+tbody tr.marcada{background:#EFF4FB}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.nome{font-weight:500;min-width:230px}
+td.nome small{display:block;font-weight:400;color:var(--faint);font-size:.76rem}
+.vazio{color:var(--faint)}
+
+/* ------------------------------------------------------------------- tags */
+.tag{
+  display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;
+  padding:2px 7px;border-radius:2px;white-space:nowrap;text-transform:uppercase;
+}
+.tag-eixo{color:#fff}
+.tag-out{background:#fff;border:1px solid var(--border);color:var(--muted);font-weight:500}
+.pill-campo{background:var(--brand);color:#fff}
+.pill-rota{background:var(--surface-2);border:1px solid var(--border);color:var(--muted);font-weight:500}
+
+/* ----------------------------------------------------------------- mapa */
+.map{height:640px;border:1px solid var(--border);background:var(--surface-2)}
+.map-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0;border:1px solid var(--border)}
+.map-layout .map{border:0;border-right:1px solid var(--border);height:660px}
+.map-side{padding:18px;overflow:auto;max-height:660px;background:#fff}
+.map-side .ph{color:var(--faint);font-size:.87rem}
+.map-side h4{font-size:1rem;margin-bottom:4px;color:var(--brand)}
+.map-side dl{margin:14px 0 0;font-size:.83rem}
+.map-side dt{color:var(--faint);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin-top:10px}
+.map-side dd{margin:1px 0 0;color:var(--ink)}
+.leaflet-container{font-family:var(--font)}
+.pte-legend{background:#fff;border:1px solid var(--border);padding:9px 11px;font-size:.76rem;line-height:1.7}
+.pte-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+
+/* ---------------------------------------------------------------- painéis */
+.grade{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
+.painel{border:1px solid var(--border);background:#fff;padding:18px}
+.painel.full{grid-column:1/-1}
+.grade.dois{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:900px){.grade.dois{grid-template-columns:1fr}}
+.painel h4{font-size:.96rem;color:var(--brand);margin-bottom:4px}
+.painel .sub{margin:0 0 14px;font-size:.81rem;color:var(--muted)}
+.chart-box{position:relative;height:320px}
+.chart-box.alta{height:440px}
+.figura{width:100%;height:auto;display:block;border:1px solid var(--border)}
+
+/* ------------------------------------------------------------ comparação */
+.cmp-drawer{border:1px solid var(--border);border-top:3px solid var(--brand);background:#fff;margin-top:20px;padding:18px}
+.cmp-drawer.hidden{display:none}
+.cmp-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.cmp-head h4{font-size:1rem;color:var(--brand)}
+.cmp-chips{display:flex;gap:6px;flex-wrap:wrap}
+.cmp-chip{
+  display:inline-flex;align-items:center;gap:6px;font-size:.78rem;
+  border:1px solid var(--border);padding:3px 5px 3px 9px;border-radius:2px;background:#fff;
+}
+.cmp-chip b{width:9px;height:9px;border-radius:50%;display:inline-block}
+.cmp-chip button{border:0;background:none;color:var(--faint);cursor:pointer;font-size:1rem;line-height:1;padding:0 2px}
+.cmp-chip button:hover{color:var(--red)}
+.cmp-layout{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:24px;align-items:start}
+
+/* ------------------------------------------------------------ rota/fichas */
+.rotas-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.rotas-nav button{
+  font:inherit;font-size:.85rem;padding:8px 14px;border:1px solid var(--border);
+  background:#fff;color:var(--muted);cursor:pointer;border-radius:2px;
+  border-left:4px solid var(--border);
+}
+.rotas-nav button.active{background:var(--surface-2);color:var(--ink);font-weight:600;border-color:var(--border)}
+.rota-info{font-size:.83rem;color:var(--muted);margin:0 0 18px}
+.fichas{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+.ficha{border:1px solid var(--border);background:#fff;padding:16px;border-top:3px solid var(--brand-2)}
+.ficha h4{font-size:.98rem;margin-bottom:2px}
+.ficha .loc{font-size:.78rem;color:var(--faint);margin:0 0 10px}
+.ficha .tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.ficha dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0;font-size:.82rem}
+.ficha dt{color:var(--faint);white-space:nowrap}
+.ficha dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.ficha .faixa{margin-top:12px;padding-top:11px;border-top:1px solid var(--border-2)}
+.ficha .faixa b{font-family:var(--display);font-weight:600;font-size:1.02rem;color:var(--brand)}
+.ficha.sem-est{border-top-color:var(--border)}
+.ficha.sem-est .faixa{color:var(--faint);font-size:.8rem}
+
+/* ------------------------------------------------------------------ misc */
+.aviso{border-left:3px solid var(--amber);background:#FDF8EF;padding:12px 16px;font-size:.85rem;color:var(--muted);margin:16px 0}
+.downloads{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-top:16px}
+.dl{border:1px solid var(--border);padding:14px 16px;background:#fff}
+.dl b{display:block;font-size:.9rem;margin-bottom:3px}
+.dl span{font-size:.79rem;color:var(--muted)}
+.metodo dt{font-weight:700;margin-top:16px;color:var(--brand)}
+.metodo dd{margin:3px 0 0;color:var(--muted);font-size:.9rem;max-width:80ch}
+
+.parceiros{border-top:1px solid var(--border);background:var(--surface-2);margin-top:48px}
+.parceiros .wrap{display:flex;gap:40px;align-items:center;flex-wrap:wrap;padding-top:26px;padding-bottom:26px}
+.pgroup{display:flex;flex-direction:column;gap:8px}
+.pgroup .pl{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}
+.pgroup img{max-height:42px;width:auto;object-fit:contain}
+.pgroup.tecnico{margin-left:auto}
+
+@media (max-width:1080px){
+  .map-layout{grid-template-columns:1fr}
+  .map-layout .map{border-right:0;border-bottom:1px solid var(--border);height:460px}
+  .map-side{max-height:none}
+  .cmp-layout{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  :root{--gutter:16px}
+  .topbar .marca span{display:none}
+  .sec-head h2{font-size:1.4rem}
+  .numeros div{flex-basis:50%;border-right:0}
+}
+@media print{
+  .secnav,.topbar .fim,.exp-bar,.barra{display:none}
+  .view.hidden{display:block}
+}

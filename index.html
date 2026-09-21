@@ -2,292 +2,391 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<script src="assets/data/campo.enc.js"></script>
-<script src="assets/js/auth.js"></script>
+<script src="assets/data/campo.enc.js?v=70"></script>
+<script src="assets/data/p5.enc.js?v=70"></script>
+<script src="assets/js/auth.js?v=70"></script>
 <script>if(!window.PTEAuth||!PTEAuth.dados())location.replace("entrar.html");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Plano Brasil Nordeste - Incursões</title>
+<title>Painel PTE-NE — carteira e incursões de campo</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<!-- Agrupamento de marcadores sobrepostos (mesmo município / próximos) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/dashboard.css?v=66" />
-<link rel="stylesheet" href="assets/css/campo.css?v=1" />
-<style>
-.sair-link{align-self:flex-start;margin-left:auto;font-size:.78rem;color:#fff;text-decoration:none;
-  border:1px solid rgba(255,255,255,.35);padding:6px 13px;border-radius:999px;white-space:nowrap}
-.sair-link:hover{background:rgba(255,255,255,.12)}
-</style>
+<link rel="stylesheet" href="assets/css/painel.css?v=70" />
+<link rel="stylesheet" href="assets/css/campo.css?v=70" />
 </head>
 <body>
+
 <header class="topbar">
-  <div class="brand">
-    <div>
-      <h1>Plano Brasil Nordeste - Incursões</h1>
-      <p class="sub">Plano Brasil Nordeste de Transformação Ecológica · avaliação e planejamento de incursões de campo</p>
+  <div class="wrap">
+    <div class="marca">
+      <b>Plano Brasil Nordeste</b>
+      <span>Transformação Ecológica · carteira e incursões de campo</span>
+    </div>
+    <div class="fim">
+      <span class="selo">Produto 5 B · uso restrito</span>
+      <a class="sair-link" href="#" id="sair">Sair</a>
     </div>
   </div>
-  <div id="kpis" class="kpis"></div>
-  <a class="sair-link" href="#" id="sair">Sair</a>
 </header>
 
-<div class="hills" aria-hidden="true">
-  <svg viewBox="0 0 1440 44" preserveAspectRatio="none">
-    <path d="M0,24 C160,8 320,32 480,22 C640,12 800,34 960,22 C1120,10 1280,30 1440,18 L1440,44 L0,44 Z" fill="#3f9e3f"/>
-    <path d="M0,32 C180,18 300,40 520,30 C700,22 860,40 1040,30 C1220,20 1320,38 1440,30 L1440,44 L0,44 Z" fill="#55b847"/>
-  </svg>
-</div>
-
-<nav class="tabs" id="tabs">
-  <button data-view="ranking" class="active">Ranking</button>
-  <button data-view="cards">Cartões</button>
-  <button data-view="mapa">Mapa geral</button>
-  <button data-view="selecao">Seleção</button>
-  <button data-view="analises">Análises</button>
-  <button data-view="rota-manual">Rotas Manuais de Campo</button>
-  <button data-view="comparar">Comparar</button>
-  <button data-view="campo">Evidência de campo</button>
+<nav class="secnav">
+  <div class="wrap" id="secnav">
+    <button data-view="carteira" class="active">Carteira</button>
+    <button data-view="mapa">Mapa</button>
+    <button data-view="experiencias">Experiências de campo</button>
+    <button data-view="analise">Análise</button>
+    <button data-view="metodo">Método e downloads</button>
+  </div>
 </nav>
 
-<section class="filters" id="filters">
-  <input type="search" id="f-busca" placeholder="Buscar iniciativa, organização ou município..." />
-  <select id="f-eixo"><option value="">Todos os eixos</option></select>
-  <select id="f-estado"><option value="">Todos os estados</option></select>
-  <select id="f-bioma"><option value="">Todos os biomas</option></select>
-  <label class="chk"><input type="checkbox" id="f-pre" /> Apenas pré-selecionadas</label>
-  <span class="count" id="f-count"></span>
-  <button id="f-reset" class="ghost">Limpar filtros</button>
+<main class="wrap">
+
+<!-- ====================================================== CARTEIRA -->
+<section class="view" id="view-carteira">
+  <div class="sec-head">
+    <h2>A carteira em números</h2>
+    <p id="carteira-lead">A prospecção mapeou iniciativas de transformação ecológica nos nove estados do Nordeste.
+      Uma parte foi visitada ou entrevistada em campo, e para essas há estimativa preliminar de recursos.</p>
+  </div>
+
+  <div class="numeros" id="carteira-numeros"></div>
+
+  <div class="bloco">
+    <h3>Trajetória do valor da carteira</h3>
+    <p class="sub">Do bloco de recursos ao componente do apoio, passando pelo eixo e pela postura de cada
+      experiência. A espessura de cada fluxo é o valor máximo estimado. Figura 7.10 do Produto 5 B.</p>
+    <div class="exp-bar">
+      <span class="exp-lab">Exportar:</span>
+      <button class="exp-btn" data-exp="png" data-target="#fig-aluvial" data-name="trajetoria-valor">PNG</button>
+    </div>
+    <div id="fig-aluvial" class="figura" style="border:0"></div>
+    <p class="nota-fonte"><b>Fonte:</b> Produto 5 B, seção 7.3. Valores máximos em R$ milhões,
+      preços de setembro de 2026, horizonte de 36 meses.</p>
+  </div>
+
+  <div class="bloco">
+    <h3>Ranking das iniciativas</h3>
+    <p class="sub">Todas as iniciativas da base de prospecção. Duas notas convivem e não são comparáveis entre si:
+      a <b>nota da matriz</b> avalia toda a base em dez critérios; a <b>pontuação P5</b> (0 a 100) só existe
+      para as organizações com ficha de campo. Marque linhas para comparar perfis.</p>
+    <div class="barra">
+      <input type="search" id="f-busca" placeholder="Buscar iniciativa, organização ou município…" />
+      <select id="f-eixo"><option value="">Todos os eixos</option></select>
+      <select id="f-uf"><option value="">Todos os estados</option></select>
+      <select id="f-bioma"><option value="">Todos os biomas</option></select>
+      <select id="f-nat"><option value="">Todas as naturezas jurídicas</option></select>
+      <label class="chk"><input type="checkbox" id="f-campo" /> Só as que foram a campo</label>
+      <span class="cnt" id="f-cnt"></span>
+      <button id="f-reset" class="ghost">Limpar</button>
+    </div>
+    <div class="exp-bar">
+      <span class="exp-lab">Exportar:</span>
+      <button class="exp-btn" data-exp="xlsx" data-target="#tbl-ranking" data-name="ranking-pte-ne"
+              data-title="Ranking das iniciativas" data-sheet="Ranking">XLS</button>
+      <button class="exp-btn" data-exp="pdf" data-target="#tbl-ranking" data-name="ranking-pte-ne"
+              data-title="Ranking das iniciativas">PDF</button>
+    </div>
+    <div class="tbl-scroll">
+      <table id="tbl-ranking">
+        <thead><tr>
+          <th style="width:34px"></th>
+          <th data-sort="nome">Iniciativa<span class="arr"></span></th>
+          <th data-sort="municipio">Município<span class="arr"></span></th>
+          <th data-sort="uf">UF<span class="arr"></span></th>
+          <th data-sort="eixo">Eixo<span class="arr"></span></th>
+          <th data-sort="natureza">Natureza jurídica<span class="arr"></span></th>
+          <th data-sort="matriz" class="num">Nota<small>matriz, 0–30</small><span class="arr"></span></th>
+          <th data-sort="campo">Campo<span class="arr"></span></th>
+          <th data-sort="p5" class="num">Pontuação<small>P5, 0–100</small><span class="arr"></span></th>
+          <th data-sort="postura">Postura de apoio<span class="arr"></span></th>
+          <th data-sort="blocoa" class="num">Bloco A<small>R$ mi, mín–máx</small><span class="arr"></span></th>
+          <th data-sort="blocob" class="num">Bloco B<small>R$ mi, mín–máx</small><span class="arr"></span></th>
+        </tr></thead>
+        <tbody id="tb-ranking"></tbody>
+      </table>
+    </div>
+    <p class="nota-fonte"><b>Fonte:</b> matriz de prospecção (PTE2026_matriz_dashboard.xlsx) e
+      seção 7 do Produto 5 B. Bloco A = recursos contratáveis nesta etapa; Bloco B = referência indicativa.</p>
+
+    <div class="cmp-drawer hidden" id="cmp-drawer">
+      <div class="cmp-head">
+        <h4>Comparação nos dez critérios da matriz</h4>
+        <div class="cmp-chips" id="cmp-chips"></div>
+        <button class="ghost" id="cmp-clear" style="margin-left:auto">Limpar seleção</button>
+      </div>
+      <div class="cmp-layout">
+        <div><canvas id="cmp-radar"></canvas></div>
+        <div class="tbl-scroll" id="cmp-matriz" style="max-height:none"></div>
+      </div>
+      <div class="exp-bar" style="margin-top:12px">
+        <span class="exp-lab">Exportar:</span>
+        <button class="exp-btn" data-exp="png" data-target="#cmp-radar" data-name="comparacao-radar">Radar (PNG)</button>
+        <button class="exp-btn" data-exp="xlsx" data-target="#cmp-matriz" data-name="comparacao"
+                data-title="Comparação de iniciativas" data-sheet="Comparacao">XLS</button>
+      </div>
+    </div>
+  </div>
 </section>
 
-<main>
-  <!-- RANKING -->
-  <div class="view" id="view-ranking">
-    <h2 class="view-head">Ranking das iniciativas <small>ordenado por nota de avaliação</small></h2>
+<!-- ========================================================== MAPA -->
+<section class="view hidden" id="view-mapa">
+  <div class="sec-head">
+    <h2>Onde estão as iniciativas</h2>
+    <p>Toda a base de prospecção no território. A cor indica o eixo do PTE-NE e o tamanho, a nota da matriz.
+      As organizações que receberam visita ou entrevista aparecem com contorno escuro, ligadas pela rota
+      em que foram percorridas.</p>
+  </div>
+  <div class="barra">
+    <select id="m-eixo"><option value="">Todos os eixos</option></select>
+    <select id="m-uf"><option value="">Todos os estados</option></select>
+    <label class="chk"><input type="checkbox" id="m-rotas" checked /> Mostrar as rotas de campo</label>
+    <label class="chk"><input type="checkbox" id="m-so-campo" /> Só as que foram a campo</label>
+    <span class="cnt" id="m-cnt"></span>
+  </div>
+  <div class="exp-bar">
+    <span class="exp-lab">Exportar:</span>
+    <button class="exp-btn" data-exp="png" data-target="#map-geral" data-name="mapa-pte-ne">Imagem do mapa (PNG)</button>
+  </div>
+  <div class="map-layout">
+    <div id="map-geral" class="map"></div>
+    <aside class="map-side" id="map-side"><p class="ph">Clique em um ponto para ver a ficha da iniciativa.</p></aside>
+  </div>
+  <p class="nota-fonte"><b>Fonte:</b> matriz de prospecção e tabela de rotas da seção 2 do Produto 5 B.
+    Iniciativas de alcance multiestadual aparecem na coordenada da sede.</p>
+</section>
+
+<!-- ================================================== EXPERIÊNCIAS -->
+<section class="view hidden" id="view-experiencias">
+  <div class="sec-head">
+    <h2>Experiências de campo</h2>
+    <p id="exp-lead">As organizações visitadas ou entrevistadas nas incursões, na ordem em que foram
+      percorridas. Cada ficha traz a avaliação do Produto 5 e a faixa de recursos estimada.</p>
+  </div>
+
+  <div class="bloco">
+    <h3>Rotas efetivamente realizadas</h3>
+    <p class="sub">Conforme a tabela da seção 2 do Produto 5 B. A rota extra, em agosto, foi feita por três
+      equipes: voltou ao Rio Grande do Norte, à Paraíba e ao Ceará e levou a primeira incursão à Bahia.</p>
+    <div class="rotas-nav" id="rotas-nav"></div>
+    <p class="rota-info" id="rota-info"></p>
+    <div class="fichas" id="fichas"></div>
+    <p class="nota-fonte"><b>Fonte:</b> fichas de campo das incursões e seção 7 do Produto 5 B.
+      Faixas em R$ milhões, preços de setembro de 2026, horizonte de 36 meses, Classe 5 da AACE International.</p>
+  </div>
+
+  <div class="bloco">
+    <h3>Evidência de campo</h3>
+    <p class="sub">A leitura qualitativa das incursões: gargalos, potencialidades, cobertura e captação.</p>
+    <div id="view-campo"><!-- preenchido por assets/js/campo.js --></div>
+  </div>
+</section>
+
+<!-- ======================================================= ANÁLISE -->
+<section class="view hidden" id="view-analise">
+  <div class="sec-head">
+    <h2>Análise da carteira</h2>
+    <p>O que a seção 7 do Produto 5 B mostra sobre a situação financeira das organizações visitadas,
+      o tamanho da carteira estimada e como esse valor se distribui. Cada gráfico traz o número da
+      figura ou tabela correspondente no relatório.</p>
+  </div>
+
+  <div class="bloco">
+    <h3>Situação econômico-financeira</h3>
+    <p class="sub" id="an-sit-sub">O que as fichas de campo registram sobre custos, receita e busca de recursos.
+      É o ponto de partida da estimativa: onde o dado falta, a faixa se alarga.</p>
+    <div class="grade dois">
+      <div class="painel">
+        <h4>Disponibilidade dos dados econômico-financeiros</h4>
+        <p class="sub">Figura 7.1 · número de fichas em cada situação, por pergunta.</p>
+        <div class="chart-box"><canvas id="ch-71"></canvas></div>
+      </div>
+      <div class="painel">
+        <h4>Maturidade operacional e potencial de escalonamento</h4>
+        <p class="sub">Figura 7.2 · número de fichas em cada cruzamento, conforme declarado.</p>
+        <div class="chart-box"><canvas id="ch-72"></canvas></div>
+      </div>
+      <div class="painel">
+        <h4>Receita × busca de recursos externos</h4>
+        <p class="sub">Figura 7.3 · a receita cobre os custos? E a organização já buscou recursos de fora?</p>
+        <div class="chart-box"><canvas id="ch-73"></canvas></div>
+      </div>
+      <div class="painel">
+        <h4>Fontes de recursos já acessadas</h4>
+        <p class="sub">Figura 7.4 · menções; uma organização pode citar mais de uma fonte.</p>
+        <div class="chart-box"><canvas id="ch-74"></canvas></div>
+      </div>
+      <div class="painel">
+        <h4>Tipo de recurso que gostaria de captar</h4>
+        <p class="sub">Figura 7.5 · menções; uma organização pode citar mais de um tipo.</p>
+        <div class="chart-box"><canvas id="ch-75"></canvas></div>
+      </div>
+      <div class="painel">
+        <h4>Acesso a financiamento verde</h4>
+        <p class="sub">Figura 7.6 · situação declarada diante de instrumentos de financiamento verde.</p>
+        <div class="chart-box"><canvas id="ch-76"></canvas></div>
+      </div>
+    </div>
+    <p class="nota-fonte"><b>Fonte:</b> fichas de campo (formulário Kobo, blocos B e C), seção 7.1 do Produto 5 B.</p>
+  </div>
+
+  <div class="bloco">
+    <h3>Carteira estimada</h3>
+    <p class="sub">Bloco A reúne o que é contratável nesta etapa; Bloco B, a referência indicativa
+      para dimensionar o investimento adiante. A faixa expressa a incerteza de uma estimativa Classe 5.</p>
+    <div class="grade dois">
+      <div class="painel">
+        <h4>Faixa por bloco</h4>
+        <p class="sub">Figura 7.7 · mínimo e máximo de cada bloco e da carteira total, com gestão e contingência.</p>
+        <div class="chart-box"><canvas id="ch-blocos"></canvas></div>
+      </div>
+      <div class="painel">
+        <h4>Custo-base contratável por componente</h4>
+        <p class="sub">Figura 7.8 · Bloco A, mínimo e máximo, antes de gestão e contingência.</p>
+        <div class="chart-box"><canvas id="ch-componentes"></canvas></div>
+      </div>
+      <div class="painel">
+        <h4>Distribuição anual do contratável</h4>
+        <p class="sub">Figura 7.9 · valor máximo do Bloco A, com gestão e contingência.</p>
+        <div class="chart-box"><canvas id="ch-anual"></canvas></div>
+      </div>
+      <div class="painel">
+        <h4>Carteira por eixo do PTE-NE</h4>
+        <p class="sub">Tabela 7.3 · soma dos valores máximos das experiências de cada eixo.</p>
+        <div class="chart-box"><canvas id="ch-eixo"></canvas></div>
+      </div>
+    </div>
+    <p class="nota-fonte" id="an-cambio"><b>Fonte:</b> Quadros 1 a 4 da planilha de estimativa (PTE2026_fichas_investimento.xlsx).</p>
+  </div>
+
+  <div class="bloco">
+    <h3>Por postura de apoio</h3>
+    <p class="sub">Tabela 7.4 · a postura resume o que cada organização precisa antes de receber recursos.
+      É ela que separa o contratável agora do que ainda depende de estudo ou de fortalecimento.</p>
+    <div class="painel">
+      <div class="chart-box"><canvas id="ch-postura"></canvas></div>
+    </div>
+  </div>
+
+  <div class="bloco">
+    <h3>Por experiência</h3>
+    <p class="sub">Figura 7.11 e Tabela 7.5 · as 27 experiências com estimativa, ordenadas pelo valor máximo
+      da carteira (A + B).</p>
     <div class="exp-bar">
       <span class="exp-lab">Exportar:</span>
-      <button class="exp-btn" data-exp="xlsx" data-target="#tbl-ranking" data-name="ranking" data-title="Ranking das iniciativas" data-sheet="Ranking">XLS</button>
-      <button class="exp-btn" data-exp="pdf" data-target="#tbl-ranking" data-name="ranking" data-title="Ranking das iniciativas">PDF</button>
+      <button class="exp-btn" data-exp="xlsx" data-target="#tbl-exp" data-name="estimativa-por-experiencia"
+              data-title="Recursos estimados por experiência" data-sheet="Experiencias">XLS</button>
+      <button class="exp-btn" data-exp="pdf" data-target="#tbl-exp" data-name="estimativa-por-experiencia"
+              data-title="Recursos estimados por experiência">PDF</button>
     </div>
-    <div class="table-wrap"><div class="tbl-scroll">
-      <table id="tbl-ranking">
-        <thead>
-          <tr>
-            <th data-sort="id" class="num">ID<span class="arr"></span></th>
-            <th data-sort="nome">Iniciativa<span class="arr"></span></th>
-            <th data-sort="municipio">Município<span class="arr"></span></th>
-            <th data-sort="estado">UF<span class="arr"></span></th>
-            <th data-sort="eixo">Eixo<span class="arr"></span></th>
-            <th data-sort="preselecionada">Pré-selecionado<span class="arr"></span></th>
-            <th data-sort="pontuacao" class="num">Nota<span class="arr"></span></th>
-            <th>Âncora</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
+    <div class="painel" style="margin-bottom:24px"><div class="chart-box" style="height:760px"><canvas id="ch-experiencias"></canvas></div></div>
+    <div class="tbl-scroll">
+      <table id="tbl-exp">
+        <thead><tr>
+          <th data-sort="nome">Experiência<span class="arr"></span></th>
+          <th data-sort="eixo">Eixo<span class="arr"></span></th>
+          <th data-sort="postura">Postura<span class="arr"></span></th>
+          <th data-sort="conf">Confiança<span class="arr"></span></th>
+          <th data-sort="p5" class="num">Pontuação<span class="arr"></span></th>
+          <th data-sort="itens" class="num">Itens<span class="arr"></span></th>
+          <th data-sort="amin" class="num">Bloco A mín.<span class="arr"></span></th>
+          <th data-sort="amax" class="num">Bloco A máx.<span class="arr"></span></th>
+          <th data-sort="bmin" class="num">Bloco B mín.<span class="arr"></span></th>
+          <th data-sort="bmax" class="num">Bloco B máx.<span class="arr"></span></th>
+          <th data-sort="tmax" class="num">Carteira máx.<span class="arr"></span></th>
+        </tr></thead>
+        <tbody id="tb-exp"></tbody>
       </table>
-    </div></div>
+    </div>
+    <p class="nota-fonte"><b>Fonte:</b> Quadro 5 da planilha de estimativa (Tabela 7.5 do Produto 5 B). Valores em R$ milhões.</p>
+  </div>
+</section>
+
+<!-- ======================================================== MÉTODO -->
+<section class="view hidden" id="view-metodo">
+  <div class="sec-head">
+    <h2>Método e downloads</h2>
+    <p>O que cada número deste painel significa, de onde vem e até onde vai.</p>
   </div>
 
-  <!-- CARTÕES -->
-  <div class="view hidden" id="view-cards">
-    <h2 class="view-head">Cartões das iniciativas <small>visão detalhada por iniciativa</small></h2>
-    <div class="cards-grid" id="cards-grid"></div>
+  <div class="bloco">
+    <h3>Como ler os números</h3>
+    <dl class="metodo">
+      <dt>Nota da matriz (0 a 30)</dt>
+      <dd>Avaliação de gabinete de toda a base de prospecção em dez critérios, de 1 a 3 cada.
+        Serve para ordenar a base e orientar a seleção de campo.</dd>
+      <dt>Pontuação do Produto 5 (0 a 100)</dt>
+      <dd>Só existe para as organizações com ficha de campo. Combina impacto (30), inovação (30),
+        operação (25) e investimento (15), conforme o Apêndice 2 do Produto 5 B.
+        Não é comparável com a nota da matriz.</dd>
+      <dt>Bloco A — contratável</dt>
+      <dd>Itens com valor declarado pela organização, preço de mercado verificado, ou estudo e
+        pré-condição. É o que pode ser contratado nesta etapa.</dd>
+      <dt>Bloco B — referência</dt>
+      <dd>Referência indicativa para dimensionar o investimento adiante. Não é compromisso de aporte.</dd>
+      <dt>Postura de apoio</dt>
+      <dd>O que a organização precisa antes de receber recursos: estar pronta, confirmar um dado,
+        dimensionar o investimento, fortalecer-se institucionalmente ou cumprir etapa preparatória.</dd>
+      <dt>Classe da estimativa</dt>
+      <dd>Classe 5 da AACE International (RP 18R-97): estimativa preliminar, feita com definição de
+        escopo entre 0% e 2%. A faixa entre mínimo e máximo é parte do resultado, não imprecisão a corrigir.</dd>
+      <dt>Preços e horizonte</dt>
+      <dd>R$ milhões a preços de setembro de 2026, horizonte de 36 meses. A conversão para dólares
+        usa a taxa registrada na aba Método da planilha de estimativa.</dd>
+    </dl>
+    <div class="aviso">Este painel é de uso restrito da equipe e das instituições parceiras.
+      As faixas de recursos por organização são estimativas preliminares de planejamento e
+      não constituem oferta, compromisso de aporte ou valor contratado.</div>
   </div>
 
-  <!-- MAPA GERAL -->
-  <div class="view hidden" id="view-mapa">
-    <h2 class="view-head">Distribuição geográfica <small>tamanho do círculo = nota · cor = eixo</small></h2>
-    <div class="exp-bar">
-      <span class="exp-lab">Exportar:</span>
-      <button class="exp-btn" data-exp="png" data-target="#map-geral" data-name="mapa-geral">Imagem do mapa (PNG)</button>
+  <div class="bloco">
+    <h3>Fontes</h3>
+    <div class="downloads">
+      <div class="dl"><b>Produto 5 B — Relatório final</b><span>Seção 7: estimativa preliminar de recursos.
+        Contrato 13849/2026 OEI/FPOS — TdR 12.500/2026.</span></div>
+      <div class="dl"><b>PTE2026_fichas_investimento.xlsx</b><span>Planilha de estimativa: catálogo de custos
+        unitários, base de itens, quadros consolidados e uma aba por experiência.</span></div>
+      <div class="dl"><b>Matriz de prospecção</b><span>Base das iniciativas mapeadas, com a avaliação
+        de gabinete nos dez critérios.</span></div>
+      <div class="dl"><b>Fichas de campo</b><span>Uma por organização visitada ou entrevistada,
+        com registro fotográfico e transcrição.</span></div>
     </div>
-    <div class="map-layout">
-      <div id="map-geral" class="map"></div>
-      <div class="map-side" id="map-side"></div>
-    </div>
+    <p class="nota-fonte">Os arquivos-fonte não são distribuídos por este painel. Solicite à equipe do projeto.</p>
   </div>
-
-  <!-- SELEÇÃO -->
-  <div class="view hidden" id="view-selecao">
-    <h2 class="view-head">Seleção estratégica <small>escolha as iniciativas para visitas e entrevistas — alimenta Análises e Rotas</small></h2>
-    <div class="sel-flowbar">
-      <span class="flowstep on">1 · Seleção</span><span class="flowarrow">→</span>
-      <span class="flowstep">2 · Análises</span><span class="flowarrow">→</span>
-      <span class="flowstep">3 · Rotas Manuais de Campo</span>
-      <span class="sel-summary" id="sel-summary"></span>
-    </div>
-    <div class="sel-block">
-      <div class="sel-head"><h3>1 · Visitas técnicas <span class="sel-badge" id="sel-count-visita">0</span></h3>
-        <span class="exp-bar"><button class="exp-btn" data-exp="png" data-target="#map-sel-visita" data-name="mapa-visitas">Mapa (PNG)</button>
-        <button class="ghost sm" id="sel-clear-visita">Limpar visitas</button></span></div>
-      <div class="ph-sub">Aplique os filtros e clique nos pontos para marcar as iniciativas que receberão visita técnica de campo.</div>
-      <div class="sel-filters">
-        <input type="search" id="sfv-busca" placeholder="Buscar iniciativa, organização ou município..." />
-        <select id="sfv-eixo"><option value="">Todos os eixos</option></select>
-        <select id="sfv-estado"><option value="">Todos os estados</option></select>
-        <select id="sfv-bioma"><option value="">Todos os biomas</option></select>
-        <select id="sfv-nat"><option value="">Todas as naturezas</option></select>
-        <span class="count" id="sfv-count"></span>
-        <button id="sfv-reset" class="ghost">Limpar filtros</button>
-      </div>
-      <div class="sel-map-wrap"><div id="map-sel-visita" class="map"></div><aside class="sel-side" id="sel-list-visita"></aside></div>
-    </div>
-
-    <div class="sel-block">
-      <div class="sel-head"><h3>2 · Entrevistas em profundidade <span class="sel-badge" id="sel-count-entrevista">0</span></h3>
-        <span class="exp-bar"><button class="exp-btn" data-exp="png" data-target="#map-sel-entrevista" data-name="mapa-entrevistas">Mapa (PNG)</button>
-        <button class="ghost sm" id="sel-clear-entrevista">Limpar entrevistas</button></span></div>
-      <div class="ph-sub">Aplique os filtros e clique nos pontos para marcar as iniciativas que terão entrevista em profundidade.</div>
-      <div class="sel-filters">
-        <input type="search" id="sfe-busca" placeholder="Buscar iniciativa, organização ou município..." />
-        <select id="sfe-eixo"><option value="">Todos os eixos</option></select>
-        <select id="sfe-estado"><option value="">Todos os estados</option></select>
-        <select id="sfe-bioma"><option value="">Todos os biomas</option></select>
-        <select id="sfe-nat"><option value="">Todas as naturezas</option></select>
-        <span class="count" id="sfe-count"></span>
-        <button id="sfe-reset" class="ghost">Limpar filtros</button>
-      </div>
-      <div class="sel-map-wrap"><div id="map-sel-entrevista" class="map"></div><aside class="sel-side" id="sel-list-entrevista"></aside></div>
-    </div>
-
-    <div class="sel-tables">
-      <div class="sel-tbl-block">
-        <div class="sel-head"><h3>Pré-selecionadas para visita técnica <span class="sel-badge" id="seltbl-cv">0</span></h3>
-          <span class="exp-bar">
-            <button class="exp-btn" data-exp="xlsx" data-target="#tbl-sel-visita" data-name="pre-visitas" data-title="Pré-selecionadas para visita técnica" data-sheet="Visitas">XLS</button>
-            <button class="exp-btn" data-exp="pdf" data-target="#tbl-sel-visita" data-name="pre-visitas" data-title="Pré-selecionadas para visita técnica">PDF</button>
-          </span></div>
-        <div class="tbl-scroll" id="tbl-sel-visita"></div>
-      </div>
-      <div class="sel-tbl-block">
-        <div class="sel-head"><h3>Pré-selecionadas para entrevista em profundidade <span class="sel-badge" id="seltbl-ce">0</span></h3>
-          <span class="exp-bar">
-            <button class="exp-btn" data-exp="xlsx" data-target="#tbl-sel-entrevista" data-name="pre-entrevistas" data-title="Pré-selecionadas para entrevista em profundidade" data-sheet="Entrevistas">XLS</button>
-            <button class="exp-btn" data-exp="pdf" data-target="#tbl-sel-entrevista" data-name="pre-entrevistas" data-title="Pré-selecionadas para entrevista em profundidade">PDF</button>
-          </span></div>
-        <div class="tbl-scroll" id="tbl-sel-entrevista"></div>
-      </div>
-    </div>
-
-    <div class="sel-actions">
-      <button class="btn" id="sel-go-analises">Ver Análises das selecionadas →</button>
-      <button class="btn secondary" id="sel-go-rotas">Planejar Rotas Manuais de Campo →</button>
-    </div>
-  </div>
-
-  <!-- ANÁLISES -->
-  <div class="view hidden" id="view-analises">
-    <h2 class="view-head">Análises <small>cobertura e desempenho por eixo e estado</small></h2>
-    <div class="an-base" id="an-base"></div>
-    <div class="analises-grid">
-      <div class="panel full">
-        <h3>Cobertura por estado e eixo</h3>
-        <div class="ph-sub">Número de iniciativas em cada cruzamento (e quantas estão selecionadas na aba Seleção). Cada iniciativa é contada uma vez, na sua UF principal; as de alcance nacional/multi-UF aparecem em “Nac./Multi”.</div>
-        <div class="exp-bar">
-          <span class="exp-lab">Exportar:</span>
-          <button class="exp-btn" data-exp="xlsx" data-target="#heatmap" data-name="cobertura-eixo-estado" data-title="Cobertura por estado e eixo" data-sheet="Cobertura">XLS</button>
-          <button class="exp-btn" data-exp="pdf" data-target="#heatmap" data-name="cobertura-eixo-estado" data-title="Cobertura por estado e eixo">PDF</button>
-        </div>
-        <div id="heatmap" class="heatmap"></div>
-      </div>
-      <div class="panel">
-        <h3>Distribuição das notas</h3>
-        <div class="ph-sub">Quantidade de iniciativas por faixa de nota.</div>
-        <div class="exp-bar"><button class="exp-btn" data-exp="png" data-target="#hist-nota" data-name="distribuicao-notas">PNG</button></div>
-        <div class="chart-box"><canvas id="hist-nota"></canvas></div>
-      </div>
-      <div class="panel">
-        <h3>Nota média por eixo</h3>
-        <div class="ph-sub">Média da nota de avaliação das iniciativas de cada eixo.</div>
-        <div class="exp-bar"><button class="exp-btn" data-exp="png" data-target="#bar-eixo" data-name="nota-media-eixo">PNG</button></div>
-        <div class="chart-box"><canvas id="bar-eixo"></canvas></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ROTAS MANUAIS DE CAMPO -->
-  <div class="view hidden" id="view-rota-manual">
-    <h2 class="view-head">Rotas Manuais de Campo <small>clique nos pontos do mapa para montar as rotas na ordem desejada</small></h2>
-    <div class="exp-bar">
-      <span class="exp-lab">Exportar:</span>
-      <button class="exp-btn" data-exp="png" data-target="#map-rota-manual" data-name="mapa-rota-manual">Imagem do mapa (PNG)</button>
-      <button class="exp-btn" data-exp="pdf-el" data-target="#rota-manual-itinerary" data-name="roteiro-manual" data-title="Roteiro manual de incursões">Roteiro (PDF)</button>
-    </div>
-    <div class="rotas-wrap">
-      <div class="rotas-controls" id="rota-manual-controls"></div>
-      <div class="rotas-results">
-        <div id="map-rota-manual" class="map"></div>
-        <aside class="rotas-side" id="rota-manual-itinerary"></aside>
-      </div>
-    </div>
-  </div>
-
-  <!-- COMPARAR -->
-  <div class="view hidden" id="view-comparar">
-    <h2 class="view-head">Comparar iniciativas <small>desempenho lado a lado nos dez critérios de avaliação</small></h2>
-    <div class="cmp-bar">
-      <p>Selecione até 6 iniciativas (na tabela, nos cartões ou abaixo) para comparar o perfil nos dez critérios, ver quem lidera cada um e onde estão as maiores diferenças.</p>
-      <div class="cmp-tools">
-        <select id="cmp-add"><option value="">Adicionar iniciativa à comparação...</option></select>
-        <div class="cmp-presets">
-          <button class="btn secondary sm" id="cmp-top5">Top 5 por nota</button>
-          <button class="btn secondary sm" id="cmp-anchors">Âncoras</button>
-          <button class="btn secondary sm" id="cmp-clear">Limpar</button>
-        </div>
-        <label class="chk cmp-avg-l"><input type="checkbox" id="cmp-avg" checked> Mostrar média geral</label>
-        <span class="cmp-count" id="cmp-count"></span>
-      </div>
-    </div>
-    <div class="cmp-layout">
-      <div class="radar-wrap"><canvas id="radar"></canvas></div>
-      <div class="cmp-insights" id="cmp-insights"></div>
-    </div>
-    <div class="exp-bar">
-      <span class="exp-lab">Exportar:</span>
-      <button class="exp-btn" data-exp="png" data-target="#radar" data-name="comparar-radar">Radar (PNG)</button>
-      <button class="exp-btn" data-exp="xlsx" data-target="#cmp-matrix" data-name="comparar-matriz" data-title="Comparação de iniciativas" data-sheet="Comparacao">Matriz XLS</button>
-      <button class="exp-btn" data-exp="pdf" data-target="#cmp-matrix" data-name="comparar-matriz" data-title="Comparação de iniciativas">Matriz PDF</button>
-    </div>
-    <div class="cmp-matrix" id="cmp-matrix"></div>
-    <div class="cmp-cards" id="cmp-cards"></div>
-  </div>
-
-  <div class="view hidden" id="view-campo">
-    <!-- preenchido por assets/js/campo.js -->
-  </div>
+</section>
 
 </main>
 
 <section class="parceiros">
-  <div class="pgroup realiza">
-    <span class="pl">Realização e parceiros</span>
-    <img src="assets/img/parceiros.png"
-         alt="OEI, Open Society Foundations, Ministério da Fazenda, Governo do Brasil e Consórcio Nordeste" />
-  </div>
-  <div class="pgroup tecnico">
-    <span class="pl">Parceiro Técnico</span>
-    <img src="assets/img/logotipo-quanta.png" alt="QCP — Inteligência em Políticas Públicas" />
+  <div class="wrap">
+    <div class="pgroup realiza">
+      <span class="pl">Realização e parceiros</span>
+      <img src="assets/img/parceiros.png"
+           alt="OEI, Open Society Foundations, Ministério da Fazenda, Governo do Brasil e Consórcio Nordeste" />
+    </div>
+    <div class="pgroup tecnico">
+      <span class="pl">Parceiro técnico</span>
+      <img src="assets/img/logotipo-quanta.png" alt="QCP — Inteligência em Políticas Públicas" />
+    </div>
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=66"></script>
-<script src="assets/data/uf_ne.js?v=66"></script>
-<script src="assets/js/maplayers.js?v=66"></script>
-<script src="assets/js/rota.js?v=66"></script>
-<script src="assets/js/dashboard.js?v=66"></script>
-<script src="assets/js/export.js?v=66"></script>
-<script src="assets/js/campo.js?v=1"></script>
+<script src="assets/data/iniciativas.js?v=70"></script>
+<script src="assets/data/uf_ne.js?v=70"></script>
+<script src="assets/js/maplayers.js?v=70"></script>
+<script src="assets/js/painel.js?v=70"></script>
+<script src="assets/js/export.js?v=70"></script>
+<script src="assets/js/campo.js?v=70"></script>
 <script>
 document.getElementById("sair").addEventListener("click",function(e){
   e.preventDefault();PTEAuth.sair();location.replace("entrar.html");
