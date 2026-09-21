@@ -24,9 +24,15 @@ destrutiva ou irreversível — para essas, continuar perguntando.
 
 ## Publicação
 
-- Site: <https://bfernlucas.github.io/pte_ne/>
-- **Sem domínio próprio.** O `pte-nordeste.com.br` foi descartado por decisão
-  do usuário; não recriar o arquivo `CNAME`.
+- Site: <https://www.pte-ne.com.br/> (domínio próprio desde 21/09/2026)
+- Endereço antigo <https://bfernlucas.github.io/pte_ne/> redireciona para o novo.
+- Domínio `pte-ne.com.br` no Registro.br, titular Lucas (contatos administrativo,
+  técnico e de cobrança), pago até 21/09/2030. DNS do Registro.br em modo
+  avançado: quatro registros A no domínio principal (185.199.108.153 a
+  185.199.111.153) e CNAME `www` → `bfernlucas.github.io`.
+- O arquivo `CNAME` na raiz do repositório (`www.pte-ne.com.br`) é o que liga o
+  domínio ao GitHub Pages. **Não apagar nem alterar** sem pedir.
+- O antigo `pte-nordeste.com.br` segue descartado.
 
 ## Acesso
 
