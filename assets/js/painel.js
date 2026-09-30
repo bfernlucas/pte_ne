@@ -88,7 +88,13 @@
   var ROTAS = (P5 && P5.rotas) || [];
   var QUADROS = (P5 && P5.quadros) || null;
   var PMETA = (P5 && P5.meta) || {};
-  var ROTULO_POSTURA = PMETA.postura_rotulo || {};
+  /* Etapa 1, Estruturação (chave interna "A"), e Etapa 2, Escala ("B").
+     A classificação do ranking substitui a antiga postura de apoio. */
+  var CLASSE = PMETA.classes || { alta: "Alta prioridade", estrategico: "Potencial estratégico",
+    nao: "Não recomendada neste ciclo" };
+  var CLASSE_ORDEM = ["alta", "estrategico", "nao"];
+  function pctTxt(v) { return v == null ? "—" : num(v * 100, 0) + "%"; }
+  function classeDe(e) { return e && e.estimada === false ? "nao" : (e ? e.classificacao || "" : ""); }
 
   function nEstimadas() { return EXP.filter(function (e) { return e.estimada; }).length; }
 
@@ -107,7 +113,7 @@
       matriz: i.pontuacao == null ? null : Number(i.pontuacao),
       campo: e ? (e.coleta === "Virtual" ? "Entrevista" : "Visita") : "",
       p5: e && e.pontuacao != null ? Number(e.pontuacao) : null,
-      postura: e && e.postura ? e.postura : "",
+      classe: e ? classeDe(e) : "",
       amin: e && e.bloco_a ? e.bloco_a.min : null,
       amax: e && e.bloco_a ? e.bloco_a.max : null,
       bmin: e && e.bloco_b ? e.bloco_b.min : null,
@@ -122,7 +128,7 @@
       eixo: e.eixo_cod || "", eixo_nome: "", natureza: "", biomas: "",
       matriz: null, campo: e.coleta === "Virtual" ? "Entrevista" : "Visita",
       p5: e.pontuacao == null ? null : Number(e.pontuacao),
-      postura: e.postura || "",
+      classe: classeDe(e),
       amin: e.bloco_a ? e.bloco_a.min : null, amax: e.bloco_a ? e.bloco_a.max : null,
       bmin: e.bloco_b ? e.bloco_b.min : null, bmax: e.bloco_b ? e.bloco_b.max : null,
       lat: e.lat, lon: e.lon, criterios: null
@@ -152,29 +158,44 @@
     var comFicha = LINHAS.filter(function (l) { return l.exp; }).length;
     var novas = LINHAS.length - INI.length;   /* visitadas que a prospecção não continha */
     var estimadas = EXP.filter(function (e) { return e.estimada; }).length;
+    var nAlta = EXP.filter(function (e) { return e.estimada && e.classificacao === "alta"; }).length;
+    var nEstr = EXP.filter(function (e) { return e.estimada && e.classificacao === "estrategico"; }).length;
     var cart = QUADROS && QUADROS.carteira;
     var virtuais = EXP.filter(function (e) { return e.coleta === "Virtual"; }).length;
     var semEst = comFicha - estimadas;
+    var funil = META.funil || null;
+    var mapeadas = funil ? funil.mapeadas : LINHAS.length;
     var blocos = [
-      ["" + LINHAS.length, "iniciativas na base", INI.length + " identificadas na prospecção" +
-        (novas ? " e " + novas + " encontradas em campo" : "")],
+      ["" + mapeadas, "iniciativas mapeadas", (funil
+        ? LINHAS.length + " distintas no mapa e no ranking: " + INI.length + " da prospecção" +
+          (novas ? " e " + novas + " encontrada" + (novas > 1 ? "s" : "") + " em campo" : "")
+        : INI.length + " identificadas na prospecção")],
       ["" + comFicha, "avaliadas em campo", (comFicha - virtuais) + " por visita técnica e " + virtuais +
-        " por entrevista virtual"],
-      ["" + estimadas, "com estimativa preliminar de recursos", semEst > 0
-        ? (semEst === 1 ? "A outra organização avaliada não foi recomendada" : "As outras " + semEst +
-          " organizações avaliadas não foram recomendadas") + " para apoio nesta etapa"
-        : "Todas as organizações avaliadas em campo"]
+        " por entrevista virtual"]
     ];
+    if (EXP.length) {
+      blocos.push(["" + nAlta, "recomendadas com alta prioridade", estimadas + " têm estimativa de recursos: " +
+        nAlta + " de alta prioridade e " + nEstr + " de potencial estratégico" +
+        (semEst > 0 ? "; " + semEst + " não recomendada" + (semEst > 1 ? "s" : "") + " neste ciclo" : "")]);
+    }
     if (cart && cart.reais) {
+      var qa = QUADROS.contratavel.total, qb = QUADROS.referencia.total;
       blocos.push([
-        num(cart.reais.min, 0) + " – " + num(cart.reais.max, 0),
-        "milhões de reais na carteira estimada",
-        "Equivalente a US$ " + num(cart.dolares.min, 0) + " a " + num(cart.dolares.max, 0) + " milhões, em 36 meses"
+        num(cart.reais.min, 1) + " – " + num(cart.reais.max, 1),
+        "milhões de reais na carteira total",
+        "Estruturação de R$ " + faixaTxt(qa.min, qa.max) + " milhões e Escala de R$ " + faixaTxt(qb.min, qb.max) +
+          " milhões; US$ " + num(cart.dolares.min, 1) + " a " + num(cart.dolares.max, 1) + " milhões, em 36 meses"
       ]);
     }
     $("#carteira-numeros").innerHTML = blocos.map(function (b) {
       return "<div><b>" + esc(b[0]) + "</b><span>" + esc(b[1]) + "</span><small>" + esc(b[2]) + "</small></div>";
     }).join("");
+    if (funil) {
+      $("#carteira-funil").innerHTML = "Das " + funil.mapeadas + " iniciativas mapeadas, " + funil.descartadas +
+        " foram descartadas na prospecção, por não terem sido localizadas ou não atuarem no Nordeste, e " +
+        funil.repetidas + " repetem organizações já listadas. O mapa e o ranking mostram as " + LINHAS.length + " distintas.";
+    }
+    destaqueCarteira();
 
     desenhaAluvial($("#fig-aluvial"));
     $("#aluvial-leitura").innerHTML = leituraAluvial();
@@ -188,28 +209,47 @@
   };
 
 
+  /* ---- leitura de abertura da carteira (pedido da equipe: dar destaque à
+     proposta de programa único). Números do pacote cifrado, nunca do HTML. */
+  function destaqueCarteira() {
+    var alvo = $("#carteira-destaque");
+    if (!alvo || !QUADROS || !QUADROS.carteira) { if (alvo) alvo.classList.add("hidden"); return; }
+    var qa = QUADROS.contratavel.total, qb = QUADROS.referencia.total, qc = QUADROS.carteira.reais;
+    var est = EXP.filter(function (e) { return e.estimada; });
+    var esc_ = P5.escala || {};
+    var prontCart = qc.max ? qa.max / qc.max : null;
+    alvo.innerHTML = "<h3>Leitura da carteira</h3>" +
+      "<p>A carteira total soma <b>R$ " + faixaTxt(qc.min, qc.max) + " milhões</b> em 36 meses, para " + est.length +
+      " experiências. A <b>Estruturação</b>, de R$ " + faixaTxt(qa.min, qa.max) + " milhões, pode ser contratada agora: " +
+      "estudos, formalizações, sistemas e itens com custo definido. A <b>Escala</b>, de R$ " + faixaTxt(qb.min, qb.max) +
+      " milhões, depende da condição de cada item e é o que a Estruturação vai dimensionar. Só " + pctTxt(prontCart) +
+      " do valor máximo está na Estruturação.</p>" +
+      (esc_.acima_padrao != null ? "<p>Isoladamente, apenas " + esc_.acima_padrao + " das " + est.length +
+        " experiências alcançam o porte mínimo dos canais de maior volume, de R$ " + num(esc_.piso_padrao, 0) + " milhões, e " +
+        esc_.abaixo_reduzido + " ficam abaixo até do piso reduzido, de R$ " + num(esc_.piso_reduzido, 0) + " milhões.</p>" : "") +
+      (esc_.proposta ? '<p class="proposta">' + esc(esc_.proposta) + "</p>" : "");
+  }
+
   /* ---- aluvial da trajetória do valor (Figura 7.10), desenhado em SVG a
-     partir de P5.fluxos. Mesmo desenho da figura do relatório: fitas do
-     Bloco A em azul firme, do Bloco B em cinza-azulado; ordem das colunas
+     partir de P5.fluxos. Mesmo desenho da figura do relatório: fitas da
+     Estruturação em azul firme, da Escala em cinza-azulado; ordem das colunas
      por tamanho e, a partir da terceira, pelo baricentro da anterior. ---- */
   var NOMES_ALU = [
-    { A: ["Bloco A — contratável", "nesta etapa"], B: ["Bloco B — referência", "indicativa"] },
+    { A: ["Etapa 1", "Estruturação"], B: ["Etapa 2", "Escala"] },
     { NIVA: ["Nova Infraestrutura Verde-Azul", "e Adaptação Climática"], ADT: ["Adensamento Tecnológico"],
       EC: ["Economia Circular", "e Solidária"], TE: ["Transição Energética"],
       FSI: ["Finanças Sustentáveis", "e Inclusivas"], BIO: ["Bioeconomia e Sistemas", "Agroalimentares Adaptados"] },
-    { "pronta": ["Pronta para", "receber apoio"], "pronta c/ dado": ["Pronta, com dado", "a confirmar"],
-      "dimensionar": ["Precisa dimensionar", "o investimento"], "fortalecer": ["Precisa se", "fortalecer"],
-      "preparatório": ["Etapa", "preparatória"] },
-    { C0: ["Estudo de", "dimensionamento"], C1: ["Estruturação", "institucional"],
+    { alta: ["Alta prioridade"], estrategico: ["Potencial", "estratégico"] },
+    { C0: ["Estudo de", "dimensionamento"], C1: ["Desenvolvimento", "institucional"],
       C2: ["Investimento em", "ativos e fundos"], C3: ["Assistência técnica", "e capacidades"],
       C4: ["Monitoramento", "e avaliação"] }
   ];
-  var CAB_ALU = ["BLOCO DE RECURSOS", "EIXO DO PLANO", "POSTURA DE APOIO", "COMPONENTE DO APOIO"];
+  var CAB_ALU = ["ETAPA", "EIXO DO PLANO", "CLASSIFICAÇÃO", "COMPONENTE DO APOIO"];
 
   function desenhaAluvial(alvo) {
     var F = (P5 && P5.fluxos) || [];
     if (!F.length) { alvo.innerHTML = '<p class="vazio">Os dados deste diagrama não estão disponíveis nesta sessão.</p>'; return; }
-    var KEYS = ["bloco", "eixo", "postura", "comp"], ST = 4;
+    var KEYS = ["bloco", "eixo", "classe", "comp"], ST = 4;
     var tot = F.reduce(function (a, f) { return a + f.valor; }, 0);
     function tam(st, k) {
       return F.reduce(function (a, f) { return a + (f[KEYS[st]] === k ? f.valor : 0); }, 0);
@@ -301,7 +341,7 @@
             var sg = seg[k];
             svg.push('<path d="' + fita(X[st], sg[0], sg[1], X[st + 1], inn[d_], inn[d_] + v) +
               '" fill="' + COR[bl] + '" fill-opacity="' + ALF[bl] + '"><title>' +
-              esc((bl === "A" ? "Bloco A" : "Bloco B") + ": R$ " + num(v) + " milhões") + "</title></path>");
+              esc((bl === "A" ? "Estruturação" : "Escala") + ": R$ " + num(v) + " milhões") + "</title></path>");
             inn[d_] += v;
           });
         });
@@ -332,39 +372,38 @@
 
     var altura = Math.max(TOPO + ALT + BASE, fundo + 8);
     alvo.innerHTML = '<svg id="svg-aluvial" viewBox="0 0 ' + W + " " + altura +
-      '" width="100%" role="img" aria-label="Trajetória do valor da carteira, do bloco ao componente" ' +
+      '" width="100%" role="img" aria-label="Trajetória do valor da carteira, da etapa ao componente" ' +
       'style="font-family:Roboto,system-ui,sans-serif;background:#fff">' + svg.join("") + "</svg>";
   }
 
   /* parágrafo de leitura do aluvial, calculado dos mesmos fluxos que o desenham */
-  var FRASE_POSTURA = { "pronta": "prontas para receber apoio", "pronta c/ dado": "prontas, com dado a confirmar",
-    "dimensionar": "que precisam dimensionar o investimento", "fortalecer": "que precisam se fortalecer institucionalmente",
-    "preparatório": "em etapa preparatória" };
   function leituraAluvial() {
     var F = (P5 && P5.fluxos) || [];
     if (!F.length) return "";
     function soma(chave, val) { return F.reduce(function (a, f) { return a + (val == null || f[chave] === val ? f.valor : 0); }, 0); }
+    function soma2(c1, v1, c2, v2) { return F.reduce(function (a, f) { return a + (f[c1] === v1 && f[c2] === v2 ? f.valor : 0); }, 0); }
     function maior(chave) {
       var t = {}; F.forEach(function (f) { t[f[chave]] = (t[f[chave]] || 0) + f.valor; });
       return Object.keys(t).sort(function (a, b) { return t[b] - t[a]; }).map(function (k) { return { k: k, v: t[k] }; });
     }
     var tot = soma(), A = soma("bloco", "A"), B = soma("bloco", "B");
-    var eixos = maior("eixo"), post = maior("postura"), comps = maior("comp");
+    var eixos = maior("eixo"), comps = maior("comp");
+    var alta = soma("classe", "alta"), estr = soma("classe", "estrategico");
+    var prAlta = alta ? soma2("classe", "alta", "bloco", "A") / alta : 0;
+    var prEstr = estr ? soma2("classe", "estrategico", "bloco", "A") / estr : 0;
     var nomeEixo = {}; (META.eixos || []).forEach(function (e) { nomeEixo[e.cod] = e.nome; });
     var nomeComp = {}; (PMETA.componentes || []).forEach(function (c) { nomeComp[c.cod] = c.nome.toLowerCase(); });
-    var prontaA = F.reduce(function (a, f) { return a + (f.postura === "pronta" && f.bloco === "A" ? f.valor : 0); }, 0);
-    var prontaB = F.reduce(function (a, f) { return a + (f.postura === "pronta" && f.bloco === "B" ? f.valor : 0); }, 0);
+    var prep = ["C0", "C1", "C4"].reduce(function (a, k) { return a + soma("comp", k); }, 0);
     var p = function (v) { return num(v / tot * 100, 0) + "%"; };
-    return "No valor máximo, a carteira soma <b>R$ " + num(tot, 1) + " milhões</b>. O Bloco A, contratável nesta etapa, " +
-      "responde por " + p(A) + " (R$ " + num(A, 1) + " milhões); o Bloco B, de referência indicativa, pelos outros " + p(B) + ". " +
+    return "No valor máximo, a carteira soma <b>R$ " + num(tot, 1) + " milhões</b>. A Estruturação, contratável agora, " +
+      "responde por " + p(A) + " (R$ " + num(A, 1) + " milhões); a Escala, que depende da condição de cada item, pelos outros " + p(B) + ". " +
       "<b>" + esc(nomeEixo[eixos[0].k] || eixos[0].k) + "</b> concentra " + p(eixos[0].v) + " do total, seguido de " +
       esc(nomeEixo[eixos[1].k] || eixos[1].k) + " (" + p(eixos[1].v) + "). " +
-      "Pela postura, a maior parte do valor está em organizações <b>" + esc(FRASE_POSTURA[post[0].k] || post[0].k) +
-      "</b> (" + p(post[0].v) + ") ou " + esc(FRASE_POSTURA[post[1].k] || post[1].k) + " (" + p(post[1].v) +
-      "); as prontas para receber apoio somam " +
-      "R$ " + num(prontaA + prontaB, 1) + " milhões" + (prontaB < 0.05 ? ", todos no Bloco A" : "") + ". " +
-      "É por isso que o apoio se concentra em <b>" + esc(nomeComp[comps[0].k] || comps[0].k) + "</b> (" + p(comps[0].v) + ") e " +
-      esc(nomeComp[comps[1].k] || comps[1].k) + " (" + p(comps[1].v) + "), e não em estudos ou estruturação.";
+      "As experiências de <b>alta prioridade</b> somam " + p(alta) + " do valor, mas a prontidão não acompanha a pontuação: " +
+      "a parcela já contratável é de " + num(prAlta * 100, 0) + "% entre elas e de " + num(prEstr * 100, 0) +
+      "% entre as de potencial estratégico. O valor se concentra em <b>" + esc(nomeComp[comps[0].k] || comps[0].k) + "</b> (" +
+      p(comps[0].v) + ") e " + esc(nomeComp[comps[1].k] || comps[1].k) + " (" + p(comps[1].v) + "); os componentes " +
+      "preparatórios (estudo, desenvolvimento institucional e monitoramento) reúnem os R$ " + num(prep, 1) + " milhões restantes.";
   }
 
   /* ---- filtros do ranking ---- */
@@ -388,11 +427,11 @@
     [["#f-eixo", "eixo"], ["#f-uf", "uf"], ["#f-bioma", "bioma"], ["#f-nat", "nat"]].forEach(function (p) {
       $(p[0]).addEventListener("change", function (e) { fEstado[p[1]] = e.target.value; pintaRanking(); });
     });
-    $("#f-campo").addEventListener("change", function (e) { fEstado.campo = e.target.checked; pintaRanking(); });
+    $("#f-campo").addEventListener("change", function (e) { fEstado.campo = e.target.value === "campo"; pintaRanking(); });
     $("#f-reset").addEventListener("click", function () {
       fEstado = { busca: "", eixo: "", uf: "", bioma: "", nat: "", campo: false };
       $("#f-busca").value = ""; $("#f-eixo").value = ""; $("#f-uf").value = "";
-      $("#f-bioma").value = ""; $("#f-nat").value = ""; $("#f-campo").checked = false;
+      $("#f-bioma").value = ""; $("#f-nat").value = ""; $("#f-campo").value = "todas";
       pintaRanking();
     });
 
@@ -401,7 +440,7 @@
         var k = th.dataset.sort;
         if (ordRank.chave === k) ordRank.dir = ordRank.dir === "desc" ? "asc" : "desc";
         else { ordRank.chave = k; ordRank.dir = (k === "nome" || k === "municipio" || k === "uf" ||
-          k === "eixo" || k === "natureza" || k === "postura" || k === "campo") ? "asc" : "desc"; }
+          k === "eixo" || k === "natureza" || k === "classe" || k === "campo") ? "asc" : "desc"; }
         pintaRanking();
       });
     });
@@ -427,15 +466,15 @@
 
   var CHAVES = {
     nome: ["nome", "txt"], municipio: ["municipio", "txt"], uf: ["uf", "txt"],
-    eixo: ["eixo", "txt"], natureza: ["natureza", "txt"], postura: ["postura", "txt"],
+    eixo: ["eixo", "txt"], natureza: ["natureza", "txt"], classe: ["classeOrd", "n"],
     campo: ["campo", "txt"], matriz: ["matriz", "n"], p5: ["p5", "n"],
     blocoa: ["amax", "n"], blocob: ["bmax", "n"]
   };
 
   /* UF: até duas siglas por extenso; acima disso, a primeira + contagem,
      com a lista completa no title e no arquivo exportado (data-exp). */
-  var POSTURA_CURTA = { "pronta": "Pronta", "pronta c/ dado": "Pronta, dado a confirmar",
-    "dimensionar": "Dimensionar", "fortalecer": "Fortalecer", "preparatório": "Preparatória" };
+  var CLASSE_CURTA = { alta: "Alta prioridade", estrategico: "Potencial estratégico", nao: "Não recomendada" };
+  LINHAS.forEach(function (l) { l.classeOrd = l.classe ? CLASSE_ORDEM.indexOf(l.classe) : null; });
 
   /* Município e UF numa célula só: acima de duas UFs, a primeira + contagem,
      com a lista completa no title e no arquivo exportado. */
@@ -483,8 +522,8 @@
         '<td class="num">' + (l.matriz == null ? '<span class="vazio">—</span>' : num(l.matriz, 0)) + "</td>" +
         "<td>" + (l.campo ? '<span class="tag pill-campo">' + esc(l.campo) + "</span>" : "") + "</td>" +
         '<td class="num">' + (l.p5 == null ? '<span class="vazio">—</span>' : num(l.p5, 0)) + "</td>" +
-        '<td title="' + esc(l.postura ? (ROTULO_POSTURA[l.postura] || l.postura) : "") + '">' +
-          esc(l.postura ? (POSTURA_CURTA[l.postura] || l.postura) : "—") + "</td>" +
+        '<td title="' + esc(l.classe ? CLASSE[l.classe] : "") + '">' +
+          (l.classe ? '<span class="cls-' + l.classe + '">' + esc(CLASSE_CURTA[l.classe]) + "</span>" : '<span class="vazio">—</span>') + "</td>" +
         '<td class="num">' + faixa(l.amin, l.amax) + "</td>" +
         '<td class="num">' + faixa(l.bmin, l.bmax) + "</td>" +
         "</tr>";
@@ -708,12 +747,13 @@
       h += "<dt>Coleta em campo</dt><dd>" + esc(e.coleta) + ", em " + esc(e.data) +
         " (" + esc(e.rota_nome) + ")</dd>";
       if (e.pontuacao != null) h += "<dt>Pontuação final</dt><dd>" + num(e.pontuacao, 0) + " de 100</dd>";
-      if (e.postura) h += "<dt>Postura de apoio</dt><dd>" + esc(ROTULO_POSTURA[e.postura] || e.postura) + "</dd>";
+      if (classeDe(e)) h += "<dt>Classificação</dt><dd>" + esc(CLASSE[classeDe(e)]) + "</dd>";
       if (e.estimada) {
-        h += "<dt>Bloco A — contratável</dt><dd>R$ " + faixaTxt(e.bloco_a.min, e.bloco_a.max) + " milhões</dd>";
-        h += "<dt>Bloco B — referência</dt><dd>R$ " + faixaTxt(e.bloco_b.min, e.bloco_b.max) + " milhões</dd>";
+        h += "<dt>Etapa 1 — Estruturação</dt><dd>R$ " + faixaTxt(e.bloco_a.min, e.bloco_a.max) + " milhões</dd>";
+        h += "<dt>Etapa 2 — Escala</dt><dd>" + (e.bloco_b.max ? "R$ " + faixaTxt(e.bloco_b.min, e.bloco_b.max) + " milhões" : "Sem Escala") + "</dd>";
+        h += "<dt>Prontidão</dt><dd>" + pctTxt(e.prontidao) + " da carteira na Estruturação</dd>";
       } else {
-        h += "<dt>Estimativa</dt><dd>Sem estimativa nesta etapa</dd>";
+        h += "<dt>Estimativa</dt><dd>Sem estimativa: não recomendada neste ciclo</dd>";
       }
     }
     h += "</dl>";
@@ -732,9 +772,11 @@
     }
     var nEst = EXP.filter(function (e) { return e.estimada; }).length;
     var nVirt = EXP.filter(function (e) { return e.coleta === "Virtual"; }).length;
+    var nAlta = EXP.filter(function (e) { return e.estimada && e.classificacao === "alta"; }).length;
     $("#exp-lead").textContent = "Nas " + ROTAS.length + " rotas, " + EXP.length + " organizações receberam visita " +
-      "presencial (" + (EXP.length - nVirt) + ") ou entrevista virtual (" + nVirt + "). Dessas, " + nEst +
-      " têm estimativa de recursos; as outras " + (EXP.length - nEst) + " não foram recomendadas para apoio nesta etapa.";
+      "presencial (" + (EXP.length - nVirt) + ") ou entrevista virtual (" + nVirt + "). Dessas, " + nAlta +
+      " foram recomendadas com alta prioridade e " + (nEst - nAlta) + " como potencial estratégico, e as " + nEst +
+      " têm estimativa de recursos; as outras " + (EXP.length - nEst) + " não foram recomendadas neste ciclo.";
 
     var botoes = [{ id: "todas", nome: "Todas as rotas", cor: CINZA, n: EXP.length }].concat(
       ROTAS.map(function (r) {
@@ -778,24 +820,25 @@
         "</div>";
       if (e.estimada) {
         h += "<dl>" +
-          "<dt>Postura de apoio</dt><dd>" + esc(ROTULO_POSTURA[e.postura] || e.postura) + "</dd>" +
+          "<dt>Classificação</dt><dd>" + esc(CLASSE[e.classificacao] || e.classificacao) + "</dd>" +
           "<dt>Pontuação final</dt><dd>" + num(e.pontuacao, 0) + " (" + esc(e.posicao) + "º lugar entre " + nEstimadas() + ")</dd>" +
+          "<dt>Prontidão</dt><dd>" + pctTxt(e.prontidao) + " da carteira na Estruturação</dd>" +
           "<dt>Informação financeira</dt><dd>" + esc(maiusc(e.info_financeira)) + "</dd>" +
           "<dt>Confiança da estimativa</dt><dd>" + esc(maiusc(e.confianca)) + "</dd>" +
           "<dt>Itens estimados</dt><dd>" + esc(e.itens) + "</dd>" +
           (e.gabinete != null ? "<dt>Nota da matriz</dt><dd>" + num(e.gabinete, 0) + " de 30</dd>" : "") +
           "</dl>" +
           '<div class="faixa"><dl>' +
-            "<dt>Bloco A — contratável</dt><dd><b>" + faixa(e.bloco_a.min, e.bloco_a.max) + "</b></dd>" +
-            "<dt>Bloco B — referência</dt><dd>" + faixa(e.bloco_b.min, e.bloco_b.max) + "</dd>" +
-            "<dt>Carteira (A + B)</dt><dd>" + faixa((e.bloco_a.min || 0) + (e.bloco_b.min || 0),
+            "<dt>Estruturação</dt><dd><b>" + faixa(e.bloco_a.min, e.bloco_a.max) + "</b></dd>" +
+            "<dt>Escala</dt><dd>" + faixa(e.bloco_b.min, e.bloco_b.max) + "</dd>" +
+            "<dt>Carteira total</dt><dd>" + faixa((e.bloco_a.min || 0) + (e.bloco_b.min || 0),
               (e.bloco_a.max || 0) + (e.bloco_b.max || 0)) + "</dd>" +
           '</dl><p class="unid">Valores em R$ milhões, para 36 meses</p></div>';
         if (e.ficha_inv) {
           h += '<button class="abrir" data-aba="' + esc(e.aba) + '">Ver ficha de investimento</button>';
         }
       } else {
-        h += '<div class="faixa">Sem estimativa de recursos: não recomendada para apoio nesta etapa. ' +
+        h += '<div class="faixa">Sem estimativa de recursos: não recomendada neste ciclo. ' +
           "A avaliação está na seção Diagnóstico de campo.</div>";
       }
       return h + "</article>";
@@ -840,13 +883,15 @@
         '" data-title="Ficha de investimento — ' + esc(e.curto) + '">PDF</button></div>' +
       '<button class="ghost fechar" id="inv-fechar">Fechar ficha</button></div>';
     h += '<div class="inv-kpis">' +
-      "<div><b>" + esc(ROTULO_POSTURA[e.postura] || e.postura) + "</b><span>Postura de apoio</span></div>" +
-      "<div><b>" + num(e.pontuacao, 0) + "</b><span>Pontuação final, " + esc(e.posicao) + "º lugar entre " + nEstimadas() + "</span></div>" +
+      "<div><b>" + esc(CLASSE[e.classificacao] || e.classificacao) + "</b><span>Classificação; pontuação final " +
+        num(e.pontuacao, 0) + ", " + esc(e.posicao) + "º lugar entre " + nEstimadas() + "</span></div>" +
+      "<div><b>" + pctTxt(e.prontidao) + "</b><span>Prontidão: parcela da carteira máxima já na Estruturação" +
+        (e.condicao ? ". Condição predominante da Escala: " + esc(maiusc(e.condicao)) : "") + "</span></div>" +
       "<div><b>" + esc(maiusc(e.confianca)) + "</b><span>Confiança da estimativa; informação financeira " + esc(e.info_financeira) + "</span></div>" +
-      '<div class="v"><b>' + faixa(e.bloco_a.min, e.bloco_a.max) + "</b><span>Bloco A (contratável), em R$ milhões</span></div>" +
-      '<div class="v"><b>' + faixa(e.bloco_b.min, e.bloco_b.max) + "</b><span>Bloco B (referência), em R$ milhões</span></div>" +
+      '<div class="v"><b>' + faixa(e.bloco_a.min, e.bloco_a.max) + "</b><span>Etapa 1, Estruturação (contratável agora), em R$ milhões</span></div>" +
+      '<div class="v"><b>' + faixa(e.bloco_b.min, e.bloco_b.max) + "</b><span>Etapa 2, Escala (após a condição de cada item), em R$ milhões</span></div>" +
       '<div class="v"><b>' + faixa((e.bloco_a.min || 0) + (e.bloco_b.min || 0), (e.bloco_a.max || 0) + (e.bloco_b.max || 0)) +
-        "</b><span>Total dos blocos A e B, em R$ milhões, para 36 meses</span></div></div>";
+        "</b><span>Carteira total, em R$ milhões, para 36 meses</span></div></div>";
 
     /* Na tela: cinco colunas. Rubrica e unidade viram uma linha abaixo do
        item; o racional abre sob demanda (detalhe expansível). A tabela
@@ -862,22 +907,24 @@
     var TELA = [], EXPO = [];
     f.blocos.forEach(function (bl) {
       var t = '<div class="inv-bloco ' + bl.id.toLowerCase() + '"><h5>' + esc(bl.titulo) + "</h5>" +
+        (bl.descricao ? '<p class="inv-desc">' + esc(bl.descricao) + (bl.id === "B" ? ". Cada item traz a condição para ser contratado." : ".") + "</p>" : "") +
         '<table class="inv-tbl"><colgroup><col class="c-n"><col class="c-item"><col class="c-q"><col class="c-u"><col class="c-t"></colgroup>' +
         '<thead><tr><th>Nº</th><th>Item</th><th class="num">Quantidade</th>' +
         '<th class="num">Valor unitário<small>R$, mínimo a máximo</small></th>' +
         '<th class="num">Valor total<small>R$, mínimo a máximo</small></th></tr></thead><tbody>';
       var x = '<div class="inv-bloco"><h5>' + esc(bl.titulo) + '</h5><table><thead><tr><th>Nº</th><th>Item</th><th>Rubrica</th><th>Unidade</th>' +
         "<th>Racional</th><th>Qtd. mínima</th><th>Qtd. máxima</th><th>Unitário mínimo (R$)</th><th>Unitário máximo (R$)</th>" +
-        "<th>Total mínimo (R$)</th><th>Total máximo (R$)</th></tr></thead><tbody>";
+        "<th>Total mínimo (R$)</th><th>Total máximo (R$)</th><th>Condição para contratar</th></tr></thead><tbody>";
       bl.componentes.forEach(function (c) {
         t += '<tr class="comp"><td>' + c.n + '</td><td colspan="3">' + esc(c.nome) + "</td>" +
           '<td class="num">' + intervalo(c.min, c.max, inteiro) + "</td></tr>";
         x += "<tr><td>" + c.n + "</td><td>" + esc(c.nome) + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>" +
-          "<td>" + inteiro(c.min) + "</td><td>" + inteiro(c.max) + "</td></tr>";
+          "<td>" + inteiro(c.min) + "</td><td>" + inteiro(c.max) + "</td><td></td></tr>";
         c.itens.forEach(function (it) {
           var sub = [it.rubrica, it.unidade ? "unidade: " + it.unidade : ""].filter(Boolean).join("; ");
           t += '<tr class="item"><td class="n">' + esc(it.n) + '</td><td class="it">' + esc(it.item) +
             (sub ? '<span class="rub">' + esc(maiusc(sub)) + "</span>" : "") +
+            (it.condicao ? '<span class="cond"><b>Condição para contratar:</b> ' + esc(it.condicao) + "</span>" : "") +
             (it.racional ? '<details class="rac"><summary>Racional do custo</summary><p>' + esc(it.racional) + "</p></details>" : "") +
             "</td>" +
             '<td class="num">' + intervalo(it.q_min, it.q_max, inteiro) + "</td>" +
@@ -886,18 +933,19 @@
           x += "<tr><td>" + esc(it.n) + "</td><td>" + esc(it.item) + "</td><td>" + esc(it.rubrica || "") + "</td><td>" +
             esc(it.unidade || "") + "</td><td>" + esc(it.racional || "") + "</td><td>" +
             (it.q_min == null ? "" : inteiro(it.q_min)) + "</td><td>" + (it.q_max == null ? "" : inteiro(it.q_max)) + "</td><td>" +
-            inteiro(it.u_min) + "</td><td>" + inteiro(it.u_max) + "</td><td>" + inteiro(it.min) + "</td><td>" + inteiro(it.max) + "</td></tr>";
+            inteiro(it.u_min) + "</td><td>" + inteiro(it.u_max) + "</td><td>" + inteiro(it.min) + "</td><td>" + inteiro(it.max) + "</td><td>" +
+            esc(it.condicao || "") + "</td></tr>";
         });
       });
       bl.resumo.forEach(function (r) {
-        var total = /^TOTAL GERAL/.test(r.rotulo);
-        var rot = maiusc(String(r.rotulo).toLowerCase()).replace(/bloco ([ab])$/, function (m, l) { return "Bloco " + l.toUpperCase(); });
+        var total = /^Total geral/.test(r.rotulo);
+        var rot = String(r.rotulo);
         t += '<tr class="' + (total ? "total " + bl.id.toLowerCase() : "resumo") + '"><td></td><td>' + esc(rot) +
           (r.racional ? '<span class="rub">' + esc(r.racional) + "</span>" : "") + "</td><td></td>" +
           '<td class="num">' + (r.pct_min == null ? "" : intervalo(r.pct_min * 100, r.pct_max * 100, function (v) { return num(v, 0) + "%"; })) + "</td>" +
           '<td class="num">' + intervalo(r.min, r.max, inteiro) + "</td></tr>";
         x += "<tr><td></td><td>" + esc(rot) + "</td><td></td><td></td><td>" + esc(r.racional || "") + "</td><td></td><td></td><td>" +
-          pctf(r.pct_min) + "</td><td>" + pctf(r.pct_max) + "</td><td>" + inteiro(r.min) + "</td><td>" + inteiro(r.max) + "</td></tr>";
+          pctf(r.pct_min) + "</td><td>" + pctf(r.pct_max) + "</td><td>" + inteiro(r.min) + "</td><td>" + inteiro(r.max) + "</td><td></td></tr>";
       });
       TELA.push(t + "</tbody></table></div>");
       EXPO.push(x + "</tbody></table></div>");
@@ -981,7 +1029,7 @@
     graficos.push(new Chart($("#ch-blocos"), {
       type: "bar",
       data: {
-        labels: ["Bloco A — contratável", "Bloco B — referência", "Carteira (A + B)"],
+        labels: ["Etapa 1 — Estruturação", "Etapa 2 — Escala", "Carteira total"],
         datasets: [{
           data: [[qa.total.min, qa.total.max], [qb.total.min, qb.total.max], [qc.reais.min, qc.reais.max]],
           backgroundColor: [AZ_A, AZ_B, "#24246C"], borderSkipped: false, barPercentage: 0.55
@@ -996,7 +1044,7 @@
       }
     }));
 
-    /* ---- Figura 7.8: custo-base contratável por componente, mín–máx ---- */
+    /* ---- Figura 7.8: custo-base da Estruturação por componente, mín–máx ---- */
     var S7 = P5.secao7 || null;
     if (S7 && S7.f78) {
       graficos.push(new Chart($("#ch-componentes"), {
@@ -1010,7 +1058,7 @@
           indexAxis: "y", responsive: true, maintainAspectRatio: false,
           plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (c) {
             return "R$ " + num(c.raw[0]) + " a " + num(c.raw[1]) + " milhões"; } } } },
-          scales: { x: { beginAtZero: true, title: { display: true, text: "R$ milhões (custo-base, Bloco A)" } },
+          scales: { x: { beginAtZero: true, title: { display: true, text: "R$ milhões (custo-base da Estruturação)" } },
             y: { grid: { display: false }, ticks: { autoSkip: false } } }
         }
       }));
@@ -1048,8 +1096,8 @@
       data: {
         labels: eixos,
         datasets: [
-          { label: "Bloco A", data: eixos.map(function (k) { return somaA[k] || 0; }), backgroundColor: AZ_A },
-          { label: "Bloco B", data: eixos.map(function (k) { return somaB[k] || 0; }), backgroundColor: AZ_B }
+          { label: "Estruturação", data: eixos.map(function (k) { return somaA[k] || 0; }), backgroundColor: AZ_A },
+          { label: "Escala", data: eixos.map(function (k) { return somaB[k] || 0; }), backgroundColor: AZ_B }
         ]
       },
       options: {
@@ -1062,31 +1110,56 @@
       }
     }));
 
-    /* ---- por postura ---- */
-    var ordem = PMETA.postura_ordem || [];
+    /* ---- por classificação (Tabela 7.4) ---- */
+    var ordem = ["alta", "estrategico"];
     var pA = {}, pB = {}, pN = {};
     est.forEach(function (e) {
-      pA[e.postura] = (pA[e.postura] || 0) + (e.bloco_a.max || 0);
-      pB[e.postura] = (pB[e.postura] || 0) + (e.bloco_b.max || 0);
-      pN[e.postura] = (pN[e.postura] || 0) + 1;
+      pA[e.classificacao] = (pA[e.classificacao] || 0) + (e.bloco_a.max || 0);
+      pB[e.classificacao] = (pB[e.classificacao] || 0) + (e.bloco_b.max || 0);
+      pN[e.classificacao] = (pN[e.classificacao] || 0) + 1;
     });
-    graficos.push(new Chart($("#ch-postura"), {
+    graficos.push(new Chart($("#ch-classe"), {
       type: "bar",
       data: {
-        labels: ordem.map(function (p) { return (ROTULO_POSTURA[p] || p) + " (" + (pN[p] || 0) + ")"; }),
+        labels: ordem.map(function (p) { return CLASSE[p] + " (" + (pN[p] || 0) + ")"; }),
         datasets: [
-          { label: "Bloco A — contratável", data: ordem.map(function (p) { return pA[p] || 0; }), backgroundColor: AZ_A },
-          { label: "Bloco B — referência", data: ordem.map(function (p) { return pB[p] || 0; }), backgroundColor: AZ_B }
+          { label: "Estruturação", data: ordem.map(function (p) { return pA[p] || 0; }), backgroundColor: AZ_A },
+          { label: "Escala", data: ordem.map(function (p) { return pB[p] || 0; }), backgroundColor: AZ_B }
         ]
       },
       options: {
         indexAxis: "y", responsive: true, maintainAspectRatio: false,
         plugins: { legend: { position: "bottom", labels: { boxWidth: 12 } },
-          tooltip: { callbacks: { label: function (c) { return c.dataset.label + ": R$ " + num(c.raw) + " milhões"; } } } },
+          tooltip: { callbacks: { label: function (c) {
+            var k = ordem[c.dataIndex], t = (pA[k] || 0) + (pB[k] || 0);
+            return c.dataset.label + ": R$ " + num(c.raw) + " milhões" +
+              (c.datasetIndex === 0 && t ? " (prontidão de " + num((pA[k] || 0) / t * 100, 0) + "%)" : ""); } } } },
         scales: { x: { stacked: true, beginAtZero: true, title: { display: true, text: "R$ milhões (valor máximo)" } },
           y: { stacked: true, grid: { display: false } } }
       }
     }));
+
+    /* ---- Escala por tipo de condição para contratar (Tabela 7.5) ---- */
+    var COND = (P5 && P5.condicoes) || [];
+    if (COND.length) {
+      graficos.push(new Chart($("#ch-condicao"), {
+        type: "bar",
+        data: {
+          labels: COND.map(function (c) { return c.cod + " (" + c.itens + " itens)"; }),
+          datasets: [{ data: COND.map(function (c) { return [c.min, c.max]; }),
+            backgroundColor: AZ_B, borderSkipped: false, barPercentage: 0.55 }]
+        },
+        options: {
+          indexAxis: "y", responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: {
+            title: function (c) { return COND[c[0].dataIndex].rotulo; },
+            label: function (c) { var x = COND[c.dataIndex];
+              return "R$ " + num(c.raw[0]) + " a " + num(c.raw[1]) + " milhões; " + x.itens + " itens em " + x.experiencias + " experiências"; } } } },
+          scales: { x: { beginAtZero: true, title: { display: true, text: "R$ milhões (Escala, mínimo a máximo)" } },
+            y: { grid: { display: false }, ticks: { autoSkip: false } } }
+        }
+      }));
+    }
 
     /* ---- por experiência ---- */
     var ordE = est.slice().sort(function (a, b) {
@@ -1097,8 +1170,8 @@
       data: {
         labels: ordE.map(function (e) { return e.curto; }),
         datasets: [
-          { label: "Bloco A — contratável", data: ordE.map(function (e) { return e.bloco_a.max; }), backgroundColor: AZ_A },
-          { label: "Bloco B — referência", data: ordE.map(function (e) { return e.bloco_b.max; }), backgroundColor: AZ_B }
+          { label: "Etapa 1 — Estruturação", data: ordE.map(function (e) { return e.bloco_a.max; }), backgroundColor: AZ_A },
+          { label: "Etapa 2 — Escala", data: ordE.map(function (e) { return e.bloco_b.max; }), backgroundColor: AZ_B }
         ]
       },
       options: {
@@ -1179,7 +1252,8 @@
   var ordExp = { chave: "tmax", dir: "desc" };
   var CH_EXP = {
     nome: function (e) { return e.curto; }, eixo: function (e) { return e.eixo_cod; },
-    postura: function (e) { return (PMETA.postura_ordem || []).indexOf(e.postura); },
+    classe: function (e) { return CLASSE_ORDEM.indexOf(e.classificacao); },
+    pront: function (e) { return e.prontidao; },
     conf: function (e) { return ["alta", "média", "baixa"].indexOf(e.confianca); },
     p5: function (e) { return e.pontuacao; }, itens: function (e) { return e.itens; },
     amin: function (e) { return e.bloco_a.min; }, amax: function (e) { return e.bloco_a.max; },
@@ -1201,7 +1275,8 @@
         return "<tr>" +
           '<td class="nome">' + esc(e.curto) + "<small>" + esc(e.municipio) + " (" + esc(e.uf) + ")</small></td>" +
           '<td><span class="tag tag-eixo" style="' + estiloEixo(e.eixo_cod) + '">' + esc(e.eixo_cod) + "</span></td>" +
-          '<td title="' + esc(ROTULO_POSTURA[e.postura] || e.postura) + '">' + esc(POSTURA_CURTA[e.postura] || e.postura) + "</td>" +
+          "<td>" + esc(CLASSE_CURTA[e.classificacao] || e.classificacao) + "</td>" +
+          '<td class="num">' + pctTxt(e.prontidao) + "</td>" +
           "<td>" + esc(maiusc(e.confianca)) + "</td>" +
           '<td class="num">' + num(e.pontuacao, 0) + "</td>" +
           '<td class="num">' + esc(e.itens) + "</td>" +
@@ -1212,7 +1287,7 @@
           '<td class="num"><b>' + num((e.bloco_a.max || 0) + (e.bloco_b.max || 0)) + "</b></td>" +
           "</tr>";
       }).join("") +
-      '<tr class="linha-total"><td>Total</td><td></td><td></td><td></td><td></td><td></td>' +
+      '<tr class="linha-total"><td>Total</td><td></td><td></td><td class="num">' + pctTxt(tA1 / ((tA1 + tB1) || 1)) + "</td><td></td><td></td><td></td>" +
         '<td class="num">' + num(tA0) + '</td><td class="num">' + num(tA1) + "</td>" +
         '<td class="num">' + num(tB0) + '</td><td class="num">' + num(tB1) + "</td>" +
         '<td class="num">' + num(tA1 + tB1) + "</td></tr>";
@@ -1221,7 +1296,7 @@
       th.addEventListener("click", function () {
         var k = th.dataset.sort;
         if (ordExp.chave === k) ordExp.dir = ordExp.dir === "desc" ? "asc" : "desc";
-        else { ordExp.chave = k; ordExp.dir = (k === "nome" || k === "eixo" || k === "postura" || k === "conf") ? "asc" : "desc"; }
+        else { ordExp.chave = k; ordExp.dir = (k === "nome" || k === "eixo" || k === "classe" || k === "conf") ? "asc" : "desc"; }
         pinta();
       });
     });

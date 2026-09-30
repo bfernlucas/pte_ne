@@ -1,7 +1,20 @@
 window.PTE_DATA = {
  "meta": {
-  "fonte": "PTE2026_matriz_dashboard.xlsx",
-  "total": 79,
+  "fonte": "PTE2026_matriz_dashboard.xlsx e aba Mapa_89 iniciativas (Instituto Caburé)",
+  "total": 80,
+  "funil": {
+   "mapeadas": 89,
+   "descartadas": 5,
+   "repetidas": 3,
+   "descartadas_nomes": [
+    "Projeto Pacto Global de Jovens pelo Clima",
+    "LabSolar+",
+    "Programa Nacional de Biodigestores e Biogás",
+    "Programa Mais Luz para a Amazônia e o Semiárido",
+    "SEDEPE"
+   ],
+   "repetidas_nota": "CCI-BSHE repete a Associação do Carbono Social do Bioma Caatinga (mesmo CNPJ); o Programa Sertão Vivo aparece em duas linhas; a linha \"Fied\" repete a FIEB."
+  },
   "eixos": [
    {
     "nome": "Finanças Sustentáveis e Inclusivas",
@@ -3571,6 +3584,46 @@ window.PTE_DATA = {
    },
    "pontuacao": 26,
    "observacoes": "Infraestrutura financeira pioneira para a economia de impacto, com inovação tecnológica e social máxima (crowdlending de impacto e blended finance) e destaque na inclusão produtiva e na equidade de gênero, raça e etnia (foco em pequenos negócios sem acesso a crédito e debate explícito de equidade racial e de gênero, incluindo mulheres indígenas Krikati/MA). Apresenta nota máxima no fortalecimento das cadeias produtivas sustentáveis do NE (sociobiodiversidade e agricultura familiar) e na viabilidade operacional e replicabilidade/escala (mais de 15 anos, mais de R$ 475 milhões mobilizados e plataforma replicável por região). A relevância territorial é intermediária (chamadas e capacitações específicas no NE, mas atuação nacional), assim como a atração de investimentos verdes (mobiliza capital filantrópico e de impacto em escala menor que bancos e plataformas federais) e a governança multinível (parcerias público-privadas e filantrópicas).",
+   "fora_ne": false
+  },
+  {
+   "nome": "Instituto Caburé",
+   "objetivo": "Atua pelo desenvolvimento socioambiental em comunidades tradicionais, valorizando saberes ancestrais em diálogo com ciência e tecnologia, com foco na valorização cultural, conservação do manguezal e no enfrentamento da crise climática. Atualmente, o projeto está em Cajueiro da Praia, no norte do Piauí, mas atua na APA Delta do Parnaíba (PI, CE, MA).",
+   "resumo": "Atua com comunidades tradicionais do Delta do Parnaíba, unindo saberes ancestrais, ciência e tecnologia na conservação do manguezal, na valorização cultural e na inclusão produtiva de mulheres.",
+   "tematica": "Economia azul; desenvolvimento socioambiental",
+   "org": "Instituto Caburé",
+   "cnpj": "46.273.145/0001-67",
+   "fundacao": "29/03/2022",
+   "cnae": "85.92-9-99 - Ensino de arte e cultura não especificado anteriormente",
+   "endereco": "Rua do Lago, s/n, Zona Rural, Cajueiro da Praia, PI, CEP 64.222-000",
+   "lat": -2.9333,
+   "lon": -41.3417,
+   "avaliador": "Leidiane",
+   "municipio": "Cajueiro da Praia",
+   "estado": "PI, CE, MA",
+   "biomas": "Zona Costeira/Marinho",
+   "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática",
+   "eixo_sec": "BIO, EC",
+   "setor": "Primário",
+   "natureza": "Associação Privada",
+   "tipo_inst": "Associação / Cooperativa",
+   "salvaguardas": "Atende",
+   "criterios": {
+    "relevancia": 2,
+    "clima": 3,
+    "cadeias": 2,
+    "viabilidade": 3,
+    "replicabilidade": 2,
+    "inovacao": 2,
+    "investimentos": 2,
+    "inclusao": 3,
+    "equidade": 3,
+    "governanca": 3
+   },
+   "pontuacao": 25,
+   "observacoes": "Entre as iniciativas desenvolvidas pelo instituto, destacam-se a biblioteca comunitária Caburezinhos do Piauí, voltada à leitura infantil, e o projeto Delta Mulher Artesanato, lançado em 2023 e liderado por mulheres da região do Delta do Parnaíba (RESEX Delta e APA), que une mulheres e territórios pelo seu protagonismo, pela defesa de seus direitos e pela inclusão socioprodutiva na sociobioeconomia regional. Recebeu o Prêmio Ponto de Leitura 2023 e o Prêmio Cultura da Resistência.",
+   "id": 80,
+   "eixo_cod": "NIVA",
    "fora_ne": false
   }
  ]

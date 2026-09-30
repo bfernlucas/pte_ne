@@ -32,8 +32,8 @@ RACIONAL = ["Referência de mercado para serviços equivalentes na região, com 
 
 def _ficha(rnd, a_max, b_max, a_min, b_min):
     blocos = []
-    for bid, tmin, tmax, titulo in (("A", a_min, a_max, "A. Bloco A — contratável nesta etapa"),
-                                     ("B", b_min, b_max, "B. Bloco B — referência indicativa")):
+    for bid, tmin, tmax, titulo in (("A", a_min, a_max, gen_p5.ETAPAS["A"]["nome"]),
+                                     ("B", b_min, b_max, gen_p5.ETAPAS["B"]["nome"])):
         comps, base_max = [], tmax * 1e6 / 1.15
         ncomp = rnd.randint(2, 4)
         for c in range(ncomp):
@@ -50,24 +50,26 @@ def _ficha(rnd, a_max, b_max, a_min, b_min):
                                                   "Estudo de viabilidade técnica e econômica"]),
                               "rubrica": rnd.choice(RUBRICAS), "unidade": rnd.choice(UNIDADES),
                               "racional": rnd.choice(RACIONAL), "q_min": q0, "q_max": q1,
-                              "u_min": u0, "u_max": u1, "min": u0 * q0, "max": tot1})
-            comps.append({"n": c + 1, "nome": rnd.choice(["Estruturação institucional e governança",
+                              "u_min": u0, "u_max": u1, "min": u0 * q0, "max": tot1,
+                              "condicao": ("Estudo: condição fictícia para teste de layout" if bid == "B" else None)})
+            comps.append({"n": c + 1, "nome": rnd.choice(["Desenvolvimento institucional e governança",
                                                          "Investimento em ativos e fundos",
                                                          "Assistência técnica e capacidades",
                                                          "Monitoramento e avaliação"]),
                           "min": sum(x["min"] for x in itens), "max": cmax, "itens": itens})
         cb_min = sum(c["min"] for c in comps); cb_max = sum(c["max"] for c in comps)
         resumo = [
-            {"rotulo": "CUSTO-BASE DO BLOCO " + bid, "racional": None, "pct_min": None, "pct_max": None,
+            {"rotulo": "Custo-base da " + gen_p5.ETAPAS[bid]["curto"], "racional": None, "pct_min": None, "pct_max": None,
              "min": cb_min, "max": cb_max},
             {"rotulo": "Gestão do apoio", "racional": "Percentual sobre o custo-base, conforme a seção 7.2",
              "pct_min": 0.05, "pct_max": 0.08, "min": cb_min * .05, "max": cb_max * .08},
             {"rotulo": "Contingência", "racional": "Classe 5 da AACE: faixa de incerteza do custo-base",
              "pct_min": 0.05, "pct_max": 0.07, "min": cb_min * .05, "max": cb_max * .07},
-            {"rotulo": "TOTAL GERAL DO BLOCO " + bid, "racional": None, "pct_min": None, "pct_max": None,
+            {"rotulo": "Total geral da " + gen_p5.ETAPAS[bid]["curto"], "racional": None, "pct_min": None, "pct_max": None,
              "min": tmin * 1e6, "max": tmax * 1e6},
         ]
-        blocos.append({"id": bid, "titulo": titulo, "componentes": comps, "resumo": resumo})
+        blocos.append({"id": bid, "titulo": titulo, "descricao": "Descrição fictícia da etapa",
+                       "componentes": comps, "resumo": resumo})
     return {"blocos": blocos,
             "notas": ["(1) Valores fictícios gerados para teste de layout.",
                       "(2) Faixa de custo com precisão Classe 5 da AACE International.",
@@ -81,7 +83,6 @@ def gerar(semente=7):
     rnd = random.Random(semente)
     base = gen_p5.carregar_base()
     experiencias, pos = [], 0
-    posturas = gen_p5.POSTURA_ORDEM
     for rota in gen_p5.ROTAS:
         for (nome, mun, uf, coleta, data, aba, ref) in sorted(rota["paradas"], key=lambda x: gen_p5.data_ord(x[4])):
             b = base.get(ref, {}) if ref else {}
@@ -96,7 +97,9 @@ def gerar(semente=7):
                  "equipe": rota["equipe"] if rota["id"] != "RX" else gen_p5.EQUIPE_RX.get(nome, "Sinoel, Caio e Luiz"),
                  "ref_id": ref, "lat": b.get("lat", nova.get("lat")), "lon": b.get("lon", nova.get("lon")),
                  "nova_em_campo": ref is None, "eixo_cod": b.get("eixo_cod") or "ADT", "estimada": est,
-                 "aba": aba, "ficha": None, "postura": rnd.choice(posturas) if est else None,
+                 "aba": aba, "ficha": None,
+                 "prontidao": round(a_max / (a_max + b_max), 4) if est else None,
+                 "condicao": "Estudo (fictício)" if est else None,
                  "info_financeira": rnd.choice(["completa", "parcial", "ausente"]) if est else None,
                  "confianca": rnd.choice(["alta", "média", "baixa"]) if est else None,
                  "pontuacao": total, "classificacao": gen_p5.classificar(total),
@@ -117,7 +120,7 @@ def gerar(semente=7):
     for e in est:
         for bl, v in (("A", e["bloco_a"]["max"]), ("B", e["bloco_b"]["max"])):
             for comp, fr in (("C2", .5), ("C3", .3), ("C1", .15), ("C4", .05)):
-                fluxos.append({"bloco": bl, "eixo": e["eixo_cod"], "postura": e["postura"], "comp": comp, "valor": v * fr})
+                fluxos.append({"bloco": bl, "eixo": e["eixo_cod"], "classe": e["classificacao"], "comp": comp, "valor": v * fr})
     lin = lambda r, mn, mx: {"rotulo": r, "min": mn, "max": mx}
     quadros = {
         "contratavel": {"rubricas": [], "custo_base": {"comp": [0] * 5, "min": A0 / 1.15, "max": A1 / 1.15},
@@ -142,13 +145,20 @@ def gerar(semente=7):
                           "Cooperação internacional", "Emendas parlamentares", "Doações de pessoas físicas", "Outros"]),
               "f75": lst(["Não reembolsável", "Crédito subsidiado", "Capital de giro", "Equity", "Garantias", "Outros"]),
               "f76": lst(["Nunca acessou", "Acessou uma vez", "Acessa com frequência", "Não sabe", "Sem informação"]),
-              "f78": [{"rotulo": n, "min": rnd.uniform(1, 5), "max": rnd.uniform(6, 20)} for c, n in gen_p5.COMPONENTES],
+              "f78": [{"cod": c, "rotulo": n, "min": rnd.uniform(1, 5), "max": rnd.uniform(6, 20)} for c, n in gen_p5.COMPONENTES],
               "t72": [], "cambio": "US$ 1 = R$ 5,20 (fictício)"}
+    condicoes = [{"cod": c, "rotulo": r, "itens": rnd.randint(5, 40), "experiencias": rnd.randint(3, 15),
+                  "min": B0 * f * .8, "max": B1 * f} for (c, r), f in zip(gen_p5.CONDICOES, (.55, .15, .1, .2))]
     p5 = {"meta": {"componentes": [{"cod": c, "nome": t} for c, t in gen_p5.COMPONENTES],
-                   "postura_ordem": posturas, "postura_rotulo": gen_p5.POSTURA_ROTULO,
+                   "classes": gen_p5.CLASSE_ROTULO, "etapas": gen_p5.ETAPAS,
+                   "faixas": {"alta": "80 a 100", "estrategico": "60 a 79", "nao": "abaixo de 60"},
                    "pesos": gen_p5.PESOS, "organizacoes": len(experiencias), "estimadas": len(est)},
           "rotas": [{k: v for k, v in r.items() if k != "paradas"} for r in gen_p5.ROTAS],
-          "experiencias": experiencias, "quadros": quadros, "fluxos": fluxos, "secao7": secao7}
+          "experiencias": experiencias, "quadros": quadros, "fluxos": fluxos, "condicoes": condicoes,
+          "escala": {"piso_padrao": 15.0, "piso_reduzido": 5.0, "acima_padrao": 1, "acima_20": 0,
+                     "abaixo_reduzido": 20, "nota": "Nota fictícia de escala para teste de layout.",
+                     "proposta": "Proposta fictícia para teste de layout."},
+          "secao7": secao7}
 
     tmp = tempfile.mkdtemp()
     montar_campo.P5 = os.path.join(tmp, "p5.json")

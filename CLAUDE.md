@@ -64,10 +64,17 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
 - **Aposentados, não carregados pelo `index.html`:** `dashboard.js`, `rota.js`,
   `demo-data.js`, `config.js`, `app.js`, `dashboard.css`.
 - Dados:
-  - `assets/data/iniciativas.js` (`window.PTE_DATA`, 79 iniciativas), de
-    `scripts/gen_data.py` sobre `PTE2026_matriz_dashboard.xlsx`
+  - `assets/data/iniciativas.js` (`window.PTE_DATA`, 80 iniciativas), de
+    `scripts/gen_data.py` sobre `PTE2026_matriz_dashboard.xlsx` mais o
+    Instituto Caburé (`ADICIONAIS`, transcrito da aba "Mapa_89 iniciativas").
+    Base final fixada pela equipe em 30/09/2026: **89 iniciativas mapeadas**;
+    5 descartadas na prospecção (nota 0) e 3 repetidas (CCI-BSHE = Carbono
+    Social; Sertão Vivo em duas linhas; "Fied" = FIEB). Mapa e ranking mostram
+    as 81 distintas (80 da base + Porto Digital — Caruaru, encontrado em
+    campo). O funil vai em `meta.funil`. A FIEB visitada é a linha 54
+    (Programa Indústria Verde, nota 25/30).
   - `scripts/gen_p5.py` → `dados_p5.json` (fora do Git), lendo
-    `PTE2026_fichas_investimento.xlsx` e `PTE2026_secao7_base_e_graficos.xlsx`
+    `PTE2026_fichas_investimento_v1.2.xlsx` e `PTE2026_secao7_base_e_graficos.xlsx`
     na pasta `PTE - Incursões`. Confere totais contra os quadros e as notas
     contra o Apêndice 2; para se algo não fechar.
   - `scripts/montar_campo.py` → `dados_campo.json` (fora do Git): números do
@@ -89,6 +96,16 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
 
 ## Convenções
 
+- **Vocabulário da carteira (desde 30/09/2026):** Etapa 1 — Estruturação
+  (contratável agora) e Etapa 2 — Escala (após a condição de cada item); a soma
+  é a carteira total. As chaves internas continuam `bloco_a`/`bloco_b` e "A"/"B".
+  A postura de apoio saiu: no lugar, a classificação do ranking (alta
+  prioridade 80–100, potencial estratégico 60–79, "não recomendada neste
+  ciclo") e a prontidão (parcela da carteira máxima na Estruturação). Cada item
+  da Escala traz a condição para contratar (estudo, formalização, decisão
+  externa ou verificação). O componente C1 é "Desenvolvimento institucional e
+  governança". Não usar "Bloco A/B" nem "nesta etapa" na interface.
+
 - **CTERSA**: a planilha o chamava de `Renova-Semiárido` (id 46). A equipe
   confirmou que são a mesma iniciativa — apresentar **sempre como CTERSA**.
 - Rótulos de seção em versalete (regra global de `h1..h4`); **nomes próprios
@@ -106,9 +123,11 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
 
 ## Pendências conhecidas
 
-- 2 organizações visitadas não constam da base de prospecção (Instituto
-  Caburé e Porto Digital — Unidade Caruaru). Decidir se entram na planilha.
-- MA e SE não receberam incursão. A Bahia entrou na rota extra (ago/2026).
+- Porto Digital — Unidade Caruaru é a única organização visitada fora da base
+  de prospecção (o Caburé estava no levantamento prévio e entrou como id 80).
+- MA e SE não receberam incursão. O Instituto Caburé (entrevistado no PI)
+  atua também no MA; só SE ficou sem organização avaliada. A Bahia entrou na
+  rota extra (ago/2026).
 - As 5 organizações da Bahia ainda não têm gargalos/potencialidades
   codificados em `montar_campo.py` (entram com números, sem leitura qualitativa).
 
