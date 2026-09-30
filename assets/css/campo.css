@@ -330,3 +330,19 @@
 .ec-st.adiada{background:#fff2d6;color:#9a5b00;border:1px solid #f3d08a}
 
 .ec-mx tbody tr.ec-semcod td{color:var(--faint);font-size:.76rem;text-align:left;padding-left:12px;font-style:italic}
+
+/* ---- telas estreitas (v82): nada ultrapassa a largura da janela ---- */
+@media(max-width:900px){.ec-split{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:640px){
+  .ec-filtros select,.ec-filtros input{flex:1 1 100%;min-width:0;max-width:100%}
+  .ec-controles{flex-wrap:wrap}
+  .ec-campo-ctrl{flex-wrap:wrap;max-width:100%}
+  .ec-campo-ctrl select{min-width:0;max-width:100%}
+  .ec-ufs .r .t{flex-basis:100%}
+  .ec-freq .r{flex-wrap:wrap;gap:4px 10px}
+  .ec-freq .r .t{flex-basis:100%}
+  .ec-nr thead{display:none}
+  .ec-nr tr{display:block;padding:10px 0;border-bottom:1px solid var(--border-2)}
+  .ec-nr td{display:block;padding:2px 0;border:0}
+  .ec-nr td:nth-child(2){white-space:normal}
+}

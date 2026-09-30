@@ -112,6 +112,13 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
   revisão de layout de 30/09/2026; caixa alta só nos cabeçalhos de tabela e
   nos rótulos miúdos de metadados. Nas cores de "acima/abaixo" do gráfico de
   prospecção e campo, azul-petróleo, laranja e cinza, não verde e vermelho.
+- **Identidade do impresso (v82):** cada seção abre com uma aba de capítulo
+  (bloco de cor preso à margem esquerda, canto inferior direito arredondado e
+  um motivo do livro em SVG no `index.html`): Carteira vermelho, Mapa verde,
+  Incursões laranja, Diagnóstico azul, Análise anil. Cores chapadas em
+  `--c-*` no `painel.css`, amostradas do PDF; sobre laranja e verde o texto é
+  anil (contraste). O funil 89 → 29 → 27 → 18 usa cápsulas de largura
+  proporcional (Carteira e Cobertura). Fora desses pontos, a cor fica no dado.
 
 - Interface e documentação em português
 - CSS de módulo novo em arquivo próprio, com prefixo de classe — não inchar
