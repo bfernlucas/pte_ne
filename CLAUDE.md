@@ -108,9 +108,10 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
 
 - **CTERSA**: a planilha o chamava de `Renova-Semiárido` (id 46). A equipe
   confirmou que são a mesma iniciativa — apresentar **sempre como CTERSA**.
-- Rótulos de seção em versalete (regra global de `h1..h4`); **nomes próprios
-  longos abrem exceção** com `text-transform:none`, para não prejudicar a
-  leitura. Rótulo grita, nome não.
+- Títulos de seção e abas em caixa normal (Oswald, sentence case) desde a
+  revisão de layout de 30/09/2026; caixa alta só nos cabeçalhos de tabela e
+  nos rótulos miúdos de metadados. Nas cores de "acima/abaixo" do gráfico de
+  prospecção e campo, azul-petróleo, laranja e cinza, não verde e vermelho.
 
 - Interface e documentação em português
 - CSS de módulo novo em arquivo próprio, com prefixo de classe — não inchar

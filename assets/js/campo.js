@@ -347,7 +347,7 @@
       });
     var ctrl = { cls: "" };
     var EXTREMO = TODOS.slice().sort(function (a, b) { return Math.abs(b.d) - Math.abs(a.d); })[0] || null;
-    var COR = { sobe: "#54B43C", desce: "#E42424", perto: "#24246C" };
+    var COR = { sobe: "#0F7D8C", desce: "#F09C18", perto: "#6E6E78" };   /* azul-petróleo, laranja e cinza: legíveis sem depender de verde e vermelho */
     function corDe(d) { return d > 12 ? COR.sobe : (d < -12 ? COR.desce : COR.perto); }
 
     function correl(ps) {
@@ -416,7 +416,7 @@
           '<i style="background:' + corDe(p.d) + '"></i>' +
           '<span class="n">' + esc(p.nome) + '</span>' +
           '<span class="p" title="Prospecção e campo">' + Math.round(p.g) + '<span class="seta"> para </span>' + p.c + '</span>' +
-          '<span class="d" style="color:' + (p.d > 0 ? "#2c6b23" : (p.d < 0 ? "#a5241a" : "var(--muted)")) + '">' +
+          '<span class="d" style="color:' + (p.d > 12 ? COR.sobe : (p.d < -12 ? "#9A5B00" : "var(--muted)")) + '">' +
           (p.d > 0 ? "+" : "") + Math.round(p.d) + '</span></li>';
       }).join("");
 
