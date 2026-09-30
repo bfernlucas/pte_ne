@@ -5,10 +5,14 @@ Gera assets/data/p5.js -- a camada do Produto 5 B do painel PTE-NE.
 
 Fontes
 ------
-1. PTE2026_fichas_investimento.xlsx (secao 7 do P5 B): aba "Quadro por
-   experiencia" (27 experiencias com estimativa), abas por experiencia
-   (rota, ficha de campo, numero de itens) e aba "Quadros da carteira"
-   (quadros 1 a 4 consolidados).
+1. PTE2026_fichas_investimento_v1.2.xlsx (secao 7 do P5 B): aba "Quadro por
+   experiencia" (27 experiencias com estimativa, classificacao, prontidao e
+   condicao predominante), abas por experiencia (itens das Etapas 1 e 2, com
+   a condicao para contratar cada item da Escala), aba "Base" (fluxos,
+   componentes, rubricas e condicoes) e aba "Quadros da carteira" (quadros 1
+   a 4 consolidados).
+   Etapa 1, Estruturacao: o que se contrata agora (chave interna "A").
+   Etapa 2, Escala: o que depende da condicao de cada item (chave "B").
 2. Tabela de rotas do proprio P5 B (secao 2): as 29 organizacoes com
    visita ou entrevista, com municipio, UF, forma de coleta e data.
    Transcrita em ROTAS abaixo -- e a atribuicao de rota canonica do
@@ -37,10 +41,11 @@ _CANDIDATOS = [
     os.path.join(os.path.expanduser("~"), "OneDrive", "Desktop", "PTE - Incursões"),   # Windows
     os.path.join(os.path.expanduser("~"), "mnt", "PTE - Incursões"),                   # ponte (VM)
 ]
+# versao vigente da planilha; a v1.0 (sem sufixo) fica so como historico
+_VERSOES = ["PTE2026_fichas_investimento_v1.2.xlsx"]
 PADRAO_XLSX = next(
-    (os.path.join(d, "PTE2026_fichas_investimento.xlsx") for d in _CANDIDATOS
-     if os.path.exists(os.path.join(d, "PTE2026_fichas_investimento.xlsx"))),
-    os.path.join(_CANDIDATOS[0], "PTE2026_fichas_investimento.xlsx"))
+    (os.path.join(d, v) for v in _VERSOES for d in _CANDIDATOS if os.path.exists(os.path.join(d, v))),
+    os.path.join(_CANDIDATOS[0], _VERSOES[0]))
 
 # ---------------------------------------------------------------------------
 # Rotas efetivamente realizadas, conforme a tabela da secao 2 do P5 B.
@@ -60,13 +65,13 @@ ROTAS = [
    ("Instituto Casaca de Couro", "Pirpirituba", "PB", "Presencial", "23/07", "18 Instituto Casaca de Couro", 45),
   ]},
  {"id": "R2", "nome": "Rota 2", "uf": "CE e PI", "periodo": "17 a 29 de julho de 2026",
-  "equipe": "Leide e Renata", "cor": "#54B43C",
+  "equipe": "Leidiane e Renata", "cor": "#54B43C",
   "paradas": [
    ("Consórcio Público de Manejo de Resíduos Sólidos da Ibiapaba", "Tianguá", "CE", "Presencial", "17/07", "21 Consórcio da Ibiapaba", 33),
    ("Fazenda Nutrilite Brasil", "Ubajara", "CE", "Presencial", "23/07", "08 Fazenda Nutrilite Brasil", 54),
    ("Trilha Caminhos da Ibiapaba", "Viçosa do Ceará e Piracuruca", "CE/PI", "Presencial", "28/07", "06 Trilha Caminhos da Ibiapaba", 49),
    ("No Clima da Caatinga", "Crateús e Buriti dos Montes", "CE/PI", "Virtual", "29/07", "10 No Clima da Caatinga", 48),
-   ("Instituto Caburé", "Cajueiro da Praia", "PI", "Virtual", "22/07", "02 Instituto Caburé", None),
+   ("Instituto Caburé", "Cajueiro da Praia", "PI", "Virtual", "22/07", "02 Instituto Caburé", 80),
   ]},
  {"id": "R3", "nome": "Rota 3", "uf": "PE e AL", "periodo": "27 a 31 de julho de 2026",
   "equipe": "Sinoel, Tamara e Luiz", "cor": "#F09C18",
@@ -80,7 +85,7 @@ ROTAS = [
    ("Cooperativa Agroindustrial Pindorama", "Coruripe", "AL", "Presencial", "31/07", "16 Cooperativa Pindorama", 64),
   ]},
  {"id": "RX", "nome": "Rota extra", "uf": "PB, RN, CE e BA", "periodo": "5 a 21 de agosto de 2026",
-  "equipe": "Lucas e Bruna (RN e PB) · Leide e Andreia (CE) · Sinoel, Caio e Luiz (BA)", "cor": "#24246C",
+  "equipe": "Lucas e Bruna (RN e PB) · Leidiane e Andreia (CE) · Sinoel, Caio e Luiz (BA)", "cor": "#24246C",
   "paradas": [
    ("Rede Xique Xique", "Natal", "RN", "Presencial", "05/08", "14 Rede Xique Xique", 6),
    ("Sistema Metroviário do Ceará", "Fortaleza", "CE", "Presencial", "06/08", "03 Sistema Metroviário do Ceará", 39),
@@ -99,9 +104,9 @@ ROTAS = [
 # "Coleta de campo - Rotas"). Cada trecho vira uma linha propria no mapa.
 EQUIPE_RX = {
     "Rede Xique Xique": "Lucas e Bruna", "Fazenda Tamanduá": "Lucas e Bruna",
-    "Sistema Metroviário do Ceará": "Leide e Andreia",
-    "Unidade MCTI/EMBRAPII de Inovação em IA — IFCE": "Leide e Andreia",
-    "Blue C": "Leide e Andreia",
+    "Sistema Metroviário do Ceará": "Leidiane e Andreia",
+    "Unidade MCTI/EMBRAPII de Inovação em IA — IFCE": "Leidiane e Andreia",
+    "Blue C": "Leidiane e Andreia",
 }
 
 
@@ -110,10 +115,10 @@ def data_ord(d):
     return int(mes) * 100 + int(dia)
 
 
-# Visitadas em campo que nao constam da matriz de prospeccao: coordenadas do
-# local efetivamente visitado, para que aparecam no mapa.
+# Visitada em campo que nao consta da base de prospeccao (a equipe confirmou
+# que o Instituto Caburé estava no levantamento previo: linha 87 da aba
+# Mapa_89, id 80 da base). Coordenadas do local efetivamente visitado.
 NOVAS_EM_CAMPO = {
-    "Instituto Caburé": {"lat": -2.9333, "lon": -41.3417},
     "Porto Digital — Unidade Caruaru": {"lat": -8.2825, "lon": -35.9760},
 }
 
@@ -156,24 +161,36 @@ PESOS = {"impacto": 6, "inovacao": 6, "operacao": 5, "investimento": 3}
 
 
 def classificar(total):
+    """Categorias do ranking: tres faixas (secao 6.3 do relatorio final)."""
     if total >= 80:
         return "alta"
-    if total >= 50:
+    if total >= 60:
         return "estrategico"
     return "nao"
 
 
-POSTURA_ORDEM = ["pronta", "pronta c/ dado", "dimensionar", "fortalecer", "preparatório"]
-POSTURA_ROTULO = {
-    "pronta": "Pronta para receber apoio",
-    "pronta c/ dado": "Pronta, com dado a confirmar",
-    "dimensionar": "Precisa dimensionar o investimento",
-    "fortalecer": "Precisa se fortalecer institucionalmente",
-    "preparatório": "Etapa preparatória",
+CLASSE_ROTULO = {"alta": "Alta prioridade", "estrategico": "Potencial estratégico",
+                 "nao": "Não recomendada neste ciclo"}
+CLASSE_DA_PLANILHA = {"Alta prioridade": "alta", "Potencial estratégico": "estrategico"}
+ETAPAS = {
+    "A": {"nome": "Etapa 1 — Estruturação", "curto": "Estruturação", "criterio": "contratável agora"},
+    "B": {"nome": "Etapa 2 — Escala", "curto": "Escala", "criterio": "após a condição de cada item"},
 }
+# Tipos de condicao para contratar os itens da Escala (coluna V da Base)
+CONDICOES = [
+    ("Estudo", "Conclusão de estudo da Estruturação"),
+    ("Formalização", "Formalização jurídica ou institucional"),
+    ("Decisão externa", "Decisão externa (regulatória, federal, municipal ou do patrocinador)"),
+    ("Verificação", "Verificação de sobreposição ou de dados"),
+]
+RUBRICAS = [
+    ("1", "Pessoal e encargos"), ("2", "Serviços de terceiros"), ("3", "Formação e mobilização"),
+    ("4", "Infraestrutura, equipamentos e veículos"), ("5", "Insumos e materiais"),
+    ("6", "Fundos e capital de giro"), ("7", "Custeio de transição"), ("8", "Monitoramento e avaliação"),
+]
 COMPONENTES = [
     ("C0", "Estudo de dimensionamento"),
-    ("C1", "Estruturação institucional e governança"),
+    ("C1", "Desenvolvimento institucional e governança"),
     ("C2", "Investimento em ativos e fundos"),
     ("C3", "Assistência técnica e capacidades"),
     ("C4", "Monitoramento e avaliação"),
@@ -210,16 +227,20 @@ def main(xlsx=None):
         aba = q.cell(r, 7).value
         if not aba:
             continue
+        if q.cell(3, 4).value != "Classificação" or q.cell(3, 14).value is None:
+            sys.exit("planilha anterior a v1.2: falta a classificacao ou a prontidao no Quadro por experiencia")
         por_aba[aba] = {
             "nome_quadro": q.cell(r, 2).value,
             "eixo_cod": q.cell(r, 3).value,
-            "postura": q.cell(r, 4).value,
+            "classe_planilha": CLASSE_DA_PLANILHA.get(q.cell(r, 4).value),
             "info_financeira": q.cell(r, 5).value,
             "confianca": q.cell(r, 6).value,
             "a_min": n(q.cell(r, 8).value), "a_max": n(q.cell(r, 9).value),
-            "b_min": n(q.cell(r, 10).value), "b_max": n(q.cell(r, 11).value),
+            "b_min": n(q.cell(r, 10).value) or 0, "b_max": n(q.cell(r, 11).value) or 0,
             "pontuacao": q.cell(r, 12).value,
             "posicao": q.cell(r, 13).value,
+            "prontidao": n(q.cell(r, 14).value, 4),
+            "condicao": q.cell(r, 15).value,
         }
     # itens, da aba de cada experiencia
     for aba in por_aba:
@@ -246,6 +267,9 @@ def main(xlsx=None):
             if e.get("pontuacao") is not None and e["pontuacao"] != total:
                 sys.exit("pontuacao diverge para %s: planilha %s, Apendice 2 %s"
                          % (nome, e["pontuacao"], total))
+            if e.get("classe_planilha") and e["classe_planilha"] != classificar(total):
+                sys.exit("classificacao diverge para %s: planilha %s, faixa %s"
+                         % (nome, e["classe_planilha"], classificar(total)))
             experiencias.append({
                 "nome": nome,
                 "curto": e.get("nome_quadro") or nome,
@@ -259,7 +283,8 @@ def main(xlsx=None):
                 "estimada": bool(aba),
                 "aba": aba,
                 "ficha": e.get("ficha"),
-                "postura": e.get("postura"),
+                "prontidao": e.get("prontidao"),
+                "condicao": e.get("condicao"),
                 "info_financeira": e.get("info_financeira"),
                 "confianca": e.get("confianca"),
                 "pontuacao": total,
@@ -322,8 +347,16 @@ def main(xlsx=None):
     }
 
     # --- fichas de investimento: a aba de cada experiencia, linha a linha ----
-    # A aba ja traz a apresentacao (blocos A e B, subtotais por componente,
+    # A aba ja traz a apresentacao (Etapas 1 e 2, subtotais por componente,
     # custo-base, gestao, contingencias, total, notas). Le-se como esta.
+    def rotulo_tela(txt):
+        """CUSTO-BASE — ESTRUTURAÇÃO -> Custo-base da Estruturação (idem Escala)."""
+        m = re.match(r"^(CUSTO-BASE|TOTAL GERAL)\s+—\s+(ESTRUTURAÇÃO|ESCALA)$", txt.strip())
+        if not m:
+            return txt
+        return {"CUSTO-BASE": "Custo-base", "TOTAL GERAL": "Total geral"}[m.group(1)] + \
+            (" da Estruturação" if m.group(2) == "ESTRUTURAÇÃO" else " da Escala")
+
     def ler_ficha(ws):
         blocos, bloco, comp, notas, extras = [], None, None, [], {}
         em_notas = False
@@ -345,17 +378,22 @@ def main(xlsx=None):
                 em_notas = True
                 continue
             v = lambda c: n(ws.cell(r, c).value)
-            if isinstance(a, str) and a[:2] in ("A.", "B."):
-                bloco = {"id": a[0], "titulo": a, "componentes": [], "resumo": []}
+            if isinstance(a, str) and (a.startswith("ETAPA 1") or a.startswith("ETAPA 2")):
+                bid = "A" if a.startswith("ETAPA 1") else "B"
+                m = re.match(r"^[^(]+\((.+)\)\s*$", a)
+                bloco = {"id": bid, "titulo": ETAPAS[bid]["nome"],
+                         "descricao": re.sub(r";\s*a última coluna.*$", "",
+                                             (m.group(1)[0].upper() + m.group(1)[1:]) if m else ""),
+                         "componentes": [], "resumo": []}
                 blocos.append(bloco)
                 comp = None
-            elif txt.startswith("CARTEIRA DA EXPERI"):
+            elif txt.startswith("CARTEIRA TOTAL DA EXPERI"):
                 extras["carteira"] = {"min": v(10), "max": v(11)}
             elif bloco is None:
                 continue
             elif txt.startswith("CUSTO-BASE") or txt.startswith("TOTAL GERAL") or \
                     txt.startswith("Gestão do apoio") or txt.startswith("Contingência"):
-                bloco["resumo"].append({"rotulo": txt, "racional": ws.cell(r, 5).value,
+                bloco["resumo"].append({"rotulo": rotulo_tela(txt), "racional": ws.cell(r, 5).value,
                                         "pct_min": v(8), "pct_max": v(9), "min": v(10), "max": v(11)})
                 comp = None
             elif isinstance(a, int):
@@ -365,7 +403,8 @@ def main(xlsx=None):
                 comp["itens"].append({
                     "n": a, "item": txt, "rubrica": ws.cell(r, 3).value, "unidade": ws.cell(r, 4).value,
                     "racional": ws.cell(r, 5).value, "q_min": v(6), "q_max": v(7),
-                    "u_min": v(8), "u_max": v(9), "min": v(10), "max": v(11)})
+                    "u_min": v(8), "u_max": v(9), "min": v(10), "max": v(11),
+                    "condicao": ws.cell(r, 21).value if bloco["id"] == "B" else None})
         return {"blocos": blocos, "notas": notas,
                 "contrapartida": extras.get("Contrapartida identificada"),
                 "cofinanciamento": extras.get("Cofinanciamento possível"),
@@ -376,43 +415,89 @@ def main(xlsx=None):
             f = ler_ficha(wb[e["aba"]])
             # conferencia: o total de cada bloco na aba = Quadro por experiencia
             for bl in f["blocos"]:
-                tot = [x for x in bl["resumo"] if x["rotulo"].startswith("TOTAL GERAL")]
+                tot = [x for x in bl["resumo"] if x["rotulo"].startswith("Total geral")]
                 alvo = e["bloco_a"] if bl["id"] == "A" else e["bloco_b"]
                 if tot and abs((tot[0]["max"] or 0) / 1e6 - (alvo["max"] or 0)) > 1e-3:
                     sys.exit("ficha %s: total do bloco %s nao fecha com o Quadro" % (e["aba"], bl["id"]))
             e["ficha_inv"] = f
 
-    # --- fluxos da Figura 7.10: bloco -> eixo -> postura -> componente ------
+    # --- fluxos da Figura 7.10: etapa -> eixo -> classificacao -> componente --
     # Cada item da aba Base entra com o seu custo-base maximo, escalado para
-    # que a soma por experiencia e bloco feche com o total maximo (com gestao
+    # que a soma por experiencia e etapa feche com o total maximo (com gestao
     # e contingencia) do Quadro por experiencia -- o mesmo criterio da figura.
     b = wb["Base"]
+    if b.cell(3, 22).value is None or not str(b.cell(3, 22).value).startswith("Tipo de condição"):
+        sys.exit("aba Base sem a coluna de tipo de condicao (planilha anterior a v1.2)")
     por_nome = {v["nome_quadro"]: v for v in por_aba.values()}
     linhas_base, soma_base = [], {}
     for r in range(4, b.max_row + 1):
         ex = b.cell(r, 2).value
         if not ex:
             continue
-        bloco = "A" if b.cell(r, 17).value == "S" else "B"
+        entra = b.cell(r, 17).value
+        if entra not in ("S", "REF"):
+            continue
+        bloco = "A" if entra == "S" else "B"
+        classe = CLASSE_DA_PLANILHA.get(b.cell(r, 3).value)
         comp = str(b.cell(r, 4).value or "")[:2]
+        vmin = float(b.cell(r, 14).value or 0) / 1e6
         v = float(b.cell(r, 15).value or 0) / 1e6
         if ex not in por_nome:
             sys.exit("experiencia da aba Base sem linha no Quadro: %s" % ex)
-        linhas_base.append((ex, bloco, b.cell(r, 3).value, comp, v))
+        if classe is None:
+            sys.exit("classificacao desconhecida na aba Base: %s" % b.cell(r, 3).value)
+        linhas_base.append({"ex": ex, "bloco": bloco, "classe": classe, "comp": comp,
+                            "sub": str(b.cell(r, 5).value or ""), "min": vmin, "max": v,
+                            "cond": b.cell(r, 22).value if bloco == "B" else None})
         soma_base[(ex, bloco)] = soma_base.get((ex, bloco), 0) + v
     fl = {}
-    for ex, bloco, postura, comp, v in linhas_base:
-        if v <= 0:
+    for x in linhas_base:
+        if x["max"] <= 0:
             continue
-        q = por_nome[ex]
-        alvo = q["a_max"] if bloco == "A" else q["b_max"]
-        k = (bloco, q["eixo_cod"], postura, comp)
-        fl[k] = fl.get(k, 0) + v * alvo / soma_base[(ex, bloco)]
-    fluxos = [{"bloco": k[0], "eixo": k[1], "postura": k[2], "comp": k[3], "valor": round(v, 6)}
+        q = por_nome[x["ex"]]
+        alvo = q["a_max"] if x["bloco"] == "A" else q["b_max"]
+        k = (x["bloco"], q["eixo_cod"], x["classe"], x["comp"])
+        fl[k] = fl.get(k, 0) + x["max"] * alvo / soma_base[(x["ex"], x["bloco"])]
+    fluxos = [{"bloco": k[0], "eixo": k[1], "classe": k[2], "comp": k[3], "valor": round(v, 6)}
               for k, v in sorted(fl.items())]
 
-    # --- figuras 7.1 a 7.6 e 7.8 (planilha de apoio da secao 7) ---------------
-    secao7 = None
+    # --- Escala por tipo de condicao (Tabela 7.5 do relatorio final) --------
+    # Custo-base dos itens da Escala, com gestao e contingencia aplicadas pelos
+    # fatores do Catalogo (minimo com os percentuais minimos, maximo com os
+    # maximos): o total fecha com o Quadro 2.
+    cat = wb["Catálogo"]
+    g0, g1, c0, c1 = (float(cat[x].value) for x in ("F19", "G19", "F20", "G20"))
+    fmin, fmax = (1 + g0) * (1 + c0), (1 + g1) * (1 + c1)
+    condicoes = []
+    for cod, rot in CONDICOES:
+        it = [x for x in linhas_base if x["bloco"] == "B" and x["cond"] == cod]
+        condicoes.append({"cod": cod, "rotulo": rot, "itens": len(it),
+                          "experiencias": len({x["ex"] for x in it}),
+                          "min": round(sum(x["min"] for x in it) * fmin, 6),
+                          "max": round(sum(x["max"] for x in it) * fmax, 6)})
+    sem_cond = [x for x in linhas_base if x["bloco"] == "B" and x["cond"] not in dict(CONDICOES)]
+    if sem_cond:
+        sys.exit("itens da Escala sem tipo de condicao: %d" % len(sem_cond))
+    soma_cond = sum(c["max"] for c in condicoes)
+    total_b = sum(v["b_max"] for v in por_aba.values())
+    if abs(soma_cond - total_b) > 0.05:
+        sys.exit("Escala por condicao (%.2f) nao fecha com o Quadro por experiencia (%.2f)" % (soma_cond, total_b))
+
+    # --- Estruturacao por componente (Figura 7.8) e por rubrica (Tabela 7.2) --
+    base_a = [x for x in linhas_base if x["bloco"] == "A"]
+    f78 = [{"cod": c, "rotulo": t,
+            "min": round(sum(x["min"] for x in base_a if x["comp"] == c), 6),
+            "max": round(sum(x["max"] for x in base_a if x["comp"] == c), 6)} for c, t in COMPONENTES]
+    tmax_a = sum(x["max"] for x in base_a)
+    t72 = []
+    for k, rot in RUBRICAS:
+        sel = [x for x in base_a if x["sub"].startswith(k + ".")]
+        mx = sum(x["max"] for x in sel)
+        t72.append({"rotulo": k + " " + rot, "min": round(sum(x["min"] for x in sel), 6),
+                    "max": round(mx, 6), "pct": round(mx / tmax_a, 6) if tmax_a else None})
+
+    # --- figuras 7.1 a 7.6 (planilha de apoio da secao 7: indicadores do Kobo) --
+    secao7 = {"f78": f78, "t72": t72}
     apoio7 = os.path.join(os.path.dirname(os.path.abspath(xlsx)), "PTE2026_secao7_base_e_graficos.xlsx")
     if os.path.exists(apoio7):
         w7 = openpyxl.load_workbook(apoio7, data_only=True)
@@ -429,7 +514,7 @@ def main(xlsx=None):
             return [{"rotulo": ws.cell(r, 1).value, "n": ws.cell(r, 2).value or 0}
                     for r in range(r0, r1 + 1) if ws.cell(r, 1).value]
 
-        secao7 = {
+        secao7.update({
             "fichas": ind.cell(52, 2).value,
             "f71": matriz(ind, 4, 5, 8, 4),
             "f72": matriz(ind, 11, 12, 14, 5),
@@ -437,26 +522,49 @@ def main(xlsx=None):
             "f74": lista(ind, 26, 33),
             "f75": lista(ind, 37, 42),
             "f76": lista(ind, 46, 50),
-            "f78": [{"rotulo": res.cell(r, 1).value, "min": n(res.cell(r, 2).value), "max": n(res.cell(r, 3).value)}
-                    for r in range(21, 26)],
-            "t72": [{"rotulo": res.cell(r, 1).value, "min": n(res.cell(r, 2).value),
-                     "max": n(res.cell(r, 3).value), "pct": n(res.cell(r, 4).value, 6)}
-                    for r in range(31, 39)],
             "cambio": res.cell(9, 1).value,
-        }
+        })
         if secao7["fichas"] != 29:
             sys.exit("Indicadores 7.1: conferencia de fichas diferente de 29")
-        soma78 = sum(x["max"] for x in secao7["f78"])
-        if abs(soma78 - quadros["contratavel"]["custo_base"]["max"]) > 0.01:
-            sys.exit("Figura 7.8 nao fecha com o Quadro 1 (%.3f)" % soma78)
     else:
         print("aviso: %s ausente -- figuras 7.1 a 7.6 ficam fora do painel" % apoio7)
+    soma78 = sum(x["max"] for x in f78)
+    if abs(soma78 - quadros["contratavel"]["custo_base"]["max"]) > 0.01:
+        sys.exit("Figura 7.8 nao fecha com o Quadro 1 (%.3f)" % soma78)
+
+    # --- restricao de escala (secao 7.4): porte de cada experiencia e de cada
+    # eixo contra o piso do canal regional (FDNE/Sudene) -------------------
+    PISO, PISO_RED = 15.0, 5.0
+    NOME_EIXO = {"NIVA": "Nova Infraestrutura Verde-Azul", "TE": "Transição Energética",
+                 "ADT": "Adensamento Tecnológico", "EC": "Economia Circular",
+                 "FSI": "Finanças Sustentáveis", "BIO": "Bioeconomia"}
+    cart = [(x["bloco_a"]["max"] or 0) + (x["bloco_b"]["max"] or 0) for x in experiencias if x["estimada"]]
+    por_eixo = {}
+    for x in experiencias:
+        if x["estimada"]:
+            por_eixo[x["eixo_cod"]] = por_eixo.get(x["eixo_cod"], 0) + (x["bloco_a"]["max"] or 0) + (x["bloco_b"]["max"] or 0)
+    acima = [k for k, v in sorted(por_eixo.items(), key=lambda kv: -kv[1]) if v >= PISO]
+    meio = [k for k, v in sorted(por_eixo.items(), key=lambda kv: -kv[1]) if PISO_RED <= v < PISO]
+    n15, n20, n5 = sum(v >= PISO for v in cart), sum(v >= 20 for v in cart), sum(v < PISO_RED for v in cart)
+
+    def lista(ks):
+        ns = [NOME_EIXO.get(k, k) for k in ks]
+        return ns[0] if len(ns) == 1 else ", ".join(ns[:-1]) + " e " + ns[-1]
+    nota = ("Individualmente, pelo valor máximo da carteira total (Estruturação e Escala), apenas %d das %d experiências "
+            "com estimativa alcançam o porte mínimo padrão de R$ 15 milhões (%d delas passam de R$ 20 milhões), e %d ficam "
+            "abaixo até do piso reduzido de R$ 5 milhões. Agregadas por eixo, %s %s o porte mínimo padrão"
+            % (n15, len(cart), n20, n5, lista(acima), "supera" if len(acima) == 1 else "superam"))
+    nota += ("; %s %s entre o piso reduzido e o padrão." % (lista(meio), "fica" if len(meio) == 1 else "ficam")) if meio else "."
+    escala = {"piso_padrao": PISO, "piso_reduzido": PISO_RED, "acima_padrao": n15, "acima_20": n20,
+              "abaixo_reduzido": n5, "nota": nota,
+              "proposta": "Daí a proposta de tratar a carteira como programa único, com subprojetos sob um agente "
+                          "credenciado que os selecione e supervisione. Assim apresentada, a carteira passa a dialogar "
+                          "com canais que, experiência a experiência, permaneceriam fora de alcance."}
 
     est = [e for e in experiencias if e["estimada"]]
     doc = {
         "meta": {
-            "fonte": "Produto 5 B — Relatório final (OEI/PTE-NE), seção 7 e "
-                     "PTE2026_fichas_investimento.xlsx",
+            "fonte": "Produto 5 B — Relatório final (OEI/PTE-NE), seção 7 e " + os.path.basename(xlsx),
             "contrato": "13849/2026 OEI/FPOS — TdR 12.500/2026",
             "classe": "Classe 5 — AACE International, RP 18R-97",
             "moeda": "R$ milhões, preços de setembro de 2026",
@@ -465,15 +573,18 @@ def main(xlsx=None):
             "estimadas": len(est),
             "fichas": 29,
             "componentes": [{"cod": c, "nome": t} for c, t in COMPONENTES],
-            "postura_ordem": POSTURA_ORDEM,
             "pesos": PESOS,
-            "faixas": {"alta": "80 a 100", "estrategico": "50 a 79", "nao": "abaixo de 50"},
-            "postura_rotulo": POSTURA_ROTULO,
+            "faixas": {"alta": "80 a 100", "estrategico": "60 a 79", "nao": "abaixo de 60"},
+            "classes": CLASSE_ROTULO,
+            "etapas": ETAPAS,
+            "fatores": {"min": round(fmin, 6), "max": round(fmax, 6)},
         },
         "rotas": [{k: v for k, v in r.items() if k != "paradas"} for r in ROTAS],
         "experiencias": experiencias,
         "quadros": quadros,
         "fluxos": fluxos,
+        "condicoes": condicoes,
+        "escala": escala,
         "secao7": secao7,
     }
 

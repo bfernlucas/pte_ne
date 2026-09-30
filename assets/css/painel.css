@@ -257,7 +257,7 @@ table.ranking .pill-campo{font-size:.6rem}
 .inv-bloco.b>h5{border-left-color:#a3b3c6}
 /* cinco colunas: nº | item (rubrica, unidade e racional abaixo) | quantidade | unitário | total */
 table.inv-tbl{table-layout:fixed;font-size:.84rem;border:1px solid var(--border)}
-table.inv-tbl col.c-n{width:48px}
+table.inv-tbl col.c-n{width:58px}
 table.inv-tbl col.c-q{width:12%}
 table.inv-tbl col.c-u{width:17%}
 table.inv-tbl col.c-t{width:19%}
@@ -336,3 +336,22 @@ tr.linha-total td{background:var(--surface-2);font-weight:700}
 .sec-head p,.bloco>.sub{max-width:110ch}
 @media (max-width:1280px){ .wrap{--gutter:20px} }
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ------------------------------------ correções da equipe (30/09/2026) */
+/* leitura de abertura da carteira, com destaque à proposta de programa único */
+.carteira-destaque{border-left:4px solid var(--brand);background:var(--surface-2);padding:18px 24px;margin:0 0 26px;max-width:110ch}
+.carteira-destaque h3{margin:0 0 8px;font-size:.78rem;letter-spacing:.08em;color:var(--muted)}
+.carteira-destaque p{margin:0 0 10px;font-size:.95rem;line-height:1.6}
+.carteira-destaque p:last-child{margin-bottom:0}
+.carteira-destaque b{color:var(--brand)}
+.carteira-destaque .proposta{font-weight:600;color:var(--brand);font-size:1rem}
+.numeros + .funil{margin:10px 0 0;font-size:.8rem;color:var(--faint);max-width:110ch}
+/* classificação no ranking e na tabela por experiência */
+.cls-alta{color:#2F7A21;font-weight:600}
+.cls-estrategico{color:var(--gold-ink);font-weight:600}
+.cls-nao{color:var(--muted)}
+/* ficha de investimento: descrição da etapa e condição de cada item da Escala */
+.inv-bloco .inv-desc{margin:-4px 0 10px;font-size:.8rem;color:var(--muted);max-width:110ch}
+table.inv-tbl .cond{display:block;margin-top:4px;font-size:.74rem;color:var(--gold-ink)}
+table.inv-tbl .cond b{font-weight:600}
+table.inv-tbl td.n{white-space:nowrap}

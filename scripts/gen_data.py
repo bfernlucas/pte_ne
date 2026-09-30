@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 """Gera assets/data/iniciativas.js a partir de PTE2026_matriz_dashboard.xlsx.
 Uso: python3 scripts/gen_data.py
+
+Base final da prospecção (set/2026): a equipe fixou como referência a aba
+"Mapa_89 iniciativas" da planilha de avaliação do relatório final (89 linhas).
+Dessas, 5 foram descartadas na própria prospecção (nota 0: não localizadas ou
+sem atuação no Nordeste) e 3 repetem outra linha (CCI-BSHE = Associação do
+Carbono Social; Sertão Vivo em duas linhas; "Fied" = FIEB). As 81 distintas
+são as 79 desta planilha, o Instituto Caburé (linha 87, abaixo em ADICIONAIS)
+e o Porto Digital — Caruaru, que só existe na camada de campo (sem nota da
+matriz, encontrado nas visitas).
 """
 import openpyxl, json, os, re, unicodedata
 
@@ -278,6 +287,34 @@ RESUMO = {
     82: "Pioneira em finanças de impacto no Brasil, mobiliza recursos via blended finance e crowdlending; no Nordeste apoia negócios de impacto com crédito acessível.",
 }
 
+# Iniciativas da aba "Mapa_89 iniciativas" que não constam de
+# PTE2026_matriz_dashboard.xlsx. Transcritas da linha correspondente, com as
+# mesmas colunas da matriz. Coordenadas: local da atuação (a planilha não traz).
+ADICIONAIS = [
+    {"nome": "Instituto Caburé",
+     "objetivo": "Atua pelo desenvolvimento socioambiental em comunidades tradicionais, valorizando saberes ancestrais em diálogo com ciência e tecnologia, com foco na valorização cultural, conservação do manguezal e no enfrentamento da crise climática. Atualmente, o projeto está em Cajueiro da Praia, no norte do Piauí, mas atua na APA Delta do Parnaíba (PI, CE, MA).",
+     "resumo": "Atua com comunidades tradicionais do Delta do Parnaíba, unindo saberes ancestrais, ciência e tecnologia na conservação do manguezal, na valorização cultural e na inclusão produtiva de mulheres.",
+     "tematica": "Economia azul; desenvolvimento socioambiental", "org": "Instituto Caburé",
+     "cnpj": "46.273.145/0001-67", "fundacao": "29/03/2022",
+     "cnae": "85.92-9-99 - Ensino de arte e cultura não especificado anteriormente",
+     "endereco": "Rua do Lago, s/n, Zona Rural, Cajueiro da Praia, PI, CEP 64.222-000",
+     "lat": -2.9333, "lon": -41.3417, "avaliador": "Leidiane",
+     "municipio": "Cajueiro da Praia", "estado": "PI, CE, MA", "biomas": "Zona Costeira/Marinho",
+     "eixo": "Nova Infraestrutura Verde-Azul e Adaptação Climática", "eixo_sec": "BIO, EC",
+     "setor": "Primário", "natureza": "Associação Privada", "tipo_inst": "Associação / Cooperativa",
+     "salvaguardas": "Atende",
+     "criterios": [2, 3, 2, 3, 2, 2, 2, 3, 3, 3], "pontuacao": 25,
+     "observacoes": "Entre as iniciativas desenvolvidas pelo instituto, destacam-se a biblioteca comunitária Caburezinhos do Piauí, voltada à leitura infantil, e o projeto Delta Mulher Artesanato, lançado em 2023 e liderado por mulheres da região do Delta do Parnaíba (RESEX Delta e APA), que une mulheres e territórios pelo seu protagonismo, pela defesa de seus direitos e pela inclusão socioprodutiva na sociobioeconomia regional. Recebeu o Prêmio Ponto de Leitura 2023 e o Prêmio Cultura da Resistência.",
+     "linha_mapa89": 87},
+]
+# Funil da base final (aba Mapa_89): mapeadas, descartadas, repetidas.
+FUNIL = {"mapeadas": 89, "descartadas": 5, "repetidas": 3,
+         "descartadas_nomes": ["Projeto Pacto Global de Jovens pelo Clima", "LabSolar+",
+                               "Programa Nacional de Biodigestores e Biogás",
+                               "Programa Mais Luz para a Amazônia e o Semiárido", "SEDEPE"],
+         "repetidas_nota": "CCI-BSHE repete a Associação do Carbono Social do Bioma Caatinga (mesmo CNPJ); "
+                           "o Programa Sertão Vivo aparece em duas linhas; a linha \"Fied\" repete a FIEB."}
+
 EIXO_COD = {"Finanças Sustentáveis e Inclusivas": "FSI", "Adensamento Tecnológico": "ADT",
             "Bioeconomia e Sistemas Agroalimentares Adaptados": "BIO", "Transição Energética": "TE",
             "Economia Circular e Solidária": "EC", "Nova Infraestrutura Verde-Azul e Adaptação Climática": "NIVA"}
@@ -339,6 +376,16 @@ def main():
             else:
                 it["estado"] = locs[0]["uf"]        # ponto único: ajusta também a UF
 
+    # iniciativas da base final que não estão na matriz do dashboard
+    for a in ADICIONAIS:
+        it = dict(a)
+        it["id"] = 10_000 + a["linha_mapa89"]
+        it["criterios"] = {key: v for (key, _), v in zip(CRIT, a["criterios"])}
+        it["eixo_cod"] = EIXO_COD.get(a["eixo"])
+        it["fora_ne"] = False
+        it.pop("linha_mapa89", None)
+        items.append(it)
+
     # renumera os IDs sequencialmente (1..N), sem lacunas, após aplicar
     # exclusões e tudo que dependia dos IDs originais (PRE, FORA_NE, overrides, ALT_LOCAIS)
     for n, it in enumerate(items, 1):
@@ -381,7 +428,8 @@ def main():
         rota_manual_default.append({"nome": r["nome"], "color": ROTA_COLORS[ri % len(ROTA_COLORS)],
                                     "carOnly": bool(r.get("carOnly")), "stops": stops})
 
-    meta = {"fonte": "PTE2026_matriz_dashboard.xlsx", "total": len(items),
+    meta = {"fonte": "PTE2026_matriz_dashboard.xlsx e aba Mapa_89 iniciativas (Instituto Caburé)",
+            "total": len(items), "funil": FUNIL,
             "eixos": [{"nome": n, "cod": c, "cor": cor} for n, c, cor in EIXO_CORES],
             "criterios": [{"key": k, "label": l} for k, l in CRIT],
             "selecao_default": selecao_default, "rota_manual_default": rota_manual_default}

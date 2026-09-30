@@ -4,8 +4,9 @@
 Monta dados_campo.json -- a camada de evidencia das incursoes (P3, P4, P5).
 
 Universo e numeros: Produto 5 B, via dados_p5.json (scripts/gen_p5.py) --
-as 29 organizacoes com visita ou entrevista, notas do Apendice 2, postura,
-rota e faixas de recursos (Bloco A + Bloco B). Rode gen_p5.py antes.
+as 29 organizacoes com visita ou entrevista, notas do Apendice 2,
+classificacao, prontidao, rota e faixas de recursos (Etapa 1, Estruturacao,
+e Etapa 2, Escala; chaves internas bloco_a e bloco_b). Rode gen_p5.py antes.
 
 Leitura qualitativa: Documentos Tecnicos 3, 4 e 5 (Quanta/OEI), codificada
 abaixo (EXP: o que se apoia; ANALISE: gargalos e potencialidades; PERFIL).
@@ -35,15 +36,10 @@ ALIAS_P5 = {
     "Cooperativa Agroindustrial Pindorama": "Cooperativa Pindorama",
     "Unidade MCTI/EMBRAPII de Inovação em IA — IFCE": "EMBRAPII IA — IFCE",
 }
-# postura do P5 B -> chave interna usada por campo.js e POSTURA_MECANISMO
-POSTURA_P5 = {
-    "pronta": "direto", "pronta c/ dado": "condicionado", "dimensionar": "quantificacao",
-    "fortalecer": "preparacao", "preparatório": "preparatorio",
-}
-
 # nome | eixo | A oper | B inv | C impacto | D inov | total/100 | classif
 # | (envelope do P5 A, removido: os valores vêm do P5 B, só no pacote cifrado)
-# | postura | base informacional | rota | o que se apoia
+# | (postura de apoio, aposentada em set/2026: a classificação e a prontidão
+#   vêm do P5 B) | base informacional | rota | o que se apoia
 EXP = [
  ("Fazenda Nutrilite Brasil","NIVA",5,5,5,5,100,"alta",None,None,"condicionado","parcial","R2",
   "Semimecanização da colheita de acerola, diversificação de culturas e contabilização de emissões."),
@@ -84,15 +80,15 @@ EXP = [
  ("Cooperativa Solar Bem Viver","TE",3,4,4,4,75,"estrategico",None,None,"preparatorio","ausente","R1",
   "Equacionamento da divisão de áreas de concessão entre dois cadastros da concessionária."),
  ("Porto Digital — Caruaru","ADT",3,4,2,4,63,"estrategico",None,None,"preparatorio","ausente","R3",
-  "Sem alocação própria: contemplada no envelope do Porto Digital — Recife."),
+  "Lei municipal de inovação, modelo de receita própria e carteira de projetos com a indústria da região."),
  ("Programa Terra Plantar","BIO",4,2,3,3,62,"estrategico",None,None,"preparatorio","ausente","R3",
   "Estruturação de indicadores e rastreabilidade da aplicação de recursos."),
  ("AMAREZ","EC",3,3,3,3,60,"estrategico",None,None,"preparatorio","parcial","R1",
   "Capital de giro para estocar material e vender direto à indústria, sem intermediação."),
  ("Banco Comunitário de Araçoiaba","FSI",2,2,2,3,46,"nao",None,None,"","","R3",
-  "Não recomendada nesta etapa: requer fortalecimento institucional prévio."),
+  "Não recomendada neste ciclo: requer fortalecimento institucional prévio."),
  ("Carbono Social do Bioma Caatinga","FSI",2,2,1,3,40,"nao",None,None,"","","R3",
-  "Não recomendada nesta etapa: sem créditos gerados, sem receita e sem financiamento."),
+  "Não recomendada neste ciclo: sem créditos gerados, sem receita e sem financiamento."),
 ]
 
 # ---------------------------------------------------------------------------
@@ -207,16 +203,14 @@ REF_OVERRIDES = {
  # Projetos de Conservacao do Bioma Caatinga, Delmiro Gouveia/AL
 }
 
-# Descobertas em campo: nao constam da base de prospecao. Coordenadas do local
-# efetivamente visitado, para que aparecam no mapa.
-NOVAS_EM_CAMPO = {
-    "Instituto Caburé":  {"municipio": "Cajueiro da Praia", "estado": "PI", "lat": -2.9333, "lon": -41.3417},
-}
+# Encontrada em campo (nao consta da base de prospeccao): so o Porto Digital —
+# Caruaru, que vem sem ref_id do gen_p5.py. O Instituto Caburé estava no
+# levantamento previo (linha 87 da aba Mapa_89) e entrou na base como id 80.
 
 # ---------------------------------------------------------------------------
-# Secao 7.4 do P5: familias de mecanismos de captacao e a aproximacao
-# postura -> familia. O documento nunca mapeia mecanismo a iniciativa
-# nominalmente; o mapa e por grupo, e assim fica registrado aqui.
+# Secao 7.4 do P5: familias de mecanismos de captacao (Quadro 7.1) e a
+# aproximacao etapa e condicao -> familia (Tabela 7.8). O documento nunca
+# mapeia mecanismo a iniciativa nominalmente; o mapa e por grupo.
 # ---------------------------------------------------------------------------
 CAPTACAO = [
  {"nome": "Instrumentos do Plano de Transformação Ecológica nacional",
@@ -245,32 +239,51 @@ CAPTACAO = [
   "atencao": "Modelagem jurídica específica e prazos longos de estruturação."},
 ]
 
-POSTURA_MECANISMO = {
- "direto":        {"familias": "Blended finance e capital catalítico · fundos socioambientais privados",
-                   "obs": "Perfil compatível com tranche de primeira perda."},
- "condicionado":  {"familias": "Crédito de desenvolvimento · PPPs · mercado de carbono, onde couber",
-                   "obs": "O dado que falta define o instrumento: sem custo apurado o crédito é inviável; sem necessidade quantificada a parceria não se modela."},
- "quantificacao": {"familias": "Sublinha de estruturação de projetos do Eco Invest · assistência técnica de organismos de cooperação",
-                   "obs": "A correspondência mais direta do mapa: essas experiências precisam exatamente do produto que a sublinha oferece."},
- "preparacao":    {"familias": "Fundos socioambientais privados · filantropia · emendas e fundos estaduais",
-                   "obs": "Volumes pequenos e finalidade institucional."},
- "preparatorio":  {"familias": "Fundos socioambientais privados · filantropia · emendas e fundos estaduais",
-                   "obs": "O envelope financia a remoção da pré-condição, não a operação."},
-}
-
-AGENDAS = [
- {"t": "Metodologia de contabilização de carbono para a Caatinga",
-  "d": "Inexistente. Bloqueia ao mesmo tempo o mecanismo de maior potencial de receita recorrente e o eixo de maior peso. O Vale Sustentável já mensurou mais de 1.700 t sem conseguir monetizar; suas áreas são a base empírica natural."},
- {"t": "Formalização jurídica",
-  "d": "A Trilha opera sem personalidade jurídica, o CTERSA aponta a configuração jurídica como gargalo primário e a AMAREZ estuda a transição de modelo. Enquanto não se resolve, os canais de maior volume permanecem fechados independentemente do mérito técnico."},
- {"t": "Previsibilidade plurianual",
-  "d": "Gargalo mais determinante que o volume. Formatos de âncora de médio prazo: contrato de gestão, fundo territorial, chamada permanente. O Fundo Caatinga, em estudo por uma das organizações, é a referência citada."},
+# Tabela 7.8 do relatorio final: aproximacao indicativa entre a etapa, o tipo
+# de condicao para contratar e as familias de mecanismos. Como no relatorio,
+# a associacao e por etapa e condicao, nunca por iniciativa. Os numeros de
+# cada linha vem de dados_p5.json (condicoes).
+MECANISMO_ETAPA = [
+ {"cod": "A", "rotulo": "Etapa 1 — Estruturação",
+  "familias": "Linha de estruturação de projetos do Eco Invest Brasil; assistência técnica de organismos de cooperação; "
+              "fundos socioambientais privados e filantropia; fundos de pequenas doações",
+  "obs": "Estudos, formalizações, sistemas e itens com custo definido. Os aportes a fundos de crédito e de capital de giro "
+         "já incluídos nesta etapa (Acreditar, Rede Recicla Bahia, AMAREZ e Blue C) combinam bem doação e crédito, "
+         "com um aporte inicial que atrai outros investidores."},
+ {"cod": "Estudo", "rotulo": "Etapa 2 — Escala, condicionada a estudo",
+  "familias": "Crédito de desenvolvimento e fundos constitucionais; fundos climáticos internacionais; "
+              "parcerias público-privadas, onde couber",
+  "obs": "É o maior volume da Escala, e o instrumento só se define depois que o estudo quantifica custo e necessidade."},
+ {"cod": "Formalização", "rotulo": "Etapa 2 — Escala, condicionada a formalização",
+  "familias": "Fundos de pequenas doações e filantropia para a formalização; depois dela, fundos climáticos internacionais "
+              "e Fundo de Desenvolvimento do Nordeste, que exigem personalidade jurídica",
+  "obs": "O teto dos fundos de pequenas doações cobre a formalização, não o conjunto do objeto."},
+ {"cod": "Decisão externa", "rotulo": "Etapa 2 — Escala, condicionada a decisão externa",
+  "familias": "Articulação institucional antes de qualquer captação; emendas e fundos estaduais, quando a decisão depender do estado",
+  "obs": "Nenhum instrumento financeiro substitui a solução regulatória, a decisão federal ou a liberação de um imóvel."},
+ {"cod": "Verificação", "rotulo": "Etapa 2 — Escala, condicionada a verificação",
+  "familias": "Os mesmos canais do item verificado, depois de afastada a sobreposição com orçamento ou investimento já existente",
+  "obs": "A verificação protege contra o financiamento duplo, como no aporte à Pindorama e nos novos polos do Porto Digital."},
 ]
 
-ESCALA = {
- "piso_padrao": 15.0, "piso_reduzido": 5.0,
- "nota": "Individualmente, pelo valor máximo da carteira (Bloco A + Bloco B), 2 das 27 experiências com estimativa alcançam R$ 20 milhões, 3 alcançam R$ 15 milhões e 11 ficam abaixo até do piso reduzido de R$ 5 milhões. Agregadas por eixo, Infraestrutura Verde-Azul, Transição Energética, Adensamento Tecnológico e Economia Circular superam o porte mínimo padrão; Finanças Sustentáveis e Bioeconomia ficam entre o piso reduzido e o padrão. Daí a proposta de tratar a carteira como programa único, com subprojetos sob agente credenciado."
-}
+# Agendas coletivas: os tres temas da secao 7.4 do relatorio final.
+AGENDAS = [
+ {"t": "Contabilização de carbono",
+  "d": "Na Caatinga não há metodologia consolidada de certificação, e essa lacuna bloqueia ao mesmo tempo o mecanismo de maior "
+       "potencial de receita recorrente e o eixo de maior peso da carteira. O Vale Sustentável já mediu mais de 1.700 toneladas "
+       "sem conseguir vendê-las, e suas áreas são a base empírica natural. No Cerrado já há projetos certificados, e a questão é "
+       "de acesso e custo; na zona costeira e marinha, a metodologia de carbono azul ainda está em piloto no Brasil. "
+       "A indicação é financiar o estudo uma única vez, com resultado compartilhado."},
+ {"t": "Formalização jurídica",
+  "d": "A Trilha Caminhos da Ibiapaba e a Rede BATUC não têm personalidade jurídica própria, o CTERSA aponta a configuração "
+       "jurídica como gargalo primário e a AMAREZ estuda a transição de modelo; ao todo, onze itens da Escala dependem de uma "
+       "formalização. Enquanto isso não se resolve, os canais de maior volume ficam fechados, qualquer que seja o mérito técnico."},
+ {"t": "Previsibilidade plurianual",
+  "d": "Gargalo mais determinante que o volume: dependência de financiador único, fontes pulverizadas e apoios pontuais "
+       "desfazem a equipe ao fim de cada projeto. Formatos de âncora de médio prazo, como contrato de gestão, fundo territorial "
+       "ou chamada permanente, merecem exploração; o Fundo Caatinga, em estruturação pelo Consórcio Nordeste, e o fundo de capital "
+       "de giro proposto pela Rede Recicla Bahia são referências."},
+]
 
 PESOS = {"impacto": 30, "inovacao": 30, "operacao": 25, "investimento": 15}
 STOP = set("de da do das dos e a o as os para em no na programa projeto instituto "
@@ -291,6 +304,24 @@ def carregar_base():
     txt = open(BASE, encoding="utf-8").read()
     bruto = txt.split("=", 1)[1].strip().rstrip(";")
     return json.loads(bruto)["iniciativas"]
+
+
+def mecanismos(p5):
+    """Tabela 7.8 com os numeros da planilha: itens, experiencias e faixa."""
+    cond = {c["cod"]: c for c in p5.get("condicoes", [])}
+    qa = p5["quadros"]["contratavel"]["total"]
+    br = lambda v: ("%.1f" % v).replace(".", ",")
+    out = []
+    for m in MECANISMO_ETAPA:
+        x = dict(m)
+        if m["cod"] == "A":
+            x["numeros"] = "R$ %s a %s milhões" % (br(qa["min"]), br(qa["max"]))
+        else:
+            c = cond[m["cod"]]
+            x["numeros"] = "%d itens em %d experiências, R$ %s a %s milhões" % (
+                c["itens"], c["experiencias"], br(c["min"]), br(c["max"]))
+        out.append(x)
+    return out
 
 
 def main():
@@ -317,7 +348,8 @@ def main():
             "classificacao": e["classificacao"],
             "envelope": {"min": round(env_min, 4), "max": round(env_max, 4)},
             "bloco_a": a, "bloco_b": b,
-            "postura": POSTURA_P5.get(e.get("postura") or "", ""),
+            "prontidao": e.get("prontidao"),
+            "condicao": e.get("condicao"),
             "base_informacional": e.get("info_financeira") or "",
             "rota": e["rota"],
             "apoio": apoio.get(chave, ""),
@@ -340,18 +372,20 @@ def main():
             "contrato": "13849/2026 OEI/FPOS - TdR 12.500/2026",
             "referencia_notas": "Apendice 2 do Produto 5 B",
             "pesos": PESOS,
-            "faixas": {"alta": "80 a 100", "estrategico": "50 a 79", "nao": "abaixo de 50"},
+            "faixas": p5["meta"]["faixas"],
+            "classes": p5["meta"]["classes"],
+            "etapas": p5["meta"]["etapas"],
             "moeda": "R$ milhoes a precos de setembro de 2026, horizonte de 36 meses",
-            "envelope": "Bloco A + Bloco B da secao 7 do P5 B",
+            "envelope": "Etapa 1 (Estruturacao) + Etapa 2 (Escala) da secao 7 do P5 B",
             "rotas": p5.get("rotas", []),
             "total": len(saida),
         "gargalos": GARGALOS,
         "gargalos_curto": GARGALOS_CURTO,
         "potenciais": POTENCIAIS,
         "captacao": CAPTACAO,
-        "postura_mecanismo": POSTURA_MECANISMO,
+        "mecanismo_etapa": mecanismos(p5),
         "agendas": AGENDAS,
-        "escala": ESCALA,
+        "escala": p5["escala"],
         },
         "experiencias": saida,
     }

@@ -13,6 +13,10 @@ Serve o repositório em localhost, injeta os pacotes fictícios na sessão
 Não altera a proteção em produção: nada disto é carregado pelo index.html.
 
     python3 scripts/teste_visual.py SAIDA_DIR [largura ...]
+
+Com PTE_DADOS_REAIS=1, usa dados_p5.json e dados_campo.json (em claro, gerados
+por gen_p5.py e montar_campo.py) no lugar dos fictícios. As capturas trazem
+então os valores reais: guarde-as fora do repositório.
 """
 import http.server, json, os, socketserver, sys, threading
 from playwright.sync_api import sync_playwright
@@ -69,7 +73,14 @@ def main():
     saida = sys.argv[1] if len(sys.argv) > 1 else "capturas"
     larguras = [int(x) for x in sys.argv[2:]] or [1366, 1920]
     os.makedirs(saida, exist_ok=True)
-    p5, campo = gerar()
+    reais = os.environ.get("PTE_DADOS_REAIS") and all(
+        os.path.exists(os.path.join(RAIZ, f)) for f in ("dados_p5.json", "dados_campo.json"))
+    if reais:
+        p5 = json.load(open(os.path.join(RAIZ, "dados_p5.json"), encoding="utf-8"))
+        campo = json.load(open(os.path.join(RAIZ, "dados_campo.json"), encoding="utf-8"))
+        print("usando os dados reais (dados_p5.json e dados_campo.json)")
+    else:
+        p5, campo = gerar()
     ini = ("sessionStorage.setItem('pte.campo', %s);sessionStorage.setItem('pte.campo.v', %s);"
            "sessionStorage.setItem('pte.p5', %s);sessionStorage.setItem('pte.p5.v', %s);") % (
         json.dumps(json.dumps(campo)), json.dumps(prefixo_ct("campo.enc.js", "")),
