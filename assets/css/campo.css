@@ -294,3 +294,38 @@
 .ec-freq .r .b{min-width:60px}
 @media(max-width:1100px){.ec-freq .r .t{flex-basis:200px}}
 .ec-legenda .lg-txt{display:block}
+
+/* ---- cobertura por estado (30/09/2026): mapeadas x avaliadas ---- */
+.ec-uf-leg{display:flex;gap:18px;flex-wrap:wrap;font-size:.76rem;color:var(--muted);margin:-6px 0 12px}
+.ec-uf-leg i{display:inline-block;width:12px;height:10px;margin-right:6px;vertical-align:-1px}
+.ec-uf-leg i.aval,.ec-ufs .b .aval{background:#0C549C}
+.ec-uf-leg i.map,.ec-ufs .b .map{background:#D4DCE8}
+.ec-ufs{gap:9px}
+.ec-ufs .r{align-items:flex-start}
+.ec-ufs .r .t{flex:0 0 190px;padding-top:1px}
+.ec-ufs .r .t small{color:var(--faint);font-size:.74rem}
+.ec-ufs .r .b{position:relative;height:14px;margin-top:3px;background:transparent;border-radius:0;overflow:visible}
+.ec-ufs .r .b span{position:absolute;left:0;top:0;height:100%;border-radius:0}
+.ec-ufs .r .v{flex:0 0 330px;text-align:left;white-space:normal;line-height:1.35;color:var(--ink)}
+.ec-ufs .r .v b{font-weight:700}
+.ec-ufs .r .v .ec-rot{color:var(--muted);font-size:.76rem}
+.ec-ufs .r .v .ec-rot::before{content:"· "}
+.ec-ufs .r .v small{display:block;color:var(--faint);font-size:.72rem}
+.ec-ufs .r .v em{display:block;font-style:normal;font-size:.74rem;color:var(--muted);margin-top:2px;max-width:40ch}
+.ec-ufs .r.sem .t{color:var(--muted)}
+.ec-sem{display:inline-block;font-size:.68rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  padding:2px 7px;border:1px solid var(--border);color:var(--muted);background:var(--surface)}
+@media(max-width:1100px){.ec-ufs .r .v{flex-basis:240px}}
+@media(max-width:800px){.ec-ufs .r{flex-wrap:wrap}.ec-ufs .r .v{flex:1 1 100%}}
+
+/* ---- visitas previstas e não realizadas: tabela com situação ---- */
+.ec-nr{width:100%;border-collapse:collapse;font-size:.82rem}
+.ec-nr th{text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+  font-weight:700;padding:6px 10px 8px;border-bottom:1px solid var(--border)}
+.ec-nr td{padding:10px;border-bottom:1px solid var(--border-2);vertical-align:top;line-height:1.45}
+.ec-nr td small{display:block;color:var(--faint);font-size:.74rem}
+.ec-nr td:nth-child(2){white-space:nowrap;color:var(--muted)}
+.ec-nr td:last-child{color:var(--muted)}
+.ec-st{display:inline-block;font-size:.68rem;font-weight:600;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.ec-st.nao{background:#fdecea;color:#a5241a;border:1px solid #f5c6c2}
+.ec-st.adiada{background:#fff2d6;color:#9a5b00;border:1px solid #f3d08a}

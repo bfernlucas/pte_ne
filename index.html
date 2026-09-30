@@ -2,9 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<script src="assets/data/campo.enc.js?v=76"></script>
-<script src="assets/data/p5.enc.js?v=76"></script>
-<script src="assets/js/auth.js?v=76"></script>
+<script src="assets/data/campo.enc.js?v=77"></script>
+<script src="assets/data/p5.enc.js?v=77"></script>
+<script src="assets/js/auth.js?v=77"></script>
 <script>if(!window.PTEAuth)location.replace("entrar.html");else PTEAuth.exigir();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Plano Brasil Nordeste de Transformação Ecológica — carteira e incursões de campo</title>
@@ -19,8 +19,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/painel.css?v=76" />
-<link rel="stylesheet" href="assets/css/campo.css?v=76" />
+<link rel="stylesheet" href="assets/css/painel.css?v=77" />
+<link rel="stylesheet" href="assets/css/campo.css?v=77" />
 </head>
 <body>
 
@@ -103,9 +103,9 @@
     <div class="tbl-scroll" tabindex="0" role="region" aria-label="Ranking das iniciativas">
       <table id="tbl-ranking" class="ranking">
         <colgroup>
-          <col style="width:30px"><col style="width:26%"><col style="width:11%"><col style="width:52px">
-          <col style="width:13%"><col style="width:7%"><col style="width:7%"><col style="width:7%">
-          <col style="width:12%"><col style="width:8.5%"><col style="width:8.5%">
+          <col style="width:30px"><col style="width:25%"><col style="width:11%"><col style="width:52px">
+          <col style="width:12%"><col style="width:7%"><col style="width:7%"><col style="width:7%">
+          <col style="width:12%"><col style="width:9.5%"><col style="width:9.5%">
         </colgroup>
         <thead><tr>
           <th aria-label="Seleção"></th>
@@ -276,7 +276,8 @@
 
   <div class="bloco">
     <h3>Carteira por experiência</h3>
-    <p class="sub">Valores em R$ milhões, para 36 meses. Clique no cabeçalho de uma coluna para ordenar a tabela.</p>
+    <p class="sub">Valores em R$ milhões, para 36 meses, do mínimo ao máximo. A prontidão é a parcela da carteira máxima que
+      já está na Etapa 1, Estruturação. Clique no cabeçalho de uma coluna para ordenar a tabela.</p>
     <div class="exp-bar">
       <span class="exp-lab">Exportar:</span>
       <button class="exp-btn" data-exp="xlsx" data-target="#tbl-exp" data-name="estimativa-por-experiencia"
@@ -288,23 +289,20 @@
     <div class="tbl-scroll" tabindex="0" role="region" aria-label="Carteira por experiência">
       <table id="tbl-exp" class="ranking">
         <colgroup>
-          <col style="width:22%"><col style="width:52px"><col style="width:12%"><col style="width:7%"><col style="width:7%">
-          <col style="width:7%"><col style="width:5%"><col style="width:7%"><col style="width:7%">
-          <col style="width:7%"><col style="width:7%"><col style="width:7%">
+          <col style="width:21%"><col style="width:52px"><col style="width:12%"><col style="width:8%"><col style="width:8%">
+          <col style="width:7%"><col style="width:5%"><col style="width:12%"><col style="width:12%"><col style="width:9%">
         </colgroup>
         <thead><tr>
           <th data-sort="nome">Experiência<span class="arr"></span></th>
           <th data-sort="eixo">Eixo<span class="arr"></span></th>
           <th data-sort="classe">Classificação<span class="arr"></span></th>
-          <th data-sort="pront" class="num">Prontidão<span class="arr"></span><small>% na Estruturação</small></th>
+          <th data-sort="pront" class="num">Prontidão<span class="arr"></span><small>% já na Etapa 1</small></th>
           <th data-sort="conf">Confiança<span class="arr"></span></th>
           <th data-sort="p5" class="num">Pontuação<span class="arr"></span></th>
           <th data-sort="itens" class="num">Itens<span class="arr"></span></th>
-          <th data-sort="amin" class="num">Estruturação<span class="arr"></span><small>mínimo</small></th>
-          <th data-sort="amax" class="num">Estruturação<span class="arr"></span><small>máximo</small></th>
-          <th data-sort="bmin" class="num">Escala<span class="arr"></span><small>mínimo</small></th>
-          <th data-sort="bmax" class="num">Escala<span class="arr"></span><small>máximo</small></th>
-          <th data-sort="tmax" class="num">Total<span class="arr"></span><small>máximo</small></th>
+          <th data-sort="amax" class="num">Estruturação<span class="arr"></span><small>R$ mi, mín. – máx.</small></th>
+          <th data-sort="bmax" class="num">Escala<span class="arr"></span><small>R$ mi, mín. – máx.</small></th>
+          <th data-sort="tmax" class="num">Carteira<span class="arr"></span><small>total máx.</small></th>
         </tr></thead>
         <tbody id="tb-exp"></tbody>
       </table>
@@ -328,12 +326,12 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=76"></script>
-<script src="assets/data/uf_ne.js?v=76"></script>
-<script src="assets/js/maplayers.js?v=76"></script>
-<script src="assets/js/painel.js?v=76"></script>
-<script src="assets/js/export.js?v=76"></script>
-<script src="assets/js/campo.js?v=76"></script>
+<script src="assets/data/iniciativas.js?v=77"></script>
+<script src="assets/data/uf_ne.js?v=77"></script>
+<script src="assets/js/maplayers.js?v=77"></script>
+<script src="assets/js/painel.js?v=77"></script>
+<script src="assets/js/export.js?v=77"></script>
+<script src="assets/js/campo.js?v=77"></script>
 <script>
 document.getElementById("sair").addEventListener("click",function(e){
   e.preventDefault();PTEAuth.sair();location.replace("entrar.html");

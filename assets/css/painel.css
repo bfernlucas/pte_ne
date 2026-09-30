@@ -338,13 +338,30 @@ tr.linha-total td{background:var(--surface-2);font-weight:700}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* ------------------------------------ correções da equipe (30/09/2026) */
-/* leitura de abertura da carteira, com destaque à proposta de programa único */
-.carteira-destaque{border-left:4px solid var(--brand);background:var(--surface-2);padding:18px 24px;margin:0 0 26px;max-width:110ch}
-.carteira-destaque h3{margin:0 0 8px;font-size:.78rem;letter-spacing:.08em;color:var(--muted)}
-.carteira-destaque p{margin:0 0 10px;font-size:.95rem;line-height:1.6}
-.carteira-destaque p:last-child{margin-bottom:0}
-.carteira-destaque b{color:var(--brand)}
-.carteira-destaque .proposta{font-weight:600;color:var(--brand);font-size:1rem}
+/* leitura de abertura da carteira: figura à esquerda, texto à direita */
+.carteira-destaque{display:grid;grid-template-columns:minmax(280px,34%) 1fr;gap:0 40px;
+  border-top:3px solid var(--brand);border-bottom:1px solid var(--border);padding:22px 0 24px;margin:0 0 28px}
+.carteira-destaque .cd-lab{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.carteira-destaque .cd-num{display:block;font-family:var(--display);font-weight:600;font-size:2.15rem;line-height:1.1;
+  color:var(--brand);margin:4px 0 2px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.carteira-destaque .cd-num small{font-size:1rem;font-weight:500;color:var(--muted);letter-spacing:0}
+.carteira-destaque .cd-sub{display:block;font-size:.78rem;color:var(--faint)}
+.carteira-destaque .cd-bar{display:flex;height:14px;margin:16px 0 12px;background:var(--surface-2);overflow:hidden}
+.carteira-destaque .cd-bar i{display:block;height:100%}
+.carteira-destaque .cd-bar i.a,.carteira-destaque .sw.a{background:#1d5fb0}
+.carteira-destaque .cd-bar i.b,.carteira-destaque .sw.b{background:#a3b3c6}
+.carteira-destaque .cd-etapas{margin:0;display:grid;gap:10px}
+.carteira-destaque .cd-etapas dt{display:flex;align-items:center;gap:7px;font-size:.8rem;font-weight:700;color:var(--ink)}
+.carteira-destaque .sw{display:inline-block;width:10px;height:10px;flex:0 0 10px}
+.carteira-destaque .cd-etapas dd{margin:2px 0 0 17px;font-size:.9rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.carteira-destaque .cd-etapas dd span{color:var(--muted);font-size:.78rem;margin-left:6px}
+.carteira-destaque .cd-etapas small{display:block;margin-left:17px;font-size:.74rem;color:var(--faint);line-height:1.4}
+.carteira-destaque .cd-txt h3{margin:0 0 10px;font-size:.78rem;letter-spacing:.08em;color:var(--muted)}
+.carteira-destaque .cd-txt p{margin:0 0 12px;font-size:.95rem;line-height:1.62;max-width:72ch}
+.carteira-destaque .cd-txt b{color:var(--brand)}
+.carteira-destaque blockquote.proposta{margin:14px 0 0;padding:10px 0 10px 16px;border-left:3px solid var(--brand);
+  font-size:.98rem;line-height:1.55;font-weight:500;color:var(--brand);max-width:72ch}
+@media (max-width:900px){.carteira-destaque{grid-template-columns:1fr;gap:18px}}
 .numeros + .funil{margin:10px 0 0;font-size:.8rem;color:var(--faint);max-width:110ch}
 /* classificação no ranking e na tabela por experiência */
 .cls-alta{color:#2F7A21;font-weight:600}
@@ -355,3 +372,6 @@ tr.linha-total td{background:var(--surface-2);font-weight:700}
 table.inv-tbl .cond{display:block;margin-top:4px;font-size:.74rem;color:var(--gold-ink)}
 table.inv-tbl .cond b{font-weight:600}
 table.inv-tbl td.n{white-space:nowrap}
+.inv-notas .legenda{column-span:all;margin-top:10px;padding-top:8px;border-top:1px solid var(--border-2);font-size:.72rem;color:var(--faint)}
+/* cabeçalhos das tabelas largas: palavra longa não pode ser cortada */
+table.ranking thead th{letter-spacing:.02em;overflow:visible}
