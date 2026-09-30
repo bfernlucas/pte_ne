@@ -373,6 +373,8 @@ def main(xlsx=None):
                 else:
                     if txt.startswith("("):
                         notas.append(txt)
+                    elif txt.startswith("Origem:"):
+                        extras["legenda"] = "Origem das notas: " + txt.split(":", 1)[1].strip()
                 continue
             if txt == "Notas":
                 em_notas = True
@@ -405,7 +407,7 @@ def main(xlsx=None):
                     "racional": ws.cell(r, 5).value, "q_min": v(6), "q_max": v(7),
                     "u_min": v(8), "u_max": v(9), "min": v(10), "max": v(11),
                     "condicao": ws.cell(r, 21).value if bloco["id"] == "B" else None})
-        return {"blocos": blocos, "notas": notas,
+        return {"blocos": blocos, "notas": notas, "legenda": extras.get("legenda"),
                 "contrapartida": extras.get("Contrapartida identificada"),
                 "cofinanciamento": extras.get("Cofinanciamento possível"),
                 "carteira": extras.get("carteira")}
@@ -503,15 +505,19 @@ def main(xlsx=None):
         w7 = openpyxl.load_workbook(apoio7, data_only=True)
         ind, res = w7["Indicadores 7.1"], w7["Resumo 7.2–7.3"]
 
+        def sem_codigo(t):
+            """'Custo operacional anual (C1)' -> 'Custo operacional anual' (codigo do formulario fica fora da tela)."""
+            return re.sub(r"\s*\((?:[A-Z]\d{1,2}(?:\.\d+)?)\)\s*$", "", str(t or ""))
+
         def matriz(ws, r_cab, r0, r1, c1):
             cols = [ws.cell(r_cab, c).value for c in range(2, c1 + 1)]
             return {"colunas": cols,
-                    "linhas": [{"rotulo": ws.cell(r, 1).value,
+                    "linhas": [{"rotulo": sem_codigo(ws.cell(r, 1).value),
                                 "valores": [ws.cell(r, c).value or 0 for c in range(2, c1 + 1)]}
                                for r in range(r0, r1 + 1) if ws.cell(r, 1).value]}
 
         def lista(ws, r0, r1):
-            return [{"rotulo": ws.cell(r, 1).value, "n": ws.cell(r, 2).value or 0}
+            return [{"rotulo": sem_codigo(ws.cell(r, 1).value), "n": ws.cell(r, 2).value or 0}
                     for r in range(r0, r1 + 1) if ws.cell(r, 1).value]
 
         secao7.update({

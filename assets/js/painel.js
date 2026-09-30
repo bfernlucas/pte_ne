@@ -217,17 +217,31 @@
     var qa = QUADROS.contratavel.total, qb = QUADROS.referencia.total, qc = QUADROS.carteira.reais;
     var est = EXP.filter(function (e) { return e.estimada; });
     var esc_ = P5.escala || {};
-    var prontCart = qc.max ? qa.max / qc.max : null;
-    alvo.innerHTML = "<h3>Leitura da carteira</h3>" +
-      "<p>A carteira total soma <b>R$ " + faixaTxt(qc.min, qc.max) + " milhões</b> em 36 meses, para " + est.length +
-      " experiências. A <b>Estruturação</b>, de R$ " + faixaTxt(qa.min, qa.max) + " milhões, pode ser contratada agora: " +
-      "estudos, formalizações, sistemas e itens com custo definido. A <b>Escala</b>, de R$ " + faixaTxt(qb.min, qb.max) +
-      " milhões, depende da condição de cada item e é o que a Estruturação vai dimensionar. Só " + pctTxt(prontCart) +
-      " do valor máximo está na Estruturação.</p>" +
-      (esc_.acima_padrao != null ? "<p>Isoladamente, apenas " + esc_.acima_padrao + " das " + est.length +
-        " experiências alcançam o porte mínimo dos canais de maior volume, de R$ " + num(esc_.piso_padrao, 0) + " milhões, e " +
-        esc_.abaixo_reduzido + " ficam abaixo até do piso reduzido, de R$ " + num(esc_.piso_reduzido, 0) + " milhões.</p>" : "") +
-      (esc_.proposta ? '<p class="proposta">' + esc(esc_.proposta) + "</p>" : "");
+    var pA = qc.max ? qa.max / qc.max : 0, pB = 1 - pA;
+    alvo.innerHTML =
+      '<div class="cd-fig">' +
+        '<span class="cd-lab">Carteira total estimada</span>' +
+        '<b class="cd-num">R$ ' + num(qc.min, 1) + ' – ' + num(qc.max, 1) + ' <small>milhões</small></b>' +
+        '<span class="cd-sub">' + est.length + ' experiências, em 36 meses. Valores mínimo e máximo, Classe 5.</span>' +
+        '<div class="cd-bar" role="img" aria-label="Estruturação ' + num(pA * 100, 0) + '% e Escala ' + num(pB * 100, 0) + '% do valor máximo">' +
+          '<i class="a" style="width:' + (pA * 100).toFixed(1) + '%"></i><i class="b" style="width:' + (pB * 100).toFixed(1) + '%"></i></div>' +
+        '<dl class="cd-etapas">' +
+          '<div><dt><i class="sw a"></i>Etapa 1 — Estruturação</dt><dd>R$ ' + faixaTxt(qa.min, qa.max) + ' mi <span>' + num(pA * 100, 0) + '% do máximo</span></dd>' +
+            '<small>Contratável agora: estudos, formalizações, sistemas e itens com custo definido</small></div>' +
+          '<div><dt><i class="sw b"></i>Etapa 2 — Escala</dt><dd>R$ ' + faixaTxt(qb.min, qb.max) + ' mi <span>' + num(pB * 100, 0) + '% do máximo</span></dd>' +
+            '<small>Após a condição de cada item; é o que a Estruturação vai dimensionar</small></div>' +
+        '</dl>' +
+      '</div>' +
+      '<div class="cd-txt">' +
+        '<h3>Leitura da carteira</h3>' +
+        '<p>Só <b>' + num(pA * 100, 0) + '%</b> do valor máximo da carteira pode ser contratado agora. O restante depende de ' +
+          'estudos, formalizações, decisões externas e verificações que a própria Estruturação financia: a decisão desta etapa ' +
+          'é menos sobre quanto aportar e mais sobre a sequência em que o apoio é liberado.</p>' +
+        (esc_.acima_padrao != null ? '<p>Isoladamente, apenas <b>' + esc_.acima_padrao + ' das ' + est.length + '</b> experiências alcançam ' +
+          'o porte mínimo dos canais de maior volume, de R$ ' + num(esc_.piso_padrao, 0) + ' milhões, e ' + esc_.abaixo_reduzido +
+          ' ficam abaixo até do piso reduzido, de R$ ' + num(esc_.piso_reduzido, 0) + ' milhões.</p>' : '') +
+        (esc_.proposta ? '<blockquote class="proposta">' + esc(esc_.proposta) + '</blockquote>' : '') +
+      '</div>';
   }
 
   /* ---- aluvial da trajetória do valor (Figura 7.10), desenhado em SVG a
@@ -853,6 +867,10 @@
   /* ---- ficha de investimento: a aba da planilha, no estilo de uma ficha
      de carteira. Só existe quando os itens vieram no pacote cifrado. ---- */
   var invAberta = null;
+  /* legenda dos códigos de origem citados nas notas (linha "Origem" da aba) */
+  var LEGENDA_ORIGEM = "Origem das notas: K = ficha do formulário de campo, com o código do campo; F6.5 e F7.3 = ficha de " +
+    "recomendação do relatório final; P3 e P4 = relatórios das incursões; R1 a R4 = transcrição da incursão correspondente; " +
+    "PREM = premissa da equipe, a validar.";
   function pct(v) { return v == null ? "" : num(v * 100, 0) + "%"; }
   function marcaAberta() {
     $$("#fichas .ficha").forEach(function (f) {
@@ -957,7 +975,10 @@
         (f.contrapartida ? "<div><b>Contrapartida identificada</b>" + esc(f.contrapartida) + "</div>" : "") +
         (f.cofinanciamento ? "<div><b>Cofinanciamento possível</b>" + esc(f.cofinanciamento) + "</div>" : "") + "</div>";
     }
-    if (f.notas.length) h += '<div class="inv-notas"><b>Notas</b>' + f.notas.map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("") + "</div>";
+    if (f.notas.length) {
+      h += '<div class="inv-notas"><b>Notas</b>' + f.notas.map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("") +
+        '<p class="legenda">' + esc(String(f.legenda || LEGENDA_ORIGEM).replace(/produto 5 ?B/i, "relatório final")) + "</p></div>";
+    }
     var inv = $("#inv"); inv.innerHTML = h; inv.classList.remove("hidden");
     $("#inv-fechar").addEventListener("click", fechaInvestimento);
     inv.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1190,12 +1211,16 @@
 
   function S7fin() { return !!(P5 && P5.secao7 && P5.secao7.f71); }
 
+  /* rótulos das figuras vêm da planilha com o código do campo do formulário
+     entre parênteses ("Custo operacional anual (C1)"); na tela, sem o código */
+  function semCodigo(t) { return String(t == null ? "" : t).replace(/\s*\((?:[A-Z]\d{1,2}(?:\.\d+)?)\)\s*$/, ""); }
+
   /* barras horizontais empilhadas a partir de uma matriz {colunas, linhas} */
   function empilhada(canvas, mz, cores, eixo) {
     return new Chart(canvas, {
       type: "bar",
       data: {
-        labels: mz.linhas.map(function (l) { return l.rotulo; }),
+        labels: mz.linhas.map(function (l) { return semCodigo(l.rotulo); }),
         datasets: mz.colunas.map(function (c, k) {
           return { label: c, data: mz.linhas.map(function (l) { return l.valores[k]; }),
             backgroundColor: cores[k], barPercentage: 0.62 };
@@ -1216,7 +1241,7 @@
     var l = lista.slice().sort(function (a, b) { return b.n - a.n; });
     return new Chart(canvas, {
       type: "bar",
-      data: { labels: l.map(function (x) { return x.rotulo; }),
+      data: { labels: l.map(function (x) { return semCodigo(x.rotulo); }),
         datasets: [{ data: l.map(function (x) { return x.n; }), backgroundColor: AZ_A, barPercentage: 0.62 }] },
       options: {
         indexAxis: "y", responsive: true, maintainAspectRatio: false,
@@ -1256,8 +1281,7 @@
     pront: function (e) { return e.prontidao; },
     conf: function (e) { return ["alta", "média", "baixa"].indexOf(e.confianca); },
     p5: function (e) { return e.pontuacao; }, itens: function (e) { return e.itens; },
-    amin: function (e) { return e.bloco_a.min; }, amax: function (e) { return e.bloco_a.max; },
-    bmin: function (e) { return e.bloco_b.min; }, bmax: function (e) { return e.bloco_b.max; },
+    amax: function (e) { return e.bloco_a.max; }, bmax: function (e) { return e.bloco_b.max; },
     tmax: function (e) { return (e.bloco_a.max || 0) + (e.bloco_b.max || 0); }
   };
 
@@ -1280,16 +1304,13 @@
           "<td>" + esc(maiusc(e.confianca)) + "</td>" +
           '<td class="num">' + num(e.pontuacao, 0) + "</td>" +
           '<td class="num">' + esc(e.itens) + "</td>" +
-          '<td class="num">' + num(e.bloco_a.min) + "</td>" +
-          '<td class="num">' + num(e.bloco_a.max) + "</td>" +
-          '<td class="num">' + num(e.bloco_b.min) + "</td>" +
-          '<td class="num">' + num(e.bloco_b.max) + "</td>" +
+          '<td class="num">' + faixa(e.bloco_a.min, e.bloco_a.max) + "</td>" +
+          '<td class="num">' + faixa(e.bloco_b.min, e.bloco_b.max) + "</td>" +
           '<td class="num"><b>' + num((e.bloco_a.max || 0) + (e.bloco_b.max || 0)) + "</b></td>" +
           "</tr>";
       }).join("") +
       '<tr class="linha-total"><td>Total</td><td></td><td></td><td class="num">' + pctTxt(tA1 / ((tA1 + tB1) || 1)) + "</td><td></td><td></td><td></td>" +
-        '<td class="num">' + num(tA0) + '</td><td class="num">' + num(tA1) + "</td>" +
-        '<td class="num">' + num(tB0) + '</td><td class="num">' + num(tB1) + "</td>" +
+        '<td class="num">' + faixa(tA0, tA1) + '</td><td class="num">' + faixa(tB0, tB1) + "</td>" +
         '<td class="num">' + num(tA1 + tB1) + "</td></tr>";
     }
     $$("#tbl-exp thead th[data-sort]").forEach(function (th) {

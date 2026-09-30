@@ -76,9 +76,20 @@
   /* Atuação que vai além do local da visita, registrada pela equipe de campo:
      conta para a leitura de cobertura por estado. */
   var ATUACAO = { "Instituto Caburé": ["PI", "CE", "MA"], "Trilha Caminhos da Ibiapaba": ["CE", "PI"] };
+  /* Estados sem incursão: o que a equipe registrou sobre cada um (P3, P4 e revisão de 30/09). */
+  var SEM_INCURSAO = {
+    SE: "Os parceiros mapeados não tiveram disponibilidade para receber a equipe, embora tenha havido mapeamento e contato.",
+    MA: "Nenhuma visita foi programada para o estado."
+  };
+  var SEM_INCURSAO_CURTO = {
+    SE: "Parceiros sem disponibilidade para receber a equipe, apesar do mapeamento e do contato.",
+    MA: "Sem visita programada."
+  };
   var ARTIGO = { "Instituto Caburé": "o", "Trilha Caminhos da Ibiapaba": "a" };
   var ARTIGO_UF = { MA: "O Maranhão", PI: "O Piauí", CE: "O Ceará", RN: "O Rio Grande do Norte", PB: "A Paraíba",
     PE: "Pernambuco", AL: "Alagoas", SE: "Sergipe", BA: "A Bahia" };
+  var EM_UF = { MA: "no Maranhão", PI: "no Piauí", CE: "no Ceará", RN: "no Rio Grande do Norte", PB: "na Paraíba",
+    PE: "em Pernambuco", AL: "em Alagoas", SE: "em Sergipe", BA: "na Bahia" };
   function comArtigo(nome, prep) {
     var a = ARTIGO[nome] || "";
     if (prep === "de") return (a === "o" ? "do " : a === "a" ? "da " : "de ") + nome;
@@ -133,7 +144,10 @@
       leitura: "<strong>" + nuncaVisitadas + " das " + TOTAL_BASE + "</strong> iniciativas da base de prospecção não " +
         "receberam visita nem entrevista." +
         (ufsSemNada.length ? " Só " + listaUF(ufsSemNada) + (ufsSemNada.length > 1 ? " ficaram" : " ficou") +
-          " sem nenhuma organização avaliada em campo." : " Todos os nove estados têm ao menos uma organização avaliada em campo.") }
+          " sem nenhuma organização avaliada em campo" +
+          (ufsSemNada.length === 1 && SEM_INCURSAO[ufsSemNada[0]] ? ": " + SEM_INCURSAO[ufsSemNada[0]].charAt(0).toLowerCase() +
+            SEM_INCURSAO[ufsSemNada[0]].slice(1) : ".")
+          : " Todos os nove estados têm ao menos uma organização avaliada em campo.") }
   ];
 
   raiz.innerHTML =
@@ -537,49 +551,86 @@
       'e, por isso, aparecem com menos marcações.</p></div>';
   })();
   /* ----------------------------------------------------------- 5. Cobertura
-     Calculada a partir das rotas do relatório final (dados.meta.rotas), sem
-     nenhuma afirmação fixa sobre quais estados receberam incursão. */
+     Calculada a partir das rotas do relatório final (dados.meta.rotas) e da
+     base de prospecção (window.PTE_DATA). Nada de fixo sobre quais estados
+     receberam incursão; o que é registro da equipe está em SEM_INCURSAO,
+     ATUACAO e NAO_REALIZADAS. */
   (function () {
     var cruzadas = exp.filter(function (x) { return x.ref_id; }).length;
     var novas = exp.filter(function (x) { return !x.ref_id; });
     var virtuais = exp.filter(function (x) { return (x.perfil || {}).modo === "virtual"; });
     var ROTAS = (dados.meta.rotas || []);
-    var nomeRota = {};
-    ROTAS.forEach(function (r) { nomeRota[r.id] = r.nome; });
+    var nomeRota = {}, ordemRota = {};
+    ROTAS.forEach(function (r, i) { nomeRota[r.id] = r.nome; ordemRota[r.id] = i; });
+    function rotaCurta(id) { return (nomeRota[id] || id).replace(/^Rota extra$/, "rota extra"); }
+    function listaRotas(ids) {
+      var l = ids.slice().sort(function (a, b) { return (ordemRota[a] || 0) - (ordemRota[b] || 0); }).map(rotaCurta);
+      return l.length < 2 ? l.join("") : l.slice(0, -1).join(", ") + " e " + l[l.length - 1];
+    }
 
-    /* por UF: quantas organizações e em quais rotas */
+    /* mapeadas com atuação no estado (base de prospecção; programas em vários
+       estados contam em cada um) e avaliadas em campo (local da visita) */
+    var BASE = (window.PTE_DATA && window.PTE_DATA.iniciativas) || [];
+    function ufsDe(v) {
+      return String(v || "").split(/[,/]/).map(function (u) { return u.trim(); }).filter(function (u) { return /^[A-Z]{2}$/.test(u); });
+    }
+    var mapUF = {};
+    BASE.forEach(function (i) { ufsDe(i.estado).forEach(function (u) { mapUF[u] = (mapUF[u] || 0) + 1; }); });
     var porUF = {};
-    /* cada organização conta no estado da visita; a atuação em outro estado sem
-       visita é registrada à parte (ATUACAO), para não inflar as contagens */
     exp.forEach(function (x) {
-      String(x.estado || "").split(/[,/]/).forEach(function (u) {
-        u = u.trim(); if (!u) return;
+      ufsDe(x.estado).forEach(function (u) {
         porUF[u] = porUF[u] || { n: 0, rotas: {} };
-        porUF[u].n += 1; porUF[u].rotas[nomeRota[x.rota] || x.rota] = 1;
+        porUF[u].n += 1; porUF[u].rotas[x.rota] = 1;
       });
     });
-    var maxUF = Math.max.apply(null, UF_NE.map(function (u) { return (porUF[u] || {}).n || 0; })) || 1;
+    var maxUF = Math.max.apply(null, UF_NE.map(function (u) { return Math.max(mapUF[u] || 0, (porUF[u] || {}).n || 0); })) || 1;
     var ufHtml = UF_NE.map(function (u) {
-      var v = porUF[u];
-      return '<div class="r"><span class="t">' + NOME_UF[u] + ' (' + u + ')</span>' +
-        '<span class="b"><span style="width:' + (v ? v.n / maxUF * 100 : 4) + '%;background:' +
-        (v ? "#54B43C" : "#D9D9DE") + ';opacity:' + (v ? ".8" : "1") + '"></span></span>' +
-        '<span class="v">' + (v ? v.n + " (" + Object.keys(v.rotas).join(", ").replace(/Rota extra/, "rota extra") + ")"
-          : (ufsAtuacao[u] ? "Sem incursão; atuação " + ufsAtuacao[u].map(function (n) { return comArtigo(n, "de"); }).join(" e ")
-            : "Sem incursão")) + '</span></div>';
+      var v = porUF[u], m = mapUF[u] || 0;
+      var det;
+      if (v) det = '<b>' + v.n + '</b> avaliada' + (v.n > 1 ? 's' : '') + ' <span class="ec-rot">' + esc(listaRotas(Object.keys(v.rotas))) + '</span>';
+      else det = '<span class="ec-sem">Sem incursão</span>';
+      var linha2 = "";
+      if (!v) {
+        var partes = [];
+        if (SEM_INCURSAO_CURTO[u]) partes.push(esc(SEM_INCURSAO_CURTO[u]));
+        if (ufsAtuacao[u]) partes.push('Atuação ' + ufsAtuacao[u].map(function (n) {
+          var o = exp.filter(function (x) { return x.nome === n || x.nome_p5 === n; })[0];
+          var onde = o ? ufsDe(o.estado)[0] : null;
+          return esc(comArtigo(n, "de")) + (onde ? ', avaliad' + (ARTIGO[n] === "a" ? 'a' : 'o') + ' ' + esc(EM_UF[onde] || onde) : '');
+        }).join(" e ") + '.');
+        linha2 = partes.join(" ");
+      }
+      return '<div class="r ec-uf' + (v ? '' : ' sem') + '">' +
+        '<span class="t">' + NOME_UF[u] + ' <small>(' + u + ')</small></span>' +
+        '<span class="b" title="' + m + ' mapeadas com atuação no estado; ' + (v ? v.n : 0) + ' avaliadas em campo">' +
+          '<span class="map" style="width:' + (m / maxUF * 100).toFixed(1) + '%"></span>' +
+          (v ? '<span class="aval" style="width:' + (v.n / maxUF * 100).toFixed(1) + '%"></span>' : '') + '</span>' +
+        '<span class="v">' + det + '<small>' + m + ' mapeada' + (m > 1 ? 's' : '') + '</small>' +
+          (linha2 ? '<em>' + linha2 + '</em>' : '') + '</span></div>';
     }).join("");
 
-    var naoRealizadas = [
-      ["Redeser (Crato, CE)", "Não realizada: sem retorno da Fundação Araripe"],
-      ["Hub Pecém", "Adiada: a operação só começa em 2029 ou 2030"],
-      ["7 de 13 organizações da Rota 3", "Sem retorno aos contatos por e-mail, telefone e WhatsApp"]
-    ].map(function (x) {
-      return '<div class="r"><span class="t">' + esc(x[0]) + '</span>' +
-        '<span class="b"><span style="width:100%;background:#E42424;opacity:.18"></span></span>' +
-        '<span class="v" style="flex-basis:230px;text-align:left;color:var(--muted)">' + esc(x[1]) + '</span></div>';
-    }).join("");
+    /* visitas previstas que não aconteceram (P3, seção 4.1; P4, seção 2) */
+    var NAO_REALIZADAS = [
+      { org: "Redeser", local: "Crato (CE)", rota: "Rota 1", st: "nao", situacao: "Não realizada",
+        motivo: "A Fundação Araripe não retornou aos contatos." },
+      { org: "Hub de Hidrogênio Verde do Pecém", local: "São Gonçalo do Amarante (CE)", rota: "Rota 2", st: "adiada", situacao: "Adiada, sem data",
+        motivo: "Prevista como entrevista virtual; a operação só começa em 2029 ou 2030." },
+      { org: "7 das 13 organizações previstas", local: "Pernambuco e Alagoas", rota: "Rota 3", st: "nao", situacao: "Sem retorno",
+        motivo: "Sem resposta aos contatos por e-mail, telefone, WhatsApp e intermediários. Entre elas: Logística Verde em Suape, " +
+          "Grupo EQM/ZEG Biogás, SIMACaatinga, OxeTech, Paisagens Alimentares e EXYGEN/GranBio." }
+    ];
+    var REPROGRAMADAS = [
+      { org: "Rede Xique Xique", de: "Rota 1", para: "rota extra, em 05/08" },
+      { org: "Fazenda Tamanduá", de: "Rota 1", para: "rota extra, em 14/08" }
+    ];
+    var nrHtml = '<table class="ec-nr"><thead><tr><th>Organização</th><th>Rota prevista</th><th>Situação</th><th>Motivo</th></tr></thead><tbody>' +
+      NAO_REALIZADAS.map(function (x) {
+        return '<tr><td><b>' + esc(x.org) + '</b><small>' + esc(x.local) + '</small></td><td>' + esc(x.rota) + '</td>' +
+          '<td><span class="ec-st ' + x.st + '">' + esc(x.situacao) + '</span></td><td>' + esc(x.motivo) + '</td></tr>';
+      }).join("") + '</tbody></table>';
 
     var bahia = porUF.BA ? porUF.BA.n : 0;
+    var maisBase = UF_NE.slice().sort(function (a, b) { return (mapUF[b] || 0) - (mapUF[a] || 0); })[0];
 
     var nEst = exp.filter(function (x) { return x.envelope && x.envelope.max > 0; }).length;
     var mapeadas = FUNIL ? FUNIL.mapeadas : TOTAL_BASE + novas.length;
@@ -612,27 +663,33 @@
       'Das ' + TOTAL_BASE + ' iniciativas da base, ' + cruzadas + ' foram avaliadas em campo; as outras ' + nuncaVisitadas +
       ' <strong>não receberam visita nem entrevista</strong> e, por isso, só têm a avaliação da prospecção.</p></div>' +
       '<div class="ec-card"><h3>Cobertura por estado</h3>' +
-      '<p class="sub">Organizações avaliadas em cada estado e rotas que passaram por ele</p>' +
-      '<div class="ec-freq">' + ufHtml + '</div>' +
+      '<p class="sub">Iniciativas mapeadas com atuação em cada estado e organizações avaliadas em campo, com as rotas que passaram por ele</p>' +
+      '<div class="ec-uf-leg"><span><i class="aval"></i>Avaliadas em campo</span><span><i class="map"></i>Mapeadas com atuação no estado</span></div>' +
+      '<div class="ec-freq ec-ufs">' + ufHtml + '</div>' +
       '<p class="ec-nota">' +
         (ufsSemNada.length ? '<strong>Só ' + listaUF(ufsSemNada) + (ufsSemNada.length > 1 ? ' ficaram' : ' ficou') +
           ' sem nenhuma organização avaliada em campo.</strong> ' : '') +
+        ufsSemNada.map(function (u) { return SEM_INCURSAO[u] ? SEM_INCURSAO[u] + ' ' : ''; }).join("") +
         Object.keys(ufsAtuacao).map(function (u) {
           return (ARTIGO_UF[u] || u) + ' não recebeu incursão, mas ' +
             ufsAtuacao[u].map(function (n) { return comArtigo(n); }).join(" e ") +
             (ufsAtuacao[u].length > 1 ? ', avaliadas em estados vizinhos, atuam' : ', avaliado em estado vizinho, atua') +
             ' também nele. ';
         }).join("") +
-        (bahia ? 'A Bahia, estado com mais iniciativas na base de prospecção, entrou na rota extra de agosto, com ' +
-          bahia + ' organizações visitadas em Salvador e no Recôncavo.' : '') +
+        (bahia && maisBase === "BA" ? 'A Bahia, estado com mais iniciativas mapeadas, entrou na rota extra de agosto, com ' +
+          bahia + ' organizações visitadas em Salvador e no Recôncavo. ' : '') +
+        'Programas que atuam em vários estados contam como mapeados em cada um deles; as organizações avaliadas contam pelo ' +
+        'local da visita ou entrevista, e as que atuam em dois estados, como a Trilha Caminhos da Ibiapaba e o No Clima da Caatinga, contam nos dois.' +
       '</p></div>' +
       '<div class="ec-card"><h3>Visitas previstas e não realizadas</h3>' +
-      '<p class="sub">Organizações previstas nas rotas e motivo da não realização</p>' +
-      '<div class="ec-freq">' + naoRealizadas + '</div>' +
-      '<p class="ec-nota">Das ' + exp.length + ' avaliações, ' + virtuais.length + ' foram feitas ' +
-      '<strong>por videochamada</strong>' +
+      '<p class="sub">Organizações previstas nas rotas que não puderam ser visitadas nem entrevistadas, segundo os relatórios das incursões</p>' +
+      nrHtml +
+      '<p class="ec-nota">Duas visitas previstas na Rota 1 foram reprogramadas e realizadas na rota extra: ' +
+      REPROGRAMADAS.map(function (x) { return esc(x.org) + ' (' + esc(x.para) + ')'; }).join(" e ") +
+      '. Das ' + exp.length + ' avaliações, ' + virtuais.length + ' foram feitas <strong>por videochamada</strong>' +
       (virtuais.length ? ' (' + virtuais.map(function (x) { return esc(x.nome); }).join(", ") + ')' : "") +
-      ', o que o relatório registra como limitação metodológica.</p></div>';
+      ', no caso do Instituto Caburé e do No Clima da Caatinga por indisponibilidade de agenda das organizações; ' +
+      'o relatório registra a videochamada como limitação metodológica.</p></div>';
   })();
   /* ------------------------------------------------------------ 6. Captação */
   (function () {
