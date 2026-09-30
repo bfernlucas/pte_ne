@@ -728,15 +728,16 @@
       '<div class="ec-kpis">' +
         '<div class="ec-kpi a"><div class="v">' + fams.length + '</div><div class="l">famílias de mecanismos</div></div>' +
         '<div class="ec-kpi c"><div class="v">' + acimaPiso + '</div><div class="l">das ' + recom.length +
-          ' organizações de alta prioridade alcançam o porte mínimo do fundo regional</div></div>' +
-        '<div class="ec-kpi"><div class="v" style="color:var(--red)">' + abaixoRed +
-          '</div><div class="l">ficam abaixo até do piso reduzido</div></div>' +
+          ' organizações de alta prioridade alcançam o porte mínimo do fundo regional, de R$ ' + (escala.piso_padrao || 15) + ' milhões</div></div>' +
+        '<div class="ec-kpi"><div class="v">' + abaixoRed +
+          '</div><div class="l">das 18 ficam abaixo até do piso reduzido, de R$ ' + (escala.piso_reduzido || 5) + ' milhões</div></div>' +
       '</div>' +
       '<div class="ec-card"><h3>Restrição de escala</h3>' +
       '<p class="sub">O porte de cada organização, isoladamente, não alcança os canais de maior volume</p>' +
       '<p style="font-size:.88rem;line-height:1.6;margin:0">' + esc(escala.nota || "") + '</p>' +
-      (escala.proposta ? '<p style="font-size:.95rem;line-height:1.6;margin:10px 0 0;font-weight:600;color:var(--brand)">' +
-        esc(escala.proposta) + '</p>' : '') + '</div>' +
+      '<p style="font-size:.95rem;line-height:1.6;margin:10px 0 0;font-weight:600;color:var(--brand)">' +
+        'A carteira só alcança esses canais se for apresentada como um programa único, com subprojetos selecionados e ' +
+        'supervisionados por um agente credenciado. Apresentada experiência a experiência, a maior parte ficaria de fora.</p></div>' +
       '<div class="ec-card"><h3>Mecanismos por etapa e condição para contratar</h3>' +
       '<p class="sub">A associação é feita por etapa e tipo de condição, e não por iniciativa</p>' +
       porEtapa +

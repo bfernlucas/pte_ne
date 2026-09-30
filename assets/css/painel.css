@@ -50,7 +50,7 @@ a{color:var(--brand-2)}
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .topbar .fim{margin-left:auto;display:flex;align-items:center;gap:16px}
-.topbar .selo{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+.topbar .selo{font-size:.76rem;color:rgba(255,255,255,.7)}
 .sair-link{
   color:#fff;text-decoration:none;font-size:.78rem;
   border:1px solid rgba(255,255,255,.4);padding:5px 14px;border-radius:2px;white-space:nowrap;
@@ -91,11 +91,11 @@ main{padding-bottom:64px}
 
 /* ---------------------------------------------------------- números-chave */
 .numeros{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.numeros div{flex:1 1 170px;padding:22px 28px;border-right:1px solid var(--border-2);text-align:center}
-.numeros div:last-child{border-right:0}
+.numeros div{flex:1 1 170px;padding:20px 28px 20px 0;margin-right:28px;border-right:1px solid var(--border-2);text-align:left}
+.numeros div:last-child{border-right:0;margin-right:0}
 .numeros b{display:block;font-family:var(--display);font-weight:600;font-size:1.9rem;line-height:1.1;color:var(--brand)}
 .numeros span{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
-.numeros small{display:block;font-size:.72rem;color:var(--faint);max-width:34ch;margin:0 auto}
+.numeros small{display:block;font-size:.74rem;color:var(--faint);max-width:34ch;margin:0}
 
 /* -------------------------------------------------------------- controles */
 .barra{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
@@ -115,7 +115,7 @@ main{padding-bottom:64px}
 .btn:hover{background:#1B1B57}
 .ghost:hover{border-color:var(--brand-2);color:var(--brand-2)}
 .exp-bar{display:flex;gap:8px;align-items:center;margin:0 0 12px;flex-wrap:wrap}
-.exp-lab{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}
+.exp-lab{font-size:.78rem;color:var(--faint)}
 .exp-btn{
   font:inherit;font-size:.78rem;padding:5px 11px;border:1px solid var(--border);
   background:#fff;color:var(--muted);border-radius:2px;cursor:pointer;
@@ -280,11 +280,11 @@ table.inv-tbl tr.resumo td{color:var(--muted);border-top:1px solid var(--border-
 table.inv-tbl tr.total td{font-weight:700;color:var(--ink);border-top:2px solid var(--brand);background:#F5F7FB;font-size:.88rem}
 table.inv-tbl tr.total.b td{border-top-color:#a3b3c6}
 .inv-notas{margin-top:22px;font-size:.8rem;color:var(--muted);columns:2;column-gap:32px;border-top:1px solid var(--border-2);padding-top:14px}
-.inv-notas>b{display:block;column-span:all;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-bottom:6px}
+.inv-notas>b{display:block;column-span:all;font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:6px}
 .inv-notas p{margin:0 0 6px;break-inside:avoid}
 .inv-extra{margin-top:16px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr))}
-.inv-extra div{border:1px solid var(--border);border-left:3px solid var(--green);padding:12px 14px;font-size:.84rem;color:var(--ink);background:#FBFDFB}
-.inv-extra b{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.inv-extra div{border-top:2px solid var(--border);padding:12px 0 0;font-size:.84rem;color:var(--ink);line-height:1.55}
+.inv-extra b{display:block;font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:4px}
 @media (max-width:900px){.inv-notas{columns:1}}
 
 /* ------------------------------------------------------------------ misc */
@@ -299,7 +299,7 @@ table.inv-tbl tr.total.b td{border-top-color:#a3b3c6}
 .parceiros{border-top:1px solid var(--border);background:var(--surface-2);margin-top:48px}
 .parceiros .wrap{display:flex;gap:40px;align-items:center;flex-wrap:wrap;padding-top:26px;padding-bottom:26px}
 .pgroup{display:flex;flex-direction:column;gap:8px}
-.pgroup .pl{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}
+.pgroup .pl{font-size:.76rem;color:var(--faint)}
 .pgroup img{max-height:42px;width:auto;object-fit:contain}
 .pgroup.tecnico{margin-left:auto}
 
@@ -376,3 +376,5 @@ table.inv-tbl td.n{white-space:nowrap}
 .inv-notas .legenda{column-span:all;margin-top:10px;padding-top:8px;border-top:1px solid var(--border-2);font-size:.72rem;color:var(--faint)}
 /* cabeçalhos das tabelas largas: palavra longa não pode ser cortada */
 table.ranking thead th{letter-spacing:.02em;overflow:visible}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
