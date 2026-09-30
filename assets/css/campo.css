@@ -39,8 +39,8 @@
 .ec-cls.estrategico{background:#fff2d6;color:#9a5b00;border:1px solid #f3d08a}
 .ec-cls.nao{background:#fdecea;color:#a5241a;border:1px solid #f5c6c2}
 
-.ec-dims{display:flex;gap:3px;align-items:flex-end;height:22px}
-.ec-dims i{width:7px;border-radius:1px;display:block;background:var(--brand-2);opacity:.85}
+.ec-dims{display:flex;gap:3px;align-items:flex-end;height:26px}
+.ec-dims i{width:9px;border-radius:1px;display:block;background:var(--brand-2);opacity:.85}
 
 .ec-ev{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px}
 .ec-ev.completa{background:var(--green)}
@@ -329,3 +329,5 @@
 .ec-st{display:inline-block;font-size:.68rem;font-weight:600;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap}
 .ec-st.nao{background:#fdecea;color:#a5241a;border:1px solid #f5c6c2}
 .ec-st.adiada{background:#fff2d6;color:#9a5b00;border:1px solid #f3d08a}
+
+.ec-mx tbody tr.ec-semcod td{color:var(--faint);font-size:.76rem;text-align:left;padding-left:12px;font-style:italic}

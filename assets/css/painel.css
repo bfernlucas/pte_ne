@@ -340,7 +340,7 @@ tr.linha-total td{background:var(--surface-2);font-weight:700}
 /* ------------------------------------ correções da equipe (30/09/2026) */
 /* leitura de abertura da carteira: figura à esquerda, texto à direita */
 .carteira-destaque{display:grid;grid-template-columns:minmax(280px,34%) 1fr;gap:0 40px;
-  border-top:3px solid var(--brand);border-bottom:1px solid var(--border);padding:22px 0 24px;margin:0 0 28px}
+  border-top:3px solid var(--brand);padding:22px 0 8px;margin:26px 0 28px}
 .carteira-destaque .cd-lab{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .carteira-destaque .cd-num{display:block;font-family:var(--display);font-weight:600;font-size:2.15rem;line-height:1.1;
   color:var(--brand);margin:4px 0 2px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
@@ -363,6 +363,7 @@ tr.linha-total td{background:var(--surface-2);font-weight:700}
   font-size:.98rem;line-height:1.55;font-weight:500;color:var(--brand);max-width:72ch}
 @media (max-width:900px){.carteira-destaque{grid-template-columns:1fr;gap:18px}}
 .numeros + .funil{margin:10px 0 0;font-size:.8rem;color:var(--faint);max-width:110ch}
+.numeros{margin-top:4px}
 /* classificação no ranking e na tabela por experiência */
 .cls-alta{color:#2F7A21;font-weight:600}
 .cls-estrategico{color:var(--gold-ink);font-weight:600}

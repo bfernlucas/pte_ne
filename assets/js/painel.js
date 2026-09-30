@@ -174,18 +174,10 @@
         " por entrevista virtual"]
     ];
     if (EXP.length) {
-      blocos.push(["" + nAlta, "recomendadas com alta prioridade", estimadas + " têm estimativa de recursos: " +
-        nAlta + " de alta prioridade e " + nEstr + " de potencial estratégico" +
-        (semEst > 0 ? "; " + semEst + " não recomendada" + (semEst > 1 ? "s" : "") + " neste ciclo" : "")]);
-    }
-    if (cart && cart.reais) {
-      var qa = QUADROS.contratavel.total, qb = QUADROS.referencia.total;
-      blocos.push([
-        num(cart.reais.min, 1) + " – " + num(cart.reais.max, 1),
-        "milhões de reais na carteira total",
-        "Estruturação de R$ " + faixaTxt(qa.min, qa.max) + " milhões e Escala de R$ " + faixaTxt(qb.min, qb.max) +
-          " milhões; US$ " + num(cart.dolares.min, 1) + " a " + num(cart.dolares.max, 1) + " milhões, em 36 meses"
-      ]);
+      blocos.push(["" + estimadas, "com estimativa de recursos", semEst > 0
+        ? "As outras " + semEst + " avaliadas não foram recomendadas neste ciclo" : "Todas as avaliadas em campo"]);
+      blocos.push(["" + nAlta, "recomendadas com alta prioridade", "80 pontos ou mais na matriz de avaliação; " + nEstr +
+        " são de potencial estratégico (60 a 79 pontos)"]);
     }
     $("#carteira-numeros").innerHTML = blocos.map(function (b) {
       return "<div><b>" + esc(b[0]) + "</b><span>" + esc(b[1]) + "</span><small>" + esc(b[2]) + "</small></div>";
@@ -597,7 +589,10 @@
       });
     });
 
-    var rotulos = CRIT.map(function (c) { return c.label; });
+    var CURTO = { relevancia: "Relevância", clima: "Clima", cadeias: "Cadeias produtivas", viabilidade: "Viabilidade",
+      replicabilidade: "Replicabilidade", inovacao: "Inovação", investimentos: "Investimentos verdes",
+      inclusao: "Inclusão produtiva", equidade: "Equidade", governanca: "Governança" };
+    var rotulos = CRIT.map(function (c) { return CURTO[c.key] || c.label; });
     var ds = sel.map(function (l, i) {
       var cor = PAL_CMP[i % PAL_CMP.length];
       return {
@@ -612,9 +607,9 @@
       data: { labels: rotulos, datasets: ds },
       options: {
         responsive: true, maintainAspectRatio: true, aspectRatio: 1,
-        layout: { padding: 8 },
+        layout: { padding: 14 },
         scales: { r: { min: 0, max: 3, ticks: { stepSize: 1, backdropColor: "transparent", font: { size: 10 } },
-          pointLabels: { font: { size: 10.5 }, padding: 6, callback: quebraRotulo },
+          pointLabels: { font: { size: 11 }, padding: 8 },
           grid: { color: "#ECECEF" }, angleLines: { color: "#ECECEF" } } },
         plugins: { legend: { display: false } }
       }

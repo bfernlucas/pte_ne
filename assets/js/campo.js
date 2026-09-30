@@ -300,7 +300,7 @@
     document.getElementById("ec-corpo").innerHTML = linhas.map(function (x, i) {
       var e = EIXOS[x.eixo_cod] || [x.eixo_cod, "#6b7080"];
       var dims = DIMS.map(function (d) {
-        return '<i style="height:' + (x.notas[d[0]] / 5 * 22) + 'px"></i>'; }).join("");
+        return '<i style="height:' + (x.notas[d[0]] / 5 * 26) + 'px"></i>'; }).join("");
       var env = x.envelope.max > 0 ? fmt(x.envelope.min) + " – " + fmt(x.envelope.max) : "—";
       var base = x.base_informacional || "ausente";
       return '<tr data-n="' + i + '">' +
@@ -514,11 +514,16 @@
     var fp = freq(POTENCIAIS, "potenciais", "#54B43C");
 
     var ordExp = exp.slice().sort(function (a, b) {
+      if (a.codificada !== b.codificada) return a.codificada ? -1 : 1;
       return (b.gargalos || []).length - (a.gargalos || []).length; });
     var cab = fg.ord.map(function (k) {
       return '<th class="vert" title="' + esc(GARGALOS[k]) + '"><div>' +
              esc(gargCurto(k)) + '</div></th>'; }).join("");
     var linhas = ordExp.map(function (x) {
+      if (!x.codificada) {
+        return '<tr class="ec-semcod"><th class="rot">' + esc(x.nome) + '</th>' +
+          '<td colspan="' + (fg.ord.length + 1) + '">Sem leitura qualitativa codificada</td></tr>';
+      }
       return '<tr><th class="rot">' + esc(x.nome) + '</th>' +
         fg.ord.map(function (k) {
           var on = (x.gargalos || []).indexOf(k) !== -1;
@@ -547,8 +552,8 @@
       '<thead><tr><th class="rot">Experiência</th>' + cab +
       '<th class="vert tot-h"><div>Total</div></th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
       '<p class="ec-nota">Célula vazia significa que o gargalo <strong>não foi mencionado no relatório</strong>, ' +
-      'e não que ele inexiste. As cinco experiências visitadas fora dos roteiros têm ficha menos detalhada ' +
-      'e, por isso, aparecem com menos marcações.</p></div>';
+      'e não que ele inexiste. As organizações visitadas na Bahia em agosto ainda não têm a leitura qualitativa codificada ' +
+      'e aparecem ao fim da tabela, sem marcações.</p></div>';
   })();
   /* ----------------------------------------------------------- 5. Cobertura
      Calculada a partir das rotas do relatório final (dados.meta.rotas) e da
