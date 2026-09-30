@@ -563,9 +563,9 @@ def main(xlsx=None):
     nota += ("; %s %s entre o piso reduzido e o padrão." % (lista(meio), "fica" if len(meio) == 1 else "ficam")) if meio else "."
     escala = {"piso_padrao": PISO, "piso_reduzido": PISO_RED, "acima_padrao": n15, "acima_20": n20,
               "abaixo_reduzido": n5, "nota": nota,
-              "proposta": "Daí a proposta de tratar a carteira como programa único, com subprojetos sob um agente "
-                          "credenciado que os selecione e supervisione. Assim apresentada, a carteira passa a dialogar "
-                          "com canais que, experiência a experiência, permaneceriam fora de alcance."}
+              "proposta": "A carteira só alcança esses canais se for apresentada como um programa único, com subprojetos "
+                          "selecionados e supervisionados por um agente credenciado. Apresentada experiência a experiência, "
+                          "a maior parte ficaria de fora."}
 
     est = [e for e in experiencias if e["estimada"]]
     doc = {

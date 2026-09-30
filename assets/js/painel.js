@@ -234,13 +234,15 @@
       '</div>' +
       '<div class="cd-txt">' +
         '<h3>Leitura da carteira</h3>' +
-        '<p>Só <b>' + num(pA * 100, 0) + '%</b> do valor máximo da carteira pode ser contratado agora. O restante depende de ' +
-          'estudos, formalizações, decisões externas e verificações que a própria Estruturação financia: a decisão desta etapa ' +
-          'é menos sobre quanto aportar e mais sobre a sequência em que o apoio é liberado.</p>' +
-        (esc_.acima_padrao != null ? '<p>Isoladamente, apenas <b>' + esc_.acima_padrao + ' das ' + est.length + '</b> experiências alcançam ' +
-          'o porte mínimo dos canais de maior volume, de R$ ' + num(esc_.piso_padrao, 0) + ' milhões, e ' + esc_.abaixo_reduzido +
-          ' ficam abaixo até do piso reduzido, de R$ ' + num(esc_.piso_reduzido, 0) + ' milhões.</p>' : '') +
-        (esc_.proposta ? '<blockquote class="proposta">' + esc(esc_.proposta) + '</blockquote>' : '') +
+        '<p>Da carteira máxima, ' + num(pA * 100, 0) + '% correspondem a itens que já podem ser contratados. O restante espera ' +
+          'a conclusão de um estudo, uma formalização, uma decisão externa ou uma verificação, e é a Estruturação que paga ' +
+          'esses passos. Por isso a ordem em que o apoio é liberado pesa mais do que o valor total.</p>' +
+        (esc_.acima_padrao != null ? '<p>Tomadas uma a uma, ' + esc_.acima_padrao + ' das ' + est.length + ' experiências alcançam ' +
+          'o porte mínimo dos canais de maior volume, de R$ ' + num(esc_.piso_padrao, 0) + ' milhões; ' + esc_.abaixo_reduzido +
+          ' ficam abaixo do piso reduzido, de R$ ' + num(esc_.piso_reduzido, 0) + ' milhões.</p>' : '') +
+        '<blockquote class="proposta">A carteira só alcança esses canais se for apresentada como um programa único, com ' +
+          'subprojetos selecionados e supervisionados por um agente credenciado. Apresentada experiência a experiência, ' +
+          'a maior parte ficaria de fora.</blockquote>' +
       '</div>';
   }
 
