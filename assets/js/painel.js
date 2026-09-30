@@ -179,8 +179,16 @@
       blocos.push(["" + nAlta, "recomendadas com alta prioridade", "80 pontos ou mais na matriz de avaliação; " + nEstr +
         " são de potencial estratégico (60 a 79 pontos)"]);
     }
-    $("#carteira-numeros").innerHTML = blocos.map(function (b) {
-      return "<div><b>" + esc(b[0]) + "</b><span>" + esc(b[1]) + "</span><small>" + esc(b[2]) + "</small></div>";
+    /* funil em cápsulas, como "Metodologia em números" do impresso: a largura
+       de cada cápsula é proporcional à primeira etapa (as iniciativas mapeadas) */
+    var base = +blocos[0][0] || 1, TONS = ["azul", "vermelho", "laranja", "verde"];
+    var cx = $("#carteira-numeros");
+    cx.setAttribute("role", "list");
+    cx.innerHTML = blocos.map(function (b, i) {
+      var p = Math.max(0, Math.min(1, (+b[0] || 0) / base));
+      return '<div class="cap-linha" role="listitem" style="--p:' + p.toFixed(4) + ';--i:' + i + '">' +
+        '<b class="cap ' + TONS[i % TONS.length] + '">' + esc(b[0]) + "</b>" +
+        '<p class="cap-txt"><span>' + esc(b[1]) + "</span><small>" + esc(b[2]) + "</small></p></div>";
     }).join("");
     if (funil) {
       $("#carteira-funil").innerHTML = "Das " + funil.mapeadas + " iniciativas mapeadas, " + funil.descartadas +

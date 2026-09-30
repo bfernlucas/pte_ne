@@ -2,7 +2,9 @@
    Painel PTE-NE — folha principal.
    Identidade: documento Plano Brasil Nordeste de Transformação Ecológica.
    Layout: referência data.worldbank.org — fundo branco, régua de 1px,
-   sem sombra e sem gradiente; a cor fica reservada ao dado.
+   sem sombra e sem gradiente; a cor fica reservada ao dado. A cor chapada
+   do impresso aparece em três lugares só: a aba de capítulo de cada seção,
+   as cápsulas do funil da carteira e a citação (bloco no fim da folha).
    ========================================================================== */
 
 :root{
@@ -10,6 +12,10 @@
   --brand:#24246C; --brand-2:#0C549C; --brand-3:#3A6FB8;
   --red:#E42424; --amber:#F09C18; --green:#54B43C; --orange:#F09C18;
   --teal:#0F7D8C;
+  /* cores chapadas do impresso (amostradas do PDF do plano) */
+  --c-vermelho:#ED2424; --c-laranja:#FAA51A; --c-amarelo:#FEE200;
+  --c-verde:#55B847; --c-azul:#1F4DA1; --c-anil:#24246C;
+  --grao:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 
   --bg:#ffffff; --surface:#ffffff; --surface-2:#F5F5F7;
   --ink:#1A1A1F; --muted:#55555F; --faint:#6E6E78;   /* 5:1 sobre branco (AA) */
@@ -39,15 +45,16 @@ a{color:var(--brand-2)}
 
 /* ------------------------------------------------------------------ topo */
 .topbar{background:var(--brand);color:#fff}
-.topbar .wrap{display:flex;align-items:center;gap:20px;min-height:58px}
-.topbar .marca{display:flex;align-items:baseline;gap:12px;min-width:0}
-.topbar .marca b{
-  font-family:var(--display);font-weight:700;font-size:1.06rem;
-  text-transform:uppercase;letter-spacing:.055em;white-space:nowrap;
+.topbar .wrap{display:flex;align-items:center;gap:20px;min-height:66px}
+.topbar .marca{display:flex;align-items:center;gap:16px;min-width:0}
+/* assinatura empilhada, como o título da capa */
+.topbar .logo{
+  display:flex;flex-direction:column;font-family:var(--display);font-weight:700;font-size:1rem;
+  line-height:1.06;text-transform:uppercase;letter-spacing:.045em;white-space:nowrap;
 }
-.topbar .marca span{
-  font-size:.78rem;color:rgba(255,255,255,.72);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+.topbar .desc{
+  font-size:.8rem;color:rgba(255,255,255,.78);line-height:1.3;padding-left:16px;
+  border-left:1px solid rgba(255,255,255,.3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .topbar .fim{margin-left:auto;display:flex;align-items:center;gap:16px}
 .topbar .selo{font-size:.76rem;color:rgba(255,255,255,.7)}
@@ -62,16 +69,16 @@ a{color:var(--brand-2)}
 .secnav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 .secnav .wrap::-webkit-scrollbar{display:none}
 .secnav button{
-  appearance:none;background:none;border:0;border-bottom:3px solid transparent;
+  appearance:none;background:none;border:0;border-bottom:4px solid transparent;
   padding:14px 16px 11px;font:inherit;font-size:.92rem;font-weight:500;color:var(--muted);
   cursor:pointer;white-space:nowrap;
 }
 .secnav button:hover{color:var(--ink)}
-.secnav button.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:700}
+.secnav button.active{color:var(--brand);border-bottom-color:var(--cap,var(--brand));font-weight:700}
 
 /* -------------------------------------------------------------- estrutura */
 main{padding-bottom:64px}
-.view{padding-top:32px}
+.view{padding-top:0}
 .view.hidden{display:none}
 .sec-head{margin-bottom:24px}
 .sec-head h2{
@@ -88,14 +95,6 @@ main{padding-bottom:64px}
 .bloco>.sub{margin:0 0 18px;color:var(--muted);font-size:.89rem}
 .leitura{margin:18px 0 0;font-size:.97rem;line-height:1.6;color:var(--ink)}
 .leitura b{color:var(--brand)}
-
-/* ---------------------------------------------------------- números-chave */
-.numeros{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.numeros div{flex:1 1 170px;padding:20px 28px 20px 0;margin-right:28px;border-right:1px solid var(--border-2);text-align:left}
-.numeros div:last-child{border-right:0;margin-right:0}
-.numeros b{display:block;font-family:var(--display);font-weight:600;font-size:1.9rem;line-height:1.1;color:var(--brand)}
-.numeros span{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
-.numeros small{display:block;font-size:.74rem;color:var(--faint);max-width:34ch;margin:0}
 
 /* -------------------------------------------------------------- controles */
 .barra{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
@@ -296,11 +295,12 @@ table.inv-tbl tr.total.b td{border-top-color:#a3b3c6}
 .metodo dt{font-weight:700;margin-top:16px;color:var(--brand)}
 .metodo dd{margin:3px 0 0;color:var(--muted);font-size:.9rem;max-width:80ch}
 
-.parceiros{border-top:1px solid var(--border);background:var(--surface-2);margin-top:48px}
+.parceiros{border-top:1px solid var(--border);background:#fff;margin-top:48px}
 .parceiros .wrap{display:flex;gap:40px;align-items:center;flex-wrap:wrap;padding-top:26px;padding-bottom:26px}
 .pgroup{display:flex;flex-direction:column;gap:8px}
 .pgroup .pl{font-size:.76rem;color:var(--faint)}
-.pgroup img{max-height:42px;width:auto;object-fit:contain}
+.pgroup{min-width:0;max-width:100%}
+.pgroup img{max-height:42px;width:auto;max-width:100%;height:auto;object-fit:contain}
 .pgroup.tecnico{margin-left:auto}
 
 @media (max-width:1080px){
@@ -311,9 +311,8 @@ table.inv-tbl tr.total.b td{border-top-color:#a3b3c6}
 }
 @media (max-width:640px){
   :root{--gutter:16px}
-  .topbar .marca span{display:none}
-  .sec-head h2{font-size:1.4rem}
-  .numeros div{flex-basis:50%;border-right:0}
+  .topbar .desc,.topbar .selo{display:none}
+  .topbar .logo{font-size:.9rem}
 }
 @media print{
   .secnav,.topbar .fim,.exp-bar,.barra{display:none}
@@ -331,8 +330,6 @@ tr.linha-total td{background:var(--surface-2);font-weight:700}
 /* tabela por experiência: cabe na largura sem rolagem interna */
 #tbl-exp thead th{padding:8px 6px;font-size:.66rem;letter-spacing:.03em;white-space:normal;line-height:1.25}
 #tbl-exp tbody td{padding:7px 6px}
-.numeros div{min-width:0}
-.numeros small{line-height:1.4;margin-top:2px}
 .sec-head p,.bloco>.sub{max-width:110ch}
 @media (max-width:1280px){ .wrap{--gutter:20px} }
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -359,11 +356,11 @@ tr.linha-total td{background:var(--surface-2);font-weight:700}
 .carteira-destaque .cd-txt h3{margin:0 0 10px;font-size:.82rem;letter-spacing:0;color:var(--muted)}
 .carteira-destaque .cd-txt p{margin:0 0 12px;font-size:.95rem;line-height:1.62;max-width:72ch}
 .carteira-destaque .cd-txt b{color:var(--brand)}
-.carteira-destaque blockquote.proposta{margin:14px 0 0;padding:10px 0 10px 16px;border-left:3px solid var(--brand);
-  font-size:.98rem;line-height:1.55;font-weight:500;color:var(--brand);max-width:72ch}
+/* citação no estilo do impresso: azul, corpo maior, sem filete */
+.carteira-destaque blockquote.proposta{margin:20px 0 0;padding:0;border:0;
+  font-size:1.24rem;line-height:1.48;font-weight:400;color:var(--c-azul);max-width:48ch}
 @media (max-width:900px){.carteira-destaque{grid-template-columns:1fr;gap:18px}}
-.numeros + .funil{margin:10px 0 0;font-size:.8rem;color:var(--faint);max-width:110ch}
-.numeros{margin-top:4px}
+.capsulas + .funil{margin:16px 0 0;font-size:.8rem;color:var(--faint);max-width:110ch}
 /* classificação no ranking e na tabela por experiência */
 .cls-alta{color:#2F7A21;font-weight:600}
 .cls-estrategico{color:var(--gold-ink);font-weight:600}
@@ -378,3 +375,69 @@ table.inv-tbl td.n{white-space:nowrap}
 table.ranking thead th{letter-spacing:.02em;overflow:visible}
 
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* ============================================ identidade do impresso (v82) */
+/* aba de capítulo: bloco de cor preso à margem esquerda, canto inferior
+   direito arredondado e um motivo do livro na ponta (como "Prólogo") */
+#view-carteira{--cap:var(--c-vermelho);--cap-ink:#fff}
+#view-mapa{--cap:var(--c-verde);--cap-ink:var(--c-anil)}
+#view-experiencias{--cap:var(--c-laranja);--cap-ink:var(--c-anil)}
+#view-diagnostico{--cap:var(--c-azul);--cap-ink:#fff}
+#view-analise{--cap:var(--c-anil);--cap-ink:#fff}
+.secnav button[data-view=carteira]{--cap:var(--c-vermelho)}
+.secnav button[data-view=mapa]{--cap:var(--c-verde)}
+.secnav button[data-view=experiencias]{--cap:var(--c-laranja)}
+.secnav button[data-view=diagnostico]{--cap:var(--c-azul)}
+.secnav button[data-view=analise]{--cap:var(--c-anil)}
+
+.sec-head{margin-bottom:28px}
+.sec-head .aba{
+  position:relative;display:inline-flex;align-items:center;max-width:calc(100% - 36px);
+  margin:0 0 20px;padding:30px 60px 24px 0;border-radius:0 0 60px 0;
+  background:var(--cap) var(--grao);color:var(--cap-ink);
+}
+.sec-head .aba::before{content:"";position:absolute;top:0;bottom:0;right:calc(100% - 1px);width:100vw;background:inherit}
+.sec-head .aba h2{
+  font-family:var(--display);font-weight:700;font-size:clamp(1.55rem,2.2vw,2.2rem);
+  line-height:1.08;letter-spacing:.005em;color:inherit;margin:0;
+}
+.sec-head .motivo{position:absolute;right:-24px;top:12px;width:48px;height:auto;pointer-events:none}
+.sec-head .motivo.ave{width:66px;right:-52px;top:8px}
+.sec-head .motivo.folha{width:50px;top:auto;bottom:-16px;right:-18px}
+.sec-head .motivo.brilho{width:44px;top:auto;bottom:-14px;right:-14px}
+.sec-head .motivo.cacto{width:50px;top:10px;right:-30px}
+.sec-head>p{font-size:1rem;line-height:1.6;color:var(--muted);max-width:92ch}
+
+/* cápsulas do funil (como "Metodologia em números"): largura proporcional */
+.capsulas{display:grid;gap:10px;margin:4px 0 0}
+.cap-linha{display:flex;align-items:center;gap:18px;min-width:0}
+.cap{
+  flex:0 0 calc(var(--p) * 58%);min-width:76px;height:50px;display:flex;align-items:center;justify-content:flex-end;
+  padding:0 22px 0 12px;border-radius:0 25px 25px 0;background:var(--k) var(--grao);color:var(--k-ink);
+  font-family:var(--display);font-weight:700;font-size:1.95rem;line-height:1;font-variant-numeric:tabular-nums;
+}
+.cap.azul{--k:var(--c-azul);--k-ink:#fff}
+.cap.vermelho{--k:var(--c-vermelho);--k-ink:#fff}
+.cap.laranja{--k:var(--c-laranja);--k-ink:var(--c-anil)}
+.cap.verde{--k:var(--c-verde);--k-ink:var(--c-anil)}
+.cap-txt{margin:0;flex:1 1 240px;min-width:0;max-width:56ch}
+.cap-txt span{display:block;font-size:1rem;font-weight:500;line-height:1.3;color:var(--ink)}
+.cap-txt small{display:block;font-size:.8rem;line-height:1.4;color:var(--muted);margin-top:2px}
+@media (prefers-reduced-motion:no-preference){
+  .cap{animation:cap-abre .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 90ms)}
+  @keyframes cap-abre{from{clip-path:inset(0 100% 0 0 round 0 25px 25px 0)}to{clip-path:inset(0 0 0 0 round 0 25px 25px 0)}}
+}
+@media (max-width:700px){
+  .cap-linha{flex-wrap:wrap;gap:6px 12px}
+  .cap{flex-basis:calc(var(--p) * 100%);height:46px;font-size:1.6rem;border-radius:0 23px 23px 0}
+  .cap-txt{flex-basis:100%}
+}
+@media (max-width:640px){
+  .sec-head .aba{padding:22px 44px 18px 0;border-radius:0 0 44px 0}
+  .sec-head .motivo{display:none}
+}
+@media print{
+  .sec-head .aba,.cap{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cap{animation:none}
+}
+

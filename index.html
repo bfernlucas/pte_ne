@@ -2,9 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<script src="assets/data/campo.enc.js?v=81"></script>
-<script src="assets/data/p5.enc.js?v=81"></script>
-<script src="assets/js/auth.js?v=81"></script>
+<script src="assets/data/campo.enc.js?v=82"></script>
+<script src="assets/data/p5.enc.js?v=82"></script>
+<script src="assets/js/auth.js?v=82"></script>
 <script>if(!window.PTEAuth)location.replace("entrar.html");else PTEAuth.exigir();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Plano Brasil Nordeste de Transformação Ecológica — carteira e incursões de campo</title>
@@ -19,16 +19,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/painel.css?v=81" />
-<link rel="stylesheet" href="assets/css/campo.css?v=81" />
+<link rel="stylesheet" href="assets/css/painel.css?v=82" />
+<link rel="stylesheet" href="assets/css/campo.css?v=82" />
 </head>
 <body>
 
 <header class="topbar">
   <div class="wrap">
     <div class="marca">
-      <b>Plano Brasil Nordeste</b>
-      <span>Transformação Ecológica: carteira de iniciativas e incursões de campo</span>
+      <b class="logo"><span>Plano Brasil Nordeste</span> <span>de Transformação Ecológica</span></b>
+      <span class="desc">Carteira de iniciativas e incursões de campo</span>
     </div>
     <div class="fim">
       <span class="selo">Uso restrito à equipe</span>
@@ -52,12 +52,12 @@
 <!-- ====================================================== CARTEIRA -->
 <section class="view" id="view-carteira">
   <div class="sec-head">
-    <h2>A carteira em números</h2>
+    <div class="aba"><h2>A carteira em números</h2><svg class="motivo palma" viewBox="0 0 48 64" aria-hidden="true" focusable="false"><g transform="rotate(16 24 32)"><path d="M24 2C36 3 45 16 45 32C45 50 36 62 24 62C12 62 4 50 4 32C4 15 12 1 24 2Z" fill="#FEE200"/><g fill="#E0A800"><circle cx="17" cy="20" r="2"/><circle cx="30" cy="16" r="2"/><circle cx="24" cy="31" r="2"/><circle cx="14" cy="40" r="2"/><circle cx="33" cy="44" r="2"/></g></g></svg></div>
     <p id="carteira-lead">As iniciativas de transformação ecológica mapeadas nos nove estados do Nordeste, as organizações
       visitadas em campo e a estimativa preliminar de recursos para apoiá-las.</p>
   </div>
 
-  <div class="numeros" id="carteira-numeros"></div>
+  <div class="capsulas" id="carteira-numeros"></div>
   <p class="funil" id="carteira-funil"></p>
 
   <div class="carteira-destaque" id="carteira-destaque"></div>
@@ -147,7 +147,7 @@
 <!-- ========================================================== MAPA -->
 <section class="view hidden" id="view-mapa">
   <div class="sec-head">
-    <h2>Onde estão as iniciativas</h2>
+    <div class="aba"><h2>Onde estão as iniciativas</h2><svg class="motivo cacto" viewBox="16 18 64 66" aria-hidden="true" focusable="false"><path d="M40 82V28a8 8 0 0 1 16 0V82ZM20 58V42a6 6 0 0 1 12 0V54h8v8H26a6 6 0 0 1-6-4ZM56 52h8V38a6 6 0 0 1 12 0V50a8 8 0 0 1-8 8H56Z" fill="#24246C"/></svg></div>
     <p>Localização de todas as iniciativas da base de prospecção. A cor indica o eixo do plano, e o tamanho do
       círculo, a nota da matriz. As organizações que receberam visita ou entrevista têm contorno escuro, e as
       linhas tracejadas mostram os trechos percorridos em cada rota.</p>
@@ -172,7 +172,7 @@
 <!-- ================================================== EXPERIÊNCIAS -->
 <section class="view hidden" id="view-experiencias">
   <div class="sec-head">
-    <h2>Incursões e fichas de investimento</h2>
+    <div class="aba"><h2>Incursões e fichas de investimento</h2><svg class="motivo ave" viewBox="0 0 100 70" aria-hidden="true" focusable="false"><path d="M99 16C95 12 89 10 84 12C80 14 77 17 74 21C66 10 50 2 26 1C40 8 53 18 61 29C54 33 48 37 40 40L2 40L30 48L6 64C36 60 60 50 76 38C85 32 93 25 99 16Z" fill="#1F4DA1"/></svg></div>
     <p id="exp-lead">Organizações visitadas ou entrevistadas nas incursões, na ordem das rotas. Cada cartão traz
       a avaliação, a faixa de recursos estimada e o acesso à ficha de investimento.</p>
   </div>
@@ -192,7 +192,7 @@
 <!-- =================================================== DIAGNÓSTICO -->
 <section class="view hidden" id="view-diagnostico">
   <div class="sec-head">
-    <h2>Diagnóstico de campo</h2>
+    <div class="aba"><h2>Diagnóstico de campo</h2><svg class="motivo folha" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="28" fill="#fff" stroke="#ED2424" stroke-width="4"/><path d="M17 47C17 29 29 18 48 16C48 35 37 47 19 47M19 47L40 26" fill="none" stroke="#ED2424" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <p>Leitura qualitativa das incursões, com base nas fichas de campo e nas transcrições das entrevistas:
       perfil das organizações, gargalos, potencialidades, captação de recursos e cobertura territorial.</p>
   </div>
@@ -202,7 +202,7 @@
 <!-- ======================================================= ANÁLISE -->
 <section class="view hidden" id="view-analise">
   <div class="sec-head">
-    <h2>Análise da carteira</h2>
+    <div class="aba"><h2>Análise da carteira</h2><svg class="motivo brilho" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><path d="M32 2C35 24 41 29 62 32C41 35 35 40 32 62C29 40 23 35 2 32C23 29 29 24 32 2Z" fill="#FAA51A"/></svg></div>
     <p>Situação financeira das organizações visitadas, valor total da carteira estimada e sua distribuição por etapa, componente, ano, eixo, classificação, condição para contratar e experiência.</p>
   </div>
 
@@ -326,12 +326,12 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=81"></script>
-<script src="assets/data/uf_ne.js?v=81"></script>
-<script src="assets/js/maplayers.js?v=81"></script>
-<script src="assets/js/painel.js?v=81"></script>
-<script src="assets/js/export.js?v=81"></script>
-<script src="assets/js/campo.js?v=81"></script>
+<script src="assets/data/iniciativas.js?v=82"></script>
+<script src="assets/data/uf_ne.js?v=82"></script>
+<script src="assets/js/maplayers.js?v=82"></script>
+<script src="assets/js/painel.js?v=82"></script>
+<script src="assets/js/export.js?v=82"></script>
+<script src="assets/js/campo.js?v=82"></script>
 <script>
 document.getElementById("sair").addEventListener("click",function(e){
   e.preventDefault();PTEAuth.sair();location.replace("entrar.html");

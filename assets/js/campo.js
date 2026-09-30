@@ -639,24 +639,20 @@
 
     var nEst = exp.filter(function (x) { return x.envelope && x.envelope.max > 0; }).length;
     var mapeadas = FUNIL ? FUNIL.mapeadas : TOTAL_BASE + novas.length;
-    var funilBarra = function (rot, v, cor) {
-      return '<div class="r"><span class="t">' + rot + '</span><span class="b">' +
-        '<span style="width:' + (v / mapeadas * 100) + '%;background:' + cor + ';opacity:.8"></span></span><span class="v">' + v + '</span></div>';
+    /* mesmo funil em cápsulas da aba Carteira: largura proporcional às mapeadas */
+    var TONS = ["azul", "vermelho", "laranja", "verde"];
+    var capsula = function (i, v, rot) {
+      return '<div class="cap-linha" role="listitem" style="--p:' + (v / mapeadas).toFixed(4) + ';--i:' + i + '">' +
+        '<b class="cap ' + TONS[i] + '">' + v + '</b><p class="cap-txt"><span>' + rot + '</span></p></div>';
     };
     document.getElementById("sub-cobertura").innerHTML =
-      '<div class="ec-kpis">' +
-        '<div class="ec-kpi a"><div class="v">' + mapeadas + '</div><div class="l">iniciativas mapeadas</div></div>' +
-        '<div class="ec-kpi c"><div class="v">' + exp.length + '</div><div class="l">avaliadas em campo</div></div>' +
-        '<div class="ec-kpi"><div class="v">' + nEst + '</div><div class="l">com estimativa de recursos</div></div>' +
-        '<div class="ec-kpi b"><div class="v">' + nAlta + '</div><div class="l">recomendadas com alta prioridade</div></div>' +
-      '</div>' +
       '<div class="ec-card"><h3>Da prospecção à recomendação</h3>' +
       '<p class="sub">Das ' + mapeadas + ' iniciativas mapeadas às ' + nAlta + ' recomendadas com alta prioridade</p>' +
-      '<div class="ec-freq">' +
-        funilBarra("Mapeadas", mapeadas, "#24246C") +
-        funilBarra("Avaliadas em campo", exp.length, "#0C549C") +
-        funilBarra("Com estimativa de recursos", nEst, "#0F7D8C") +
-        funilBarra("Recomendadas com alta prioridade", nAlta, "#54B43C") +
+      '<div class="capsulas" role="list">' +
+        capsula(0, mapeadas, "iniciativas mapeadas") +
+        capsula(1, exp.length, "avaliadas em campo") +
+        capsula(2, nEst, "com estimativa de recursos") +
+        capsula(3, nAlta, "recomendadas com alta prioridade") +
       '</div>' +
       '<p class="ec-nota">' + (FUNIL
         ? 'Das ' + FUNIL.mapeadas + ' iniciativas mapeadas, ' + FUNIL.descartadas + ' foram descartadas na prospecção, ' +
