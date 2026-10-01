@@ -130,6 +130,17 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
   incursões com faixa do eixo, barra de pontuação (marcas em 60 e 80) e barra
   de carteira em escala comum; linha do trajeto por rota; a ficha de
   investimento abre na grade, logo abaixo da linha do cartão (`posicionaInv`).
+- **Aluvial e mapa (v84):** o aluvial é um "parallel sets": cada registro de
+  `P5.fluxos` é um fio contínuo da etapa ao componente (`desenhaAluvial`). Cor
+  das faixas por eixo (padrão), etapa ou classificação (`#aluvial-cor`); o
+  mesmo desempate de ordem nos dois lados de cada trecho evita faixas torcidas.
+  Mouse num nó acende o caminho; clique (ou Tab + Enter) fixa e preenche
+  `#aluvial-sel`. Ícones dentro de SVG são copiados do `<symbol>` (`icoInline`),
+  porque o PNG exportado não resolve `<use>`. No mapa, marcadores `divIcon`
+  com o ícone do eixo, agrupados pelo Leaflet.markercluster 1.5.3 (unpkg, com
+  SRI) em anéis por eixo; o painel lateral tem contagem por eixo (realça e
+  filtra) e a lista da área visível com busca; `vaiAte` aproxima até a cidade e
+  abre o grupo em leque, sem descer ao nível da rua.
 
 - Interface e documentação em português
 - CSS de módulo novo em arquivo próprio, com prefixo de classe — não inchar
