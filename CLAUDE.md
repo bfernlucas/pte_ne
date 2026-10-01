@@ -91,7 +91,13 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
   extra). A rota extra teve três equipes; no mapa cada uma é um trecho, e
   entrevistas virtuais não entram nas linhas.
 - Base cartográfica: Esri. "Ruas e estradas" é a camada padrão do mapa desde a
-  v85 (pedido do Lucas, 01/10/2026); "Cinza claro" segue disponível no seletor. As bases da CARTO passaram a
+  v85 (pedido do Lucas, 01/10/2026); "Cinza claro" segue disponível no seletor.
+- Enquadramento (v86): `enquadraNE()` abre no maior zoom inteiro em que cabem
+  todas as iniciativas com sede no Nordeste (teste de ponto nos polígonos de
+  `uf_ne.js`), centrado nos nove estados; o mapa tem altura
+  `clamp(560px, 100vh − 150px, 820px)`. As 14 com sede no Centro-Sul ficam fora
+  do recorte, com aviso e botão "Mostrar todas no mapa" no painel. Legenda no
+  canto inferior esquerdo, longe do litoral. As bases da CARTO passaram a
   exigir chave e devolvem ladrilhos com marca d'água. Manter zoom inteiro no
   mapa: zoom fracionário cria emendas brancas entre ladrilhos.
 

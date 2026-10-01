@@ -889,6 +889,29 @@
      das iniciativas na área visível do mapa (padrão "lista de locais"). */
   var mapa = null, camadaPontos = null, camadaRotas = null, marcadores = {}, mkSel = null;
   var NE_BOUNDS = [[-18.3, -48.6], [-1.2, -34.8]];
+  /* iniciativas com sede dentro dos nove estados (as demais têm sede no Centro-Sul) */
+  var noNE = (function () {
+    var U = (window.PTE_UF_NE && PTE_UF_NE.features) || [];
+    function dentro(lon, lat, anel) {
+      var c = false;
+      for (var i = 0, j = anel.length - 1; i < anel.length; j = i++) {
+        var xi = anel[i][0], yi = anel[i][1], xj = anel[j][0], yj = anel[j][1];
+        if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / (yj - yi) + xi) c = !c;
+      }
+      return c;
+    }
+    return function (l) {
+      if (l.lat == null || l.lon == null) return false;
+      if (!U.length) return l.lat > -18.4 && l.lat < -1 && l.lon > -46.9 && l.lon < -34.7;
+      return U.some(function (f) {
+        var ps = f.geometry.type === "MultiPolygon" ? f.geometry.coordinates : [f.geometry.coordinates];
+        /* folga de ~5 km para cidades do litoral */
+        return ps.some(function (p) {
+          return dentro(l.lon, l.lat, p[0]) || dentro(l.lon + 0.05, l.lat, p[0]) || dentro(l.lon - 0.05, l.lat, p[0]);
+        });
+      });
+    };
+  })();
 
   function htmlIco(cod, tam) {
     if (!(cod in ICO_INLINE)) { var sym = document.getElementById("i-" + cod); ICO_INLINE[cod] = sym ? sym.innerHTML : ""; }
@@ -938,7 +961,7 @@
     /* zoom inteiro: em zoom fracionário os ladrilhos são escalados e aparecem
        emendas brancas entre eles */
     mapa = L.map("map-geral", { scrollWheelZoom: true });
-    mapa.fitBounds(NE_BOUNDS, { padding: [4, 4] });   /* os nove estados */
+    enquadraNE();
     if (window.PTE_MAP && PTE_MAP.setup) PTE_MAP.setup(mapa, { base: "Ruas e estradas", noAirports: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
       { attribution: "&copy; OpenStreetMap, &copy; CARTO", maxZoom: 19 }).addTo(mapa);
@@ -972,7 +995,29 @@
   function enquadraUF(uf) {
     var f = uf && window.PTE_UF_NE && PTE_UF_NE.features.filter(function (x) { return x.properties.sigla === uf; })[0];
     if (f) mapa.fitBounds(L.geoJSON(f).getBounds(), { padding: [24, 24] });
-    else mapa.fitBounds(NE_BOUNDS, { padding: [4, 4] });
+    else enquadraNE();
+  }
+  /* Recorte do Nordeste no maior zoom inteiro em que cabem todas as
+     iniciativas com sede na região (zoom fracionário deixa emendas entre os
+     ladrilhos). Centra nos nove estados e só desloca o necessário para não
+     cortar nenhum ponto; o extremo sul da Bahia, sem iniciativas, pode ficar
+     fora quando a janela é baixa. */
+  function enquadraNE() {
+    var pts = LINHAS.filter(noNE).map(function (l) { return [l.lat, l.lon]; });
+    var alvo = pts.length ? L.latLngBounds(pts) : L.latLngBounds(NE_BOUNDS);
+    var folga = L.point(36, 36);
+    var z = Math.min(mapa.getBoundsZoom(L.latLngBounds(NE_BOUNDS), false, folga) + 1, mapa.getBoundsZoom(alvo, false, folga));
+    z = Math.max(4, Math.floor(z));
+    mapa.setView(L.latLngBounds(NE_BOUNDS).getCenter(), z, { animate: false });
+    var tam = mapa.getSize(), a = mapa.latLngToContainerPoint(alvo.getNorthWest()), b = mapa.latLngToContainerPoint(alvo.getSouthEast());
+    var dx = 0, dy = 0, m = 36;
+    if (a.y < m) dy = a.y - m; else if (b.y > tam.y - m) dy = b.y - (tam.y - m);
+    if (a.x < m) dx = a.x - m; else if (b.x > tam.x - m) dx = b.x - (tam.x - m);
+    if (dx || dy) mapa.panBy([dx, dy], { animate: false });
+  }
+  function enquadraTodas() {
+    var pts = visiveis.map(function (l) { return [l.lat, l.lon]; });
+    if (pts.length) mapa.fitBounds(pts, { padding: [36, 36] });
   }
   function botaoNordeste() {
     var c = L.control({ position: "topleft" });
@@ -989,7 +1034,9 @@
   /* legenda compacta: o eixo aparece pelo ícone (e no painel ao lado); fica
      no mapa para sair no PNG exportado */
   function legendaMapa() {
-    var ctl = L.control({ position: "bottomright" });
+    /* no canto inferior esquerdo, sobre o interior; o litoral, onde estão
+       quase todos os pontos, fica livre */
+    var ctl = L.control({ position: "bottomleft" });
     ctl.onAdd = function () {
       var d = L.DomUtil.create("div", "pte-legend mk-leg");
       var h = '<button type="button" class="mk-leg-bt" aria-expanded="true">Legenda</button><div class="mk-leg-corpo">' +
@@ -1085,6 +1132,15 @@
           '<span class="b"><i style="width:' + (t / mx * 100).toFixed(1) + '%"></i><i class="c" style="width:' +
           (c / mx * 100).toFixed(1) + '%"></i></span><b>' + t + "</b></button></li>";
       }).join("") + "</ul></div>" +
+      (function () {
+        var fora = visiveis.filter(function (l) { return !noNE(l); });
+        if (!fora.length) return "";
+        var cid = {};
+        fora.forEach(function (l) { var c = String(l.municipio || "").replace(/\s*\(.*$/, "").split(/[;,]/)[0].trim(); if (c && !/^diversos/i.test(c)) cid[c] = 1; });
+        return '<p class="ms-fora" id="ms-fora" hidden>' + fora.length + (fora.length > 1 ? " iniciativas têm" : " iniciativa tem") +
+          " sede fora do Nordeste" + (Object.keys(cid).length ? " (" + esc(Object.keys(cid).join(", ")) + ")" : "") +
+          ' e ficam fora deste recorte. <button type="button" id="ms-todas">Mostrar todas no mapa</button></p>';
+      })() +
       '<div class="ms-lista"><div class="ms-lista-cab"><h4 id="ms-lista-tit"></h4>' +
       '<input type="search" id="ms-busca" placeholder="Buscar iniciativa ou município" aria-label="Buscar iniciativa ou município no mapa" value="' +
       esc(buscaMapa) + '" /></div><ol id="ms-itens"></ol></div>';
@@ -1099,12 +1155,15 @@
       b.addEventListener("mouseleave", function () { $("#map-geral").removeAttribute("data-realce"); });
     });
     $("#ms-busca").addEventListener("input", function (ev) { buscaMapa = ev.target.value; listaLateral(); });
+    if ($("#ms-todas")) $("#ms-todas").addEventListener("click", enquadraTodas);
     listaLateral();
   }
 
   function listaLateral() {
     var ol = $("#ms-itens"); if (!ol || !mapa) return;
     var q = buscaMapa.trim().toLowerCase(), area = mapa.getBounds();
+    /* o aviso das sediadas fora do Nordeste só aparece quando alguma está fora da vista */
+    if ($("#ms-fora")) $("#ms-fora").hidden = !visiveis.some(function (l) { return !noNE(l) && !area.contains([l.lat, l.lon]); });
     var itens = visiveis.filter(function (l) {
       if (q) return (l.nome + " " + l.org + " " + l.municipio).toLowerCase().indexOf(q) >= 0;
       return area.contains([l.lat, l.lon]);
