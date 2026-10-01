@@ -305,10 +305,11 @@
       var base = x.base_informacional || "ausente";
       return '<tr data-n="' + i + '">' +
         '<td class="nome">' + esc(x.nome) + '</td>' +
-        '<td><span class="ec-eixo" style="background:' + e[1] + (x.eixo_cod === "BIO" || x.eixo_cod === "TE" ? ';color:#1A1A1F' : '') + '" title="' + esc(e[0]) + '">' + esc(x.eixo_cod) + '</span></td>' +
+        '<td>' + (window.PTE_EIXO ? window.PTE_EIXO.tag(x.eixo_cod) :
+          '<span class="ec-eixo" style="background:' + e[1] + '" title="' + esc(e[0]) + '">' + esc(x.eixo_cod) + '</span>') + '</td>' +
         '<td><div class="ec-dims" title="Notas em operação, investimento, impacto e inovação">' + dims + '</div></td>' +
         '<td class="n"><strong>' + x.total + '</strong></td>' +
-        '<td><span class="ec-cls ' + x.classificacao + '">' + CLS[x.classificacao] + '</span></td>' +
+        '<td><span class="cls-cap ' + x.classificacao + '">' + CLS[x.classificacao] + '</span></td>' +
         '<td class="n">' + env + '</td>' +
         '<td><span class="ec-ev ' + base + '" title="Base informacional ' + base + '"></span> <span class="ec-evt">' + base + '</span></td></tr>' +
         (aberta === x.nome ? detalhe(x) : "");
@@ -816,7 +817,7 @@
     function quadro(itens) {
       var linhas = [
         ["Pontuação de campo", function (x) { return '<b>' + x.total + '</b>/100'; }],
-        ["Classificação", function (x) { return '<span class="ec-cls ' + x.classificacao + '">' + CLS[x.classificacao] + '</span>'; }],
+        ["Classificação", function (x) { return '<span class="cls-cap ' + x.classificacao + '">' + CLS[x.classificacao] + '</span>'; }],
         ["Eixo", function (x) { return esc((EIXOS[x.eixo_cod] || [x.eixo_cod])[0]); }],
         ["Carteira total", function (x) { return x.envelope.max > 0 ? "R$ " + fmt(x.envelope.min) + " a " + fmt(x.envelope.max) + " milhões" : "Sem estimativa"; }],
         ["Prontidão", function (x) { return prontTxt(x); }],
