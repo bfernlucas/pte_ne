@@ -766,3 +766,15 @@ table.ranking tbody tr:hover td.sem-campo{background:transparent}
 #map-geral[data-realce="BIO"] .mk-grupo[data-eixos~="BIO"],#map-geral[data-realce="TE"] .mk-grupo[data-eixos~="TE"],
 #map-geral[data-realce="EC"] .mk-grupo[data-eixos~="EC"],#map-geral[data-realce="NIVA"] .mk-grupo[data-eixos~="NIVA"]{opacity:1}
 .map-side .ms-voltar,.map-side .ms-ir{align-self:flex-start}
+
+/* mapa mais alto, até onde a janela permite: o Nordeste é mais alto que largo (v85) */
+.map-layout{--map-h:clamp(560px, calc(100vh - 150px), 820px)}
+.map-layout .map{height:var(--map-h)}
+.map-layout .map-side{height:var(--map-h)}
+.ms-fora{margin:0 0 12px;padding:9px 11px;background:var(--surface-2);font-size:.76rem;line-height:1.45;color:var(--muted)}
+.ms-fora button{display:inline;padding:0;border:0;background:none;color:var(--brand-2);font:inherit;font-weight:600;text-decoration:underline;cursor:pointer}
+@media (max-width:1080px){
+  .map-layout .map{height:min(72vh, 560px)}
+  .map-layout .map-side{height:auto}
+}
+.ms-fora[hidden]{display:none}
