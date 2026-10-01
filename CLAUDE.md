@@ -90,7 +90,8 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
 - Rotas: a tabela da seção 2 do P5 B é a fonte canônica (Rota 1, 2, 3 e rota
   extra). A rota extra teve três equipes; no mapa cada uma é um trecho, e
   entrevistas virtuais não entram nas linhas.
-- Base cartográfica: Esri (Cinza claro / Ruas). As bases da CARTO passaram a
+- Base cartográfica: Esri. "Ruas e estradas" é a camada padrão do mapa desde a
+  v85 (pedido do Lucas, 01/10/2026); "Cinza claro" segue disponível no seletor. As bases da CARTO passaram a
   exigir chave e devolvem ladrilhos com marca d'água. Manter zoom inteiro no
   mapa: zoom fracionário cria emendas brancas entre ladrilhos.
 

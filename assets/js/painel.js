@@ -939,7 +939,7 @@
        emendas brancas entre eles */
     mapa = L.map("map-geral", { scrollWheelZoom: true });
     mapa.fitBounds(NE_BOUNDS, { padding: [4, 4] });   /* os nove estados */
-    if (window.PTE_MAP && PTE_MAP.setup) PTE_MAP.setup(mapa, { base: "Cinza claro", noAirports: true });
+    if (window.PTE_MAP && PTE_MAP.setup) PTE_MAP.setup(mapa, { base: "Ruas e estradas", noAirports: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
       { attribution: "&copy; OpenStreetMap, &copy; CARTO", maxZoom: 19 }).addTo(mapa);
     legendaMapa().addTo(mapa);
