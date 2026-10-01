@@ -259,6 +259,13 @@
     destaqueCarteira();
 
     desenhaAluvial($("#fig-aluvial"));
+    $$("#aluvial-cor button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        aluCor = b.dataset.cor;
+        $$("#aluvial-cor button").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+        desenhaAluvial($("#fig-aluvial"));
+      });
+    });
     $("#aluvial-leitura").innerHTML = leituraAluvial();
 
     if (!P5) {
@@ -308,9 +315,8 @@
   }
 
   /* ---- aluvial da trajetória do valor (Figura 7.10), desenhado em SVG a
-     partir de P5.fluxos. Mesmo desenho da figura do relatório: fitas da
-     Estruturação em azul firme, da Escala em cinza-azulado; ordem das colunas
-     por tamanho e, a partir da terceira, pelo baricentro da anterior. ---- */
+     partir de P5.fluxos; ordem das colunas por tamanho e, a partir da
+     terceira, pelo baricentro da anterior. ---- */
   var NOMES_ALU = [
     { A: ["Etapa 1", "Estruturação"], B: ["Etapa 2", "Escala"] },
     { NIVA: ["Nova Infraestrutura Verde-Azul", "e Adaptação Climática"], ADT: ["Adensamento Tecnológico"],
@@ -321,12 +327,36 @@
       C2: ["Investimento em", "ativos e fundos"], C3: ["Assistência técnica", "e capacidades"],
       C4: ["Monitoramento", "e avaliação"] }
   ];
-  var CAB_ALU = ["ETAPA", "EIXO DO PLANO", "CLASSIFICAÇÃO", "COMPONENTE DO APOIO"];
+  var CAB_ALU = ["Etapa", "Eixo do plano", "Classificação", "Componente do apoio"];
+  var DIM_ALU = ["bloco", "eixo", "classe", "comp"];
+  /* cores por dimensão: etapa como no relatório, eixo nas cores do livro,
+     classificação e componente em tons de anil (só no painel da seleção) */
+  var COR_DIM = {
+    bloco: { A: "#1d5fb0", B: "#a3b3c6" },
+    eixo: COR_EIXO,
+    classe: { alta: "#24246C", estrategico: "#8C8CC4" },
+    comp: { C2: "#24246C", C3: "#4F4F99", C0: "#7C7CBE", C1: "#A9A9D6", C4: "#D3D3EC" }
+  };
+  var aluCor = "eixo", aluFixo = null, aluR = null, aluOrd = null;
 
+  /* ícone do eixo copiado do <symbol> para dentro do SVG: a exportação em PNG
+     não resolve <use> que aponta para fora do desenho */
+  var ICO_INLINE = {};
+  function icoInline(cod, x, y, s, cor) {
+    if (!(cod in ICO_INLINE)) { var sym = document.getElementById("i-" + cod); ICO_INLINE[cod] = sym ? sym.innerHTML : ""; }
+    return '<svg x="' + x + '" y="' + y + '" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" color="' + cor +
+      '" aria-hidden="true">' + ICO_INLINE[cod] + "</svg>";
+  }
+  function rotAlu(st, k) { return (NOMES_ALU[st][k] || [k]).join(" "); }
+
+  /* ---- aluvial interativo (parallel sets): cada fluxo de P5.fluxos é um fio
+     contínuo da etapa ao componente. A cor vem da dimensão escolhida; passar o
+     mouse numa categoria acende os fios que passam por ela, e o clique fixa a
+     seleção e abre a composição dela nas outras três colunas. ---- */
   function desenhaAluvial(alvo) {
     var F = (P5 && P5.fluxos) || [];
     if (!F.length) { alvo.innerHTML = '<p class="vazio">Os dados deste diagrama não estão disponíveis nesta sessão.</p>'; return; }
-    var KEYS = ["bloco", "eixo", "classe", "comp"], ST = 4;
+    var KEYS = DIM_ALU, ST = 4;
     var tot = F.reduce(function (a, f) { return a + f.valor; }, 0);
     function tam(st, k) {
       return F.reduce(function (a, f) { return a + (f[KEYS[st]] === k ? f.valor : 0); }, 0);
@@ -348,7 +378,9 @@
         ORD[st].sort(function (a, b) { return bar[a] - bar[b]; });
       })(st);
     }
-    /* geometria: coordenadas em "valor" no eixo y, convertidas no fim */
+    var IDX = ORD.map(function (o) { var m = {}; o.forEach(function (k, i) { m[k] = i; }); return m; });
+    aluOrd = ORD;
+
     var PAD = tot * 0.018, P = [], Hs = [];
     for (st = 0; st < ST; st++) {
       var H = ORD[st].reduce(function (a, k) { return a + tam(st, k); }, 0) + PAD * (ORD[st].length - 1);
@@ -363,15 +395,43 @@
       return o;
     });
 
-    var W = 1100, TOPO = 46, ALT = 600, BASE = 14, NW = 14;
+    var W = 1100, TOPO = 50, ALT = 600, BASE = 14, NW = 14;
     var X = [150, 440, 700, 930];
     var ky = ALT / Hmax;
     function Y(v) { return TOPO + v * ky; }
-    var COR = { A: "#2a78d6", B: "#dbe3ec" }, ALF = { A: 0.62, B: 0.92 };
-    var NO0 = { A: "#1d5fb0", B: "#a3b3c6" }, NO = "#2e4a6e";
+    var dc = KEYS.indexOf(aluCor);
+
+    /* empilhamento dos fios em cada nó: na saída, pela ordem do destino e da
+       cor; na entrada, pela ordem da origem e da cor (menos cruzamentos) */
+    var R = F.map(function (f, i) { return { f: f, i: i, v: f.valor, out: [], inn: [] }; });
+    function cmp(a, b, ordem) {
+      for (var j = 0; j < ordem.length; j++) {
+        var s = ordem[j] === "c" ? dc : ordem[j];
+        if (s < 0 || s >= ST) continue;
+        var d = IDX[s][a.f[KEYS[s]]] - IDX[s][b.f[KEYS[s]]];
+        if (d) return d;
+      }
+      return 0;
+    }
+    for (st = 0; st < ST; st++) {
+      ORD[st].forEach(function (k) {
+        var rs = R.filter(function (r) { return r.f[KEYS[st]] === k; });
+        if (st < ST - 1) {
+          var y0 = P[st][k][0];
+          /* mesmo desempate dos dois lados de cada trecho: a faixa não torce */
+          rs.slice().sort(function (a, b) { return cmp(a, b, [st + 1, "c", st + 2, st - 1, st + 3, st - 2]); })
+            .forEach(function (r) { r.out[st] = [y0, y0 + r.v]; y0 += r.v; });
+        }
+        if (st > 0) {
+          var y1 = P[st][k][0];
+          rs.slice().sort(function (a, b) { return cmp(a, b, [st - 1, "c", st + 1, st - 2, st + 2, st - 3]); })
+            .forEach(function (r) { r.inn[st] = [y1, y1 + r.v]; y1 += r.v; });
+        }
+      });
+    }
+    aluR = R;
 
     function fita(x0, a0, b0, x1, a1, b1) {
-      /* curva com trecho reto inicial (lead) e final (tail), como na figura */
       var xa = x0 + NW, xb = x1, dx = xb - xa;
       var p = xa + dx * 0.30, q = xb - dx * 0.14, m1 = p + (q - p) * 0.5;
       return "M" + xa + "," + Y(a0) + " L" + p + "," + Y(a0) +
@@ -380,77 +440,184 @@
         " C" + m1 + "," + Y(b1) + " " + m1 + "," + Y(b0) + " " + p + "," + Y(b0) +
         " L" + xa + "," + Y(b0) + " Z";
     }
+    function corFio(f) { return (COR_DIM[aluCor] || {})[f[aluCor]] || CINZA; }
+    function alfa(f) { return aluCor === "bloco" && f.bloco === "B" ? 0.8 : 0.66; }
 
     var svg = [];
-    svg.push('<line x1="10" x2="' + (W - 10) + '" y1="' + (TOPO - 12) + '" y2="' + (TOPO - 12) +
-      '" stroke="#D9D9DE" stroke-width="1"/>');
+    svg.push('<line x1="10" x2="' + (W - 10) + '" y1="' + (TOPO - 14) + '" y2="' + (TOPO - 14) + '" stroke="#D9D9DE" stroke-width="1"/>');
     CAB_ALU.forEach(function (t, i) {
       var x = i === 0 ? 10 : (i === ST - 1 ? W - 10 : X[i] + NW + 8);
-      var anc = i === 0 ? "start" : (i === ST - 1 ? "end" : "start");
-      svg.push('<text x="' + x + '" y="' + (TOPO - 20) + '" font-size="11" letter-spacing=".06em" fill="#55555F" text-anchor="' +
-        anc + '">' + t + "</text>");
+      svg.push('<text x="' + x + '" y="' + (TOPO - 24) + '" font-size="13" font-weight="600" font-family="Oswald,Roboto,sans-serif" fill="#1A1A1F" text-anchor="' +
+        (i === ST - 1 ? "end" : "start") + '">' + t + "</text>");
     });
 
-    /* fitas: pilha por origem (saída) e por destino (entrada), separadas por bloco */
+    /* fios: os maiores primeiro, para os finos ficarem visíveis nos cruzamentos */
+    var ordemDesenho = R.slice().sort(function (a, b) { return b.v - a.v; });
     for (st = 0; st < ST - 1; st++) {
-      var agg = {};
-      F.forEach(function (f) {
-        var k = f.bloco + "|" + f[KEYS[st]] + "|" + f[KEYS[st + 1]];
-        agg[k] = (agg[k] || 0) + f.valor;
-      });
-      var out = {}, seg = {};
-      ORD[st].forEach(function (s_) { out[s_] = P[st][s_][0]; });
-      ORD[st].forEach(function (s_) {
-        ORD[st + 1].forEach(function (d_) {
-          ["A", "B"].forEach(function (bl) {
-            var v = agg[bl + "|" + s_ + "|" + d_] || 0;
-            if (v > 0) { seg[bl + "|" + s_ + "|" + d_] = [out[s_], out[s_] + v]; out[s_] += v; }
-          });
-        });
-      });
-      var inn = {};
-      ORD[st + 1].forEach(function (d_) { inn[d_] = P[st + 1][d_][0]; });
-      ORD[st + 1].forEach(function (d_) {
-        ORD[st].forEach(function (s_) {
-          ["A", "B"].forEach(function (bl) {
-            var k = bl + "|" + s_ + "|" + d_, v = agg[k] || 0;
-            if (v <= 0) return;
-            var sg = seg[k];
-            svg.push('<path d="' + fita(X[st], sg[0], sg[1], X[st + 1], inn[d_], inn[d_] + v) +
-              '" fill="' + COR[bl] + '" fill-opacity="' + ALF[bl] + '"><title>' +
-              esc((bl === "A" ? "Estruturação" : "Escala") + ": R$ " + num(v) + " milhões") + "</title></path>");
-            inn[d_] += v;
-          });
-        });
+      ordemDesenho.forEach(function (r) {
+        svg.push('<path class="fx" data-r="' + r.i + '" d="' + fita(X[st], r.out[st][0], r.out[st][1], X[st + 1], r.inn[st + 1][0], r.inn[st + 1][1]) +
+          '" fill="' + corFio(r.f) + '" fill-opacity="' + alfa(r.f) + '"/>');
       });
     }
 
-    /* nós e rótulos, com anti-colisão vertical */
+    /* nós, com rótulos que também respondem ao mouse e ao teclado */
     var LH = 14, fundo = 0;
+    /* contorno branco sob o texto: rótulo legível sobre as faixas */
+    var HALO = ' stroke="#fff" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke"';
     for (st = 0; st < ST; st++) {
       var ult = -1e9;
       ORD[st].forEach(function (k) {
-        var a = P[st][k][0], b = P[st][k][1];
-        svg.push('<rect x="' + X[st] + '" y="' + Y(a) + '" width="' + NW + '" height="' + Math.max(1, Y(b) - Y(a)) +
-          '" fill="' + (st === 0 ? NO0[k] : NO) + '"/>');
+        var a = P[st][k][0], b = P[st][k][1], v = b - a;
         var nome = (NOMES_ALU[st][k] || [k]), esq = st === 0;
+        var ico = st === 1 && COR_EIXO[k];
         var xt = esq ? X[st] - 8 : X[st] + NW + 8, anc = esq ? "end" : "start";
-        var yt = Math.max(Y(a) + 11, ult + 15);   /* 15 = altura de maiúscula + respiro */
+        var yt = Math.max(Y(a) + 11, ult + 15);
+        var xtt = ico ? xt + 24 : xt;
+        var fim = yt + nome.length * LH;
+        var cor = st === 0 ? COR_DIM.bloco[k] : st === 1 ? corEixo(k) : st === 2 ? COR_DIM.classe[k] : "#2e4a6e";
+        var g = '<g class="no" tabindex="0" role="button" aria-pressed="false" data-st="' + st + '" data-k="' + esc(k) + '" aria-label="' +
+          esc(rotAlu(st, k) + ", R$ " + num(v) + " milhões, " + num(v / tot * 100, 0) + "% da carteira máxima") + '">' +
+          '<rect class="hit" x="' + (esq ? xt - 190 : X[st]) + '" y="' + Math.min(Y(a), yt - 12) + '" width="' + (esq ? 190 + 8 + NW : 210) +
+          '" height="' + Math.max(Y(b) - Math.min(Y(a), yt - 12), fim - yt + 18) + '" fill="transparent"/>' +
+          '<rect class="nr" x="' + X[st] + '" y="' + Y(a) + '" width="' + NW + '" height="' + Math.max(1, Y(b) - Y(a)) + '" fill="' + cor + '"/>';
+        if (ico) g += '<rect x="' + xt + '" y="' + (yt - 12) + '" width="18" height="18" fill="' + corEixo(k) + '"/>' +
+          icoInline(k, xt + 2, yt - 10, 14, tintaEixo(k));
         nome.forEach(function (ln, i) {
-          svg.push('<text x="' + xt + '" y="' + (yt + i * LH) + '" font-size="' + (esq ? 13 : 12) +
-            '" font-weight="700" fill="#1A1A1F" text-anchor="' + anc + '">' + esc(ln) + "</text>");
+          g += '<text x="' + xtt + '" y="' + (yt + i * LH) + '" font-size="' + (esq ? 13 : 12) +
+            '" font-weight="700" fill="#1A1A1F" text-anchor="' + anc + '"' + HALO + ">" + esc(ln) + "</text>";
         });
-        svg.push('<text x="' + xt + '" y="' + (yt + nome.length * LH) + '" font-size="11.5" fill="#55555F" text-anchor="' +
-          anc + '">R$ ' + num(b - a) + " milhões</text>");
-        ult = yt + nome.length * LH + 4;
+        g += '<text x="' + xtt + '" y="' + fim + '" font-size="11.5" fill="#55555F" text-anchor="' + anc + '"' + HALO + '>R$ ' + num(v) +
+          " milhões</text></g>";
+        svg.push(g);
+        ult = fim + 4;
         if (ult > fundo) fundo = ult;
       });
     }
 
     var altura = Math.max(TOPO + ALT + BASE, fundo + 8);
-    alvo.innerHTML = '<svg id="svg-aluvial" viewBox="0 0 ' + W + " " + altura +
-      '" width="100%" role="img" aria-label="Trajetória do valor da carteira, da etapa ao componente" ' +
-      'style="font-family:Roboto,system-ui,sans-serif;background:#fff">' + svg.join("") + "</svg>";
+    alvo.innerHTML = '<div class="alu-scroll"><svg id="svg-aluvial" viewBox="0 0 ' + W + " " + altura +
+      '" width="100%" role="group" aria-label="Trajetória do valor da carteira, da etapa ao componente. Use Tab para percorrer as categorias e Enter para fixar uma." ' +
+      'style="font-family:Roboto,system-ui,sans-serif;background:#fff">' + svg.join("") + '</svg></div><div class="alu-tip" hidden></div>';
+
+    /* ---- interação ---- */
+    var el = alvo.querySelector("svg"), tip = alvo.querySelector(".alu-tip");
+    var fios = $$(".fx", el), nos = $$(".no", el);
+    function acende(teste) {
+      el.classList.add("foco");
+      fios.forEach(function (p) { p.classList.toggle("on", teste(R[+p.dataset.r].f)); });
+    }
+    function porNo(st, k) { return function (f) { return f[KEYS[st]] === k; }; }
+    function repouso() {
+      if (aluFixo) acende(porNo(aluFixo.st, aluFixo.k));
+      else { el.classList.remove("foco"); fios.forEach(function (p) { p.classList.remove("on"); }); }
+      tip.hidden = true;
+    }
+    function mostraTip(html, cx, cy) {
+      tip.innerHTML = html; tip.hidden = false;
+      var r = alvo.getBoundingClientRect(), w = tip.offsetWidth;
+      var x = cx - r.left + 14, y = cy - r.top + 14;
+      if (x + w > r.width) x = Math.max(0, cx - r.left - w - 14);
+      tip.style.left = x + "px"; tip.style.top = y + "px";
+    }
+    function textoNo(st, k) {
+      var v = tam(st, k);
+      return "<b>" + esc(rotAlu(st, k)) + "</b>R$ " + num(v) + " milhões, " + num(v / tot * 100, 0) + "% da carteira máxima" +
+        '<small>' + (aluFixo && aluFixo.st === st && aluFixo.k === k ? "Clique para desfazer a seleção" : "Clique para fixar e ver a composição") + "</small>";
+    }
+    nos.forEach(function (g) {
+      var st_ = +g.dataset.st, k = g.dataset.k;
+      g.addEventListener("mouseenter", function () { acende(porNo(st_, k)); });
+      g.addEventListener("mousemove", function (ev) { mostraTip(textoNo(st_, k), ev.clientX, ev.clientY); });
+      g.addEventListener("mouseleave", repouso);
+      g.addEventListener("focus", function () {
+        acende(porNo(st_, k));
+        var b = g.querySelector(".nr").getBoundingClientRect();
+        mostraTip(textoNo(st_, k), b.right, b.top);
+      });
+      g.addEventListener("blur", repouso);
+      function alterna() {
+        aluFixo = aluFixo && aluFixo.st === st_ && aluFixo.k === k ? null : { st: st_, k: k };
+        nos.forEach(function (n) {
+          var on = !!aluFixo && +n.dataset.st === aluFixo.st && n.dataset.k === aluFixo.k;
+          n.classList.toggle("fixo", on); n.setAttribute("aria-pressed", on);
+        });
+        aluPainel();
+        acende(porNo(st_, k));
+        if (!aluFixo) repouso();
+      }
+      g.addEventListener("click", alterna);
+      g.addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); alterna(); }
+        if (ev.key === "Escape" && aluFixo) { aluFixo = { st: st_, k: k }; alterna(); }
+      });
+    });
+    fios.forEach(function (p) {
+      var f = R[+p.dataset.r].f;
+      p.addEventListener("mouseenter", function () { acende(function (x) { return x === f; }); });
+      p.addEventListener("mousemove", function (ev) {
+        mostraTip("<b>R$ " + num(f.valor, 2) + " milhões</b>" + KEYS.map(function (d, s) { return esc(rotAlu(s, f[d])); }).join(" &rsaquo; "),
+          ev.clientX, ev.clientY);
+      });
+      p.addEventListener("mouseleave", repouso);
+    });
+    if (aluFixo) {
+      nos.forEach(function (n) {
+        var on = +n.dataset.st === aluFixo.st && n.dataset.k === aluFixo.k;
+        n.classList.toggle("fixo", on); n.setAttribute("aria-pressed", on);
+      });
+      repouso();
+    }
+    aluLegenda();
+    aluPainel();
+  }
+
+  /* legenda da cor escolhida, em cápsulas (no eixo, com o ícone) */
+  function aluLegenda() {
+    var alvo = $("#aluvial-leg"); if (!alvo || !aluOrd) return;
+    var st = DIM_ALU.indexOf(aluCor);
+    alvo.innerHTML = aluOrd[st].map(function (k) {
+      var cor = (COR_DIM[aluCor] || {})[k] || CINZA;
+      return '<span class="alu-l">' + (aluCor === "eixo" ? '<span class="q" style="' + varsEixo(k) + '">' + icoEixo(k) + "</span>"
+        : '<i style="background:' + cor + '"></i>') + esc(aluCor === "eixo" ? CURTO_EIXO[k] || k : rotAlu(st, k)) + "</span>";
+    }).join("");
+  }
+
+  /* composição da categoria fixada nas outras três dimensões */
+  function aluPainel() {
+    var alvo = $("#aluvial-sel"); if (!alvo) return;
+    var F = (P5 && P5.fluxos) || [];
+    if (!aluFixo || !F.length || !aluOrd) {
+      alvo.innerHTML = '<p class="alu-dica">Clique numa categoria do diagrama, ou percorra com Tab e tecle Enter, ' +
+        "para ver como o valor dela se divide nas outras três colunas.</p>";
+      return;
+    }
+    var tot = F.reduce(function (a, f) { return a + f.valor; }, 0);
+    var dimSel = DIM_ALU[aluFixo.st];
+    var sub = F.filter(function (f) { return f[dimSel] === aluFixo.k; });
+    var vs = sub.reduce(function (a, f) { return a + f.valor; }, 0);
+    var h = '<div class="alu-sel-cab">' +
+      (aluFixo.st === 1 ? '<span class="q" style="' + varsEixo(aluFixo.k) + '">' + icoEixo(aluFixo.k) + "</span>" : "") +
+      "<div><b>" + esc(rotAlu(aluFixo.st, aluFixo.k)) + "</b><span>R$ " + num(vs) + " milhões, " + num(vs / tot * 100, 0) +
+      "% da carteira máxima</span></div>" +
+      '<button type="button" class="ghost" id="alu-limpa">Limpar seleção</button></div><div class="alu-sel-dims">';
+    DIM_ALU.forEach(function (d, s) {
+      if (s === aluFixo.st) return;
+      var t = {}; sub.forEach(function (f) { t[f[d]] = (t[f[d]] || 0) + f.valor; });
+      var ks = aluOrd[s].filter(function (k) { return t[k] > 0; }).sort(function (a, b) { return t[b] - t[a]; });
+      h += '<div class="alu-dim"><h5>' + CAB_ALU[s] + '</h5><span class="alu-barra" aria-hidden="true">' +
+        ks.map(function (k) {
+          return '<i style="width:' + (t[k] / vs * 100).toFixed(2) + "%;background:" + ((COR_DIM[d] || {})[k] || CINZA) + '" title="' +
+            esc(rotAlu(s, k)) + '"></i>';
+        }).join("") + "</span><ul>" +
+        ks.map(function (k) {
+          return '<li><i style="background:' + ((COR_DIM[d] || {})[k] || CINZA) + '"></i><span>' + esc(rotAlu(s, k)) + "</span><b>" +
+            num(t[k] / vs * 100, 0) + "%</b></li>";
+        }).join("") + "</ul></div>";
+    });
+    alvo.innerHTML = h + "</div>";
+    $("#alu-limpa").addEventListener("click", function () {
+      aluFixo = null; desenhaAluvial($("#fig-aluvial"));
+    });
   }
 
   /* parágrafo de leitura do aluvial, calculado dos mesmos fluxos que o desenham */
@@ -716,7 +883,50 @@
   }
 
   /* ========================================================== 2. MAPA === */
-  var mapa = null, camadaPontos = null, camadaRotas = null;
+  /* Pontos com o ícone do eixo (quadrado do livro); as avaliadas em campo são
+     maiores e têm contorno. Pontos próximos se agrupam num anel com a
+     composição por eixo. O painel lateral junta a contagem por eixo e a lista
+     das iniciativas na área visível do mapa (padrão "lista de locais"). */
+  var mapa = null, camadaPontos = null, camadaRotas = null, marcadores = {}, mkSel = null;
+  var NE_BOUNDS = [[-18.3, -48.6], [-1.2, -34.8]];
+
+  function htmlIco(cod, tam) {
+    if (!(cod in ICO_INLINE)) { var sym = document.getElementById("i-" + cod); ICO_INLINE[cod] = sym ? sym.innerHTML : ""; }
+    return '<svg width="' + tam + '" height="' + tam + '" viewBox="0 0 24 24" color="' + tintaEixo(cod) + '" aria-hidden="true">' +
+      ICO_INLINE[cod] + "</svg>";
+  }
+  function iconeIni(l) {
+    var t = l.exp ? 26 : 19;
+    return L.divIcon({
+      className: "mk-wrap",
+      html: '<span class="mk' + (l.exp ? " campo" : "") + '" data-e="' + esc(l.eixo) + '" style="' + varsEixo(l.eixo) + '">' +
+        htmlIco(l.eixo, l.exp ? 18 : 13) + "</span>",
+      iconSize: [t, t], iconAnchor: [t / 2, t / 2], tooltipAnchor: [0, -t / 2]
+    });
+  }
+  /* anel do agrupamento: um arco por eixo, proporcional à contagem */
+  function iconeGrupo(cl) {
+    var ms = cl.getAllChildMarkers(), n = {}, tot = ms.length, campo = 0;
+    ms.forEach(function (m) { n[m.options.eixo] = (n[m.options.eixo] || 0) + 1; if (m.options.campo) campo++; });
+    var r = 15, C = 2 * Math.PI * r, acc = 0, arcos = "";
+    (META.eixos || []).forEach(function (e) {
+      var q = n[e.cod] || 0; if (!q) return;
+      var len = q / tot * C;
+      arcos += '<circle r="' + r + '" cx="20" cy="20" fill="none" stroke="' + corEixo(e.cod) + '" stroke-width="7" stroke-dasharray="' +
+        len.toFixed(2) + " " + (C - len).toFixed(2) + '" stroke-dashoffset="' + (-acc).toFixed(2) + '" transform="rotate(-90 20 20)"/>';
+      acc += len;
+    });
+    return L.divIcon({
+      className: "mk-wrap",
+      html: '<span class="mk-grupo" data-eixos="' + Object.keys(n).join(" ") + '" title="' + tot + " iniciativas próximas" +
+          (campo ? ", " + campo + " avaliada" + (campo > 1 ? "s" : "") + " em campo" : "") + '; clique para abrir">' +
+        '<svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="11.5" fill="#fff"/>' + arcos +
+        (campo ? '<circle cx="20" cy="20" r="19.2" fill="none" stroke="#24246C" stroke-width="1.6"/>' : "") +
+        '<text x="20" y="24.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#24246C" font-family="Roboto,sans-serif">' +
+        tot + "</text></svg></span>",
+      iconSize: [40, 40], iconAnchor: [20, 20]
+    });
+  }
 
   INICIA.mapa = function () {
     preencheSelect($("#m-eixo"), (META.eixos || []).map(function (e) { return { v: e.cod, t: e.nome }; }));
@@ -728,60 +938,91 @@
     /* zoom inteiro: em zoom fracionário os ladrilhos são escalados e aparecem
        emendas brancas entre eles */
     mapa = L.map("map-geral", { scrollWheelZoom: true });
-    mapa.fitBounds([[-18.3, -48.6], [-1.2, -34.8]], { padding: [4, 4] });   /* os nove estados */
+    mapa.fitBounds(NE_BOUNDS, { padding: [4, 4] });   /* os nove estados */
     if (window.PTE_MAP && PTE_MAP.setup) PTE_MAP.setup(mapa, { base: "Cinza claro", noAirports: true });
     else L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
       { attribution: "&copy; OpenStreetMap, &copy; CARTO", maxZoom: 19 }).addTo(mapa);
     legendaMapa().addTo(mapa);
+    botaoNordeste().addTo(mapa);
 
     camadaRotas = L.layerGroup().addTo(mapa);
-    camadaPontos = L.layerGroup().addTo(mapa);
+    camadaPontos = L.markerClusterGroup
+      ? L.markerClusterGroup({
+          maxClusterRadius: 24, showCoverageOnHover: false, zoomToBoundsOnClick: false,
+          spiderfyOnMaxZoom: true, spiderfyDistanceMultiplier: 1.4, iconCreateFunction: iconeGrupo
+        })
+      : L.layerGroup();
+    camadaPontos.addTo(mapa);
+    if (camadaPontos.on) camadaPontos.on("clusterclick", function (ev) {
+      /* pontos no mesmo município: abre em leque; senão, aproxima */
+      var b = ev.layer.getBounds();
+      if (b.getNorthEast().distanceTo(b.getSouthWest()) < 4000 || mapa.getBoundsZoom(b) > 11) ev.layer.spiderfy();
+      else ev.layer.zoomToBounds({ padding: [50, 50] });
+    });
 
-    ["#m-eixo", "#m-uf"].forEach(function (s) { $(s).addEventListener("change", pintaMapa); });
+    $("#m-eixo").addEventListener("change", pintaMapa);
+    $("#m-uf").addEventListener("change", function () { pintaMapa(); enquadraUF($("#m-uf").value); });
     $("#m-rotas").addEventListener("change", pintaMapa);
     $("#m-so-campo").addEventListener("change", pintaMapa);
+    mapa.on("moveend", function () { if (!fichaNoPainel) listaLateral(); });
     pintaMapa();
   };
   RETOMA.mapa = function () { if (mapa) setTimeout(function () { mapa.invalidateSize(); }, 60); };
 
-  var NOME_CURTO_EIXO = { FSI: "Finanças Sustentáveis", ADT: "Adensamento Tecnológico",
-    BIO: "Bioeconomia", TE: "Transição Energética", EC: "Economia Circular", NIVA: "Infraestrutura Verde-Azul" };
+  function enquadraUF(uf) {
+    var f = uf && window.PTE_UF_NE && PTE_UF_NE.features.filter(function (x) { return x.properties.sigla === uf; })[0];
+    if (f) mapa.fitBounds(L.geoJSON(f).getBounds(), { padding: [24, 24] });
+    else mapa.fitBounds(NE_BOUNDS, { padding: [4, 4] });
+  }
+  function botaoNordeste() {
+    var c = L.control({ position: "topleft" });
+    c.onAdd = function () {
+      var d = L.DomUtil.create("div", "leaflet-bar mk-ne");
+      d.innerHTML = '<a href="#" role="button" title="Ver o Nordeste inteiro" aria-label="Ver o Nordeste inteiro">NE</a>';
+      L.DomEvent.disableClickPropagation(d);
+      d.querySelector("a").addEventListener("click", function (ev) { ev.preventDefault(); enquadraUF(""); });
+      return d;
+    };
+    return c;
+  }
 
+  /* legenda compacta: o eixo aparece pelo ícone (e no painel ao lado); fica
+     no mapa para sair no PNG exportado */
   function legendaMapa() {
     var ctl = L.control({ position: "bottomright" });
     ctl.onAdd = function () {
-      var d = L.DomUtil.create("div", "pte-legend");
-      d.style.fontSize = ".72rem"; d.style.lineHeight = "1.6";
-      var h = '<div style="font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:#55555F">Eixo</div>' +
-        (META.eixos || []).map(function (e) {
-          return '<div title="' + esc(e.nome) + '"><i style="background:' + corEixo(e.cod) + '"></i>' +
-            esc(e.cod) + ": " + esc(NOME_CURTO_EIXO[e.cod] || e.nome) + "</div>";
-        }).join("") +
-        '<div style="font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:#55555F;margin-top:6px">Campo</div>' +
-        '<div><i style="background:#fff;border:2px solid #1A1A1F;box-sizing:border-box"></i>Visita ou entrevista</div>' +
-        '<div style="color:#6B6B75">Linhas: trechos presenciais de cada equipe</div>';
-      if (ROTAS.length) h += ROTAS.map(function (r) {
-        return '<div><i style="border-radius:0;height:0;border-top:2.5px dashed ' +
-          (COR_ROTA[r.id] || CINZA) + ';width:16px"></i>' + esc(r.nome) + " (" + esc(r.uf) + ")</div>";
-      }).join("");
-      d.innerHTML = h;
+      var d = L.DomUtil.create("div", "pte-legend mk-leg");
+      var h = '<button type="button" class="mk-leg-bt" aria-expanded="true">Legenda</button><div class="mk-leg-corpo">' +
+        '<div class="mk-leg-eixos">' + (META.eixos || []).map(function (e) {
+          return '<span title="' + esc(e.nome) + '"><span class="mk" style="' + varsEixo(e.cod) + '">' + htmlIco(e.cod, 13) + "</span>" +
+            esc(e.cod) + "</span>";
+        }).join("") + "</div>" +
+        '<div class="mk-leg-l"><span class="mk campo" style="--e:#8A8A94;--ei:#fff"></span>Avaliada em campo</div>' +
+        '<div class="mk-leg-l"><span class="mk" style="--e:#8A8A94;--ei:#fff"></span>Mapeada, sem visita</div>' +
+        '<div class="mk-leg-l"><span class="mk-anel"></span>Iniciativas próximas: clique para abrir</div>';
+      if (ROTAS.length) h += '<div class="mk-leg-rotas">' + ROTAS.map(function (r) {
+        return '<div><i style="border-top-color:' + (COR_ROTA[r.id] || CINZA) + '"></i>' + esc(r.nome) + " (" + esc(r.uf) + ")</div>";
+      }).join("") + "</div>";
+      d.innerHTML = h + "</div>";
+      var bt = d.querySelector(".mk-leg-bt");
+      if (window.innerWidth < 700) { d.classList.add("fechada"); bt.setAttribute("aria-expanded", "false"); }
+      bt.addEventListener("click", function () {
+        var f = d.classList.toggle("fechada"); bt.setAttribute("aria-expanded", !f);
+      });
       L.DomEvent.disableClickPropagation(d);
+      L.DomEvent.disableScrollPropagation(d);
       return d;
     };
     return ctl;
   }
 
-  function raio(l) {
-    var base = l.matriz == null ? 18 : Number(l.matriz);
-    return 4 + (base - 14) * 0.55;
-  }
-
+  var visiveis = [];
   function pintaMapa() {
     var eixo = $("#m-eixo").value, uf = $("#m-uf").value;
     var soCampo = $("#m-so-campo").checked;
-    camadaPontos.clearLayers(); camadaRotas.clearLayers();
+    camadaPontos.clearLayers(); camadaRotas.clearLayers(); marcadores = {}; mkSel = null;
 
-    var vis = LINHAS.filter(function (l) {
+    visiveis = LINHAS.filter(function (l) {
       if (l.lat == null || l.lon == null) return false;
       if (soCampo && !l.exp) return false;
       if (eixo && l.eixo !== eixo) return false;
@@ -789,16 +1030,15 @@
       return true;
     });
 
-    vis.forEach(function (l) {
-      var m = L.circleMarker([l.lat, l.lon], {
-        radius: raio(l), color: l.exp ? "#1A1A1F" : corEixo(l.eixo),
-        weight: l.exp ? 2 : 1, fillColor: corEixo(l.eixo),
-        fillOpacity: l.exp ? 0.92 : 0.5
-      });
-      m.bindTooltip(l.nome, { direction: "top" });
-      m.on("click", function () { fichaLateral(l); });
-      camadaPontos.addLayer(m);
+    var ms = visiveis.map(function (l) {
+      var m = L.marker([l.lat, l.lon], { icon: iconeIni(l), eixo: l.eixo, campo: !!l.exp, riseOnHover: true,
+        keyboard: true, title: l.nome, alt: l.nome, zIndexOffset: l.exp ? 500 : 0 });
+      m.bindTooltip(esc(l.nome), { direction: "top" });
+      m.on("click", function () { selecionaPonto(l, false); });
+      marcadores[l.id] = m;
+      return m;
     });
+    if (camadaPontos.addLayers) camadaPontos.addLayers(ms); else ms.forEach(function (m) { camadaPontos.addLayer(m); });
 
     if ($("#m-rotas").checked && ROTAS.length) {
       /* EXP já vem em ordem de data dentro de cada rota (gen_p5.py). A rota
@@ -818,14 +1058,16 @@
         }).bindTooltip((r.nome || "") + ", equipe " + (l[0].equipe || "") + ", de " + l[0].data + " a " + l[l.length - 1].data));
       });
     }
-    $("#m-cnt").textContent = vis.length + " iniciativas no mapa";
+    $("#m-cnt").textContent = visiveis.length + " iniciativas no mapa";
     if (!fichaNoPainel) resumoLateral();
   }
 
-  /* painel lateral sem ponto selecionado: contagem por eixo, que também filtra */
-  var fichaNoPainel = false;
+  /* painel lateral sem ponto selecionado: contagem por eixo (filtra e realça)
+     e a lista das iniciativas na área visível */
+  var fichaNoPainel = false, buscaMapa = "";
   function resumoLateral() {
     fichaNoPainel = false;
+    if (mkSel && mkSel.getElement()) mkSel.getElement().classList.remove("sel");
     var uf = $("#m-uf").value, soCampo = $("#m-so-campo").checked, ativo = $("#m-eixo").value;
     var base = LINHAS.filter(function (l) {
       return l.lat != null && (!soCampo || l.exp) && (!uf || ufsDe(l.uf).indexOf(uf) >= 0);
@@ -835,15 +1077,17 @@
     Object.keys(n).forEach(function (k) { mx = Math.max(mx, n[k]); });
     var h = '<div class="ms-resumo"><h4>Iniciativas por eixo</h4>' +
       '<p class="ms-sub">' + base.length + " no mapa" + (uf ? " com atuação em " + esc(uf) : "") +
-      ". A parte escura da barra são as avaliadas em campo. Clique num eixo para filtrar.</p><ul>" +
+      ". A parte escura da barra são as avaliadas em campo. Passe o mouse para destacar no mapa; clique para filtrar.</p><ul>" +
       (META.eixos || []).map(function (e) {
         var k = e.cod, t = n[k] || 0, c = nc[k] || 0;
         return '<li><button type="button" data-e="' + k + '" style="' + varsEixo(k) + '" aria-pressed="' + (ativo === k) + '">' +
           '<span class="q">' + icoEixo(k) + '</span><span class="t">' + esc(CURTO_EIXO[k] || e.nome) + "</span>" +
           '<span class="b"><i style="width:' + (t / mx * 100).toFixed(1) + '%"></i><i class="c" style="width:' +
           (c / mx * 100).toFixed(1) + '%"></i></span><b>' + t + "</b></button></li>";
-      }).join("") + "</ul>" +
-      '<p class="ph">Clique em um ponto do mapa para ver a ficha da iniciativa.</p></div>';
+      }).join("") + "</ul></div>" +
+      '<div class="ms-lista"><div class="ms-lista-cab"><h4 id="ms-lista-tit"></h4>' +
+      '<input type="search" id="ms-busca" placeholder="Buscar iniciativa ou município" aria-label="Buscar iniciativa ou município no mapa" value="' +
+      esc(buscaMapa) + '" /></div><ol id="ms-itens"></ol></div>';
     $("#map-side").innerHTML = h;
     $$("#map-side button[data-e]").forEach(function (b) {
       b.addEventListener("click", function () {
@@ -851,7 +1095,101 @@
         sel.value = sel.value === b.dataset.e ? "" : b.dataset.e;
         sel.dispatchEvent(new Event("change"));
       });
+      b.addEventListener("mouseenter", function () { $("#map-geral").setAttribute("data-realce", b.dataset.e); });
+      b.addEventListener("mouseleave", function () { $("#map-geral").removeAttribute("data-realce"); });
     });
+    $("#ms-busca").addEventListener("input", function (ev) { buscaMapa = ev.target.value; listaLateral(); });
+    listaLateral();
+  }
+
+  function listaLateral() {
+    var ol = $("#ms-itens"); if (!ol || !mapa) return;
+    var q = buscaMapa.trim().toLowerCase(), area = mapa.getBounds();
+    var itens = visiveis.filter(function (l) {
+      if (q) return (l.nome + " " + l.org + " " + l.municipio).toLowerCase().indexOf(q) >= 0;
+      return area.contains([l.lat, l.lon]);
+    }).sort(function (a, b) {
+      return (b.exp ? 1 : 0) - (a.exp ? 1 : 0) || (b.matriz || 0) - (a.matriz || 0) || a.nome.localeCompare(b.nome, "pt-BR");
+    });
+    $("#ms-lista-tit").textContent = (q ? "Resultados da busca" : "Nesta área do mapa") + " (" + itens.length + ")";
+    ol.innerHTML = itens.length ? itens.map(function (l) {
+      return '<li><button type="button" data-id="' + esc(l.id) + '">' +
+        '<span class="mk' + (l.exp ? " campo" : "") + '" style="' + varsEixo(l.eixo) + '">' + htmlIco(l.eixo, l.exp ? 16 : 12) + "</span>" +
+        '<span class="t"><b>' + esc(l.nome) + "</b><small>" + esc(localIni(l)) +
+        (l.exp ? '</small><span class="campo-tag">' + esc(l.campo) + "</span>" : "</small>") + "</span>" +
+        '<span class="n" title="Nota da matriz">' + (l.matriz == null ? "" : num(l.matriz, 0)) + "</span></button></li>";
+    }).join("") : '<li class="ms-vazio">' + (q ? "Nenhuma iniciativa com esse nome ou município. Confira a grafia ou limpe a busca."
+      : "Nenhuma iniciativa nesta área. Afaste o zoom ou use o botão NE para ver o Nordeste inteiro.") + "</li>";
+    $$("#ms-itens button[data-id]").forEach(function (b) {
+      var l = LINHAS.filter(function (x) { return String(x.id) === b.dataset.id; })[0];
+      b.addEventListener("click", function () { selecionaPonto(l, true); });
+      b.addEventListener("mouseenter", function () { realcaPonto(l, true); });
+      b.addEventListener("mouseleave", function () { realcaPonto(l, false); });
+    });
+  }
+
+  function elPonto(l) {
+    var m = marcadores[l.id]; if (!m) return null;
+    var p = camadaPontos.getVisibleParent ? camadaPontos.getVisibleParent(m) : m;
+    return p && p.getElement ? p.getElement() : null;
+  }
+  function realcaPonto(l, on) { var el = elPonto(l); if (el) el.classList.toggle("hl", on); }
+
+  /* abre a ficha no painel; vindo da lista, aproxima o mapa até o ponto */
+  function selecionaPonto(l, voar) {
+    var m = marcadores[l.id];
+    function marca() {
+      if (mkSel && mkSel.getElement()) mkSel.getElement().classList.remove("sel");
+      mkSel = m;
+      if (m && m.getElement()) m.getElement().classList.add("sel");
+    }
+    fichaLateral(l);
+    if (!m) return;
+    if (!voar) { marca(); return; }
+    vaiAte(m, marca, 0, null);
+  }
+  /* aproxima até o ponto sair do agrupamento; no mesmo município, abre em leque
+     numa escala de cidade, sem descer ao nível da rua */
+  function vaiAte(m, marca, n, antes) {
+    var pai = camadaPontos.getVisibleParent ? camadaPontos.getVisibleParent(m) : m;
+    if (!pai || pai === m) {
+      if (!mapa.getBounds().contains(m.getLatLng()) || mapa.getZoom() < 7) {
+        mapa.once("moveend", function () { setTimeout(marca, 350); });
+        mapa.setView(m.getLatLng(), Math.max(mapa.getZoom(), 8));
+      } else marca();
+      return;
+    }
+    var b = pai.getBounds();
+    if (b.getNorthEast().distanceTo(b.getSouthWest()) < 4000 || n > 4 || pai === antes) {
+      var abre = function () {
+        var p2 = camadaPontos.getVisibleParent(m);
+        if (p2 && p2 !== m && p2.spiderfy) { p2.spiderfy(); setTimeout(marca, 450); } else marca();
+      };
+      if (mapa.getZoom() < 9) { mapa.once("moveend", function () { setTimeout(abre, 400); }); mapa.setView(b.getCenter(), 9); }
+      else abre();
+      return;
+    }
+    /* espera o reagrupamento animado do Leaflet.markercluster antes de olhar de novo */
+    mapa.once("moveend", function () { setTimeout(function () { vaiAte(m, marca, n + 1, pai); }, 400); });
+    mapa.fitBounds(b, { padding: [60, 60], maxZoom: 12 });
+  }
+  /* município da iniciativa: a UF da visita, quando houve; senão, só quando a base traz uma UF */
+  function localIni(l) {
+    var us = ufsDe(l.uf), uf = l.exp && l.exp.uf ? l.exp.uf : (us.length === 1 ? us[0] : "");
+    return l.municipio ? l.municipio + (uf ? " (" + uf + ")" : "") : (us.join(", ") || "—");
+  }
+
+  /* do mapa para o cartão da incursão */
+  function irParaCartao(aba) {
+    mostrar("experiencias");
+    function vai() {
+      var c = $('#fichas .ficha[data-aba="' + aba + '"]');
+      if (!c) { var t = $('#rotas-nav button[data-rota="todas"]'); if (t) t.click(); c = $('#fichas .ficha[data-aba="' + aba + '"]'); }
+      if (!c) return;
+      c.scrollIntoView({ behavior: "smooth", block: "center" });
+      c.classList.remove("realce"); void c.offsetWidth; c.classList.add("realce");
+    }
+    setTimeout(vai, 80);
   }
 
   function fichaLateral(l) {
@@ -859,9 +1197,9 @@
     fichaNoPainel = true;
     var h = (l.eixo ? '<div class="faixa-eixo" style="' + varsEixo(l.eixo) + '"><span class="q">' + icoEixo(l.eixo) + "</span>" +
         esc(l.eixo_nome || NOME_EIXO[l.eixo] || l.eixo) + "</div>" : "") +
-      '<button type="button" class="ms-voltar" id="ms-voltar">Voltar à contagem por eixo</button>' +
+      '<button type="button" class="ms-voltar" id="ms-voltar">Voltar à lista</button>' +
       "<h4>" + esc(l.nome) + "</h4>" +
-      '<p class="loc">' + esc(l.municipio ? l.municipio + (l.uf ? " (" + l.uf + ")" : "") : l.uf) + "</p>";
+      '<p class="loc">' + esc(localIni(l)) + (ufsDe(l.uf).length > 1 ? ". Atua em " + esc(ufsDe(l.uf).join(", ")) : "") + "</p>";
     if (e && e.pontuacao != null) h += '<div class="ms-pont"><b>' + num(e.pontuacao, 0) + "</b><div>" +
       capClasse(classeDe(e)) + barraPont(e.pontuacao) + "<small>Pontuação final, de 0 a 100</small></div></div>";
     h += "<dl>";
@@ -880,9 +1218,12 @@
       }
     }
     h += "</dl>";
+    if (e) h += '<button type="button" class="ms-ir" id="ms-ir">Ver o cartão da incursão</button>';
     if (l.ini && l.ini.resumo) h += '<p class="ms-resumo-ini">' + esc(l.ini.resumo) + "</p>";
     $("#map-side").innerHTML = h;
+    $("#map-side").scrollTop = 0;
     $("#ms-voltar").addEventListener("click", resumoLateral);
+    if (e) $("#ms-ir").addEventListener("click", function () { irParaCartao(e.aba); });
   }
 
   /* ================================================ 3. EXPERIÊNCIAS === */

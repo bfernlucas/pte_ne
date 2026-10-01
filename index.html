@@ -2,9 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<script src="assets/data/campo.enc.js?v=83"></script>
-<script src="assets/data/p5.enc.js?v=83"></script>
-<script src="assets/js/auth.js?v=83"></script>
+<script src="assets/data/campo.enc.js?v=84"></script>
+<script src="assets/data/p5.enc.js?v=84"></script>
+<script src="assets/js/auth.js?v=84"></script>
 <script>if(!window.PTEAuth)location.replace("entrar.html");else PTEAuth.exigir();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Plano Brasil Nordeste de Transformação Ecológica — carteira e incursões de campo</title>
@@ -13,14 +13,18 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+      integrity="sha256-YU3qCpj/P06tdPBJGPax0bm6Q1wltfwjsho5TR4+TYc=" crossorigin="" />
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
+        integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/painel.css?v=83" />
-<link rel="stylesheet" href="assets/css/campo.css?v=83" />
+<link rel="stylesheet" href="assets/css/painel.css?v=84" />
+<link rel="stylesheet" href="assets/css/campo.css?v=84" />
 </head>
 <body>
 
@@ -76,12 +80,22 @@
     <h3>Trajetória do valor da carteira</h3>
     <p class="sub">Como o valor estimado se distribui por etapa (Estruturação, contratável agora, e Escala, após a
       condição de cada item), eixo do plano, classificação e componente do apoio. A espessura de cada faixa corresponde ao
-      valor máximo estimado.</p>
-    <div class="exp-bar">
-      <span class="exp-lab">Exportar:</span>
-      <button class="exp-btn" data-exp="png" data-target="#fig-aluvial" data-name="trajetoria-valor">PNG</button>
+      valor máximo estimado. Passe o mouse sobre uma categoria para acender o caminho dela; clique para fixar e ver a composição.</p>
+    <div class="alu-ctrl">
+      <div class="seg" id="aluvial-cor" role="group" aria-label="Colorir as faixas por">
+        <span class="seg-lab">Colorir as faixas por</span>
+        <button type="button" data-cor="eixo" aria-pressed="true">Eixo</button>
+        <button type="button" data-cor="bloco" aria-pressed="false">Etapa</button>
+        <button type="button" data-cor="classe" aria-pressed="false">Classificação</button>
+      </div>
+      <div class="exp-bar">
+        <span class="exp-lab">Exportar:</span>
+        <button class="exp-btn" data-exp="png" data-target="#fig-aluvial" data-name="trajetoria-valor">PNG</button>
+      </div>
     </div>
-    <div id="fig-aluvial" class="figura" style="border:0"></div>
+    <div class="alu-leg" id="aluvial-leg"></div>
+    <div id="fig-aluvial" class="figura alu-fig" style="border:0"></div>
+    <div class="alu-sel" id="aluvial-sel" aria-live="polite"></div>
     <p class="leitura" id="aluvial-leitura"></p>
   </div>
 
@@ -163,9 +177,9 @@
 <section class="view hidden" id="view-mapa">
   <div class="sec-head">
     <div class="aba"><h2>Onde estão as iniciativas</h2><svg class="motivo cacto" viewBox="16 18 64 66" aria-hidden="true" focusable="false"><path d="M40 82V28a8 8 0 0 1 16 0V82ZM20 58V42a6 6 0 0 1 12 0V54h8v8H26a6 6 0 0 1-6-4ZM56 52h8V38a6 6 0 0 1 12 0V50a8 8 0 0 1-8 8H56Z" fill="#24246C"/></svg></div>
-    <p>Localização de todas as iniciativas da base de prospecção. A cor indica o eixo do plano, e o tamanho do
-      círculo, a nota da matriz. As organizações que receberam visita ou entrevista têm contorno escuro, e as
-      linhas tracejadas mostram os trechos percorridos em cada rota.</p>
+    <p>Localização de todas as iniciativas da base de prospecção. Cada quadrado traz a cor e o ícone do eixo; os
+      maiores, com contorno, são as organizações que receberam visita ou entrevista. Iniciativas próximas aparecem
+      num anel com a contagem: clique nele para abri-lo. As linhas tracejadas são os trechos percorridos em cada rota.</p>
   </div>
   <div class="eixo-filtro" id="m-eixos" role="group" aria-label="Filtrar o mapa por eixo"></div>
   <div class="barra">
@@ -344,12 +358,12 @@
   </div>
 </section>
 
-<script src="assets/data/iniciativas.js?v=83"></script>
-<script src="assets/data/uf_ne.js?v=83"></script>
-<script src="assets/js/maplayers.js?v=83"></script>
-<script src="assets/js/painel.js?v=83"></script>
-<script src="assets/js/export.js?v=83"></script>
-<script src="assets/js/campo.js?v=83"></script>
+<script src="assets/data/iniciativas.js?v=84"></script>
+<script src="assets/data/uf_ne.js?v=84"></script>
+<script src="assets/js/maplayers.js?v=84"></script>
+<script src="assets/js/painel.js?v=84"></script>
+<script src="assets/js/export.js?v=84"></script>
+<script src="assets/js/campo.js?v=84"></script>
 <script>
 document.getElementById("sair").addEventListener("click",function(e){
   e.preventDefault();PTEAuth.sair();location.replace("entrar.html");
