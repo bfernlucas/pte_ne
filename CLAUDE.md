@@ -119,6 +119,17 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
   `--c-*` no `painel.css`, amostradas do PDF; sobre laranja e verde o texto é
   anil (contraste). O funil 89 → 29 → 27 → 18 usa cápsulas de largura
   proporcional (Carteira e Cobertura). Fora desses pontos, a cor fica no dado.
+- **Eixos, rotas e cartões (v83):** os seis eixos têm ícones redesenhados do
+  índice de propostas do livro (`<symbol id="i-FSI">` etc. no topo do
+  `index.html`), usados por `tagEixo()`/`icoEixo()` em `painel.js` e expostos a
+  `campo.js` como `window.PTE_EIXO`. O filtro por eixo do ranking e do mapa é
+  uma fileira de botões (`chipsEixo`); o `<select>` fica oculto e guarda o
+  valor. Classificação em cápsula anil (`.cls-cap`: cheia, contorno, cinza).
+  Ranking com grupos "Prospecção" e "Avaliação em campo" (o `export.js` usa a
+  última linha do cabeçalho e expande células mescladas). Cartões das
+  incursões com faixa do eixo, barra de pontuação (marcas em 60 e 80) e barra
+  de carteira em escala comum; linha do trajeto por rota; a ficha de
+  investimento abre na grade, logo abaixo da linha do cartão (`posicionaInv`).
 
 - Interface e documentação em português
 - CSS de módulo novo em arquivo próprio, com prefixo de classe — não inchar

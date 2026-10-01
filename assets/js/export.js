@@ -71,7 +71,9 @@ window.PTE_EXPORT = (function () {
   }
   // extrai cabeçalhos + linhas, ignorando colunas de ação (âncora / botão remover ao final)
   function extract(table) {
-    const headRow = table.querySelector("thead tr");
+    // com dois níveis de cabeçalho (grupos de colunas), vale a última linha
+    const headRows = table.querySelectorAll("thead tr");
+    const headRow = headRows.length ? headRows[headRows.length - 1] : null;
     const ths = headRow ? [...headRow.children] : [];
     const skip = ths.map(th => /âncora|ancora/i.test(th.textContent) || clean(th.textContent) === "");
     const headText = th => {
@@ -86,7 +88,13 @@ window.PTE_EXPORT = (function () {
     table.querySelectorAll("tbody tr").forEach(tr => {
       const cells = [...tr.children];
       if (cells.length === 1 && cells[0].hasAttribute("colspan")) return; // linha "vazio"
-      rows.push(cells.filter((_, i) => !skip[i]).map(cellText));
+      // célula mesclada (ex.: "Não avaliada em campo") ocupa as colunas que cobre
+      const txt = [];
+      cells.forEach(td => {
+        txt.push(cellText(td));
+        for (let k = 1; k < (Number(td.getAttribute("colspan")) || 1); k++) txt.push("");
+      });
+      rows.push(txt.filter((_, i) => !skip[i]));
     });
     return { headers, rows };
   }

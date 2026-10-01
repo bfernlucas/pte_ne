@@ -51,9 +51,70 @@
   }
   function maiusc(t) { t = String(t == null ? "" : t); return t.charAt(0).toUpperCase() + t.slice(1); }
   function corEixo(cod) { return COR_EIXO[cod] || CINZA; }
-  /* texto escuro sobre o verde e o laranja: branco não atinge contraste 4,5:1 */
-  function estiloEixo(cod) {
-    return "background:" + corEixo(cod) + ";color:" + (cod === "BIO" || cod === "TE" ? "#1A1A1F" : "#fff");
+  /* texto anil sobre o verde e o laranja: branco não atinge contraste 4,5:1 */
+  function tintaEixo(cod) { return cod === "BIO" || cod === "TE" ? "#24246C" : "#fff"; }
+  function estiloEixo(cod) { return "background:" + corEixo(cod) + ";color:" + tintaEixo(cod); }
+  function varsEixo(cod) { return "--e:" + corEixo(cod) + ";--ei:" + tintaEixo(cod); }
+  var NOME_EIXO = {}; (META.eixos || []).forEach(function (e) { NOME_EIXO[e.cod] = e.nome; });
+  var CURTO_EIXO = { FSI: "Finanças Sustentáveis", ADT: "Adensamento Tecnológico",
+    BIO: "Bioeconomia", TE: "Transição Energética", EC: "Economia Circular", NIVA: "Infraestrutura Verde-Azul" };
+  /* ícones dos eixos: <symbol> no index.html, redesenhados do índice de propostas do livro */
+  function icoEixo(cod) {
+    return COR_EIXO[cod] ? '<svg class="ico" aria-hidden="true" focusable="false"><use href="#i-' + cod + '"/></svg>' : "";
+  }
+  function tagEixo(cod) {
+    if (!cod) return '<span class="vazio">—</span>';
+    return '<span class="eixo-tag" style="' + varsEixo(cod) + '" title="' + esc(NOME_EIXO[cod] || cod) + '">' +
+      icoEixo(cod) + esc(cod) + "</span>";
+  }
+  /* barra de pontuação final (0 a 100) com as marcas de 60 e 80, os limites da classificação */
+  function barraPont(v, cls) {
+    if (v == null) return "";
+    return '<span class="bp' + (cls ? " " + cls : "") + '" aria-hidden="true"><i style="width:' +
+      Math.max(0, Math.min(100, v)) + '%"></i><b style="left:60%"></b><b style="left:80%"></b></span>';
+  }
+  function capClasse(c, curta) {
+    if (!c) return "";
+    var t = curta ? { alta: "Alta prioridade", estrategico: "Potencial estratégico", nao: "Não recomendada" }[c] : CLASSE[c];
+    return '<span class="cls-cap ' + c + '">' + esc(t || c) + "</span>";
+  }
+  /* nomes de componentes vêm em caixa alta da planilha: na tela, caixa normal */
+  function caixaNormal(t) {
+    t = String(t || "");
+    return t === t.toUpperCase() ? maiusc(t.toLowerCase()) : t;
+  }
+  /* nome curto da planilha às vezes vem em caixa alta ("AMAREZ"): usa o nome, se for o mesmo */
+  function nomeCurto(e) {
+    var c = String(e.curto || ""), n = String(e.nome || "");
+    if (c && c === c.toUpperCase() && n && n.toLowerCase().indexOf(c.toLowerCase()) === 0 && n.length <= c.length + 2) return n;
+    return c || n;
+  }
+  window.PTE_EIXO = { tag: tagEixo, ico: icoEixo, cor: corEixo, tinta: tintaEixo, vars: varsEixo };
+
+  /* filtro por eixo em botões com o ícone; o <select> fica oculto e guarda o valor */
+  function chipsEixo(alvo, sel, contar) {
+    if (!alvo || !sel) return;
+    sel.hidden = true;
+    var eixos = (META.eixos || []).map(function (e) { return e.cod; });
+    function pinta() {
+      var n = contar ? contar() : null, v = sel.value;
+      alvo.innerHTML = '<button type="button" data-e=""' + (v ? "" : ' aria-pressed="true"') + ">Todos os eixos" +
+        (n ? ' <span class="n">' + n._total + "</span>" : "") + "</button>" +
+        eixos.map(function (k) {
+          return '<button type="button" data-e="' + k + '" style="' + varsEixo(k) + '" title="' + esc(NOME_EIXO[k] || k) + '"' +
+            ' aria-pressed="' + (v === k) + '"><span class="q">' + icoEixo(k) + "</span>" + esc(CURTO_EIXO[k] || k) +
+            (n ? ' <span class="n">' + (n[k] || 0) + "</span>" : "") + "</button>";
+        }).join("");
+      $$("button", alvo).forEach(function (b) {
+        b.addEventListener("click", function () {
+          sel.value = b.dataset.e;
+          sel.dispatchEvent(new Event("change"));
+        });
+      });
+    }
+    sel.addEventListener("change", pinta);
+    alvo.atualiza = pinta;
+    pinta();
   }
   function ufsDe(s) {
     return String(s || "").split(/[,/]/).map(function (x) { return x.trim(); })
@@ -429,6 +490,11 @@
 
   function montaRanking() {
     preencheSelect($("#f-eixo"), (META.eixos || []).map(function (e) { return { v: e.cod, t: e.nome }; }));
+    chipsEixo($("#f-eixos"), $("#f-eixo"), function () {
+      var n = { _total: LINHAS.length };
+      LINHAS.forEach(function (l) { n[l.eixo] = (n[l.eixo] || 0) + 1; });
+      return n;
+    });
     var ufs = {}, biomas = {}, nats = {};
     LINHAS.forEach(function (l) {
       ufsDe(l.uf).forEach(function (u) { ufs[u] = 1; });
@@ -448,6 +514,7 @@
       fEstado = { busca: "", eixo: "", uf: "", bioma: "", nat: "", campo: false };
       $("#f-busca").value = ""; $("#f-eixo").value = ""; $("#f-uf").value = "";
       $("#f-bioma").value = ""; $("#f-nat").value = ""; $("#f-campo").value = "todas";
+      if ($("#f-eixos").atualiza) $("#f-eixos").atualiza();
       pintaRanking();
     });
 
@@ -532,16 +599,18 @@
           (l.criterios ? ' aria-label="Selecionar para comparação"' : " disabled title=\"Sem avaliação nos dez critérios da matriz\"") + " /></td>" +
         '<td class="nome">' + esc(l.nome) + (l.org ? "<small>" + esc(l.org) + "</small>" : "") + "</td>" +
         localCelula(l) +
-        "<td>" + (l.eixo ? '<span class="tag tag-eixo" style="' + estiloEixo(l.eixo) + '">' +
-          esc(l.eixo) + "</span>" : '<span class="vazio">—</span>') + "</td>" +
+        "<td>" + tagEixo(l.eixo) + "</td>" +
         '<td class="nat" title="' + esc(l.natureza) + '">' + esc(l.natureza || "—") + "</td>" +
-        '<td class="num">' + (l.matriz == null ? '<span class="vazio">—</span>' : num(l.matriz, 0)) + "</td>" +
-        "<td>" + (l.campo ? '<span class="tag pill-campo">' + esc(l.campo) + "</span>" : "") + "</td>" +
-        '<td class="num">' + (l.p5 == null ? '<span class="vazio">—</span>' : num(l.p5, 0)) + "</td>" +
-        '<td title="' + esc(l.classe ? CLASSE[l.classe] : "") + '">' +
-          (l.classe ? '<span class="cls-' + l.classe + '">' + esc(CLASSE_CURTA[l.classe]) + "</span>" : '<span class="vazio">—</span>') + "</td>" +
-        '<td class="num">' + faixa(l.amin, l.amax) + "</td>" +
-        '<td class="num">' + faixa(l.bmin, l.bmax) + "</td>" +
+        '<td class="num nota">' + (l.matriz == null ? '<span class="vazio">—</span>'
+          : '<span class="bn" aria-hidden="true"><i style="width:' + (l.matriz / 30 * 100).toFixed(1) + '%"></i></span>' + num(l.matriz, 0)) + "</td>" +
+        (l.exp
+          ? "<td>" + '<span class="campo-tag">' + esc(l.campo) + "</span></td>" +
+            '<td class="num pts">' + (l.p5 == null ? '<span class="vazio">—</span>' : num(l.p5, 0) + barraPont(l.p5)) + "</td>" +
+            '<td title="' + esc(l.classe ? CLASSE[l.classe] : "") + '">' +
+              (l.classe ? capClasse(l.classe, true) : '<span class="vazio">—</span>') + "</td>" +
+            '<td class="num">' + faixa(l.amin, l.amax) + "</td>" +
+            '<td class="num">' + faixa(l.bmin, l.bmax) + "</td>"
+          : '<td colspan="5" class="sem-campo">Não avaliada em campo</td>') +
         "</tr>";
     }).join("");
 
@@ -651,6 +720,7 @@
 
   INICIA.mapa = function () {
     preencheSelect($("#m-eixo"), (META.eixos || []).map(function (e) { return { v: e.cod, t: e.nome }; }));
+    chipsEixo($("#m-eixos"), $("#m-eixo"));
     var ufs = {};
     LINHAS.forEach(function (l) { ufsDe(l.uf).forEach(function (u) { ufs[u] = 1; }); });
     preencheSelect($("#m-uf"), Object.keys(ufs).sort());
@@ -749,15 +819,51 @@
       });
     }
     $("#m-cnt").textContent = vis.length + " iniciativas no mapa";
+    if (!fichaNoPainel) resumoLateral();
+  }
+
+  /* painel lateral sem ponto selecionado: contagem por eixo, que também filtra */
+  var fichaNoPainel = false;
+  function resumoLateral() {
+    fichaNoPainel = false;
+    var uf = $("#m-uf").value, soCampo = $("#m-so-campo").checked, ativo = $("#m-eixo").value;
+    var base = LINHAS.filter(function (l) {
+      return l.lat != null && (!soCampo || l.exp) && (!uf || ufsDe(l.uf).indexOf(uf) >= 0);
+    });
+    var n = {}, nc = {}, mx = 1;
+    base.forEach(function (l) { n[l.eixo] = (n[l.eixo] || 0) + 1; if (l.exp) nc[l.eixo] = (nc[l.eixo] || 0) + 1; });
+    Object.keys(n).forEach(function (k) { mx = Math.max(mx, n[k]); });
+    var h = '<div class="ms-resumo"><h4>Iniciativas por eixo</h4>' +
+      '<p class="ms-sub">' + base.length + " no mapa" + (uf ? " com atuação em " + esc(uf) : "") +
+      ". A parte escura da barra são as avaliadas em campo. Clique num eixo para filtrar.</p><ul>" +
+      (META.eixos || []).map(function (e) {
+        var k = e.cod, t = n[k] || 0, c = nc[k] || 0;
+        return '<li><button type="button" data-e="' + k + '" style="' + varsEixo(k) + '" aria-pressed="' + (ativo === k) + '">' +
+          '<span class="q">' + icoEixo(k) + '</span><span class="t">' + esc(CURTO_EIXO[k] || e.nome) + "</span>" +
+          '<span class="b"><i style="width:' + (t / mx * 100).toFixed(1) + '%"></i><i class="c" style="width:' +
+          (c / mx * 100).toFixed(1) + '%"></i></span><b>' + t + "</b></button></li>";
+      }).join("") + "</ul>" +
+      '<p class="ph">Clique em um ponto do mapa para ver a ficha da iniciativa.</p></div>';
+    $("#map-side").innerHTML = h;
+    $$("#map-side button[data-e]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var sel = $("#m-eixo");
+        sel.value = sel.value === b.dataset.e ? "" : b.dataset.e;
+        sel.dispatchEvent(new Event("change"));
+      });
+    });
   }
 
   function fichaLateral(l) {
     var e = l.exp;
-    var h = "<h4>" + esc(l.nome) + "</h4>" +
-      '<p class="loc" style="font-size:.79rem;color:#8A8A94;margin:2px 0 10px">' +
-      esc(l.municipio ? l.municipio + (l.uf ? " (" + l.uf + ")" : "") : l.uf) + "</p>";
-    if (l.eixo) h += '<span class="tag tag-eixo" style="' + estiloEixo(l.eixo) + '">' +
-      esc(l.eixo_nome || l.eixo) + "</span>";
+    fichaNoPainel = true;
+    var h = (l.eixo ? '<div class="faixa-eixo" style="' + varsEixo(l.eixo) + '"><span class="q">' + icoEixo(l.eixo) + "</span>" +
+        esc(l.eixo_nome || NOME_EIXO[l.eixo] || l.eixo) + "</div>" : "") +
+      '<button type="button" class="ms-voltar" id="ms-voltar">Voltar à contagem por eixo</button>' +
+      "<h4>" + esc(l.nome) + "</h4>" +
+      '<p class="loc">' + esc(l.municipio ? l.municipio + (l.uf ? " (" + l.uf + ")" : "") : l.uf) + "</p>";
+    if (e && e.pontuacao != null) h += '<div class="ms-pont"><b>' + num(e.pontuacao, 0) + "</b><div>" +
+      capClasse(classeDe(e)) + barraPont(e.pontuacao) + "<small>Pontuação final, de 0 a 100</small></div></div>";
     h += "<dl>";
     if (l.org) h += "<dt>Organização</dt><dd>" + esc(l.org) + "</dd>";
     if (l.natureza) h += "<dt>Natureza jurídica</dt><dd>" + esc(l.natureza) + "</dd>";
@@ -765,8 +871,6 @@
     if (e) {
       h += "<dt>Coleta em campo</dt><dd>" + esc(e.coleta) + ", em " + esc(e.data) +
         " (" + esc(e.rota_nome) + ")</dd>";
-      if (e.pontuacao != null) h += "<dt>Pontuação final</dt><dd>" + num(e.pontuacao, 0) + " de 100</dd>";
-      if (classeDe(e)) h += "<dt>Classificação</dt><dd>" + esc(CLASSE[classeDe(e)]) + "</dd>";
       if (e.estimada) {
         h += "<dt>Etapa 1 — Estruturação</dt><dd>R$ " + faixaTxt(e.bloco_a.min, e.bloco_a.max) + " milhões</dd>";
         h += "<dt>Etapa 2 — Escala</dt><dd>" + (e.bloco_b.max ? "R$ " + faixaTxt(e.bloco_b.min, e.bloco_b.max) + " milhões" : "Sem Escala") + "</dd>";
@@ -776,9 +880,9 @@
       }
     }
     h += "</dl>";
-    if (l.ini && l.ini.resumo) h += '<p style="font-size:.83rem;color:#55555F;margin-top:14px">' +
-      esc(l.ini.resumo) + "</p>";
+    if (l.ini && l.ini.resumo) h += '<p class="ms-resumo-ini">' + esc(l.ini.resumo) + "</p>";
     $("#map-side").innerHTML = h;
+    $("#ms-voltar").addEventListener("click", resumoLateral);
   }
 
   /* ================================================ 3. EXPERIÊNCIAS === */
@@ -797,25 +901,63 @@
       " foram recomendadas com alta prioridade e " + (nEst - nAlta) + " como potencial estratégico, e as " + nEst +
       " têm estimativa de recursos; as outras " + (EXP.length - nEst) + " não foram recomendadas neste ciclo.";
 
-    var botoes = [{ id: "todas", nome: "Todas as rotas", cor: CINZA, n: EXP.length }].concat(
+    var botoes = [{ id: "todas", nome: "Todas as rotas", cor: "#24246C", n: EXP.length }].concat(
       ROTAS.map(function (r) {
         return { id: r.id, nome: r.nome + " (" + r.uf + ")", cor: COR_ROTA[r.id] || CINZA,
           n: EXP.filter(function (e) { return e.rota === r.id; }).length };
       }));
     $("#rotas-nav").innerHTML = botoes.map(function (b) {
-      return '<button data-rota="' + b.id + '" style="border-left-color:' + b.cor + '"' +
+      return '<button type="button" data-rota="' + b.id + '" style="--r:' + b.cor + ";--ri:" + tintaRota(b.id) + '" aria-pressed="' + (b.id === rotaAtiva) + '"' +
         (b.id === rotaAtiva ? ' class="active"' : "") + ">" + esc(b.nome) +
         ' <span class="n">' + b.n + "</span></button>";
     }).join("");
     $$("#rotas-nav button").forEach(function (b) {
       b.addEventListener("click", function () {
         rotaAtiva = b.dataset.rota;
-        $$("#rotas-nav button").forEach(function (x) { x.classList.toggle("active", x === b); });
+        $$("#rotas-nav button").forEach(function (x) {
+          x.classList.toggle("active", x === b); x.setAttribute("aria-pressed", x === b);
+        });
         pintaFichas();
       });
     });
+    var mxCart = 0;
+    EXP.forEach(function (e) { if (e.estimada) mxCart = Math.max(mxCart, (e.bloco_a.max || 0) + (e.bloco_b.max || 0)); });
+    ESCALA_CART = Math.ceil(mxCart / 5) * 5 || 1;
+    $("#fichas-leg").innerHTML = "Nas barras de carteira, a escala é a mesma em todos os cartões, de zero a R$ " +
+      num(ESCALA_CART, 0) + ' milhões: <i class="sw a"></i>Estruturação e <i class="sw b"></i>Escala no valor máximo, ' +
+      "com um traço no valor mínimo da carteira. Na pontuação, as marcas indicam 60 e 80 pontos, os limites da classificação.";
+    window.addEventListener("resize", function () {
+      clearTimeout(window.__pteInv); window.__pteInv = setTimeout(posicionaInv, 150);
+    });
     pintaFichas();
   };
+  var ESCALA_CART = 1;
+  /* verde e laranja pedem texto anil; azul e anil, branco */
+  function tintaRota(id) { return id === "R2" || id === "R3" ? "#24246C" : "#fff"; }
+
+  /* linha do trajeto: as paradas de cada rota, na ordem das visitas */
+  function pintaTrajeto() {
+    var rotas = rotaAtiva === "todas" ? ROTAS : ROTAS.filter(function (r) { return r.id === rotaAtiva; });
+    $("#trajeto").innerHTML = rotas.map(function (r) {
+      var ps = EXP.filter(function (e) { return e.rota === r.id; });
+      return '<div class="traj-linha" style="--r:' + (COR_ROTA[r.id] || CINZA) + ";--ri:" + tintaRota(r.id) + '">' +
+        (rotaAtiva === "todas" ? '<span class="traj-rot">' + esc(r.nome) + "</span>" : "") +
+        '<ol style="--n:' + ps.length + '" aria-label="Paradas da ' + esc(r.nome) + '">' + ps.map(function (e, i) {
+          return '<li><button type="button" data-aba="' + esc(e.aba) + '" title="' + esc(e.nome + ", " + e.municipio +
+            " (" + e.uf + "), " + e.data + (e.coleta === "Virtual" ? ", entrevista virtual" : "")) + '">' +
+            '<span class="pt' + (e.coleta === "Virtual" ? " virt" : "") + '">' + (i + 1) + "</span>" +
+            '<span class="dt">' + esc(e.data) + '</span><span class="nm">' + esc(nomeCurto(e)) + "</span></button></li>";
+        }).join("") + "</ol></div>";
+    }).join("");
+    $$("#trajeto button[data-aba]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var c = $('#fichas .ficha[data-aba="' + b.dataset.aba + '"]');
+        if (!c) return;
+        c.scrollIntoView({ behavior: "smooth", block: "center" });
+        c.classList.remove("realce"); void c.offsetWidth; c.classList.add("realce");
+      });
+    });
+  }
 
   function pintaFichas() {
     var r = ROTAS.filter(function (x) { return x.id === rotaAtiva; })[0];
@@ -824,49 +966,70 @@
         (/·/.test(r.equipe) ? "Equipes: " : "Equipe: ") + esc(String(r.equipe).replace(/ · /g, "; ")) + "." 
       : "Todas as rotas, na ordem em que foram percorridas.";
 
+    pintaTrajeto();
     var lista = EXP.filter(function (e) { return rotaAtiva === "todas" || e.rota === rotaAtiva; });
+    var inv = $("#inv");
+    $("#fichas").after(inv);   /* tira a ficha aberta da grade antes de redesenhar os cartões */
     $("#fichas").innerHTML = lista.map(function (e) {
-      var cor = corEixo(e.eixo_cod);
-      var h = '<article class="ficha' + (e.estimada ? "" : " sem-est") + '" style="border-top-color:' + cor + '">' +
+      var tot = { min: (e.bloco_a.min || 0) + (e.bloco_b.min || 0), max: (e.bloco_a.max || 0) + (e.bloco_b.max || 0) };
+      var cls = classeDe(e);
+      var h = '<article class="ficha' + (e.estimada ? "" : " sem-est") + '" data-aba="' + esc(e.aba) + '" style="' + varsEixo(e.eixo_cod) + '">' +
+        '<div class="faixa-eixo"><span class="q">' + icoEixo(e.eixo_cod) + "</span>" +
+          esc(CURTO_EIXO[e.eixo_cod] || e.eixo_cod || "") + '<span class="rota" style="--r:' + (COR_ROTA[e.rota] || CINZA) + '">' +
+          esc(e.rota_nome) + "</span></div>" +
+        '<div class="ficha-corpo">' +
         "<h4>" + esc(e.nome) + "</h4>" +
-        '<p class="loc">' + esc(e.municipio) + " (" + esc(e.uf) + "), " + esc(e.data) +
-          (e.equipe ? ". Equipe: " + esc(e.equipe) : "") + "</p>" +
-        '<div class="tags">' +
-          (e.eixo_cod ? '<span class="tag tag-eixo" style="' + estiloEixo(e.eixo_cod) + '">' + esc(e.eixo_cod) + "</span>" : "") +
-          '<span class="tag pill-rota">' + esc(e.rota_nome) + "</span>" +
-          '<span class="tag tag-out">' + esc(e.coleta) + "</span>" +
-          (e.nova_em_campo ? '<span class="tag tag-out" title="Não constava da base de prospecção">Encontrada em campo</span>' : "") +
-        "</div>";
+        '<p class="loc">' + esc(e.municipio) + " (" + esc(e.uf) + "), " + esc(e.data) + ", " +
+          (e.coleta === "Virtual" ? "entrevista virtual" : "visita presencial") +
+          (e.equipe ? ". Equipe: " + esc(e.equipe) : "") +
+          (e.nova_em_campo ? ". Encontrada em campo, fora da base de prospecção" : "") + "</p>";
+      if (e.pontuacao != null) {
+        h += '<div class="pont"><b>' + num(e.pontuacao, 0) + "</b><div>" + capClasse(cls) +
+          barraPont(e.pontuacao) + "<small>" + (e.estimada ? esc(e.posicao) + "º lugar entre " + nEstimadas() + ", " : "") +
+          "pontuação final de 0 a 100</small></div></div>";
+      }
       if (e.estimada) {
-        h += "<dl>" +
-          "<dt>Classificação</dt><dd>" + esc(CLASSE[e.classificacao] || e.classificacao) + "</dd>" +
-          "<dt>Pontuação final</dt><dd>" + num(e.pontuacao, 0) + " (" + esc(e.posicao) + "º lugar entre " + nEstimadas() + ")</dd>" +
-          "<dt>Prontidão</dt><dd>" + pctTxt(e.prontidao) + " da carteira na Estruturação</dd>" +
-          "<dt>Informação financeira</dt><dd>" + esc(maiusc(e.info_financeira)) + "</dd>" +
-          "<dt>Confiança da estimativa</dt><dd>" + esc(maiusc(e.confianca)) + "</dd>" +
-          "<dt>Itens estimados</dt><dd>" + esc(e.itens) + "</dd>" +
-          (e.gabinete != null ? "<dt>Nota da matriz</dt><dd>" + num(e.gabinete, 0) + " de 30</dd>" : "") +
-          "</dl>" +
-          '<div class="faixa"><dl>' +
-            "<dt>Estruturação</dt><dd><b>" + faixa(e.bloco_a.min, e.bloco_a.max) + "</b></dd>" +
-            "<dt>Escala</dt><dd>" + faixa(e.bloco_b.min, e.bloco_b.max) + "</dd>" +
-            "<dt>Carteira total</dt><dd>" + faixa((e.bloco_a.min || 0) + (e.bloco_b.min || 0),
-              (e.bloco_a.max || 0) + (e.bloco_b.max || 0)) + "</dd>" +
-          '</dl><p class="unid">Valores em R$ milhões, para 36 meses</p></div>';
+        var pa = (e.bloco_a.max || 0) / ESCALA_CART * 100, pb = (e.bloco_b.max || 0) / ESCALA_CART * 100;
+        h += '<div class="cart"><div class="cart-top"><span>Carteira total</span><b>R$ ' + faixaTxt(tot.min, tot.max) +
+            ' <small>milhões</small></b></div>' +
+          '<span class="barra-cart" role="img" aria-label="Carteira de R$ ' + faixaTxt(tot.min, tot.max) + ' milhões; Estruturação de R$ ' +
+            faixaTxt(e.bloco_a.min, e.bloco_a.max) + ' milhões e Escala de R$ ' + faixaTxt(e.bloco_b.min, e.bloco_b.max) + ' milhões">' +
+            '<i class="a" style="width:' + pa.toFixed(2) + '%"></i><i class="b" style="width:' + pb.toFixed(2) + '%"></i>' +
+            '<em style="left:' + (tot.min / ESCALA_CART * 100).toFixed(2) + '%"></em></span>' +
+          '<p class="cart-leg"><span><i class="sw a"></i>Estruturação ' + faixa(e.bloco_a.min, e.bloco_a.max) + "</span>" +
+            '<span><i class="sw b"></i>Escala ' + faixa(e.bloco_b.min, e.bloco_b.max) + "</span></p></div>" +
+          '<dl class="ficha-mini">' +
+            "<div><dt>Prontidão</dt><dd>" + pctTxt(e.prontidao) + "</dd></div>" +
+            "<div><dt>Informação financeira</dt><dd>" + esc(maiusc(e.info_financeira)) + "</dd></div>" +
+            "<div><dt>Confiança da estimativa</dt><dd>" + esc(maiusc(e.confianca)) + "</dd></div>" +
+            "<div><dt>Itens estimados</dt><dd>" + esc(e.itens) + "</dd></div>" +
+            (e.gabinete != null ? "<div><dt>Nota da matriz</dt><dd>" + num(e.gabinete, 0) + " de 30</dd></div>" : "") +
+          "</dl>";
         if (e.ficha_inv) {
-          h += '<button class="abrir" data-aba="' + esc(e.aba) + '">Ver ficha de investimento</button>';
+          h += '<button class="abrir" type="button" data-aba="' + esc(e.aba) + '" aria-expanded="false">Ver ficha de investimento</button>';
         }
       } else {
-        h += '<div class="faixa">Sem estimativa de recursos: não recomendada neste ciclo. ' +
-          "A avaliação está na seção Diagnóstico de campo.</div>";
+        h += '<p class="sem-txt">Sem estimativa de recursos: não recomendada neste ciclo. ' +
+          "A avaliação está na seção Diagnóstico de campo.</p>";
       }
-      return h + "</article>";
+      return h + "</div></article>";
     }).join("");
     $$("#fichas .abrir").forEach(function (b) {
       b.addEventListener("click", function () { abreInvestimento(b.dataset.aba); });
     });
     if (invAberta && !lista.some(function (e) { return e.aba === invAberta; })) fechaInvestimento();
-    else if (invAberta) marcaAberta();
+    else if (invAberta) { marcaAberta(); posicionaInv(); }
+  }
+
+  /* a ficha de investimento abre logo abaixo da linha do cartão clicado */
+  function posicionaInv() {
+    var inv = $("#inv");
+    if (!invAberta || !inv) return;
+    var card = $('#fichas .ficha[data-aba="' + invAberta + '"]');
+    if (!card) return;
+    var top = card.offsetTop, ult = card;
+    $$("#fichas .ficha").forEach(function (c) { if (Math.abs(c.offsetTop - top) < 4) ult = c; });
+    if (ult.nextElementSibling !== inv) ult.after(inv);
   }
 
   /* ---- ficha de investimento: a aba da planilha, no estilo de uma ficha
@@ -885,35 +1048,40 @@
       if (b) { b.textContent = on ? "Fechar ficha de investimento" : "Ver ficha de investimento"; b.setAttribute("aria-expanded", on); }
     });
   }
-  function fechaInvestimento() {
+  function fechaInvestimento(voltar) {
+    var card = invAberta && $('#fichas .ficha[data-aba="' + invAberta + '"]');
     invAberta = null; $("#inv").classList.add("hidden"); $("#inv").innerHTML = ""; marcaAberta();
+    $("#fichas").after($("#inv"));
+    if (voltar === true && card) card.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
   function abreInvestimento(aba) {
     var e = EXP.filter(function (x) { return x.aba === aba; })[0];
     if (!e || !e.ficha_inv) return;
-    if (invAberta === aba) { fechaInvestimento(); return; }
+    if (invAberta === aba) { fechaInvestimento(true); return; }
     invAberta = aba; marcaAberta();
     var f = e.ficha_inv, cor = corEixo(e.eixo_cod);
     var slug = String(e.curto).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    var h = '<div class="inv-head"><div class="inv-tit"><h4>' + esc(e.curto) + "</h4>" +
-      '<p class="meta"><span class="tag tag-eixo" style="' + estiloEixo(e.eixo_cod) + '">' + esc(e.eixo_cod) + "</span> " +
+    var h = '<div class="faixa-eixo inv-faixa" style="' + varsEixo(e.eixo_cod) + '"><span class="q">' + icoEixo(e.eixo_cod) + "</span>" +
+        esc(NOME_EIXO[e.eixo_cod] || e.eixo_cod || "") + "</div>" +
+      '<div class="inv-head"><div class="inv-tit"><h4>Ficha de investimento: ' + esc(nomeCurto(e)) + "</h4>" +
+      '<p class="meta">' +
       esc(e.municipio) + " (" + esc(e.uf) + "), " + esc(e.rota_nome) + ", " +
       (e.coleta === "Virtual" ? "entrevista em " : "visita em ") + esc(e.data) + "</p></div>" +
       '<div class="exp-bar" style="margin:0"><span class="exp-lab">Exportar:</span>' +
       '<button class="exp-btn" data-exp="xlsx" data-target="#inv-export" data-name="ficha-' + slug +
-        '" data-title="Ficha de investimento — ' + esc(e.curto) + '" data-sheet="Ficha">XLS</button>' +
+        '" data-title="Ficha de investimento — ' + esc(nomeCurto(e)) + '" data-sheet="Ficha">XLS</button>' +
       '<button class="exp-btn" data-exp="pdf" data-target="#inv-export" data-name="ficha-' + slug +
-        '" data-title="Ficha de investimento — ' + esc(e.curto) + '">PDF</button></div>' +
+        '" data-title="Ficha de investimento — ' + esc(nomeCurto(e)) + '">PDF</button></div>' +
       '<button class="ghost fechar" id="inv-fechar">Fechar ficha</button></div>';
     h += '<div class="inv-kpis">' +
-      "<div><b>" + esc(CLASSE[e.classificacao] || e.classificacao) + "</b><span>Classificação; pontuação final " +
+      '<div class="k-cls">' + capClasse(e.classificacao) + barraPont(e.pontuacao) + "<span>Pontuação final " +
         num(e.pontuacao, 0) + ", " + esc(e.posicao) + "º lugar entre " + nEstimadas() + "</span></div>" +
       "<div><b>" + pctTxt(e.prontidao) + "</b><span>Prontidão: parcela da carteira máxima já na Estruturação" +
         (e.condicao ? ". Condição predominante da Escala: " + esc(maiusc(e.condicao)) : "") + "</span></div>" +
       "<div><b>" + esc(maiusc(e.confianca)) + "</b><span>Confiança da estimativa; informação financeira " + esc(e.info_financeira) + "</span></div>" +
-      '<div class="v"><b>' + faixa(e.bloco_a.min, e.bloco_a.max) + "</b><span>Etapa 1, Estruturação (contratável agora), em R$ milhões</span></div>" +
-      '<div class="v"><b>' + faixa(e.bloco_b.min, e.bloco_b.max) + "</b><span>Etapa 2, Escala (após a condição de cada item), em R$ milhões</span></div>" +
-      '<div class="v"><b>' + faixa((e.bloco_a.min || 0) + (e.bloco_b.min || 0), (e.bloco_a.max || 0) + (e.bloco_b.max || 0)) +
+      '<div class="v a"><b>' + faixa(e.bloco_a.min, e.bloco_a.max) + "</b><span>Etapa 1, Estruturação (contratável agora), em R$ milhões</span></div>" +
+      '<div class="v b"><b>' + faixa(e.bloco_b.min, e.bloco_b.max) + "</b><span>Etapa 2, Escala (após a condição de cada item), em R$ milhões</span></div>" +
+      '<div class="v t"><b>' + faixa((e.bloco_a.min || 0) + (e.bloco_b.min || 0), (e.bloco_a.max || 0) + (e.bloco_b.max || 0)) +
         "</b><span>Carteira total, em R$ milhões, para 36 meses</span></div></div>";
 
     /* Na tela: cinco colunas. Rubrica e unidade viram uma linha abaixo do
@@ -939,7 +1107,7 @@
         "<th>Racional</th><th>Qtd. mínima</th><th>Qtd. máxima</th><th>Unitário mínimo (R$)</th><th>Unitário máximo (R$)</th>" +
         "<th>Total mínimo (R$)</th><th>Total máximo (R$)</th><th>Condição para contratar</th></tr></thead><tbody>";
       bl.componentes.forEach(function (c) {
-        t += '<tr class="comp"><td>' + c.n + '</td><td colspan="3">' + esc(c.nome) + "</td>" +
+        t += '<tr class="comp"><td>' + c.n + '</td><td colspan="3">' + esc(caixaNormal(c.nome)) + "</td>" +
           '<td class="num">' + intervalo(c.min, c.max, inteiro) + "</td></tr>";
         x += "<tr><td>" + c.n + "</td><td>" + esc(c.nome) + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>" +
           "<td>" + inteiro(c.min) + "</td><td>" + inteiro(c.max) + "</td><td></td></tr>";
@@ -985,7 +1153,9 @@
         '<p class="legenda">' + esc(String(f.legenda || LEGENDA_ORIGEM).replace(/produto 5 ?B/i, "relatório final")) + "</p></div>";
     }
     var inv = $("#inv"); inv.innerHTML = h; inv.classList.remove("hidden");
-    $("#inv-fechar").addEventListener("click", fechaInvestimento);
+    inv.style.cssText = varsEixo(e.eixo_cod);
+    posicionaInv();
+    $("#inv-fechar").addEventListener("click", function () { fechaInvestimento(true); });
     inv.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -1194,7 +1364,7 @@
     graficos.push(new Chart($("#ch-experiencias"), {
       type: "bar",
       data: {
-        labels: ordE.map(function (e) { return e.curto; }),
+        labels: ordE.map(function (e) { return nomeCurto(e); }),
         datasets: [
           { label: "Etapa 1 — Estruturação", data: ordE.map(function (e) { return e.bloco_a.max; }), backgroundColor: AZ_A },
           { label: "Etapa 2 — Escala", data: ordE.map(function (e) { return e.bloco_b.max; }), backgroundColor: AZ_B }
@@ -1203,10 +1373,10 @@
       options: {
         indexAxis: "y", responsive: true, maintainAspectRatio: false,
         plugins: { legend: { position: "top", align: "end", labels: { boxWidth: 12 } },
-          tooltip: { callbacks: { title: function (c) { return ordE[c[0].dataIndex].curto; },
+          tooltip: { callbacks: { title: function (c) { return nomeCurto(ordE[c[0].dataIndex]); },
             label: function (c) { return c.dataset.label + ": R$ " + num(c.raw) + " milhões"; } } } },
         scales: { y: { stacked: true, grid: { display: false }, ticks: { autoSkip: false, font: { size: 11 },
-            callback: function (v) { var t = ordE[v].curto; return t.length > 34 ? t.slice(0, 32) + "…" : t; } } },
+            callback: function (v) { var t = nomeCurto(ordE[v]); return t.length > 34 ? t.slice(0, 32) + "…" : t; } } },
           x: { stacked: true, beginAtZero: true, position: "top", title: { display: true, text: "R$ milhões (valor máximo)" } } }
       }
     }));
@@ -1298,20 +1468,24 @@
         th.classList.toggle("on", th.dataset.sort === ordExp.chave);
         th.classList.toggle("desc", th.dataset.sort === ordExp.chave && ordExp.dir === "desc");
       });
-      var tA0 = 0, tA1 = 0, tB0 = 0, tB1 = 0;
+      var tA0 = 0, tA1 = 0, tB0 = 0, tB1 = 0, mxTab = 0;
+      l.forEach(function (e) { mxTab = Math.max(mxTab, (e.bloco_a.max || 0) + (e.bloco_b.max || 0)); });
+      mxTab = mxTab || 1;
       $("#tb-exp").innerHTML = l.map(function (e) {
         tA0 += e.bloco_a.min || 0; tA1 += e.bloco_a.max || 0; tB0 += e.bloco_b.min || 0; tB1 += e.bloco_b.max || 0;
         return "<tr>" +
-          '<td class="nome">' + esc(e.curto) + "<small>" + esc(e.municipio) + " (" + esc(e.uf) + ")</small></td>" +
-          '<td><span class="tag tag-eixo" style="' + estiloEixo(e.eixo_cod) + '">' + esc(e.eixo_cod) + "</span></td>" +
-          "<td>" + esc(CLASSE_CURTA[e.classificacao] || e.classificacao) + "</td>" +
+          '<td class="nome">' + esc(nomeCurto(e)) + "<small>" + esc(e.municipio) + " (" + esc(e.uf) + ")</small></td>" +
+          "<td>" + tagEixo(e.eixo_cod) + "</td>" +
+          "<td>" + capClasse(e.classificacao, true) + "</td>" +
           '<td class="num">' + pctTxt(e.prontidao) + "</td>" +
           "<td>" + esc(maiusc(e.confianca)) + "</td>" +
           '<td class="num">' + num(e.pontuacao, 0) + "</td>" +
           '<td class="num">' + esc(e.itens) + "</td>" +
           '<td class="num">' + faixa(e.bloco_a.min, e.bloco_a.max) + "</td>" +
           '<td class="num">' + faixa(e.bloco_b.min, e.bloco_b.max) + "</td>" +
-          '<td class="num"><b>' + num((e.bloco_a.max || 0) + (e.bloco_b.max || 0)) + "</b></td>" +
+          '<td class="num"><b>' + num((e.bloco_a.max || 0) + (e.bloco_b.max || 0)) + "</b>" +
+            '<span class="barra-cart mini" aria-hidden="true"><i class="a" style="width:' + ((e.bloco_a.max || 0) / mxTab * 100).toFixed(1) +
+            '%"></i><i class="b" style="width:' + ((e.bloco_b.max || 0) / mxTab * 100).toFixed(1) + '%"></i></span></td>' +
           "</tr>";
       }).join("") +
       '<tr class="linha-total"><td>Total</td><td></td><td></td><td class="num">' + pctTxt(tA1 / ((tA1 + tB1) || 1)) + "</td><td></td><td></td><td></td>" +
