@@ -67,6 +67,12 @@ button:focus-visible{outline:3px solid var(--amarelo);outline-offset:3px}
 .rodape .pl{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
 .rodape img{display:block;height:30px;width:auto;max-width:100%}
 .rodape .tec img{height:34px}
+/* crédito de desenvolvimento: discreto, abaixo dos parceiros */
+.credito{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;margin:16px 0 0;font-size:.72rem;color:var(--muted)}
+.credito .marca{font-family:var(--display);font-weight:600;letter-spacing:.02em;color:var(--navy)}
+.credito .contato{display:inline-flex;flex-wrap:wrap;gap:4px 14px}
+.credito a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent}
+.credito a:hover,.credito a:focus-visible{color:var(--navy);border-bottom-color:currentColor}
 
 @media (max-width:900px){
   body{grid-template-columns:1fr}
@@ -166,12 +172,15 @@ button:focus-visible{outline:3px solid var(--amarelo);outline-offset:3px}
     <div class="tec"><span class="pl">Parceiro técnico</span>
       <img src="assets/img/logotipo-quanta.png" alt="QCP — Inteligência em Políticas Públicas" /></div>
   </div>
+  <p class="credito"><span>Painel desenvolvido por <b class="marca">Limber Social</b></span>
+  <span class="contato"><a href="mailto:limbersocial@gmail.com">limbersocial@gmail.com</a>
+  <a href="https://lucasfernandes-eco.github.io" target="_blank" rel="noopener">lucasfernandes-eco.github.io</a></span></p>
 </main>
 
 
-<script src="assets/data/campo.enc.js?v=87"></script>
-<script src="assets/data/p5.enc.js?v=87"></script>
-<script src="assets/js/auth.js?v=87"></script>
+<script src="assets/data/campo.enc.js?v=88"></script>
+<script src="assets/data/p5.enc.js?v=88"></script>
+<script src="assets/js/auth.js?v=88"></script>
 <script>
 (function () {
   var form = document.getElementById("form");

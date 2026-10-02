@@ -156,6 +156,10 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
   os pesos diferem); "Lado a lado" mostra um radar por experiência, com as
   notas nos vértices. Cores literais no SVG, porque o PNG exportado o
   serializa fora da página.
+- **Crédito no rodapé (v88):** linha discreta abaixo dos parceiros, no
+  `index.html` (todas as seções) e no `entrar.html`: "Painel desenvolvido por
+  Limber Social", com o e-mail limbersocial@gmail.com e o site
+  lucasfernandes-eco.github.io (pedido do Lucas, 02/10/2026).
 
 - Interface e documentação em português
 - CSS de módulo novo em arquivo próprio, com prefixo de classe — não inchar
