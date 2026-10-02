@@ -148,6 +148,14 @@ decisões no documento do projeto `claude/dashboard-p5-esqueleto.md`.
   SRI) em anéis por eixo; o painel lateral tem contagem por eixo (realça e
   filtra) e a lista da área visível com busca; `vaiAte` aproxima até a cidade e
   abre o grupo em leque, sem descer ao nível da rua.
+- **Comparação em radar (v87):** Diagnóstico > Comparação mostra o perfil nas
+  quatro dimensões em radar (`perfil()` em `campo.js`), com a média das 29
+  avaliadas tracejada e cada série com cor e forma de marcador próprias.
+  "Sobrepostas" traz ao lado a tabela das notas e da pontuação final (o
+  radar não serve para ler valores, e a área não equivale à pontuação porque
+  os pesos diferem); "Lado a lado" mostra um radar por experiência, com as
+  notas nos vértices. Cores literais no SVG, porque o PNG exportado o
+  serializa fora da página.
 
 - Interface e documentação em português
 - CSS de módulo novo em arquivo próprio, com prefixo de classe — não inchar

@@ -779,39 +779,161 @@
       '<div class="ec-chips" id="ec-cmp-chips"></div>' +
       '<div id="ec-cmp-corpo"></div>';
 
-    function barras(itens) {
-      var W = 880, H = 230, L = 130, R = 20, T = 30, B = 34;
-      var pw = W - L - R, gw = pw / DIMS.length, bw = Math.min(26, (gw - 18) / itens.length);
-      var COR = ["#24246C", "#F09C18", "#54B43C", "#0C549C"];
-      var g = "";
+    /* Perfil nas quatro dimensões em radar (teia). Sobrepostas, as formas
+       mostram onde cada experiência se destaca; como o radar não é bom para
+       ler valores exatos, a tabela ao lado traz as notas e a pontuação final
+       (a área do polígono não é a pontuação: os pesos diferem). A linha
+       tracejada é a média das 29 avaliadas. Lado a lado evita a sobreposição.
+       Cores em hexadecimal, não em variáveis CSS: o PNG exportado serializa
+       o SVG fora da página. */
+    var COR_CMP = ["#24246C", "#F09C18", "#0F7D8C", "#E42424"];
+    var FORMA = ["circulo", "quadrado", "triangulo", "losango"];
+    var modoCmp = "sobre";
+    var MEDIA = {};
+    DIMS.forEach(function (d) {
+      MEDIA[d[0]] = exp.reduce(function (a, x) { return a + (x.notas[d[0]] || 0); }, 0) / (exp.length || 1);
+    });
+    var MEDIA_TOT = exp.reduce(function (a, x) { return a + (x.total || 0); }, 0) / (exp.length || 1);
+    function dec(v) { return (Math.round(v * 10) / 10).toLocaleString("pt-BR", { minimumFractionDigits: 1 }); }
+
+    function marcador(f, x, y, r, cor) {
+      if (f === "quadrado") return '<rect x="' + (x - r).toFixed(1) + '" y="' + (y - r).toFixed(1) + '" width="' + (2 * r) +
+        '" height="' + (2 * r) + '" fill="' + cor + '" stroke="#fff" stroke-width="1.5"/>';
+      if (f === "triangulo") return '<path d="M' + x.toFixed(1) + "," + (y - r * 1.25).toFixed(1) + " L" + (x + r * 1.15).toFixed(1) + "," +
+        (y + r * 0.85).toFixed(1) + " L" + (x - r * 1.15).toFixed(1) + "," + (y + r * 0.85).toFixed(1) + 'Z" fill="' + cor +
+        '" stroke="#fff" stroke-width="1.5"/>';
+      if (f === "losango") return '<path d="M' + x.toFixed(1) + "," + (y - r * 1.3).toFixed(1) + " L" + (x + r * 1.3).toFixed(1) + "," +
+        y.toFixed(1) + " L" + x.toFixed(1) + "," + (y + r * 1.3).toFixed(1) + " L" + (x - r * 1.3).toFixed(1) + "," + y.toFixed(1) +
+        'Z" fill="' + cor + '" stroke="#fff" stroke-width="1.5"/>';
+      return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r + '" fill="' + cor + '" stroke="#fff" stroke-width="1.5"/>';
+    }
+    function simbolo(i, tam) {
+      var r = tam / 2 - 1.5;
+      return '<svg class="ec-rd-sim" width="' + tam + '" height="' + tam + '" viewBox="0 0 ' + tam + " " + tam + '" aria-hidden="true">' +
+        marcador(FORMA[i % 4], tam / 2, tam / 2, r * 0.82, COR_CMP[i % 4]) + "</svg>";
+    }
+
+    /* um radar: cx, cy, raio; itens = [{x, i}], comValores escreve as notas nos vértices */
+    function teia(itens, o) {
+      var W = o.W, H = o.H, cx = W / 2, cy = o.cy || H / 2, R = o.R, n = DIMS.length, ff = "Roboto,Arial,sans-serif";
+      function ang(k) { return -Math.PI / 2 + k * 2 * Math.PI / n; }
+      function pt(k, v) { return [cx + Math.cos(ang(k)) * R * v / 5, cy + Math.sin(ang(k)) * R * v / 5]; }
+      var s = '<svg viewBox="0 0 ' + W + " " + H + '" class="ec-rd-svg" role="img" aria-label="' + esc(o.rotulo) + '" font-family="' + ff + '">';
       [1, 2, 3, 4, 5].forEach(function (v) {
-        var y = H - B - (v / 5) * (H - T - B);
-        g += '<line x1="' + L + '" y1="' + y.toFixed(1) + '" x2="' + (W - R) + '" y2="' + y.toFixed(1) +
-             '" stroke="var(--border-2)"/>' +
-             '<text x="' + (L - 8) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="var(--muted)">' + v + '</text>';
+        s += '<polygon points="' + DIMS.map(function (d, k) { return pt(k, v).map(function (z) { return z.toFixed(1); }).join(","); }).join(" ") +
+          '" fill="' + (v === 5 ? "#FAFAFC" : "none") + '" stroke="' + (v === 5 ? "#C9C9D1" : "#E4E4EA") + '" stroke-width="1"/>';
       });
-      DIMS.forEach(function (d, di) {
-        var x0 = L + di * gw;
-        g += '<text x="' + (x0 + gw / 2).toFixed(1) + '" y="' + (H - B + 18) +
-             '" text-anchor="middle" font-size="11.5" fill="var(--ink)">' + d[1] +
-             ' <tspan fill="var(--muted)">(peso ' + d[2] + ')</tspan></text>';
-        itens.forEach(function (x, xi) {
-          var n = x.notas[d[0]];
-          var h = (n / 5) * (H - T - B);
-          var bx = x0 + gw / 2 - (itens.length * bw + (itens.length - 1) * 4) / 2 + xi * (bw + 4);
-          g += '<rect x="' + bx.toFixed(1) + '" y="' + (H - B - h).toFixed(1) + '" width="' + bw.toFixed(1) +
-               '" height="' + h.toFixed(1) + '" fill="' + COR[xi % 4] + '" opacity=".85" rx="2">' +
-               '<title>' + esc(x.nome) + ', ' + d[1].toLowerCase() + ': ' + n + ' de 5</title></rect>';
+      DIMS.forEach(function (d, k) {
+        var p = pt(k, 5);
+        s += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="#E4E4EA"/>';
+      });
+      /* escala no meio da aresta entre os dois primeiros eixos, longe dos vértices */
+      if (o.escala) [1, 2, 3, 4, 5].forEach(function (v) {
+        var a = pt(0, v), b = pt(1, v);
+        s += '<text x="' + ((a[0] + b[0]) / 2 + 3).toFixed(1) + '" y="' + ((a[1] + b[1]) / 2 - 3).toFixed(1) +
+          '" font-size="10" fill="#8A8A94">' + v + "</text>";
+      });
+      /* rótulos dos eixos, com o peso */
+      DIMS.forEach(function (d, k) {
+        var a = ang(k), lx = cx + Math.cos(a) * (R + o.folga), ly = cy + Math.sin(a) * (R + o.folga);
+        var lado = Math.abs(Math.cos(a)) >= 0.3;
+        var anc = !lado ? "middle" : (Math.cos(a) > 0 ? "start" : "end");
+        var dy = Math.sin(a) < -0.3 ? -16 : (Math.sin(a) > 0.3 ? 4 : -6);
+        /* no radar pequeno, o rótulo dos eixos laterais vai acima do vértice */
+        if (lado && o.lateralAcima) { lx = cx + Math.cos(a) * R; ly = cy - 22; anc = "middle"; dy = -6; }
+        s += '<text x="' + lx.toFixed(1) + '" y="' + (ly + dy).toFixed(1) + '" text-anchor="' + anc + '" font-size="' + o.fonte +
+          '" font-weight="700" fill="#1A1A1F">' + d[1] + "</text>" +
+          '<text x="' + lx.toFixed(1) + '" y="' + (ly + dy + o.fonte + 1).toFixed(1) + '" text-anchor="' + anc + '" font-size="' +
+          (o.fonte - 1.5) + '" fill="#6E6E78">peso ' + d[2] + "</text>";
+      });
+      /* média das 29 avaliadas */
+      s += '<polygon class="ec-rd-media" points="' + DIMS.map(function (d, k) { return pt(k, MEDIA[d[0]]).map(function (z) { return z.toFixed(1); }).join(","); }).join(" ") +
+        '" fill="none" stroke="#55555F" stroke-width="1.5" stroke-dasharray="5 4"/>';
+      itens.forEach(function (it) {
+        var x = it.x, i = it.i, cor = COR_CMP[i % 4];
+        var ps = DIMS.map(function (d, k) { return pt(k, x.notas[d[0]] || 0); });
+        s += '<g class="ec-rd-s" data-i="' + i + '"><polygon points="' + ps.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ") +
+          '" fill="' + cor + '" fill-opacity="' + (o.unico ? 0.22 : 0.12) + '" stroke="' + cor + '" stroke-width="2.5" stroke-linejoin="round"/>';
+        ps.forEach(function (p, k) {
+          var d = DIMS[k], v = x.notas[d[0]];
+          s += '<g class="ec-rd-v"><title>' + esc(x.nome) + ", " + d[1].toLowerCase() + ": " + v + " de 5 (média das " + exp.length +
+            " avaliadas: " + dec(MEDIA[d[0]]) + ")</title>" + marcador(FORMA[i % 4], p[0], p[1], o.ponto, cor) + "</g>";
+          if (o.valores) {
+            var a = ang(k), lat = Math.abs(Math.cos(a)) >= 0.3;
+            var ox = lat ? Math.cos(a) * 14 : 12, oy = lat ? 4 : (Math.sin(a) < 0 ? -2 : 2);
+            s += '<text x="' + (p[0] + ox).toFixed(1) + '" y="' + (p[1] + oy).toFixed(1) +
+              '" text-anchor="middle" font-size="12" font-weight="700" fill="' + cor + '" stroke="#fff" stroke-width="3" paint-order="stroke">' +
+              v + "</text>";
+          }
         });
+        s += "</g>";
       });
-      var leg = itens.map(function (x, xi) {
-        return '<span class="lg"><i style="background:' + COR[xi % 4] + '"></i>' + esc(x.nome) + '</span>';
-      }).join("");
-      return '<div class="ec-card"><h3>Perfil nas quatro dimensões</h3>' +
-        '<p class="sub">Nota de 1 a 5 por dimensão, com o peso de cada uma na pontuação final</p>' +
-        '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Barras comparando as quatro dimensões">' +
-        g + '<line x1="' + L + '" y1="' + (H - B) + '" x2="' + (W - R) + '" y2="' + (H - B) + '" stroke="var(--border)"/>' +
-        '</svg><div class="ec-cmp-leg">' + leg + '</div></div>';
+      return s + "</svg>";
+    }
+
+    function perfil(itens) {
+      var its = itens.map(function (x, i) { return { x: x, i: i }; });
+      var max = {};
+      DIMS.forEach(function (d) { max[d[0]] = Math.max.apply(null, itens.map(function (x) { return x.notas[d[0]]; })); });
+      var maxTot = Math.max.apply(null, itens.map(function (x) { return x.total; }));
+      var seg = '<div class="seg ec-rd-modo" role="group" aria-label="Forma de exibir">' +
+        '<button type="button" data-m="sobre" aria-pressed="' + (modoCmp === "sobre") + '">Sobrepostas</button>' +
+        '<button type="button" data-m="lado" aria-pressed="' + (modoCmp === "lado") + '">Lado a lado</button></div>';
+      var cab = '<div class="ec-rd-cab"><div><h3>Perfil nas quatro dimensões</h3>' +
+        '<p class="sub">Nota de 1 a 5 em cada dimensão; a linha tracejada é a média das ' + exp.length + ' experiências avaliadas. ' +
+        'A área da forma não equivale à pontuação final, porque os pesos das dimensões são diferentes.</p></div>' + seg + "</div>";
+      var corpo;
+      if (modoCmp === "lado") {
+        corpo = '<div class="ec-rd-grade">' + its.map(function (it) {
+          return '<figure class="ec-rd-mini" data-i="' + it.i + '"><figcaption>' + simbolo(it.i, 14) + "<b>" + esc(it.x.nome) + "</b>" +
+            '<span><strong>' + it.x.total + '</strong> pontos <span class="cls-cap ' + it.x.classificacao + '">' + esc(CLS[it.x.classificacao]) +
+            "</span></span></figcaption>" +
+            teia([it], { W: 300, H: 296, cy: 150, R: 92, folga: 20, fonte: 11.5, ponto: 4.5, valores: true, unico: true, lateralAcima: true,
+              rotulo: "Perfil de " + it.x.nome + " nas quatro dimensões" }) + "</figure>";
+        }).join("") + "</div>";
+      } else {
+        var tab = '<table class="ec-rd-tab"><thead><tr><th>Experiência</th>' +
+          DIMS.map(function (d) { return '<th class="n">' + d[1] + "<small>peso " + d[2] + "</small></th>"; }).join("") +
+          '<th class="n">Pontuação<small>de 0 a 100</small></th></tr></thead><tbody>' +
+          its.map(function (it) {
+            return '<tr data-i="' + it.i + '" tabindex="0"><th><span class="ec-rd-nm">' + simbolo(it.i, 14) + "<span>" + esc(it.x.nome) + "</span></span></th>" +
+              DIMS.map(function (d) {
+                var v = it.x.notas[d[0]];
+                return '<td class="n' + (v === max[d[0]] && itens.length > 1 ? " mx" : "") + '">' + v + "</td>";
+              }).join("") + '<td class="n tot' + (it.x.total === maxTot ? " mx" : "") + '">' + it.x.total + "</td></tr>";
+          }).join("") +
+          '<tr class="media"><th><span class="ec-rd-nm"><svg class="ec-rd-sim" width="14" height="14" aria-hidden="true"><line x1="0" y1="7" x2="14" y2="7" stroke="#55555F" stroke-width="1.5" stroke-dasharray="4 3"/></svg>' +
+          "<span>Média das " + exp.length + " avaliadas</span></span></th>" +
+          DIMS.map(function (d) { return '<td class="n">' + dec(MEDIA[d[0]]) + "</td>"; }).join("") +
+          '<td class="n tot">' + Math.round(MEDIA_TOT) + "</td></tr></tbody></table>";
+        corpo = '<div class="ec-rd-sobre">' +
+          teia(its, { W: 520, H: 400, R: 140, folga: 18, fonte: 13, ponto: 5, escala: true,
+            rotulo: "Radar comparando " + itens.length + " experiências nas quatro dimensões" }) +
+          '<div class="ec-rd-lado">' + tab +
+          '<p class="ec-mini">Em negrito, a maior nota de cada coluna. Passe o mouse sobre uma linha para destacar a experiência no radar.</p></div></div>';
+      }
+      return '<div class="ec-card ec-rd">' + cab + corpo + "</div>";
+    }
+
+    /* destaque de uma série: linha da tabela, forma no radar ou figura lado a lado */
+    function ligaPerfil(corpo) {
+      var card = corpo.querySelector(".ec-rd"); if (!card) return;
+      Array.prototype.forEach.call(card.querySelectorAll(".ec-rd-modo button"), function (b) {
+        b.addEventListener("click", function () { modoCmp = b.getAttribute("data-m"); render(); });
+      });
+      function realca(i) {
+        card.classList.toggle("foco", i != null);
+        Array.prototype.forEach.call(card.querySelectorAll(".ec-rd-s, .ec-rd-tab tr[data-i]"), function (el) {
+          el.classList.toggle("on", i != null && el.getAttribute("data-i") === String(i));
+        });
+      }
+      Array.prototype.forEach.call(card.querySelectorAll(".ec-rd-tab tr[data-i], .ec-rd-svg .ec-rd-s"), function (el) {
+        var i = el.getAttribute("data-i");
+        el.addEventListener("mouseenter", function () { realca(i); });
+        el.addEventListener("mouseleave", function () { realca(null); });
+        el.addEventListener("focus", function () { realca(i); });
+        el.addEventListener("blur", function () { realca(null); });
+      });
     }
 
     function quadro(itens) {
@@ -900,7 +1022,8 @@
         return;
       }
       var itens = sel.map(function (i) { return ordenadas[i]; });
-      corpo.innerHTML = barras(itens) + quadro(itens) + estrategia(itens);
+      corpo.innerHTML = perfil(itens) + quadro(itens) + estrategia(itens);
+      ligaPerfil(corpo);
     }
 
     /* comparação por eixo (pedido da equipe): o filtro restringe a lista e um
